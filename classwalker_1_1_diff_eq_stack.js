@@ -1,0 +1,26 @@
+var classwalker_1_1_diff_eq_stack =
+[
+    [ "DiffEqStack", "classwalker_1_1_diff_eq_stack.html#abf272999bfc1fb2af32c8c92652b05de", null ],
+    [ "betapdfs", "classwalker_1_1_diff_eq_stack.html#a32c5e784ecf315c4baa0709b0eb69b83", null ],
+    [ "createDiffEq", "classwalker_1_1_diff_eq_stack.html#a09b5f5df7f3b8b02a2701dad289ebc22", null ],
+    [ "factory", "classwalker_1_1_diff_eq_stack.html#a97297b2a1fca409a1d94078fdf91c122", null ],
+    [ "info", "classwalker_1_1_diff_eq_stack.html#a9559315ca0c5a0c28cedd212a889f53c", null ],
+    [ "infoBeta", "classwalker_1_1_diff_eq_stack.html#a77e7bcaaa3bcf99582d4fa126944c5c5", null ],
+    [ "infoDiagOU", "classwalker_1_1_diff_eq_stack.html#a774e7d00fd7b9f8ceca03a9e1a140e41", null ],
+    [ "infoDirichlet", "classwalker_1_1_diff_eq_stack.html#a615b8f3217350e693a20c6ba22893340", null ],
+    [ "infoGamma", "classwalker_1_1_diff_eq_stack.html#a728d490ad948b446c58522fe0089b84f", null ],
+    [ "infoGenDir", "classwalker_1_1_diff_eq_stack.html#a0d0f0bcdbc080619fbdc4767ad7deb3d", null ],
+    [ "infoMassFractionBeta", "classwalker_1_1_diff_eq_stack.html#ade0c68dde82eea30411e2aae98f1b4fa", null ],
+    [ "infoMixMassFracBeta", "classwalker_1_1_diff_eq_stack.html#acee9d2315e8fc705db3de468d9a6dd13", null ],
+    [ "infoMixNumFracBeta", "classwalker_1_1_diff_eq_stack.html#a2732549f79dd2b18ba932003b99849b7", null ],
+    [ "infoNumberFractionBeta", "classwalker_1_1_diff_eq_stack.html#a56bf1686406061b4aa231f9ffe205c87", null ],
+    [ "infoOU", "classwalker_1_1_diff_eq_stack.html#ad1965c2fc4327c8c12cd15eb9a473205", null ],
+    [ "infoSkewNormal", "classwalker_1_1_diff_eq_stack.html#ae36184e00772bdccf779e8d242f00f1d", null ],
+    [ "infoWrightFisher", "classwalker_1_1_diff_eq_stack.html#a4564751c0c8230f1ef6a4fab58d87689", null ],
+    [ "ntypes", "classwalker_1_1_diff_eq_stack.html#a8719b45418a9ca4d24d989e7276f6eab", null ],
+    [ "parameters", "classwalker_1_1_diff_eq_stack.html#aa96cb9d2bfbbfb0b59d2ca11309524ad", null ],
+    [ "selected", "classwalker_1_1_diff_eq_stack.html#a3a92fb28edf3f66f26eaa4e6831729ed", null ],
+    [ "spikes", "classwalker_1_1_diff_eq_stack.html#ab24098da325e9e4a4f3e47659b63259f", null ],
+    [ "m_eqTypes", "classwalker_1_1_diff_eq_stack.html#a6148ce86a9e6de5f4e8398ef14c8ebc7", null ],
+    [ "m_factory", "classwalker_1_1_diff_eq_stack.html#a67b8835629119e72a4bdd9972ec63431", null ]
+];
