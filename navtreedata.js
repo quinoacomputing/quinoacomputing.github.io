@@ -34,7 +34,7 @@ var NAVTREE =
     [ "Statistics output", "statistics_output.html", null ],
     [ "UnitTest: Unit test suite", "unittest_doc.html", null ],
     [ "Walker: Random walker for stochastic differential equations", "walker_doc.html", null ],
-    [ "Fundamental concepts", "why.html", [
+    [ "Goals", "why.html", [
       [ "1. Designed for the exascale era", "why.html#exascale", null ],
       [ "2. Verified and proven to be correct", "why.html#correct", null ],
       [ "3. Optimized for performance, power, and reliability", "why.html#optimized", null ],

@@ -44,11 +44,10 @@ var searchData=
   ['freq_5fgamma_5fc2',['freq_gamma_C2',['../namespacekw.html#a9b38e3bcb1107bd40c44440aa19a87e8',1,'kw']]],
   ['freq_5fgamma_5fc3',['freq_gamma_C3',['../namespacekw.html#a55ae7a0c61bc3eb34f1da52f498ad585',1,'kw']]],
   ['freq_5fgamma_5fc4',['freq_gamma_C4',['../namespacekw.html#a077f49750076609a2232e0841fbeaf68',1,'kw']]],
-  ['frequency',['frequency',['../structtag_1_1frequency.html',1,'tag']]],
   ['frequency',['Frequency',['../classbreeze_1_1ctr_1_1_frequency.html',1,'breeze::ctr']]],
   ['frequency',['Frequency',['../classbreeze_1_1ctr_1_1_frequency.html#acf9c220897b452ce927c10dd0665a785',1,'breeze::ctr::Frequency']]],
+  ['frequency',['frequency',['../structtag_1_1frequency.html',1,'tag']]],
   ['frequency_2eh',['Frequency.h',['../_frequency_8h.html',1,'']]],
   ['frequencytype',['FrequencyType',['../namespacebreeze_1_1ctr.html#a7d23918087617d4d55bc7e97b4a83946',1,'breeze::ctr']]],
-  ['func',['func',['../classtk_1_1_exception.html#a219a7caf05e53633886d7959cd324155',1,'tk::Exception']]],
-  ['fundamental_20concepts',['Fundamental concepts',['../why.html',1,'']]]
+  ['func',['func',['../classtk_1_1_exception.html#a219a7caf05e53633886d7959cd324155',1,'tk::Exception']]]
 ];
