@@ -5,6 +5,7 @@ var NAVTREE =
     [ "Concurrency", "concurrency.html", null ],
     [ "Differential equations", "diffeq.html", null ],
     [ "Git subtree with TPLs", "subtree.html", null ],
+    [ "Inciter: Solve a PDE on unstructured meshes", "inciter_doc.html", null ],
     [ "Inhomogeneity strategy", "inhomogeneity.html", null ],
     [ "Input/Output for PIC-based inhomogeneity strategy", "io.html", null ],
     [ "Particle data layout", "layout.html", [
@@ -98,14 +99,14 @@ var NAVTREEINDEX =
 "classtk_1_1_uns_mesh_map.html",
 "classwalker_1_1_distributor.html#ada0524d183a7d871cc890b393b0484ea",
 "classwalker_1_1ctr_1_1_input_deck.html#a4b22e7db5ce9adf6bfcb95b18f1e46f0",
-"namespacemembers_type_n.html",
-"structkw_1_1end__info.html#ab51b836a6d3d836e73c6a0b57d780949",
-"structkw_1_1npar__info_1_1expect.html",
-"structkw_1_1seq__med__info.html#ae7a98b225a000eceedd16e0942bb8621",
-"structtag_1_1c0.html",
-"structtk_1_1grm_1_1_store.html#abc2a875901ead98272f7541a8f0d3634",
-"structtut_1_1_migrated.html#a515911b678eb4b2e142c52b7c03c89e4",
-"why.html#fun"
+"namespacemembers_type_m.html",
+"structkw_1_1end__info.html#a95b5e17fc3392fabeb7b005458f1f5d3",
+"structkw_1_1npar__info.html#aaf591014e8c7340d6d9c73e8586ff615",
+"structkw_1_1seq__med__info.html#a4ba6007a25b49b596e2c68bd8f6cf98f",
+"structtag_1_1c.html",
+"structtk_1_1grm_1_1_store.html",
+"structtut_1_1_migrated.html#a4cabc975887cf1973efeba8f08db08e2",
+"why.html#friendly"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronisation';
