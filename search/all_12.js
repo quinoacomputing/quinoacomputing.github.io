@@ -174,8 +174,8 @@ var searchData=
   ['rngtest_3a_20test_20all_20available_20mkl_20and_20rngsse_20rngs_20with_20crush',['RNGTest: Test all available MKL and RNGSSE RNGs with Crush',['../rngtest_example_crush_all.html',1,'examples']]],
   ['rngtest_3a_20test_20a_20few_20rngs_20with_20smallcrush',['RNGTest: Test a few RNGs with SmallCrush',['../rngtest_example_smallcrush.html',1,'examples']]],
   ['rngtest_3a_20test_20all_20available_20mkl_20and_20rngsse_20rngs_20with_20smallcrush',['RNGTest: Test all available MKL and RNGSSE RNGs with SmallCrush',['../rngtest_example_smallcrush_all.html',1,'examples']]],
-  ['rngtestdriver',['RNGTestDriver',['../classrngtest_1_1_r_n_g_test_driver.html#a31b864e4f7a9a6c77554b4878c9057e6',1,'rngtest::RNGTestDriver']]],
   ['rngtestdriver',['RNGTestDriver',['../classrngtest_1_1_r_n_g_test_driver.html',1,'rngtest']]],
+  ['rngtestdriver',['RNGTestDriver',['../classrngtest_1_1_r_n_g_test_driver.html#a31b864e4f7a9a6c77554b4878c9057e6',1,'rngtest::RNGTestDriver']]],
   ['rngtestdriver_2ec',['RNGTestDriver.C',['../_r_n_g_test_driver_8_c.html',1,'']]],
   ['rngtestdriver_2eh',['RNGTestDriver.h',['../_r_n_g_test_driver_8h.html',1,'']]],
   ['rngtestprint',['RNGTestPrint',['../classrngtest_1_1_r_n_g_test_print.html#aa396672fdb4b06e4d38cc218c57c965a',1,'rngtest::RNGTestPrint']]],
@@ -184,7 +184,7 @@ var searchData=
   ['rngtype',['RNGType',['../namespacetk_1_1ctr.html#aa1b0831f9e998d8133473f63480b3ecb',1,'tk::ctr']]],
   ['rowcomplete',['rowcomplete',['../classinciter_1_1_conductor.html#a8d0ad2253f7356a730bd009a787ca28f',1,'inciter::Conductor::rowcomplete()'],['../classtk_1_1_lin_sys_merger.html#a991f044291b07e774e42fb247e77ce8c',1,'tk::LinSysMerger::rowcomplete()']]],
   ['rowsreceived',['rowsreceived',['../classtk_1_1_lin_sys_merger.html#a6a2342bf25787ba16667e0f58fe35872',1,'tk::LinSysMerger']]],
-  ['run',['Run',['../structtag_1_1_run.html',1,'tag']]],
   ['run',['run',['../classrngtest_1_1_stat_test.html#ae313c602006653fbe557460517c87df0',1,'rngtest::StatTest::run()'],['../structrngtest_1_1_stat_test_1_1_concept.html#a039970a2cd97b80004b1cff5ed668259',1,'rngtest::StatTest::Concept::run()'],['../structrngtest_1_1_stat_test_1_1_model.html#ab7f3614a2eacf13e0144a9e8f681f871',1,'rngtest::StatTest::Model::run()'],['../classrngtest_1_1_test_u01.html#a1777e80aab0c99a4762a300571490113',1,'rngtest::TestU01::run()'],['../classrngtest_1_1_test_u01_props.html#af4c3525ec430065bb53aa18adeaa645b',1,'rngtest::TestU01Props::run()'],['../classrngtest_1_1_test_u01_stack.html#ab5b048384755aebfaa7d7b5d88a65493',1,'rngtest::TestU01Stack::Run()'],['../classrngtest_1_1_test_u01_stack.html#aad00e5a7716dcfcd8a9d7a51c5cdb8e6',1,'rngtest::TestU01Stack::Run(unif01_Gen *gen, sres_Chi2 *res, const std::tuple&lt; long, long, int, int &gt; &amp;xargs)']]],
+  ['run',['Run',['../structtag_1_1_run.html',1,'tag']]],
   ['runfn',['RunFn',['../classrngtest_1_1_test_u01_props.html#a7bd62909119ba8b1c1824217fffd7fd2',1,'rngtest::TestU01Props']]]
 ];

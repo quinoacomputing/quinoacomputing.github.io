@@ -17,24 +17,10 @@ var NAVTREE =
       [ "3. Build the code coverage report", "index.html#build_coverage", null ],
       [ "4. Check out some examples", "index.html#build_examples", null ]
     ] ],
-    [ "Fundamental concepts", "why.html", [
-      [ "1. Designed for the exascale era", "why.html#exascale", null ],
-      [ "2. Verified and proven to be correct", "why.html#correct", null ],
-      [ "3. Optimized for performance, power, and reliability", "why.html#optimized", null ],
-      [ "4. Advanced computer science outsourced to experts", "why.html#outsource", null ],
-      [ "5. Using a language that can cope with complexity", "why.html#language", null ],
-      [ "6. Highly-valued programmer productivity", "why.html#productivity", null ],
-      [ "7. User and developer friendly", "why.html#friendly", null ],
-      [ "8. Well documented", "why.html#documented", null ],
-      [ "9. Fun to work on", "why.html#fun", null ]
-    ] ],
-    [ "Walker: Random walker for stochastic differential equations", "walker_doc.html", null ],
-    [ "RNGTest: Random number generator test suite", "rngtest_doc.html", null ],
-    [ "UnitTest: Unit test suite", "unittest_doc.html", null ],
-    [ "MeshConv: Mesh file converter", "meshconv_doc.html", null ],
     [ "Algoritm design", "algorithm.html", null ],
     [ "Concurrency", "concurrency.html", null ],
     [ "Differential equations", "diffeq.html", null ],
+    [ "Git subtree with TPLs", "subtree.html", null ],
     [ "Inhomogeneity strategy", "inhomogeneity.html", null ],
     [ "Input/Output for PIC-based inhomogeneity strategy", "io.html", null ],
     [ "Particle data layout", "layout.html", [
@@ -55,11 +41,26 @@ var NAVTREE =
       [ "Comparison of the algorithms", "layout.html#layout_comparison", null ],
       [ "Conclusion", "layout.html#layout_conclusion", null ]
     ] ],
+    [ "Third-party libraries licenses, compilers, and tools", "licenses.html", "licenses" ],
     [ "How to generate logos", "logo.html", null ],
+    [ "MeshConv: Mesh file converter", "meshconv_doc.html", null ],
     [ "Random number generators", "rng.html", null ],
     [ "Random number generators input", "rngs_input.html", null ],
+    [ "RNGTest: Random number generator test suite", "rngtest_doc.html", null ],
     [ "Statistics output", "statistics_output.html", null ],
-    [ "Third-party libraries licenses, compilers, and tools", "licenses.html", "licenses" ],
+    [ "UnitTest: Unit test suite", "unittest_doc.html", null ],
+    [ "Walker: Random walker for stochastic differential equations", "walker_doc.html", null ],
+    [ "Fundamental concepts", "why.html", [
+      [ "1. Designed for the exascale era", "why.html#exascale", null ],
+      [ "2. Verified and proven to be correct", "why.html#correct", null ],
+      [ "3. Optimized for performance, power, and reliability", "why.html#optimized", null ],
+      [ "4. Advanced computer science outsourced to experts", "why.html#outsource", null ],
+      [ "5. Using a language that can cope with complexity", "why.html#language", null ],
+      [ "6. Highly-valued programmer productivity", "why.html#productivity", null ],
+      [ "7. User and developer friendly", "why.html#friendly", null ],
+      [ "8. Well documented", "why.html#documented", null ],
+      [ "9. Fun to work on", "why.html#fun", null ]
+    ] ],
     [ "Examples", "examples.html", "examples" ],
     [ "Namespaces", null, [
       [ "Namespace List", "namespaces.html", "namespaces" ],
@@ -120,7 +121,7 @@ var NAVTREEINDEX =
 "structtag_1_1_serial_over.html",
 "structtk_1_1ctr_1_1ncomponents_1_1addncomp4tag.html#abcee3378f06f43e6dc340bce090b7b97",
 "structtut_1_1_m_k_l_gaussian_method__common.html#ab80df794e58a7d091b181ca0ffa15b57",
-"walker_example_ou.html#walker_example_ou_run"
+"walker_example_ou.html#walker_example_ou_pdf"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronisation';
