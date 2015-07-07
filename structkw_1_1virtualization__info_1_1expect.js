@@ -1,5 +1,6 @@
 var structkw_1_1virtualization__info_1_1expect =
 [
+    [ "type", "structkw_1_1virtualization__info_1_1expect.html#a994125c42eb1dfef01c6219b6009d49c", null ],
     [ "choices", "structkw_1_1virtualization__info_1_1expect.html#a7a07b611b1575c08ad2b9f68db72010c", null ],
     [ "description", "structkw_1_1virtualization__info_1_1expect.html#ac36755395c27914253fa5fd5a714cfd0", null ],
     [ "lower", "structkw_1_1virtualization__info_1_1expect.html#ab10064c435b0888c260680e742a184bd", null ],

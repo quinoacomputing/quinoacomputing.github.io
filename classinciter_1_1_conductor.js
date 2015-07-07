@@ -1,5 +1,7 @@
 var classinciter_1_1_conductor =
 [
+    [ "LinSysMergerProxy", "classinciter_1_1_conductor.html#a2d6ebfa8ed05a849d6848054591c093d", null ],
+    [ "PerformerProxy", "classinciter_1_1_conductor.html#a9a7c8d1a5293e7ec08fe8adb5941a5e3", null ],
     [ "Conductor", "classinciter_1_1_conductor.html#a51105dad2237bf331b5ee8e118d5332e", null ],
     [ "arrPerfstat", "classinciter_1_1_conductor.html#af8aef1647112a7884c3142ee7fc5d457", null ],
     [ "arrTimestamp", "classinciter_1_1_conductor.html#ab32ddcc7ba739aadb72018fe071aa8b3", null ],

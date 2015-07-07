@@ -1,5 +1,6 @@
 var structtk_1_1ctr_1_1_term =
 [
+    [ "ncomp_t", "structtk_1_1ctr_1_1_term.html#ac5b28bf11580c3de2e882bbd33d6a24c", null ],
     [ "Term", "structtk_1_1ctr_1_1_term.html#a8ff2d61e449f43483303ed41e5dad4c6", null ],
     [ "operator<", "structtk_1_1ctr_1_1_term.html#ad64b45a148c1fe58a4418628c7d94425", null ],
     [ "operator==", "structtk_1_1ctr_1_1_term.html#ac12af8eeff10ad6420f9ddf8397e84e3", null ],

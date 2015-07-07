@@ -1,5 +1,6 @@
 var classwalker_1_1_walker_print =
 [
+    [ "Policies", "classwalker_1_1_walker_print_1_1_policies.html", "classwalker_1_1_walker_print_1_1_policies" ],
     [ "WalkerPrint", "classwalker_1_1_walker_print.html#a1db8e104f28b768fd0eb171eb0c89076", null ],
     [ "DiffEqName", "classwalker_1_1_walker_print.html#a8c8b37116f95f5c34206edbd21cdf97f", null ],
     [ "diffeqs", "classwalker_1_1_walker_print.html#a2d5ad83a8daa1f2d382b6dc27f98572c", null ],

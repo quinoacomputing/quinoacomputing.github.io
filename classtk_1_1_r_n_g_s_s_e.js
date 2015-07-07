@@ -1,5 +1,7 @@
 var classtk_1_1_r_n_g_s_s_e =
 [
+    [ "InitFn", "classtk_1_1_r_n_g_s_s_e.html#ab9741135821a9b2eda52ec5b6d746300", null ],
+    [ "ncomp_t", "classtk_1_1_r_n_g_s_s_e.html#ab8f448719762545fe47b4e8c7cd160b3", null ],
     [ "RNGSSE", "classtk_1_1_r_n_g_s_s_e.html#aa09003a3a352d45c9d508213df793da4", null ],
     [ "RNGSSE", "classtk_1_1_r_n_g_s_s_e.html#a2fa2b9a535205457e9d6505225424b92", null ],
     [ "RNGSSE", "classtk_1_1_r_n_g_s_s_e.html#af5bbe68de7ebd5943cc23b23f020ca12", null ],

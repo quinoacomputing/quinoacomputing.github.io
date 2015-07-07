@@ -1,5 +1,6 @@
 var classwalker_1_1_dirichlet =
 [
+    [ "ncomp_t", "classwalker_1_1_dirichlet.html#ada5bfef41d7595a849a67df6d31e9020", null ],
     [ "Dirichlet", "classwalker_1_1_dirichlet.html#ad5fe97422126de0afbd69f569d2215e0", null ],
     [ "advance", "classwalker_1_1_dirichlet.html#abf1a6efb0bfb5c74cdf6c0a97ff1bf97", null ],
     [ "initialize", "classwalker_1_1_dirichlet.html#ad0d5ec2a7243214409a3b8abb1add82b", null ],

@@ -1,5 +1,6 @@
 var classwalker_1_1_mix_number_fraction_beta =
 [
+    [ "ncomp_t", "classwalker_1_1_mix_number_fraction_beta.html#a80af329e1d31137d6389cd47e2fc2f78", null ],
     [ "MixNumberFractionBeta", "classwalker_1_1_mix_number_fraction_beta.html#ad1bfccde402aee62ace104979642e41b", null ],
     [ "advance", "classwalker_1_1_mix_number_fraction_beta.html#aa8ea2cd73c03b0b22092af87ea5055eb", null ],
     [ "initialize", "classwalker_1_1_mix_number_fraction_beta.html#a6faadefbf71277ddcc506cb506c76224", null ],

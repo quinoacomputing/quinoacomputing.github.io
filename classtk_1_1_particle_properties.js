@@ -1,5 +1,7 @@
 var classtk_1_1_particle_properties =
 [
+    [ "int2type", "structtk_1_1_particle_properties_1_1int2type.html", "structtk_1_1_particle_properties_1_1int2type" ],
+    [ "ncomp_t", "classtk_1_1_particle_properties.html#ae359758dc9adb8772c9c9c3d28508983", null ],
     [ "ParticleProperties", "classtk_1_1_particle_properties.html#ae965198a3f637db015b63f73380d6ac0", null ],
     [ "access", "classtk_1_1_particle_properties.html#a3b6ab23946fc9207655f76d00992772b", null ],
     [ "access", "classtk_1_1_particle_properties.html#a569c09b1ca2f64ff46ed255ffa59b854", null ],

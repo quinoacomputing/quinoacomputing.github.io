@@ -1,5 +1,6 @@
 var classtk_1_1_print =
 [
+    [ "format", "classtk_1_1_print.html#aca3c88784dc945a5a5a889413d7f5bdb", null ],
     [ "Print", "classtk_1_1_print.html#a5c16860befbe6bff31cbfec7f6f62e49", null ],
     [ "endpart", "classtk_1_1_print.html#aa695f3f76c8f7900138e61ce6ee7df1d", null ],
     [ "endsubsection", "classtk_1_1_print.html#ae4b58bc31ef42dbee41b47f2209ace96", null ],

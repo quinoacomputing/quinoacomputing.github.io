@@ -1,0 +1,19 @@
+var NAVTREEINDEX20 =
+{
+"walker_example_ou.html#walker_example_ou_run":[23,6,1],
+"walker_example_skewnormal.html":[23,4],
+"walker_example_skewnormal.html#walker_example_skewnormal_control":[23,4,0],
+"walker_example_skewnormal.html#walker_example_skewnormal_output":[23,4,2],
+"walker_example_skewnormal.html#walker_example_skewnormal_results":[23,4,3],
+"walker_example_skewnormal.html#walker_example_skewnormal_run":[23,4,1],
+"why.html":[7],
+"why.html#correct":[7,1],
+"why.html#documented":[7,7],
+"why.html#exascale":[7,0],
+"why.html#friendly":[7,6],
+"why.html#fun":[7,8],
+"why.html#language":[7,4],
+"why.html#optimized":[7,2],
+"why.html#outsource":[7,3],
+"why.html#productivity":[7,5]
+};

@@ -1,5 +1,6 @@
 var classtk_1_1_control =
 [
+    [ "Tuple", "classtk_1_1_control.html#ae37600d56e48819abd0748874e8138d4", null ],
     [ "convert", "classtk_1_1_control.html#ab808941c33e950bf6272cde25d5c8528", null ],
     [ "convert", "classtk_1_1_control.html#a6f38bfb5aee1c6b9b0ecf5ef4dec6fbc", null ],
     [ "get", "classtk_1_1_control.html#a85c14acef1b9de96946fcf2ab7c08721", null ],

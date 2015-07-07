@@ -1,6 +1,11 @@
 var classinciter_1_1_performer =
 [
-    [ "TimerTag", "classinciter_1_1_performer.html#a1f170391a2a8740cae62138bcae68e24", null ],
+    [ "LinSysMergerProxy", "classinciter_1_1_performer.html#aeaede44925a56fcb5031b89d6b11fdba", null ],
+    [ "TimerTag", "classinciter_1_1_performer.html#a1f170391a2a8740cae62138bcae68e24", [
+      [ "LHS", "classinciter_1_1_performer.html#a1f170391a2a8740cae62138bcae68e24a8cbc0fb889c6cc21e0be26227a2b468b", null ],
+      [ "RHS", "classinciter_1_1_performer.html#a1f170391a2a8740cae62138bcae68e24ae80302656805aeec44dc5d789d653c6b", null ],
+      [ "SOL", "classinciter_1_1_performer.html#a1f170391a2a8740cae62138bcae68e24a46ba9eba2f4b52116787dfa6fb4278e3", null ]
+    ] ],
     [ "Performer", "classinciter_1_1_performer.html#ad21346b92cdbe4a1e6c4f5bd47b6bef3", null ],
     [ "Performer", "classinciter_1_1_performer.html#a8c99d1bcbac045df345384852c8a7538", null ],
     [ "ansol_gauss", "classinciter_1_1_performer.html#a79c703b250ee92eb359528da2c6f0196", null ],

@@ -1,4 +1,5 @@
 var namespacebreeze =
 [
-    [ "g_inputdeck_defaults", "namespacebreeze.html#a468683421ae6e8721300a1a90aa941fb", null ]
+    [ "ctr", "namespacebreeze_1_1ctr.html", "namespacebreeze_1_1ctr" ],
+    [ "deck", "namespacebreeze_1_1deck.html", "namespacebreeze_1_1deck" ]
 ];

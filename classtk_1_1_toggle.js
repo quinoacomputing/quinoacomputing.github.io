@@ -1,5 +1,6 @@
 var classtk_1_1_toggle =
 [
+    [ "EnumType", "classtk_1_1_toggle.html#ac7968f1f6da0197c265dbae3e60cbace", null ],
     [ "Toggle", "classtk_1_1_toggle.html#a2b4dd3b83dfc3fb4658386c0f3d7e030", null ],
     [ "exist", "classtk_1_1_toggle.html#af676a3ef6e7476a1471dd842ac179c12", null ],
     [ "group", "classtk_1_1_toggle.html#ac94dd097af189c12cbe902183da73617", null ],

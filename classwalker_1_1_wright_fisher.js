@@ -1,5 +1,6 @@
 var classwalker_1_1_wright_fisher =
 [
+    [ "ncomp_t", "classwalker_1_1_wright_fisher.html#a8ae58dce35e2b137ace0393e886dbb8d", null ],
     [ "WrightFisher", "classwalker_1_1_wright_fisher.html#adae9d27fca3a694548ffc8ca3c27aec5", null ],
     [ "advance", "classwalker_1_1_wright_fisher.html#a77b25b7fca6ca8db7f765a57033fa315", null ],
     [ "initialize", "classwalker_1_1_wright_fisher.html#a54bdc4a55777eac5f9b548e6728e8bad", null ],

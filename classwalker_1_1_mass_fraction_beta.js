@@ -1,5 +1,6 @@
 var classwalker_1_1_mass_fraction_beta =
 [
+    [ "ncomp_t", "classwalker_1_1_mass_fraction_beta.html#a29967c95e568757640e70f9811809504", null ],
     [ "MassFractionBeta", "classwalker_1_1_mass_fraction_beta.html#ab0719d732bbb310417ae8b5cd83bddc0", null ],
     [ "advance", "classwalker_1_1_mass_fraction_beta.html#af0d58a7ca28fd49d9315a7e696ed18d7", null ],
     [ "initialize", "classwalker_1_1_mass_fraction_beta.html#a10d3b1e60e9d74157edae3f22ccc0acd", null ],

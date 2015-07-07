@@ -1,5 +1,7 @@
 var classrngtest_1_1_test_u01_suite =
 [
+    [ "Failed", "structrngtest_1_1_test_u01_suite_1_1_failed.html", "structrngtest_1_1_test_u01_suite_1_1_failed" ],
+    [ "Proxy", "classrngtest_1_1_test_u01_suite.html#a8d98d11d19e0c3998bc5fd2362f57a64", null ],
     [ "TestU01Suite", "classrngtest_1_1_test_u01_suite.html#ad5aa6267a4523d0e8538b54817f952c3", null ],
     [ "addTests", "classrngtest_1_1_test_u01_suite.html#aabf2f6cfc72ff92edcca4b407fa722c5", null ],
     [ "assess", "classrngtest_1_1_test_u01_suite.html#ae13e2fa75874d3003c47bdcb409fa229", null ],

@@ -1,5 +1,7 @@
 var structkw_1_1keyword =
 [
+    [ "info", "structkw_1_1keyword.html#a23957f177ef793053d57358242161612", null ],
+    [ "pegtl_string", "structkw_1_1keyword.html#aa45ce99d102881f96c9df6d8a819531d", null ],
     [ "alias", "structkw_1_1keyword.html#a6e1b82164efa04e009433f9f67fc626d", null ],
     [ "alias", "structkw_1_1keyword.html#a6e1b82164efa04e009433f9f67fc626d", null ],
     [ "choices", "structkw_1_1keyword.html#a40d32c44b391fad0d995d467f8ce6e5c", null ],

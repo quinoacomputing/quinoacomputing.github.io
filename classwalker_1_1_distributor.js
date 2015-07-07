@@ -1,5 +1,6 @@
 var classwalker_1_1_distributor =
 [
+    [ "CProxyInt", "classwalker_1_1_distributor.html#af86bb57947d0693e46266a5866e182f8", null ],
     [ "Distributor", "classwalker_1_1_distributor.html#aba72a9b33997ac8efe1c7a3540d9b18e", null ],
     [ "computedt", "classwalker_1_1_distributor.html#a9c9f7e64314dd6ceac753211a4f726b4", null ],
     [ "estimateCen", "classwalker_1_1_distributor.html#af896e1a6b670ef7fc1f4f2950123ba2e", null ],

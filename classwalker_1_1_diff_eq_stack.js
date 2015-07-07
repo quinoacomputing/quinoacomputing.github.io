@@ -1,5 +1,6 @@
 var classwalker_1_1_diff_eq_stack =
 [
+    [ "registerDiffEq", "structwalker_1_1_diff_eq_stack_1_1register_diff_eq.html", "structwalker_1_1_diff_eq_stack_1_1register_diff_eq" ],
     [ "DiffEqStack", "classwalker_1_1_diff_eq_stack.html#abf272999bfc1fb2af32c8c92652b05de", null ],
     [ "betapdfs", "classwalker_1_1_diff_eq_stack.html#a32c5e784ecf315c4baa0709b0eb69b83", null ],
     [ "createDiffEq", "classwalker_1_1_diff_eq_stack.html#a09b5f5df7f3b8b02a2701dad289ebc22", null ],

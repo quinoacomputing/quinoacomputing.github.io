@@ -1,6 +1,11 @@
 var classtk_1_1_lin_sys_merger =
 [
-    [ "TimerTag", "classtk_1_1_lin_sys_merger.html#a2fbe692f16f50ec745785a81f0c78ce5", null ],
+    [ "Group", "classtk_1_1_lin_sys_merger.html#a227e7127f4075b65f312b405e2584737", null ],
+    [ "TimerTag", "classtk_1_1_lin_sys_merger.html#a2fbe692f16f50ec745785a81f0c78ce5", [
+      [ "LHS", "classtk_1_1_lin_sys_merger.html#a2fbe692f16f50ec745785a81f0c78ce5a8cbc0fb889c6cc21e0be26227a2b468b", null ],
+      [ "RHS", "classtk_1_1_lin_sys_merger.html#a2fbe692f16f50ec745785a81f0c78ce5ae80302656805aeec44dc5d789d653c6b", null ],
+      [ "SOL", "classtk_1_1_lin_sys_merger.html#a2fbe692f16f50ec745785a81f0c78ce5a46ba9eba2f4b52116787dfa6fb4278e3", null ]
+    ] ],
     [ "LinSysMerger", "classtk_1_1_lin_sys_merger.html#adf7f86528567c210aa2228782d802e8e", null ],
     [ "addlhs", "classtk_1_1_lin_sys_merger.html#a1645eb91aea46b08342c9bcdd661e740", null ],
     [ "addrhs", "classtk_1_1_lin_sys_merger.html#a269877a4716257ebe616d5579cbe43e2", null ],

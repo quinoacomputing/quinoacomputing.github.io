@@ -1,5 +1,7 @@
 var structtut_1_1_factory__common_1_1_v_base =
 [
+    [ "Concept", "structtut_1_1_factory__common_1_1_v_base_1_1_concept.html", "structtut_1_1_factory__common_1_1_v_base_1_1_concept" ],
+    [ "Model", "structtut_1_1_factory__common_1_1_v_base_1_1_model.html", "structtut_1_1_factory__common_1_1_v_base_1_1_model" ],
     [ "VBase", "structtut_1_1_factory__common_1_1_v_base.html#a21040b2c8bff30647e6090fb84a13f4d", null ],
     [ "VBase", "structtut_1_1_factory__common_1_1_v_base.html#a3185c8c474d27badca55a0a89da26765", null ],
     [ "VBase", "structtut_1_1_factory__common_1_1_v_base.html#a5f1eb7661271289976d7ae1bf0f7b9ea", null ],
