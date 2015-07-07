@@ -1,7 +1,7 @@
 var NAVTREE =
 [
   [ "Quinoa", "index.html", [
-    [ "Algoritm design", "algorithm.html", null ],
+    [ "Algorithm design", "algorithm.html", null ],
     [ "Concurrency", "concurrency.html", null ],
     [ "Differential equations", "diffeq.html", null ],
     [ "Git subtree with TPLs", "subtree.html", null ],
