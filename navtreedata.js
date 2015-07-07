@@ -1,22 +1,6 @@
 var NAVTREE =
 [
   [ "Quinoa", "index.html", [
-    [ "What is Quinoa?", "index.html#intro", null ],
-    [ "Organization", "index.html#organization", null ],
-    [ "Goals", "index.html#whyanother", null ],
-    [ "License", "index.html#license", null ],
-    [ "Authors", "index.html#authors", null ],
-    [ "How to build", "index.html#build", [
-      [ "1. Pick compilers", "index.html#build_compilers", null ],
-      [ "2. Build the required third-party libraries (TPLs)", "index.html#build_tpl", null ],
-      [ "3. Build Quinoa", "index.html#build_quinoa", null ]
-    ] ],
-    [ "Where to go from here", "index.html#build_where", [
-      [ "1. Run the unit tests", "index.html#build_unit", null ],
-      [ "2. Build the documentation", "index.html#build_doc", null ],
-      [ "3. Build the code coverage report", "index.html#build_coverage", null ],
-      [ "4. Check out some examples", "index.html#build_examples", null ]
-    ] ],
     [ "Algoritm design", "algorithm.html", null ],
     [ "Concurrency", "concurrency.html", null ],
     [ "Differential equations", "diffeq.html", null ],
@@ -114,14 +98,14 @@ var NAVTREEINDEX =
 "classtk_1_1_uns_mesh_map.html",
 "classwalker_1_1_distributor.html#ada0524d183a7d871cc890b393b0484ea",
 "classwalker_1_1ctr_1_1_input_deck.html#a4b22e7db5ce9adf6bfcb95b18f1e46f0",
-"namespacemembers_t.html",
-"structkw_1_1dt__info.html",
-"structkw_1_1ncomp__info.html#ab2310648a4d43c88e3b925b9c3f609a7",
-"structkw_1_1seed__info.html",
-"structtag_1_1_serial_over.html",
-"structtk_1_1ctr_1_1ncomponents_1_1addncomp4tag.html#abcee3378f06f43e6dc340bce090b7b97",
-"structtut_1_1_m_k_l_gaussian_method__common.html#ab80df794e58a7d091b181ca0ffa15b57",
-"walker_example_ou.html#walker_example_ou_moments"
+"namespacemembers_type_n.html",
+"structkw_1_1end__info.html#ab51b836a6d3d836e73c6a0b57d780949",
+"structkw_1_1npar__info_1_1expect.html",
+"structkw_1_1seq__med__info.html#ae7a98b225a000eceedd16e0942bb8621",
+"structtag_1_1c0.html",
+"structtk_1_1grm_1_1_store.html#abc2a875901ead98272f7541a8f0d3634",
+"structtut_1_1_migrated.html#a515911b678eb4b2e142c52b7c03c89e4",
+"why.html#fun"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronisation';

@@ -1,22 +1,8 @@
 var NAVTREEINDEX20 =
 {
-"walker_example_ou.html#walker_example_ou_moments":[24,6,3],
-"walker_example_ou.html#walker_example_ou_output":[24,6,2],
-"walker_example_ou.html#walker_example_ou_pdf":[24,6,4],
-"walker_example_ou.html#walker_example_ou_run":[24,6,1],
-"walker_example_skewnormal.html":[24,4],
-"walker_example_skewnormal.html#walker_example_skewnormal_control":[24,4,0],
-"walker_example_skewnormal.html#walker_example_skewnormal_output":[24,4,2],
-"walker_example_skewnormal.html#walker_example_skewnormal_results":[24,4,3],
-"walker_example_skewnormal.html#walker_example_skewnormal_run":[24,4,1],
-"why.html":[23],
-"why.html#correct":[23,1],
-"why.html#documented":[23,7],
-"why.html#exascale":[23,0],
-"why.html#friendly":[23,6],
-"why.html#fun":[23,8],
-"why.html#language":[23,4],
-"why.html#optimized":[23,2],
-"why.html#outsource":[23,3],
-"why.html#productivity":[23,5]
+"why.html#fun":[16,8],
+"why.html#language":[16,4],
+"why.html#optimized":[16,2],
+"why.html#outsource":[16,3],
+"why.html#productivity":[16,5]
 };
