@@ -35,15 +35,15 @@ var NAVTREE =
     [ "UnitTest: Unit test suite", "unittest_doc.html", null ],
     [ "Walker: Random walker for stochastic differential equations", "walker_doc.html", null ],
     [ "Goals", "why.html", [
-      [ "1. Designed for the exascale era", "why.html#exascale", null ],
-      [ "2. Verified and proven to be correct", "why.html#correct", null ],
-      [ "3. Optimized for performance, power, and reliability", "why.html#optimized", null ],
-      [ "4. Advanced computer science outsourced to experts", "why.html#outsource", null ],
-      [ "5. Using a language that can cope with complexity", "why.html#language", null ],
-      [ "6. Highly-valued programmer productivity", "why.html#productivity", null ],
-      [ "7. User and developer friendly", "why.html#friendly", null ],
-      [ "8. Well documented", "why.html#documented", null ],
-      [ "9. Fun to work on", "why.html#fun", null ]
+      [ "Designed for the exascale era", "why.html#exascale", null ],
+      [ "Verified and proven to be correct", "why.html#correct", null ],
+      [ "Optimized for performance, power, and reliability", "why.html#optimized", null ],
+      [ "Advanced computer science outsourced to experts", "why.html#outsource", null ],
+      [ "Using a language that can cope with complexity", "why.html#language", null ],
+      [ "Highly-valued programmer productivity", "why.html#productivity", null ],
+      [ "User and developer friendly", "why.html#friendly", null ],
+      [ "Well documented", "why.html#documented", null ],
+      [ "Fun to work on", "why.html#fun", null ]
     ] ],
     [ "Examples", "examples.html", "examples" ],
     [ "Namespaces", null, [
