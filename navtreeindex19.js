@@ -204,6 +204,8 @@ var NAVTREEINDEX19 =
 "unittest_doc.html":[21],
 "update__copyright_8sh.html":[27,0,0,1],
 "update__copyright_8sh_source.html":[27,0,0,1],
+"update__doc_8sh.html":[27,0,0,2],
+"update__doc_8sh_source.html":[27,0,0,2],
 "walker_doc.html":[22],
 "walker_example_beta.html":[24,7],
 "walker_example_beta.html#walker_example_beta_control":[24,7,0],
@@ -247,7 +249,5 @@ var NAVTREEINDEX19 =
 "walker_example_numfracbeta.html#walker_example_numfracbeta_results":[24,9,3],
 "walker_example_numfracbeta.html#walker_example_numfracbeta_run":[24,9,1],
 "walker_example_ou.html":[24,6],
-"walker_example_ou.html#walker_example_ou_control":[24,6,0],
-"walker_example_ou.html#walker_example_ou_moments":[24,6,3],
-"walker_example_ou.html#walker_example_ou_output":[24,6,2]
+"walker_example_ou.html#walker_example_ou_control":[24,6,0]
 };

@@ -121,7 +121,7 @@ var NAVTREEINDEX =
 "structtag_1_1_serial_over.html",
 "structtk_1_1ctr_1_1ncomponents_1_1addncomp4tag.html#abcee3378f06f43e6dc340bce090b7b97",
 "structtut_1_1_m_k_l_gaussian_method__common.html#ab80df794e58a7d091b181ca0ffa15b57",
-"walker_example_ou.html#walker_example_ou_pdf"
+"walker_example_ou.html#walker_example_ou_moments"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronisation';
