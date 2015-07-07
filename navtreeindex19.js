@@ -1,5 +1,7 @@
 var NAVTREEINDEX19 =
 {
+"structtut_1_1_migrated.html#a3187ca2bbe98da0506695f1009cda11b":[20,0,8,18,12],
+"structtut_1_1_migrated.html#a34d348e8d812b0fe33714a83f61988bd":[20,0,8,18,16],
 "structtut_1_1_migrated.html#a4cabc975887cf1973efeba8f08db08e2":[20,0,8,18,10],
 "structtut_1_1_migrated.html#a515911b678eb4b2e142c52b7c03c89e4":[20,0,8,18,14],
 "structtut_1_1_migrated.html#a57fb3d538e87061dfdcb4f58ed0db43f":[20,0,8,18,3],
@@ -189,10 +191,10 @@ var NAVTREEINDEX19 =
 "structwalker_1_1deck_1_1wright__fisher.html":[20,0,10,2,26],
 "subtree.html":[3],
 "unittest_doc.html":[15],
-"update__copyright_8sh.html":[21,0,0,1],
-"update__copyright_8sh_source.html":[21,0,0,1],
-"update__doc_8sh.html":[21,0,0,2],
-"update__doc_8sh_source.html":[21,0,0,2],
+"update__copyright_8sh.html":[21,0,0,2],
+"update__copyright_8sh_source.html":[21,0,0,2],
+"update__doc_8sh.html":[21,0,0,3],
+"update__doc_8sh_source.html":[21,0,0,3],
 "walker_doc.html":[16],
 "walker_example_beta.html":[18,7],
 "walker_example_beta.html#walker_example_beta_control":[18,7,0],
@@ -247,7 +249,5 @@ var NAVTREEINDEX19 =
 "walker_example_skewnormal.html#walker_example_skewnormal_results":[18,4,3],
 "walker_example_skewnormal.html#walker_example_skewnormal_run":[18,4,1],
 "why.html":[17],
-"why.html#correct":[17,1],
-"why.html#documented":[17,7],
-"why.html#exascale":[17,0]
+"why.html#correct":[17,1]
 };

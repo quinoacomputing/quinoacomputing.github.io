@@ -1,5 +1,7 @@
 var NAVTREEINDEX16 =
 {
+"structkw_1_1seq__med__info.html":[20,0,2,116],
+"structkw_1_1seq__med__info.html#a07dc141f52523d306bb3108177b6254f":[20,0,2,116,1],
 "structkw_1_1seq__med__info.html#a4ba6007a25b49b596e2c68bd8f6cf98f":[20,0,2,116,2],
 "structkw_1_1seq__med__info.html#ae7a98b225a000eceedd16e0942bb8621":[20,0,2,116,0],
 "structkw_1_1seq__short__info.html":[20,0,2,117],
@@ -247,7 +249,5 @@ var NAVTREEINDEX16 =
 "structtag_1_1battery.html":[20,0,6,4],
 "structtag_1_1beta.html":[20,0,6,5],
 "structtag_1_1beta__method.html":[20,0,6,6],
-"structtag_1_1betapdf.html":[20,0,6,7],
-"structtag_1_1binsize.html":[20,0,6,8],
-"structtag_1_1bprime.html":[20,0,6,10]
+"structtag_1_1betapdf.html":[20,0,6,7]
 };

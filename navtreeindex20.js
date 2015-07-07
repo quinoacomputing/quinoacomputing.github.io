@@ -1,5 +1,7 @@
 var NAVTREEINDEX20 =
 {
+"why.html#documented":[17,7],
+"why.html#exascale":[17,0],
 "why.html#friendly":[17,6],
 "why.html#fun":[17,8],
 "why.html#language":[17,4],
