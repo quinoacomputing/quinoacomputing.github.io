@@ -10,6 +10,8 @@ var searchData=
   ['cmdline_2eh',['CmdLine.h',['../_unit_test_2_cmd_line_2_cmd_line_8h.html',1,'']]],
   ['cmdline_2eh',['CmdLine.h',['../_walker_2_cmd_line_2_cmd_line_8h.html',1,'']]],
   ['coeffpolicy_2eh',['CoeffPolicy.h',['../_coeff_policy_8h.html',1,'']]],
+  ['collector_2ec',['Collector.C',['../_collector_8_c.html',1,'']]],
+  ['collector_2eh',['Collector.h',['../_collector_8h.html',1,'']]],
   ['commmap_2ec',['CommMap.C',['../_comm_map_8_c.html',1,'']]],
   ['commmap_2eh',['CommMap.h',['../_comm_map_8h.html',1,'']]],
   ['commongrammar_2eh',['CommonGrammar.h',['../_common_grammar_8h.html',1,'']]],

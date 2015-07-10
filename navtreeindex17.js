@@ -1,5 +1,15 @@
 var NAVTREEINDEX17 =
 {
+"structtag_1_1_simple_poker.html":[20,0,6,125],
+"structtag_1_1_string_run.html":[20,0,6,130],
+"structtag_1_1_sum_collector.html":[20,0,6,131],
+"structtag_1_1_weight_distrib.html":[20,0,6,140],
+"structtag_1_1atwood.html":[20,0,6,1],
+"structtag_1_1b.html":[20,0,6,3],
+"structtag_1_1battery.html":[20,0,6,4],
+"structtag_1_1beta.html":[20,0,6,5],
+"structtag_1_1beta__method.html":[20,0,6,6],
+"structtag_1_1betapdf.html":[20,0,6,7],
 "structtag_1_1binsize.html":[20,0,6,8],
 "structtag_1_1bprime.html":[20,0,6,10],
 "structtag_1_1c.html":[20,0,6,11],
@@ -239,15 +249,5 @@ var NAVTREEINDEX17 =
 "structtk_1_1ctr_1_1ncomponents_1_1addncomp4tag.html":[20,0,7,0,7,1],
 "structtk_1_1ctr_1_1ncomponents_1_1addncomp4tag.html#a688a5d02b63fa21712f163d48bb0de07":[20,0,7,0,7,1,1],
 "structtk_1_1ctr_1_1ncomponents_1_1addncomp4tag.html#a970dbcc427c5feab8018d5840a8baf5e":[20,0,7,0,7,1,2],
-"structtk_1_1ctr_1_1ncomponents_1_1addncomp4tag.html#abcee3378f06f43e6dc340bce090b7b97":[20,0,7,0,7,1,0],
-"structtk_1_1ctr_1_1ncomponents_1_1addncomp4tag.html#af0c231568606e552c8c7bb7a32d82820":[20,0,7,0,7,1,3],
-"structtk_1_1ctr_1_1ncomponents_1_1addncomp4tag.html#af33f8546c46d6a78e1169ca072c4d80c":[20,0,7,0,7,1,4],
-"structtk_1_1ctr_1_1ncomponents_1_1addncomp4tag.html#afd4d5a7e2063e16bc2a58e3def92ad17":[20,0,7,0,7,1,5],
-"structtk_1_1ctr_1_1ncomponents_1_1zero.html":[20,0,7,0,7,2],
-"structtk_1_1ctr_1_1ncomponents_1_1zero.html#a561d6dadb4bc9b9d484ad91f8b4ff420":[20,0,7,0,7,2,2],
-"structtk_1_1ctr_1_1ncomponents_1_1zero.html#a7faafbe230e77226eb21ba8d352ed2d8":[20,0,7,0,7,2,0],
-"structtk_1_1ctr_1_1ncomponents_1_1zero.html#ab654f033fe5498563cd2704a91654df1":[20,0,7,0,7,2,1],
-"structtk_1_1ctr_1_1unused.html":[20,0,7,0,17],
-"structtk_1_1grm_1_1_insert__field.html":[20,0,7,1,17],
-"structtk_1_1grm_1_1_insert__field.html#a941ffba76414022c39ace1a671a51dd3":[20,0,7,1,17,0]
+"structtk_1_1ctr_1_1ncomponents_1_1addncomp4tag.html#abcee3378f06f43e6dc340bce090b7b97":[20,0,7,0,7,1,0]
 };

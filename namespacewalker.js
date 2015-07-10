@@ -6,6 +6,7 @@ var namespacewalker =
     [ "Beta", "classwalker_1_1_beta.html", "classwalker_1_1_beta" ],
     [ "BetaCoeffConst", "classwalker_1_1_beta_coeff_const.html", "classwalker_1_1_beta_coeff_const" ],
     [ "CmdLineParser", "classwalker_1_1_cmd_line_parser.html", "classwalker_1_1_cmd_line_parser" ],
+    [ "Collector", "classwalker_1_1_collector.html", "classwalker_1_1_collector" ],
     [ "DiagOrnsteinUhlenbeck", "classwalker_1_1_diag_ornstein_uhlenbeck.html", "classwalker_1_1_diag_ornstein_uhlenbeck" ],
     [ "DiagOrnsteinUhlenbeckCoeffConst", "classwalker_1_1_diag_ornstein_uhlenbeck_coeff_const.html", "classwalker_1_1_diag_ornstein_uhlenbeck_coeff_const" ],
     [ "DiffEq", "classwalker_1_1_diff_eq.html", "classwalker_1_1_diff_eq" ],

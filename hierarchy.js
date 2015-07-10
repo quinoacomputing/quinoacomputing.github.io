@@ -99,6 +99,9 @@ var hierarchy =
     [ "CBase_CharmTimer", null, [
       [ "tut::CharmTimer", "structtut_1_1_charm_timer.html", null ]
     ] ],
+    [ "CBase_Collector", null, [
+      [ "walker::Collector", "classwalker_1_1_collector.html", null ]
+    ] ],
     [ "CBase_Conductor", null, [
       [ "inciter::Conductor", "classinciter_1_1_conductor.html", null ]
     ] ],
@@ -225,8 +228,8 @@ var hierarchy =
     [ "tag::diffeq", "structtag_1_1diffeq.html", null ],
     [ "walker::DiffEq", "classwalker_1_1_diff_eq.html", null ],
     [ "walker::DiffEqStack", "classwalker_1_1_diff_eq_stack.html", null ],
-    [ "tag::dirichlet", "structtag_1_1dirichlet.html", null ],
     [ "walker::Dirichlet< Init, Coefficients >", "classwalker_1_1_dirichlet.html", null ],
+    [ "tag::dirichlet", "structtag_1_1dirichlet.html", null ],
     [ "kw::dirichlet_info", "structkw_1_1dirichlet__info.html", null ],
     [ "walker::DirichletCoeffConst", "classwalker_1_1_dirichlet_coeff_const.html", null ],
     [ "tag::discr", "structtag_1_1discr.html", null ],
@@ -581,10 +584,10 @@ var hierarchy =
     [ "tut::TaggedTuple_common::name", "structtut_1_1_tagged_tuple__common_1_1name.html", null ],
     [ "tag::ncomp", "structtag_1_1ncomp.html", null ],
     [ "kw::ncomp_info", "structkw_1_1ncomp__info.html", null ],
-    [ "tk::HasFunctionExpectChoices< T >::no", "structtk_1_1_has_function_expect_choices_1_1no.html", null ],
     [ "tk::HasTypedefProxy< T >::no", "structtk_1_1_has_typedef_proxy_1_1no.html", null ],
     [ "tk::HasTypedefExpectType< T >::no", "structtk_1_1_has_typedef_expect_type_1_1no.html", null ],
     [ "tk::HasFunctionExpectDescription< T >::no", "structtk_1_1_has_function_expect_description_1_1no.html", null ],
+    [ "tk::HasFunctionExpectChoices< T >::no", "structtk_1_1_has_function_expect_choices_1_1no.html", null ],
     [ "tk::HasTypedefAlias< T >::no", "structtk_1_1_has_typedef_alias_1_1no.html", null ],
     [ "tut::Has_common::noAlias", "structtut_1_1_has__common_1_1no_alias.html", null ],
     [ "kw::node_info", "structkw_1_1node__info.html", null ],
@@ -782,8 +785,8 @@ var hierarchy =
     [ "tag::sigmasq", "structtag_1_1sigmasq.html", null ],
     [ "tk::SiloWriter", "classtk_1_1_silo_writer.html", null ],
     [ "tag::SimplePoker", "structtag_1_1_simple_poker.html", null ],
-    [ "tag::skewnormal", "structtag_1_1skewnormal.html", null ],
     [ "walker::SkewNormal< Init, Coefficients >", "classwalker_1_1_skew_normal.html", null ],
+    [ "tag::skewnormal", "structtag_1_1skewnormal.html", null ],
     [ "kw::skewnormal_info", "structkw_1_1skewnormal__info.html", null ],
     [ "walker::SkewNormalCoeffConst", "classwalker_1_1_skew_normal_coeff_const.html", null ],
     [ "tag::slm", "structtag_1_1slm.html", null ],
@@ -1021,8 +1024,8 @@ var hierarchy =
       ] ]
     ] ],
     [ "tk::ctr::unused", "structtk_1_1ctr_1_1unused.html", null ],
-    [ "tut::Factory_common::VBase", "structtut_1_1_factory__common_1_1_v_base.html", null ],
     [ "tut::VBase", "structtut_1_1_v_base.html", null ],
+    [ "tut::Factory_common::VBase", "structtut_1_1_factory__common_1_1_v_base.html", null ],
     [ "tut::Factory_common::VChild", "structtut_1_1_factory__common_1_1_v_child.html", null ],
     [ "tut::Vector_common", "structtut_1_1_vector__common.html", null ],
     [ "tag::verbose", "structtag_1_1verbose.html", null ],
@@ -1049,8 +1052,8 @@ var hierarchy =
     [ "tut::Has_common::yesExpectChoices", "structtut_1_1_has__common_1_1yes_expect_choices.html", null ],
     [ "tut::Has_common::yesExpectDescription", "structtut_1_1_has__common_1_1yes_expect_description.html", null ],
     [ "tut::Has_common::yesExpectType", "structtut_1_1_has__common_1_1yes_expect_type.html", null ],
-    [ "tut::CharmUtil_common::yesProxy", "structtut_1_1_charm_util__common_1_1yes_proxy.html", null ],
     [ "tut::Has_common::yesProxy", "structtut_1_1_has__common_1_1yes_proxy.html", null ],
+    [ "tut::CharmUtil_common::yesProxy", "structtut_1_1_charm_util__common_1_1yes_proxy.html", null ],
     [ "tk::ctr::ncomponents< Tags >::zero", "structtk_1_1ctr_1_1ncomponents_1_1zero.html", null ],
     [ "kw::zero_info", "structkw_1_1zero__info.html", null ]
 ];

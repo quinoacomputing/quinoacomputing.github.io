@@ -1,5 +1,15 @@
 var NAVTREEINDEX16 =
 {
+"structkw_1_1seed__info.html#a1b4f98a25d92279a86d4c4f32bc01bc9":[20,0,2,114,1],
+"structkw_1_1seed__info.html#a30867227d13770cbc53dd395550bb032":[20,0,2,114,2],
+"structkw_1_1seed__info.html#aa717af012890f654e24d968529479905":[20,0,2,114,3],
+"structkw_1_1seed__info_1_1expect.html":[20,0,2,114,0],
+"structkw_1_1seed__info_1_1expect.html#aaa94d6d86735178fa4c2096a9452e674":[20,0,2,114,0,1],
+"structkw_1_1seed__info_1_1expect.html#af64770a523dc02c881257c2f7cd6f1c0":[20,0,2,114,0,0],
+"structkw_1_1seq__long__info.html":[20,0,2,115],
+"structkw_1_1seq__long__info.html#a0be3bb5c283c88d055afdf07cfae70e1":[20,0,2,115,1],
+"structkw_1_1seq__long__info.html#a9159d25faea9094bc05b2b7e35d7e7b6":[20,0,2,115,0],
+"structkw_1_1seq__long__info.html#ae927f731fba9196a3481ee54d0fb7b9c":[20,0,2,115,2],
 "structkw_1_1seq__med__info.html":[20,0,2,116],
 "structkw_1_1seq__med__info.html#a07dc141f52523d306bb3108177b6254f":[20,0,2,116,1],
 "structkw_1_1seq__med__info.html#a4ba6007a25b49b596e2c68bd8f6cf98f":[20,0,2,116,2],
@@ -239,15 +249,5 @@ var NAVTREEINDEX16 =
 "structtag_1_1_sample_mean.html":[20,0,6,116],
 "structtag_1_1_sample_prod.html":[20,0,6,117],
 "structtag_1_1_savir2.html":[20,0,6,118],
-"structtag_1_1_serial_over.html":[20,0,6,123],
-"structtag_1_1_simple_poker.html":[20,0,6,125],
-"structtag_1_1_string_run.html":[20,0,6,130],
-"structtag_1_1_sum_collector.html":[20,0,6,131],
-"structtag_1_1_weight_distrib.html":[20,0,6,140],
-"structtag_1_1atwood.html":[20,0,6,1],
-"structtag_1_1b.html":[20,0,6,3],
-"structtag_1_1battery.html":[20,0,6,4],
-"structtag_1_1beta.html":[20,0,6,5],
-"structtag_1_1beta__method.html":[20,0,6,6],
-"structtag_1_1betapdf.html":[20,0,6,7]
+"structtag_1_1_serial_over.html":[20,0,6,123]
 };
