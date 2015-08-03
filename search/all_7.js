@@ -44,9 +44,9 @@ var searchData=
   ['gcd',['GCD',['../structtag_1_1_g_c_d.html',1,'tag']]],
   ['gcd',['GCD',['../classrngtest_1_1_test_u01_stack.html#a73105475b83296621bd960caec412c2e',1,'rngtest::TestU01Stack::GCD()'],['../classrngtest_1_1_test_u01_stack.html#a1a5cfa839061bb05d52f1105ae5171ae',1,'rngtest::TestU01Stack::GCD(unif01_Gen *gen, smarsa_Res2 *res, const std::tuple&lt; long, long, int, int &gt; &amp;xargs)']]],
   ['gen01ptr',['Gen01Ptr',['../namespacerngtest.html#acfe86a5d54dc25c89d8b42a048cc978f',1,'rngtest']]],
-  ['gendir',['gendir',['../structtag_1_1gendir.html',1,'tag']]],
-  ['gendir',['GENDIR',['../namespacebreeze_1_1ctr.html#a31a8397db3a2501db9a0cda27686debaa8bc09cf45a230c1727b84bc3bb985dd6',1,'breeze::ctr::GENDIR()'],['../namespacewalker_1_1ctr.html#a4592cfa71c6e4c64a71c5691df56c79fa8bc09cf45a230c1727b84bc3bb985dd6',1,'walker::ctr::GENDIR()'],['../namespacekw.html#aeb830f418918be115628977fc992a284',1,'kw::gendir()']]],
   ['gendir',['gendir',['../structwalker_1_1deck_1_1gendir.html',1,'walker::deck']]],
+  ['gendir',['GENDIR',['../namespacebreeze_1_1ctr.html#a31a8397db3a2501db9a0cda27686debaa8bc09cf45a230c1727b84bc3bb985dd6',1,'breeze::ctr::GENDIR()'],['../namespacewalker_1_1ctr.html#a4592cfa71c6e4c64a71c5691df56c79fa8bc09cf45a230c1727b84bc3bb985dd6',1,'walker::ctr::GENDIR()'],['../namespacekw.html#aeb830f418918be115628977fc992a284',1,'kw::gendir()']]],
+  ['gendir',['gendir',['../structtag_1_1gendir.html',1,'tag']]],
   ['gendir_5finfo',['gendir_info',['../structkw_1_1gendir__info.html',1,'kw']]],
   ['gendirichletparameters',['GenDirichletParameters',['../namespacewalker_1_1ctr.html#a00266fae592c2beb1a4e89e69d7fae2c',1,'walker::ctr']]],
   ['genedsup',['genEdsup',['../namespacetk.html#adb7a88611b67f7c809f2bba5c794df0b',1,'tk']]],
@@ -116,6 +116,6 @@ var searchData=
   ['groupname',['groupname',['../classtk_1_1_toggle.html#ae48fc450a0207f20e2090e03e17570ea',1,'tk::Toggle']]],
   ['grpperfstat',['grpPerfstat',['../classinciter_1_1_conductor.html#ad75f2fe1438796b466f037c231be403a',1,'inciter::Conductor']]],
   ['grptimestamp',['grpTimestamp',['../classinciter_1_1_conductor.html#a811ef9c66c05ff97746fb6c15da51707',1,'inciter::Conductor']]],
-  ['git_20subtree_20with_20tpls',['Git subtree with TPLs',['../subtree.html',1,'']]],
+  ['git_20subtree_20with_20tpls_20and_20tools',['Git subtree with TPLs and tools',['../subtree.html',1,'']]],
   ['goals',['Goals',['../why.html',1,'']]]
 ];

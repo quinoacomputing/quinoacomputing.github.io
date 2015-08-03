@@ -117,7 +117,7 @@ var hierarchy =
       [ "execute", "structexecute.html", null ]
     ] ],
     [ "CBase_Integrator", null, [
-      [ "walker::Integrator< Proxy >", "classwalker_1_1_integrator.html", null ]
+      [ "walker::Integrator", "classwalker_1_1_integrator.html", null ]
     ] ],
     [ "CBase_LinSysMerger", null, [
       [ "tk::LinSysMerger< HostProxy, WorkerProxy >", "classtk_1_1_lin_sys_merger.html", null ]
@@ -228,8 +228,8 @@ var hierarchy =
     [ "tag::diffeq", "structtag_1_1diffeq.html", null ],
     [ "walker::DiffEq", "classwalker_1_1_diff_eq.html", null ],
     [ "walker::DiffEqStack", "classwalker_1_1_diff_eq_stack.html", null ],
-    [ "walker::Dirichlet< Init, Coefficients >", "classwalker_1_1_dirichlet.html", null ],
     [ "tag::dirichlet", "structtag_1_1dirichlet.html", null ],
+    [ "walker::Dirichlet< Init, Coefficients >", "classwalker_1_1_dirichlet.html", null ],
     [ "kw::dirichlet_info", "structkw_1_1dirichlet__info.html", null ],
     [ "walker::DirichletCoeffConst", "classwalker_1_1_dirichlet_coeff_const.html", null ],
     [ "tag::discr", "structtag_1_1discr.html", null ],
@@ -584,11 +584,11 @@ var hierarchy =
     [ "tut::TaggedTuple_common::name", "structtut_1_1_tagged_tuple__common_1_1name.html", null ],
     [ "tag::ncomp", "structtag_1_1ncomp.html", null ],
     [ "kw::ncomp_info", "structkw_1_1ncomp__info.html", null ],
+    [ "tk::HasTypedefAlias< T >::no", "structtk_1_1_has_typedef_alias_1_1no.html", null ],
     [ "tk::HasTypedefProxy< T >::no", "structtk_1_1_has_typedef_proxy_1_1no.html", null ],
     [ "tk::HasTypedefExpectType< T >::no", "structtk_1_1_has_typedef_expect_type_1_1no.html", null ],
     [ "tk::HasFunctionExpectDescription< T >::no", "structtk_1_1_has_function_expect_description_1_1no.html", null ],
     [ "tk::HasFunctionExpectChoices< T >::no", "structtk_1_1_has_function_expect_choices_1_1no.html", null ],
-    [ "tk::HasTypedefAlias< T >::no", "structtk_1_1_has_typedef_alias_1_1no.html", null ],
     [ "tut::Has_common::noAlias", "structtut_1_1_has__common_1_1no_alias.html", null ],
     [ "kw::node_info", "structkw_1_1node__info.html", null ],
     [ "tut::Has_common::noExpectChoices", "structtut_1_1_has__common_1_1no_expect_choices.html", null ],
@@ -785,8 +785,8 @@ var hierarchy =
     [ "tag::sigmasq", "structtag_1_1sigmasq.html", null ],
     [ "tk::SiloWriter", "classtk_1_1_silo_writer.html", null ],
     [ "tag::SimplePoker", "structtag_1_1_simple_poker.html", null ],
-    [ "walker::SkewNormal< Init, Coefficients >", "classwalker_1_1_skew_normal.html", null ],
     [ "tag::skewnormal", "structtag_1_1skewnormal.html", null ],
+    [ "walker::SkewNormal< Init, Coefficients >", "classwalker_1_1_skew_normal.html", null ],
     [ "kw::skewnormal_info", "structkw_1_1skewnormal__info.html", null ],
     [ "walker::SkewNormalCoeffConst", "classwalker_1_1_skew_normal_coeff_const.html", null ],
     [ "tag::slm", "structtag_1_1slm.html", null ],
@@ -860,8 +860,8 @@ var hierarchy =
     [ "tut::tag9", "structtut_1_1tag9.html", null ],
     [ "tk::tuple::tagged_tuple_size< _Tp >", "structtk_1_1tuple_1_1tagged__tuple__size.html", null ],
     [ "tut::TaggedTuple_common", "structtut_1_1_tagged_tuple__common.html", null ],
-    [ "tk::ctr::Term", "structtk_1_1ctr_1_1_term.html", null ],
     [ "tag::term", "structtag_1_1term.html", null ],
+    [ "tk::ctr::Term", "structtk_1_1ctr_1_1_term.html", null ],
     [ "kw::term_info", "structkw_1_1term__info.html", null ],
     [ "tut::Make_list_common::Test< Ts >", "structtut_1_1_make__list__common_1_1_test.html", null ],
     [ "tut::ParticleProperties_common::Test< Ts >", "structtut_1_1_particle_properties__common_1_1_test.html", null ],
@@ -950,7 +950,6 @@ var hierarchy =
     [ "tk::TriPDF", "classtk_1_1_tri_p_d_f.html", null ],
     [ "tk::tuple::tt_impl< S, T >", "structtk_1_1tuple_1_1tt__impl.html", null ],
     [ "tk::tuple::tt_impl< extract< 2, 0, Ts...>, extract< 2, 1, Ts...> >", "structtk_1_1tuple_1_1tt__impl.html", [
-      [ "tk::tuple::tagged_tuple< tag::init, uint64_t, tag::ordinary, uint64_t, tag::central, uint64_t, tag::ordpdf, uint64_t, tag::cenpdf, uint64_t, tag::chare, uint64_t >", "structtk_1_1tuple_1_1tagged__tuple.html", null ],
       [ "tk::tuple::tagged_tuple< tag::name, std::string, tag::age, int, tag::email, std::string >", "structtk_1_1tuple_1_1tagged__tuple.html", null ],
       [ "tk::tuple::tagged_tuple< tag::stat, bool, tag::pdf, bool >", "structtk_1_1tuple_1_1tagged__tuple.html", null ],
       [ "tk::tuple::tagged_tuple< Tags... >", "structtk_1_1tuple_1_1tagged__tuple.html", [
@@ -1024,8 +1023,8 @@ var hierarchy =
       ] ]
     ] ],
     [ "tk::ctr::unused", "structtk_1_1ctr_1_1unused.html", null ],
-    [ "tut::VBase", "structtut_1_1_v_base.html", null ],
     [ "tut::Factory_common::VBase", "structtut_1_1_factory__common_1_1_v_base.html", null ],
+    [ "tut::VBase", "structtut_1_1_v_base.html", null ],
     [ "tut::Factory_common::VChild", "structtut_1_1_factory__common_1_1_v_child.html", null ],
     [ "tut::Vector_common", "structtut_1_1_vector__common.html", null ],
     [ "tag::verbose", "structtag_1_1verbose.html", null ],

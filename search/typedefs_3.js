@@ -10,6 +10,5 @@ var searchData=
   ['control',['control',['../structtut_1_1_control__common.html#af76d59428969d1bca7eb726cb68f1a29',1,'tut::Control_common::control()'],['../namespacekw.html#abf2032a14d63e077c66573ac950c686f',1,'kw::control()']]],
   ['control_5fgroup',['Control_group',['../namespacetut.html#acd72be9d49d9df1d06c5e43eca9386d7',1,'tut']]],
   ['control_5fobject',['Control_object',['../namespacetut.html#acce6a2e0dbb5b456f55a2749c4ed7793',1,'tut']]],
-  ['cproxyint',['CProxyInt',['../classwalker_1_1_distributor.html#af86bb57947d0693e46266a5866e182f8',1,'walker::Distributor']]],
   ['crush',['crush',['../namespacekw.html#ac6bf774d4609126a57b9a2f668e236ff',1,'kw']]]
 ];

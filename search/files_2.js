@@ -22,6 +22,7 @@ var searchData=
   ['conductor_2eh',['Conductor.h',['../_conductor_8h.html',1,'']]],
   ['containerutil_2eh',['ContainerUtil.h',['../_container_util_8h.html',1,'']]],
   ['control_2eh',['Control.h',['../_control_8h.html',1,'']]],
+  ['coverage_2edox',['coverage.dox',['../coverage_8dox.html',1,'']]],
   ['crush_2ec',['Crush.C',['../_crush_8_c.html',1,'']]],
   ['crush_2eh',['Crush.h',['../_crush_8h.html',1,'']]],
   ['crush_5fall_2edox',['Crush_all.dox',['../_crush__all_8dox.html',1,'']]]

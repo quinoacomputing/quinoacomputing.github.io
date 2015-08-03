@@ -3,6 +3,7 @@ var searchData=
   ['p',['p',['../structtut_1_1_toggle__common.html#a99312c9c1476526663d7e4c8aa70b4ca',1,'tut::Toggle_common']]],
   ['p_5f',['p_',['../classtk_1_1str__const.html#adb64e1bc27f42a5c6b6dc6a613992697',1,'tk::str_const']]],
   ['pareqcomp',['ParEqComp',['../namespacetk.html#a077f896b0c19528996cde33d4052eddc',1,'tk']]],
+  ['pdfmerger',['PDFMerger',['../namespacewalker.html#afc860ac847b7736cec6571d64c1bebdc',1,'walker']]],
   ['pdfnames',['pdfnames',['../namespacetk_1_1grm.html#aadf18699e85fe7ff02a1dfbb37d78977',1,'tk::grm']]],
   ['periodsinstrings',['PeriodsInStrings',['../classrngtest_1_1_test_u01_stack.html#a8d98335250c06d0fccf5ec3c9796b259',1,'rngtest::TestU01Stack']]],
   ['permutation',['Permutation',['../classrngtest_1_1_test_u01_stack.html#aeff5a2d89d2afae3ee48b7f7550af8fc',1,'rngtest::TestU01Stack']]],

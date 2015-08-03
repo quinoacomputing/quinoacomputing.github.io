@@ -19,19 +19,20 @@ var licenses =
       [ "16. OpenMPI for the message passing interface", "licenses.html#openmpi_license", null ],
       [ "17. Intel Math Kernel Library for BLAS/LAPACK and random number generation", "licenses.html#mkl_license", null ]
     ] ],
-    [ "Compilers", "licenses.html#compiler_licenses", [
-      [ "1. Clang C++ compiler", "licenses.html#clang_license", null ],
-      [ "2. GNU C++ compiler", "licenses.html#gcc_license", null ],
-      [ "3. Intel C++ compiler", "licenses.html#intel_license", null ]
+    [ "Compilers", "licenses.html#compiler_web", [
+      [ "1. Clang C++ compiler", "licenses.html#clang_web", null ],
+      [ "2. GNU C++ compiler", "licenses.html#gcc_web", null ],
+      [ "3. Intel C++ compiler", "licenses.html#intel_web", null ]
     ] ],
-    [ "Tools", "licenses.html#tools_licenses", [
-      [ "1. Doxygen for design, theory, and software API documentation", "licenses.html#doxygen_license", null ],
-      [ "2. CMake as a build system", "licenses.html#cmake_license", null ],
-      [ "3. Ninja for building", "licenses.html#ninja_license", null ],
-      [ "4. Gold for linking", "licenses.html#gold_license", null ],
-      [ "5. Gcov for unit test coverage analysis", "licenses.html#gcov_license", null ],
-      [ "6. Lcov for unit test coverage analysis report", "licenses.html#lcov_license", null ],
-      [ "7. Git for source code version control", "licenses.html#git_license", null ]
+    [ "Tools", "licenses.html#tools_web", [
+      [ "1. Doxygen for design, theory, and software API documentation", "licenses.html#doxygen_web", null ],
+      [ "2. CMake as a build system", "licenses.html#cmake_web", null ],
+      [ "3. Ninja for building", "licenses.html#ninja_web", null ],
+      [ "4. Gold for linking", "licenses.html#gold_web", null ],
+      [ "5. Gcov for unit test coverage analysis", "licenses.html#gcov_web", null ],
+      [ "6. Lcov for unit test coverage analysis report", "licenses.html#lcov_web", null ],
+      [ "7. Git for source code version control", "licenses.html#git_web", null ],
+      [ "8. Numdiff for comparison text files with numerical content", "licenses.html#numdiff_web", null ]
     ] ],
     [ "Charm++/Converse license", "_charm_license.html", null ],
     [ "PEGTL license", "_p_e_g_t_l_license.html", null ],

@@ -11,6 +11,8 @@ var searchData=
   ['matrixrank',['MatrixRank',['../classrngtest_1_1_test_u01_stack.html#a6f5e96846af92c45328c7baf5c8fb8be',1,'rngtest::TestU01Stack']]],
   ['maxoft',['MaxOft',['../classrngtest_1_1_test_u01_stack.html#a51fd73ff33acee2745374c27545c0a0f',1,'rngtest::TestU01Stack']]],
   ['mean',['mean',['../classtk_1_1_statistics.html#a89efc768e05c525902cade0c2e2540e0',1,'tk::Statistics::mean()'],['../namespacetk_1_1ctr.html#a8bb4e2fb54817366873d9c0455b47dd5',1,'tk::ctr::mean()']]],
+  ['merge',['merge',['../namespacetk.html#ab2f303518eec868b4f80a30b1c40f7e5',1,'tk']]],
+  ['mergepdf',['mergePDF',['../namespacetk.html#ab8753a2df233c9b1327d5682940ddcbf',1,'tk']]],
   ['mesh',['Mesh',['../namespacetut.html#a3274cc3a4b4ede383959ab63a8143721',1,'tut']]],
   ['meshconvdriver',['MeshConvDriver',['../classmeshconv_1_1_mesh_conv_driver.html#a5800dc3340fc82e32a9768e2aba6a79a',1,'meshconv::MeshConvDriver']]],
   ['meshinfo',['meshinfo',['../namespaceinciter.html#a6a34d4fe7509d26ad136c9505c15ac3b',1,'inciter']]],
