@@ -1,6 +1,5 @@
 var NAVTREEINDEX20 =
 {
-"walker_example_diagou.html#walker_example_diagou_moments":[19,5,3],
 "walker_example_diagou.html#walker_example_diagou_output":[19,5,2],
 "walker_example_diagou.html#walker_example_diagou_pdf":[19,5,4],
 "walker_example_diagou.html#walker_example_diagou_run":[19,5,1],

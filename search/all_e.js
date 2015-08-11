@@ -106,7 +106,7 @@ var searchData=
   ['numberfractionbetacoeffpolicies',['NumberFractionBetaCoeffPolicies',['../namespacewalker.html#a01c240cf104ffe62affb48ed4c2ff862',1,'walker']]],
   ['numberfractionbetacoeffpolicy_2eh',['NumberFractionBetaCoeffPolicy.h',['../_number_fraction_beta_coeff_policy_8h.html',1,'']]],
   ['numberfractionbetaparameters',['NumberFractionBetaParameters',['../namespacewalker_1_1ctr.html#a445abc7330b7094c9293f720a9313d95',1,'walker::ctr']]],
-  ['numfracbeta',['numfracbeta',['../namespacekw.html#ab9adf791eceed71fda5db310a6802bd0',1,'kw::numfracbeta()'],['../namespacewalker_1_1ctr.html#a4592cfa71c6e4c64a71c5691df56c79fac8cdd753d2245d0c53d9a08d99521c23',1,'walker::ctr::NUMFRACBETA()']]],
+  ['numfracbeta',['NUMFRACBETA',['../namespacewalker_1_1ctr.html#a4592cfa71c6e4c64a71c5691df56c79fac8cdd753d2245d0c53d9a08d99521c23',1,'walker::ctr::NUMFRACBETA()'],['../namespacekw.html#ab9adf791eceed71fda5db310a6802bd0',1,'kw::numfracbeta()']]],
   ['numfracbeta',['numfracbeta',['../structwalker_1_1deck_1_1numfracbeta.html',1,'walker::deck']]],
   ['numfracbeta',['numfracbeta',['../structtag_1_1numfracbeta.html',1,'tag']]],
   ['numfracbeta_2edox',['NumFracBeta.dox',['../_num_frac_beta_8dox.html',1,'']]],

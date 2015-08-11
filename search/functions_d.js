@@ -10,7 +10,7 @@ var searchData=
   ['pdf',['pdf',['../classwalker_1_1ctr_1_1_input_deck.html#a77c1d3ee53ffa08adb852f2817ad906e',1,'walker::ctr::InputDeck::pdf()'],['../namespacetk_1_1ctr.html#a1ae4f5b7ac9b69c29ce96ee87042e499',1,'tk::ctr::pdf()']]],
   ['pdfcentering',['PDFCentering',['../classtk_1_1ctr_1_1_p_d_f_centering.html#ae7e2a23ea764234581b2089b31e51ba3',1,'tk::ctr::PDFCentering']]],
   ['pdffile',['PDFFile',['../classtk_1_1ctr_1_1_p_d_f_file.html#a16127088ac9ef8f9e368976fa3088309',1,'tk::ctr::PDFFile']]],
-  ['pdfinfo',['pdfInfo',['../namespacetk_1_1ctr.html#a8e80e8d581ed5d2662a40f5ef4563296',1,'tk::ctr']]],
+  ['pdfinfo',['pdfInfo',['../namespacetk_1_1ctr.html#a8e1c1fc83d180d83389baaa1698f7c9b',1,'tk::ctr']]],
   ['pdfpolicy',['PDFPolicy',['../classtk_1_1ctr_1_1_p_d_f_policy.html#a4a21c3bacd2a6b0b2d48e29fdde52600',1,'tk::ctr::PDFPolicy']]],
   ['pdfs',['pdfs',['../classwalker_1_1_walker_print.html#a676b68a427e29d59c12a190cb6066d2f',1,'walker::WalkerPrint']]],
   ['pdfwriter',['PDFWriter',['../classtk_1_1_p_d_f_writer.html#ad866a267ce43916618205da175312bba',1,'tk::PDFWriter']]],

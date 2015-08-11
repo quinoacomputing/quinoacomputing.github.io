@@ -21,8 +21,7 @@ var _stat_ctr_8h =
     [ "ord2", "_stat_ctr_8h.html#a6a20f32fee3c0f688c2e18f60c3755c4", null ],
     [ "ordinary", "_stat_ctr_8h.html#aae2d07ed29fba66bd94e602368f54286", null ],
     [ "pdf", "_stat_ctr_8h.html#a1ae4f5b7ac9b69c29ce96ee87042e499", null ],
-    [ "pdfInfo", "_stat_ctr_8h.html#a8e80e8d581ed5d2662a40f5ef4563296", null ],
+    [ "pdfInfo", "_stat_ctr_8h.html#a8e1c1fc83d180d83389baaa1698f7c9b", null ],
     [ "pup", "_stat_ctr_8h.html#a120b1cecafc5c7d7552dac93f39a2a5b", null ],
-    [ "variance", "_stat_ctr_8h.html#a2265bca65a531ff6394a09bc48beb975", null ],
-    [ "vars", "_stat_ctr_8h.html#aec7b1fae00e22c12dfa1112fb6c4324c", null ]
+    [ "variance", "_stat_ctr_8h.html#a2265bca65a531ff6394a09bc48beb975", null ]
 ];

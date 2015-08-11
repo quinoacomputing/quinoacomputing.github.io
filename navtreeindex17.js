@@ -1,6 +1,5 @@
 var NAVTREEINDEX17 =
 {
-"structrngtest_1_1deck_1_1battery.html":[21,0,5,2,0],
 "structrngtest_1_1deck_1_1keywords.html":[21,0,5,2,1],
 "structrngtest_1_1deck_1_1read__file.html":[21,0,5,2,2],
 "structrngtest_1_1deck_1_1rngs.html":[21,0,5,2,3],
@@ -249,5 +248,6 @@ var NAVTREEINDEX17 =
 "structtk_1_1ctr_1_1_help_kw.html":[21,0,7,0,1],
 "structtk_1_1ctr_1_1_help_kw.html#a286c7241bbdbf3aed53ac809987cc1c1":[21,0,7,0,1,3],
 "structtk_1_1ctr_1_1_help_kw.html#a73ccf2029c41536607863a4fdd5db632":[21,0,7,0,1,2],
-"structtk_1_1ctr_1_1_help_kw.html#a889c92d0a1fa5ab2c2157cbd480504b3":[21,0,7,0,1,4]
+"structtk_1_1ctr_1_1_help_kw.html#a889c92d0a1fa5ab2c2157cbd480504b3":[21,0,7,0,1,4],
+"structtk_1_1ctr_1_1_help_kw.html#ac519c278791d6fd5e22d325a4c26f021":[21,0,7,0,1,1]
 };

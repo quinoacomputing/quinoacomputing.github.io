@@ -1,6 +1,5 @@
 var NAVTREEINDEX19 =
 {
-"structtut_1_1_factory__common_1_1_v_base_1_1_model.html#a6a746fcdc3344c19d8b36979b5bde212":[21,0,8,10,2,1,3],
 "structtut_1_1_factory__common_1_1_v_base_1_1_model.html#ab2fbc77341f54c66f28940fb0ff15096":[21,0,8,10,2,1,0],
 "structtut_1_1_factory__common_1_1_v_child.html":[21,0,8,10,3],
 "structtut_1_1_factory__common_1_1_v_child.html#a438f64f58b93d2cd679b2959366ce53a":[21,0,8,10,3,1],
@@ -249,5 +248,6 @@ var NAVTREEINDEX19 =
 "walker_example_beta.html#walker_example_beta_results":[19,7,3],
 "walker_example_beta.html#walker_example_beta_run":[19,7,1],
 "walker_example_diagou.html":[19,5],
-"walker_example_diagou.html#walker_example_diagou_control":[19,5,0]
+"walker_example_diagou.html#walker_example_diagou_control":[19,5,0],
+"walker_example_diagou.html#walker_example_diagou_moments":[19,5,3]
 };

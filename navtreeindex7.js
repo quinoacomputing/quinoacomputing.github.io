@@ -1,6 +1,5 @@
 var NAVTREEINDEX7 =
 {
-"classrngtest_1_1_stat_test.html#af5af9504019be6e5ab1ee95a0ec84eae":[21,0,5,12,2],
 "classrngtest_1_1_test_u01.html":[21,0,5,14],
 "classrngtest_1_1_test_u01.html#a117be0216749d7487a964559689c7d45":[21,0,5,14,7],
 "classrngtest_1_1_test_u01.html#a137694c5d3b1dee5e772eea2cba80093":[21,0,5,14,0],
@@ -249,5 +248,6 @@ var NAVTREEINDEX7 =
 "classtk_1_1_driver.html#aaed4f38b9ece7fad26f058bb10e2e7ae":[21,0,7,12,4],
 "classtk_1_1_driver.html#af18bf876f664ea704d0e0d74318e5486":[21,0,7,12,8],
 "classtk_1_1_exception.html":[21,0,7,13],
-"classtk_1_1_exception.html#a0bc4b622d95adf72e77f639fd6aefbbe":[21,0,7,13,11]
+"classtk_1_1_exception.html#a0bc4b622d95adf72e77f639fd6aefbbe":[21,0,7,13,11],
+"classtk_1_1_exception.html#a142eb2e61f1670d2a8fe692d649e0147":[21,0,7,13,8]
 };

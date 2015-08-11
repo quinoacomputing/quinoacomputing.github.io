@@ -1,6 +1,5 @@
 var NAVTREEINDEX16 =
 {
-"structkw_1_1sde__omega__info_1_1expect.html#ab60533fe24fca2d05c00a6f1cefdf633":[21,0,2,106,0,0],
 "structkw_1_1sde__r__info.html":[21,0,2,107],
 "structkw_1_1sde__r__info.html#a258530056079bb594406feb67b9f1f48":[21,0,2,107,2],
 "structkw_1_1sde__r__info.html#ab76206bdad78ca713d11c3689a732f9a":[21,0,2,107,1],
@@ -249,5 +248,6 @@ var NAVTREEINDEX16 =
 "structrngtest_1_1cmd_1_1helpkw.html":[21,0,5,0,3],
 "structrngtest_1_1cmd_1_1keywords.html":[21,0,5,0,4],
 "structrngtest_1_1cmd_1_1read__string.html":[21,0,5,0,5],
-"structrngtest_1_1cmd_1_1verbose.html":[21,0,5,0,6]
+"structrngtest_1_1cmd_1_1verbose.html":[21,0,5,0,6],
+"structrngtest_1_1deck_1_1battery.html":[21,0,5,2,0]
 };
