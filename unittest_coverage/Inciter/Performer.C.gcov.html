@@ -24,20 +24,20 @@
           </tr>
           <tr>
             <td class="headerItem">Commit:</td>
-            <td class="headerValue">refs/heads/master:a15b15d5f3fb33e2a8033107d1799724f3d8746e</td>
+            <td class="headerValue">refs/heads/master:d1ca977720d5e60ccf531f156efc9b44bdb74dac</td>
             <td></td>
             <td class="headerItem">Lines:</td>
             <td class="headerCovTableEntry">0</td>
-            <td class="headerCovTableEntry">188</td>
+            <td class="headerCovTableEntry">232</td>
             <td class="headerCovTableEntryLo">0.0 %</td>
           </tr>
           <tr>
             <td class="headerItem">Date:</td>
-            <td class="headerValue">2015-08-14 07:33:34</td>
+            <td class="headerValue">2015-11-19 07:26:00</td>
             <td></td>
             <td class="headerItem">Functions:</td>
             <td class="headerCovTableEntry">0</td>
-            <td class="headerCovTableEntry">18</td>
+            <td class="headerCovTableEntry">19</td>
             <td class="headerCovTableEntryLo">0.0 %</td>
           </tr>
           <tr>
@@ -76,7 +76,7 @@
 <span class="lineNum">       2 </span>                :            : /*!
 <span class="lineNum">       3 </span>                :            :   \file      src/Inciter/Performer.C
 <span class="lineNum">       4 </span>                :            :   \author    J. Bakosi
-<span class="lineNum">       5 </span>                :            :   \date      Wed 01 Jul 2015 02:25:41 PM MDT
+<span class="lineNum">       5 </span>                :            :   \date      Thu 22 Oct 2015 02:15:38 PM MDT
 <span class="lineNum">       6 </span>                :            :   \copyright 2012-2015, Jozsef Bakosi.
 <span class="lineNum">       7 </span>                :            :   \brief     Performer advances a PDE
 <span class="lineNum">       8 </span>                :            :   \details   Performer advances a PDE. There are a potentially
@@ -97,457 +97,549 @@
 <span class="lineNum">      23 </span>                :            : #include &quot;LinSysMerger.h&quot;
 <span class="lineNum">      24 </span>                :            : #include &quot;Inciter/InputDeck/InputDeck.h&quot;
 <span class="lineNum">      25 </span>                :            : 
-<span class="lineNum">      26 </span>                :            : namespace inciter {
+<span class="lineNum">      26 </span>                :            : #include &quot;DerivedData.h&quot;
 <span class="lineNum">      27 </span>                :            : 
-<span class="lineNum">      28 </span>                :            : extern ctr::InputDeck g_inputdeck;
-<span class="lineNum">      29 </span>                :            : extern std::vector&lt; std::size_t &gt; g_tetinpoel;
-<span class="lineNum">      30 </span>                :            : extern std::vector&lt; std::size_t &gt; g_meshfilemap;
-<span class="lineNum">      31 </span>                :            : extern std::vector&lt; std::vector&lt; std::size_t &gt; &gt; g_point;
-<span class="lineNum">      32 </span>                :            : extern std::vector&lt; std::vector&lt; std::size_t &gt; &gt; g_element;
-<span class="lineNum">      33 </span>                :            : extern std::vector&lt; std::map&lt; std::size_t, std::vector&lt;std::size_t&gt; &gt; &gt; g_ecomm;
-<span class="lineNum">      34 </span>                :            : 
-<span class="lineNum">      35 </span>                :            : } // inciter::
+<span class="lineNum">      28 </span>                :            : namespace inciter {
+<span class="lineNum">      29 </span>                :            : 
+<span class="lineNum">      30 </span>                :            : extern ctr::InputDeck g_inputdeck;
+<span class="lineNum">      31 </span>                :            : extern std::vector&lt; std::size_t &gt; g_tetinpoel;
+<span class="lineNum">      32 </span>                :            : extern std::vector&lt; std::size_t &gt; g_meshfilemap;
+<span class="lineNum">      33 </span>                :            : extern std::vector&lt; std::vector&lt; std::size_t &gt; &gt; g_point;
+<span class="lineNum">      34 </span>                :            : extern std::vector&lt; std::vector&lt; std::size_t &gt; &gt; g_element;
+<span class="lineNum">      35 </span>                :            : extern std::vector&lt; std::map&lt; std::size_t, std::vector&lt;std::size_t&gt; &gt; &gt; g_ecomm;
 <span class="lineNum">      36 </span>                :            : 
-<a name="37"><span class="lineNum">      37 </span>                :            : using inciter::Performer;</a>
+<span class="lineNum">      37 </span>                :            : } // inciter::
 <span class="lineNum">      38 </span>                :            : 
-<span class="lineNum">      39 </span>                :<span class="lineNoCov">          0 : Performer::Performer( CProxy_Conductor&amp; hostproxy, LinSysMergerProxy&amp; lsmproxy )</span>
-<span class="lineNum">      40 </span>                :            : : m_id( static_cast&lt; std::size_t &gt;( thisIndex ) ),
-<span class="lineNum">      41 </span>                :            :   m_hostproxy( hostproxy ),
-<span class="lineNum">      42 </span>                :            :   m_lsmproxy( lsmproxy ),
+<a name="39"><span class="lineNum">      39 </span>                :            : using inciter::Performer;</a>
+<span class="lineNum">      40 </span>                :            : 
+<span class="lineNum">      41 </span>                :<span class="lineNoCov">          0 : Performer::Performer( CProxy_Conductor&amp; hostproxy, LinSysMergerProxy&amp; lsmproxy )</span>
+<span class="lineNum">      42 </span>                :<span class="lineNoCov">          0 : : m_id( static_cast&lt; std::size_t &gt;( thisIndex ) ),</span>
 <span class="lineNum">      43 </span>                :            :   m_it( 0 ),
-<span class="lineNum">      44 </span>                :            :   m_t( 0.0 ),
-<span class="lineNum">      45 </span>                :<span class="lineNoCov">          0 :   m_point( g_point[ m_id ] )</span>
-<span class="lineNum">      46 </span>                :            : //******************************************************************************
-<span class="lineNum">      47 </span>                :            : // Constructor
-<span class="lineNum">      48 </span>                :            : //! \param[in] hostproxy Host proxy
-<span class="lineNum">      49 </span>                :            : //! \param[in] lsmproxy Linear system merger (LinSysMerger) proxy
-<span class="lineNum">      50 </span>                :            : //! \author J. Bakosi
-<span class="lineNum">      51 </span>                :            : //******************************************************************************
-<span class="lineNum">      52 </span>                :            : {
-<span class="lineNum">      53 </span>                :            :   // Register ourselves with the linear system merger
-<span class="lineNum">      54 </span>                :<span class="lineNoCov">          0 :   m_lsmproxy.ckLocalBranch()-&gt;checkin();</span>
-<span class="lineNum">      55 </span>                :            :   // Tell the Charm++ runtime system to call back to Conductor::registered()
-<span class="lineNum">      56 </span>                :            :   // once all Performer chares have registered themselves, i.e., checked in,
-<span class="lineNum">      57 </span>                :            :   // with their local branch of the linear system merger group, LinSysMerger.
-<span class="lineNum">      58 </span>                :            :   // The reduction is done via creating a callback that invokes the typed
-<span class="lineNum">      59 </span>                :            :   // reduction client, where m_hostproxy is the proxy on which the reduction
-<span class="lineNum">      60 </span>                :            :   // target method, registered(), is called upon completion of the reduction.
-<span class="lineNum">      61 </span>                :            :   contribute(
-<span class="lineNum">      62 </span>                :<span class="lineNoCov">          0 :     CkCallback( CkReductionTarget( Conductor, registered ), m_hostproxy ) );</span>
-<span class="lineNum">      63 </span>                :<span class="lineNoCov">          0 : }</span>
-<a name="64"><span class="lineNum">      64 </span>                :            : </a>
-<span class="lineNum">      65 </span>                :            : void
-<span class="lineNum">      66 </span>                :<span class="lineNoCov">          0 : Performer::setup()</span>
-<span class="lineNum">      67 </span>                :            : //******************************************************************************
-<span class="lineNum">      68 </span>                :            : // Setup
-<span class="lineNum">      69 </span>                :            : //! \author J. Bakosi
-<span class="lineNum">      70 </span>                :            : //******************************************************************************
-<span class="lineNum">      71 </span>                :            : {
-<span class="lineNum">      72 </span>                :            :   // Initialize import maps
-<span class="lineNum">      73 </span>                :<span class="lineNoCov">          0 :   initImports();</span>
-<span class="lineNum">      74 </span>                :            :   // Initialize local-&gt;global, global-&gt;local node ids, element connectivity
-<span class="lineNum">      75 </span>                :<span class="lineNoCov">          0 :   initIds( g_element[ m_id ] );</span>
-<span class="lineNum">      76 </span>                :            :   // Read coordinates of owned and received mesh nodes
-<span class="lineNum">      77 </span>                :<span class="lineNoCov">          0 :   initCoords();</span>
-<span class="lineNum">      78 </span>                :            :   // Output chare mesh to file
-<span class="lineNum">      79 </span>                :<span class="lineNoCov">          0 :   writeMesh();</span>
-<span class="lineNum">      80 </span>                :            :   // Output mesh-based fields metadata to file
-<span class="lineNum">      81 </span>                :<span class="lineNoCov">          0 :   writeMeta();</span>
-<span class="lineNum">      82 </span>                :<span class="lineNoCov">          0 : }</span>
-<a name="83"><span class="lineNum">      83 </span>                :            : </a>
-<span class="lineNum">      84 </span>                :            : void
-<span class="lineNum">      85 </span>                :<span class="lineNoCov">          0 : Performer::init()</span>
-<span class="lineNum">      86 </span>                :            : //******************************************************************************
-<span class="lineNum">      87 </span>                :            : // Initialize linear system
-<span class="lineNum">      88 </span>                :            : //! \author J. Bakosi
-<span class="lineNum">      89 </span>                :            : //******************************************************************************
-<span class="lineNum">      90 </span>                :            : {
-<span class="lineNum">      91 </span>                :<span class="lineNoCov">          0 :   m_dt = 1.0e-5;</span>
-<span class="lineNum">      92 </span>                :            :   // Set initial conditions
-<span class="lineNum">      93 </span>                :<span class="lineNoCov">          0 :   ic();</span>
-<span class="lineNum">      94 </span>                :            :   // Compute left-hand side of PDE
-<span class="lineNum">      95 </span>                :<span class="lineNoCov">          0 :   lhs();</span>
-<span class="lineNum">      96 </span>                :            :   // Compute righ-hand side of PDE
-<span class="lineNum">      97 </span>                :<span class="lineNoCov">          0 :   rhs( 0.5, m_u );</span>
-<span class="lineNum">      98 </span>                :            :   // Output field data to file
-<span class="lineNum">      99 </span>                :<span class="lineNoCov">          0 :   writeFields( m_u );</span>
-<span class="lineNum">     100 </span>                :            :   // Send some time stamps to the host
-<span class="lineNum">     101 </span>                :<span class="lineNoCov">          0 :   m_hostproxy.arrTimestamp( m_timestamp );</span>
-<span class="lineNum">     102 </span>                :<span class="lineNoCov">          0 : }</span>
-<a name="103"><span class="lineNum">     103 </span>                :            : </a>
-<span class="lineNum">     104 </span>                :            : void
-<span class="lineNum">     105 </span>                :<span class="lineNoCov">          0 : Performer::initImports()</span>
-<span class="lineNum">     106 </span>                :            : //******************************************************************************
-<span class="lineNum">     107 </span>                :            : // Initialize import maps by inverting export maps
-<span class="lineNum">     108 </span>                :            : //! \author J. Bakosi
-<span class="lineNum">     109 </span>                :            : //******************************************************************************
-<span class="lineNum">     110 </span>                :            : {
-<span class="lineNum">     111 </span>                :<span class="lineNoCov">          0 :   std::size_t h = 0;</span>
-<span class="lineNum">     112 </span>                :<span class="lineNoCov">          0 :   for (const auto&amp; m : g_ecomm) {</span>
-<span class="lineNum">     113 </span>                :<span class="lineNoCov">          0 :     for (const auto&amp; x : m)</span>
-<span class="lineNum">     114 </span>                :<span class="lineNoCov">          0 :       if (m_id == x.first)</span>
-<span class="lineNum">     115 </span>                :<span class="lineNoCov">          0 :         for (auto p : x.second)</span>
-<span class="lineNum">     116 </span>                :<span class="lineNoCov">          0 :           m_toimport[ h ].push_back( p );</span>
-<span class="lineNum">     117 </span>                :<span class="lineNoCov">          0 :     ++h;</span>
-<span class="lineNum">     118 </span>                :            :   }
-<span class="lineNum">     119 </span>                :<span class="lineNoCov">          0 : }</span>
-<a name="120"><span class="lineNum">     120 </span>                :            : </a>
-<span class="lineNum">     121 </span>                :            : void
-<span class="lineNum">     122 </span>                :<span class="lineNoCov">          0 : Performer::ic()</span>
-<span class="lineNum">     123 </span>                :            : //******************************************************************************
-<span class="lineNum">     124 </span>                :            : // Set initial conditions
-<span class="lineNum">     125 </span>                :            : //! \author J. Bakosi
-<span class="lineNum">     126 </span>                :            : //******************************************************************************
-<span class="lineNum">     127 </span>                :            : {
-<span class="lineNum">     128 </span>                :<span class="lineNoCov">          0 :   for (std::size_t i=0; i&lt;m_gid.size(); ++i)</span>
-<span class="lineNum">     129 </span>                :            :     //m_u[ m_gid[i] ] = ansol_shear( i, 2400.0 );
-<span class="lineNum">     130 </span>                :<span class="lineNoCov">          0 :     m_u[ m_gid[i] ] = ansol_gauss( i );</span>
-<span class="lineNum">     131 </span>                :            : 
-<span class="lineNum">     132 </span>                :<span class="lineNoCov">          0 :   m_lsmproxy.ckLocalBranch()-&gt;charesol( thisIndex, m_u );</span>
-<span class="lineNum">     133 </span>                :<span class="lineNoCov">          0 : }</span>
-<a name="134"><span class="lineNum">     134 </span>                :            : </a>
-<span class="lineNum">     135 </span>                :            : void
-<span class="lineNum">     136 </span>                :<span class="lineNoCov">          0 : Performer::lhs()</span>
-<span class="lineNum">     137 </span>                :            : //******************************************************************************
-<span class="lineNum">     138 </span>                :            : // Compute left-hand side of PDE
-<span class="lineNum">     139 </span>                :            : //! \author J. Bakosi
-<span class="lineNum">     140 </span>                :            : //******************************************************************************
-<span class="lineNum">     141 </span>                :            : {
-<span class="lineNum">     142 </span>                :<span class="lineNoCov">          0 :   tk::Timer t;</span>
-<span class="lineNum">     143 </span>                :            : 
-<span class="lineNum">     144 </span>                :<span class="lineNoCov">          0 :   const auto&amp; x = m_coord[0];</span>
-<span class="lineNum">     145 </span>                :<span class="lineNoCov">          0 :   const auto&amp; y = m_coord[1];</span>
-<span class="lineNum">     146 </span>                :<span class="lineNoCov">          0 :   const auto&amp; z = m_coord[2];</span>
-<span class="lineNum">     147 </span>                :            : 
-<span class="lineNum">     148 </span>                :<span class="lineNoCov">          0 :   for (std::size_t e=0; e&lt;m_inpoel.size()/4; ++e) {</span>
-<span class="lineNum">     149 </span>                :<span class="lineNoCov">          0 :     const auto a = m_inpoel[e*4+0];</span>
-<span class="lineNum">     150 </span>                :<span class="lineNoCov">          0 :     const auto b = m_inpoel[e*4+1];</span>
-<span class="lineNum">     151 </span>                :<span class="lineNoCov">          0 :     const auto c = m_inpoel[e*4+2];</span>
-<span class="lineNum">     152 </span>                :<span class="lineNoCov">          0 :     const auto d = m_inpoel[e*4+3];</span>
-<span class="lineNum">     153 </span>                :<span class="lineNoCov">          0 :     std::array&lt; tk::real, 3 &gt; ba{{ x[b]-x[a], y[b]-y[a], z[b]-z[a] }},</span>
-<span class="lineNum">     154 </span>                :<span class="lineNoCov">          0 :                               ca{{ x[c]-x[a], y[c]-y[a], z[c]-z[a] }},</span>
-<span class="lineNum">     155 </span>                :<span class="lineNoCov">          0 :                               da{{ x[d]-x[a], y[d]-y[a], z[d]-z[a] }};</span>
-<span class="lineNum">     156 </span>                :<span class="lineNoCov">          0 :     const auto J = tk::triple( ba, ca, da ) / 120.0;</span>
-<span class="lineNum">     157 </span>                :            : 
-<span class="lineNum">     158 </span>                :<span class="lineNoCov">          0 :     const auto A = m_gid[a];</span>
-<span class="lineNum">     159 </span>                :<span class="lineNoCov">          0 :     const auto B = m_gid[b];</span>
-<span class="lineNum">     160 </span>                :<span class="lineNoCov">          0 :     const auto C = m_gid[c];</span>
-<span class="lineNum">     161 </span>                :<span class="lineNoCov">          0 :     const auto D = m_gid[d];</span>
-<span class="lineNum">     162 </span>                :<span class="lineNoCov">          0 :     auto&amp; lA = m_lhs[A];</span>
-<span class="lineNum">     163 </span>                :<span class="lineNoCov">          0 :     lA[A] += 2.0*J;</span>
-<span class="lineNum">     164 </span>                :<span class="lineNoCov">          0 :     lA[B] += J;</span>
-<span class="lineNum">     165 </span>                :<span class="lineNoCov">          0 :     lA[C] += J;</span>
-<span class="lineNum">     166 </span>                :<span class="lineNoCov">          0 :     lA[D] += J;</span>
-<span class="lineNum">     167 </span>                :<span class="lineNoCov">          0 :     auto&amp; lB = m_lhs[B];</span>
-<span class="lineNum">     168 </span>                :<span class="lineNoCov">          0 :     lB[A] += J;</span>
-<span class="lineNum">     169 </span>                :<span class="lineNoCov">          0 :     lB[B] += 2.0*J;</span>
-<span class="lineNum">     170 </span>                :<span class="lineNoCov">          0 :     lB[C] += J;</span>
-<span class="lineNum">     171 </span>                :<span class="lineNoCov">          0 :     lB[D] += J;</span>
-<span class="lineNum">     172 </span>                :<span class="lineNoCov">          0 :     auto&amp; lC = m_lhs[C];</span>
-<span class="lineNum">     173 </span>                :<span class="lineNoCov">          0 :     lC[A] += J;</span>
-<span class="lineNum">     174 </span>                :<span class="lineNoCov">          0 :     lC[B] += J;</span>
-<span class="lineNum">     175 </span>                :<span class="lineNoCov">          0 :     lC[C] += 2.0*J;</span>
-<span class="lineNum">     176 </span>                :<span class="lineNoCov">          0 :     lC[D] += J;</span>
-<span class="lineNum">     177 </span>                :<span class="lineNoCov">          0 :     auto&amp; lD = m_lhs[D];</span>
-<span class="lineNum">     178 </span>                :<span class="lineNoCov">          0 :     lD[A] += J;</span>
-<span class="lineNum">     179 </span>                :<span class="lineNoCov">          0 :     lD[B] += J;</span>
-<span class="lineNum">     180 </span>                :<span class="lineNoCov">          0 :     lD[C] += J;</span>
-<span class="lineNum">     181 </span>                :<span class="lineNoCov">          0 :     lD[D] += 2.0*J;</span>
-<span class="lineNum">     182 </span>                :            :   }
-<span class="lineNum">     183 </span>                :            : 
-<span class="lineNum">     184 </span>                :<span class="lineNoCov">          0 :   m_timestamp.emplace_back( &quot;Compute left-hand side matrix&quot;, t.dsec() );</span>
-<span class="lineNum">     185 </span>                :            : 
-<span class="lineNum">     186 </span>                :<span class="lineNoCov">          0 :   m_lsmproxy.ckLocalBranch()-&gt;charelhs( thisIndex, m_lhs );</span>
-<span class="lineNum">     187 </span>                :<span class="lineNoCov">          0 : }</span>
-<a name="188"><span class="lineNum">     188 </span>                :            : </a>
-<span class="lineNum">     189 </span>                :            : void
-<span class="lineNum">     190 </span>                :<span class="lineNoCov">          0 : Performer::rhs( tk::real mult, std::map&lt; std::size_t, tk::real &gt;&amp; unk )</span>
-<span class="lineNum">     191 </span>                :            : //******************************************************************************
-<span class="lineNum">     192 </span>                :            : // Compute right-hand side of PDE
-<span class="lineNum">     193 </span>                :            : //! \author J. Bakosi
-<span class="lineNum">     194 </span>                :            : //******************************************************************************
-<span class="lineNum">     195 </span>                :            : {
-<span class="lineNum">     196 </span>                :<span class="lineNoCov">          0 :   tk::Timer t;</span>
-<span class="lineNum">     197 </span>                :            : 
-<span class="lineNum">     198 </span>                :<span class="lineNoCov">          0 :   const auto&amp; x = m_coord[0];</span>
-<span class="lineNum">     199 </span>                :<span class="lineNoCov">          0 :   const auto&amp; y = m_coord[1];</span>
-<span class="lineNum">     200 </span>                :<span class="lineNoCov">          0 :   const auto&amp; z = m_coord[2];</span>
-<span class="lineNum">     201 </span>                :            : 
-<span class="lineNum">     202 </span>                :<span class="lineNoCov">          0 :   const tk::real U0 = 0.5;</span>
-<span class="lineNum">     203 </span>                :<span class="lineNoCov">          0 :   const tk::real LAMBDA = 5.0e-4;</span>
-<span class="lineNum">     204 </span>                :            : 
-<span class="lineNum">     205 </span>                :<span class="lineNoCov">          0 :   m_rhs.clear();</span>
-<span class="lineNum">     206 </span>                :            : 
-<span class="lineNum">     207 </span>                :<span class="lineNoCov">          0 :   for (std::size_t e=0; e&lt;m_inpoel.size()/4; ++e) {</span>
-<span class="lineNum">     208 </span>                :<span class="lineNoCov">          0 :     const auto a = m_inpoel[e*4+0];</span>
-<span class="lineNum">     209 </span>                :<span class="lineNoCov">          0 :     const auto b = m_inpoel[e*4+1];</span>
-<span class="lineNum">     210 </span>                :<span class="lineNoCov">          0 :     const auto c = m_inpoel[e*4+2];</span>
-<span class="lineNum">     211 </span>                :<span class="lineNoCov">          0 :     const auto d = m_inpoel[e*4+3];</span>
-<span class="lineNum">     212 </span>                :            : 
-<span class="lineNum">     213 </span>                :            :     // compute element Jacobi determinant
-<span class="lineNum">     214 </span>                :<span class="lineNoCov">          0 :     std::array&lt; tk::real, 3 &gt; ba{{ x[b]-x[a], y[b]-y[a], z[b]-z[a] }},</span>
-<span class="lineNum">     215 </span>                :<span class="lineNoCov">          0 :                               ca{{ x[c]-x[a], y[c]-y[a], z[c]-z[a] }},</span>
-<span class="lineNum">     216 </span>                :<span class="lineNoCov">          0 :                               da{{ x[d]-x[a], y[d]-y[a], z[d]-z[a] }};</span>
-<span class="lineNum">     217 </span>                :<span class="lineNoCov">          0 :     const auto J = tk::triple( ba, ca, da );</span>
-<span class="lineNum">     218 </span>                :            : 
-<span class="lineNum">     219 </span>                :            :     // construct tetrahedron element-level matrices
+<span class="lineNum">      44 </span>                :            :   m_itf( 0 ),
+<span class="lineNum">      45 </span>                :<span class="lineNoCov">          0 :   m_t( g_inputdeck.get&lt; tag::discr, tag::t0 &gt;() ),</span>
+<span class="lineNum">      46 </span>                :            :   m_stage( 0 ),
+<span class="lineNum">      47 </span>                :            :   m_hostproxy( hostproxy ),
+<span class="lineNum">      48 </span>                :            :   m_lsmproxy( lsmproxy ),
+<span class="lineNum">      49 </span>                :<span class="lineNoCov">          0 :   m_point( g_point[ m_id ] )</span>
+<span class="lineNum">      50 </span>                :            : //******************************************************************************
+<span class="lineNum">      51 </span>                :            : // Constructor
+<span class="lineNum">      52 </span>                :            : //! \param[in] hostproxy Host proxy
+<span class="lineNum">      53 </span>                :            : //! \param[in] lsmproxy Linear system merger (LinSysMerger) proxy
+<span class="lineNum">      54 </span>                :            : //! \author J. Bakosi
+<span class="lineNum">      55 </span>                :            : //******************************************************************************
+<span class="lineNum">      56 </span>                :            : {
+<span class="lineNum">      57 </span>                :            :   // Register ourselves with the linear system merger
+<span class="lineNum">      58 </span>                :<span class="lineNoCov">          0 :   m_lsmproxy.ckLocalBranch()-&gt;checkin();</span>
+<span class="lineNum">      59 </span>                :            :   // Tell the Charm++ runtime system to call back to Conductor::registered()
+<span class="lineNum">      60 </span>                :            :   // once all Performer chares have registered themselves, i.e., checked in,
+<span class="lineNum">      61 </span>                :            :   // with their local branch of the linear system merger group, LinSysMerger.
+<span class="lineNum">      62 </span>                :            :   // The reduction is done via creating a callback that invokes the typed
+<span class="lineNum">      63 </span>                :            :   // reduction client, where m_hostproxy is the proxy on which the reduction
+<span class="lineNum">      64 </span>                :            :   // target method, registered(), is called upon completion of the reduction.
+<span class="lineNum">      65 </span>                :<span class="lineNoCov">          0 :   contribute(</span>
+<span class="lineNum">      66 </span>                :<span class="lineNoCov">          0 :     CkCallback( CkReductionTarget( Conductor, registered ), m_hostproxy ) );</span>
+<span class="lineNum">      67 </span>                :<span class="lineNoCov">          0 : }</span>
+<a name="68"><span class="lineNum">      68 </span>                :            : </a>
+<span class="lineNum">      69 </span>                :            : void
+<span class="lineNum">      70 </span>                :<span class="lineNoCov">          0 : Performer::setup()</span>
+<span class="lineNum">      71 </span>                :            : //******************************************************************************
+<span class="lineNum">      72 </span>                :            : // Setup
+<span class="lineNum">      73 </span>                :            : //! \author J. Bakosi
+<span class="lineNum">      74 </span>                :            : //******************************************************************************
+<span class="lineNum">      75 </span>                :            : {
+<span class="lineNum">      76 </span>                :            :   // Initialize local-&gt;global, global-&gt;local node ids, element connectivity
+<span class="lineNum">      77 </span>                :<span class="lineNoCov">          0 :   initIds( g_element[ m_id ] );</span>
+<span class="lineNum">      78 </span>                :            :   // Read coordinates of owned and received mesh nodes
+<span class="lineNum">      79 </span>                :<span class="lineNoCov">          0 :   initCoords();</span>
+<span class="lineNum">      80 </span>                :            :   // Output chare mesh to file
+<span class="lineNum">      81 </span>                :<span class="lineNoCov">          0 :   writeMesh();</span>
+<span class="lineNum">      82 </span>                :            :   // Output mesh-based fields metadata to file
+<span class="lineNum">      83 </span>                :<span class="lineNoCov">          0 :   writeMeta();</span>
+<span class="lineNum">      84 </span>                :<span class="lineNoCov">          0 : }</span>
+<a name="85"><span class="lineNum">      85 </span>                :            : </a>
+<span class="lineNum">      86 </span>                :            : void
+<span class="lineNum">      87 </span>                :<span class="lineNoCov">          0 : Performer::init( tk::real dt )</span>
+<span class="lineNum">      88 </span>                :            : //******************************************************************************
+<span class="lineNum">      89 </span>                :            : // Initialize linear system
+<span class="lineNum">      90 </span>                :            : //! \author J. Bakosi
+<span class="lineNum">      91 </span>                :            : //******************************************************************************
+<span class="lineNum">      92 </span>                :            : {
+<span class="lineNum">      93 </span>                :            :   // Set initial conditions
+<span class="lineNum">      94 </span>                :<span class="lineNoCov">          0 :   ic();</span>
+<span class="lineNum">      95 </span>                :            : 
+<span class="lineNum">      96 </span>                :            :   // If the desired max number of time steps is zero or the desired max time is
+<span class="lineNum">      97 </span>                :            :   // less than the initial time step size, finish righ away.
+<span class="lineNum">      98 </span>                :<span class="lineNoCov">          0 :   if ( g_inputdeck.get&lt; tag::discr, tag::nstep &gt;() == 0 ||</span>
+<span class="lineNum">      99 </span>                :<span class="lineNoCov">          0 :        g_inputdeck.get&lt; tag::discr, tag::t0 &gt;() &gt;</span>
+<span class="lineNum">     100 </span>                :<span class="lineNoCov">          0 :          g_inputdeck.get&lt; tag::discr, tag::term &gt;() ||</span>
+<span class="lineNum">     101 </span>                :<span class="lineNoCov">          0 :        g_inputdeck.get&lt; tag::discr, tag::term &gt;() &lt; dt ) {</span>
+<span class="lineNum">     102 </span>                :            : 
+<span class="lineNum">     103 </span>                :            :     // Send time stamps to the host
+<span class="lineNum">     104 </span>                :<span class="lineNoCov">          0 :     m_hostproxy.arrTimestamp( m_timestamp );</span>
+<span class="lineNum">     105 </span>                :            : 
+<span class="lineNum">     106 </span>                :            :     // Tell the Charm++ runtime system to call back to Conductor::finish(). The
+<span class="lineNum">     107 </span>                :            :     // reduction is done via creating a callback that invokes the typed
+<span class="lineNum">     108 </span>                :            :     // reduction client, where m_hostproxy is the proxy on which the reduction
+<span class="lineNum">     109 </span>                :            :     // target method, evaluateTime(), is called upon completion of the
+<span class="lineNum">     110 </span>                :            :     // reduction.
+<span class="lineNum">     111 </span>                :<span class="lineNoCov">          0 :     contribute(</span>
+<span class="lineNum">     112 </span>                :<span class="lineNoCov">          0 :       CkCallback( CkReductionTarget( Conductor, finish ), m_hostproxy ) );</span>
+<span class="lineNum">     113 </span>                :            : 
+<span class="lineNum">     114 </span>                :            :   } else {
+<span class="lineNum">     115 </span>                :            : 
+<span class="lineNum">     116 </span>                :            :     // Compute left-hand side of PDE
+<span class="lineNum">     117 </span>                :<span class="lineNoCov">          0 :     lhs();</span>
+<span class="lineNum">     118 </span>                :            :     // Advance PDE in time (start at stage 0)
+<span class="lineNum">     119 </span>                :<span class="lineNoCov">          0 :     advance( 0, dt, m_it, m_t );</span>
+<span class="lineNum">     120 </span>                :            :     // Send time stamps to the host
+<span class="lineNum">     121 </span>                :<span class="lineNoCov">          0 :     m_hostproxy.arrTimestamp( m_timestamp );</span>
+<span class="lineNum">     122 </span>                :            : 
+<span class="lineNum">     123 </span>                :            :   }
+<span class="lineNum">     124 </span>                :<span class="lineNoCov">          0 : }</span>
+<a name="125"><span class="lineNum">     125 </span>                :            : </a>
+<span class="lineNum">     126 </span>                :            : void
+<span class="lineNum">     127 </span>                :<span class="lineNoCov">          0 : Performer::ic()</span>
+<span class="lineNum">     128 </span>                :            : //******************************************************************************
+<span class="lineNum">     129 </span>                :            : // Set initial conditions
+<span class="lineNum">     130 </span>                :            : //! \author J. Bakosi
+<span class="lineNum">     131 </span>                :            : //******************************************************************************
+<span class="lineNum">     132 </span>                :            : {
+<span class="lineNum">     133 </span>                :<span class="lineNoCov">          0 :   for (std::size_t i=0; i&lt;m_gid.size(); ++i)</span>
+<span class="lineNum">     134 </span>                :<span class="lineNoCov">          0 :     m_u[ m_gid[i] ] = ansol_shear( i, m_t );</span>
+<span class="lineNum">     135 </span>                :            :     //m_u[ m_gid[i] ] = ansol_gauss( i );
+<span class="lineNum">     136 </span>                :            : 
+<span class="lineNum">     137 </span>                :            :   // Output initial conditions to file (it = 1, time = 0.0)
+<span class="lineNum">     138 </span>                :<span class="lineNoCov">          0 :   writeFields( m_t );</span>
+<span class="lineNum">     139 </span>                :            : 
+<span class="lineNum">     140 </span>                :<span class="lineNoCov">          0 :   m_lsmproxy.ckLocalBranch()-&gt;charesol( thisIndex, m_u );</span>
+<span class="lineNum">     141 </span>                :<span class="lineNoCov">          0 : }</span>
+<a name="142"><span class="lineNum">     142 </span>                :            : </a>
+<span class="lineNum">     143 </span>                :            : void
+<span class="lineNum">     144 </span>                :<span class="lineNoCov">          0 : Performer::lhs()</span>
+<span class="lineNum">     145 </span>                :            : //******************************************************************************
+<span class="lineNum">     146 </span>                :            : // Compute left-hand side of PDE
+<span class="lineNum">     147 </span>                :            : //! \author J. Bakosi
+<span class="lineNum">     148 </span>                :            : //******************************************************************************
+<span class="lineNum">     149 </span>                :            : {
+<span class="lineNum">     150 </span>                :<span class="lineNoCov">          0 :   tk::Timer t;</span>
+<span class="lineNum">     151 </span>                :            : 
+<span class="lineNum">     152 </span>                :<span class="lineNoCov">          0 :   const auto&amp; x = m_coord[0];</span>
+<span class="lineNum">     153 </span>                :<span class="lineNoCov">          0 :   const auto&amp; y = m_coord[1];</span>
+<span class="lineNum">     154 </span>                :<span class="lineNoCov">          0 :   const auto&amp; z = m_coord[2];</span>
+<span class="lineNum">     155 </span>                :            : 
+<span class="lineNum">     156 </span>                :            :   // Sparse matrix: global mesh point row and column ids, and nonzero value
+<span class="lineNum">     157 </span>                :<span class="lineNoCov">          0 :   std::map&lt; std::size_t, std::map&lt; std::size_t, tk::real &gt; &gt; lhs;</span>
+<span class="lineNum">     158 </span>                :            : 
+<span class="lineNum">     159 </span>                :<span class="lineNoCov">          0 :   for (std::size_t e=0; e&lt;m_inpoel.size()/4; ++e) {</span>
+<span class="lineNum">     160 </span>                :<span class="lineNoCov">          0 :     const auto a = m_inpoel[e*4+0];</span>
+<span class="lineNum">     161 </span>                :<span class="lineNoCov">          0 :     const auto b = m_inpoel[e*4+1];</span>
+<span class="lineNum">     162 </span>                :<span class="lineNoCov">          0 :     const auto c = m_inpoel[e*4+2];</span>
+<span class="lineNum">     163 </span>                :<span class="lineNoCov">          0 :     const auto d = m_inpoel[e*4+3];</span>
+<span class="lineNum">     164 </span>                :<span class="lineNoCov">          0 :     std::array&lt; tk::real, 3 &gt; ba{{ x[b]-x[a], y[b]-y[a], z[b]-z[a] }},</span>
+<span class="lineNum">     165 </span>                :<span class="lineNoCov">          0 :                               ca{{ x[c]-x[a], y[c]-y[a], z[c]-z[a] }},</span>
+<span class="lineNum">     166 </span>                :<span class="lineNoCov">          0 :                               da{{ x[d]-x[a], y[d]-y[a], z[d]-z[a] }};</span>
+<span class="lineNum">     167 </span>                :<span class="lineNoCov">          0 :     const auto J = tk::triple( ba, ca, da ) / 120.0;</span>
+<span class="lineNum">     168 </span>                :            : 
+<span class="lineNum">     169 </span>                :<span class="lineNoCov">          0 :     const auto A = m_gid[a];</span>
+<span class="lineNum">     170 </span>                :<span class="lineNoCov">          0 :     const auto B = m_gid[b];</span>
+<span class="lineNum">     171 </span>                :<span class="lineNoCov">          0 :     const auto C = m_gid[c];</span>
+<span class="lineNum">     172 </span>                :<span class="lineNoCov">          0 :     const auto D = m_gid[d];</span>
+<span class="lineNum">     173 </span>                :<span class="lineNoCov">          0 :     auto&amp; lA = lhs[A];</span>
+<span class="lineNum">     174 </span>                :<span class="lineNoCov">          0 :     lA[A] += 2.0*J;</span>
+<span class="lineNum">     175 </span>                :<span class="lineNoCov">          0 :     lA[B] += J;</span>
+<span class="lineNum">     176 </span>                :<span class="lineNoCov">          0 :     lA[C] += J;</span>
+<span class="lineNum">     177 </span>                :<span class="lineNoCov">          0 :     lA[D] += J;</span>
+<span class="lineNum">     178 </span>                :<span class="lineNoCov">          0 :     auto&amp; lB = lhs[B];</span>
+<span class="lineNum">     179 </span>                :<span class="lineNoCov">          0 :     lB[A] += J;</span>
+<span class="lineNum">     180 </span>                :<span class="lineNoCov">          0 :     lB[B] += 2.0*J;</span>
+<span class="lineNum">     181 </span>                :<span class="lineNoCov">          0 :     lB[C] += J;</span>
+<span class="lineNum">     182 </span>                :<span class="lineNoCov">          0 :     lB[D] += J;</span>
+<span class="lineNum">     183 </span>                :<span class="lineNoCov">          0 :     auto&amp; lC = lhs[C];</span>
+<span class="lineNum">     184 </span>                :<span class="lineNoCov">          0 :     lC[A] += J;</span>
+<span class="lineNum">     185 </span>                :<span class="lineNoCov">          0 :     lC[B] += J;</span>
+<span class="lineNum">     186 </span>                :<span class="lineNoCov">          0 :     lC[C] += 2.0*J;</span>
+<span class="lineNum">     187 </span>                :<span class="lineNoCov">          0 :     lC[D] += J;</span>
+<span class="lineNum">     188 </span>                :<span class="lineNoCov">          0 :     auto&amp; lD = lhs[D];</span>
+<span class="lineNum">     189 </span>                :<span class="lineNoCov">          0 :     lD[A] += J;</span>
+<span class="lineNum">     190 </span>                :<span class="lineNoCov">          0 :     lD[B] += J;</span>
+<span class="lineNum">     191 </span>                :<span class="lineNoCov">          0 :     lD[C] += J;</span>
+<span class="lineNum">     192 </span>                :<span class="lineNoCov">          0 :     lD[D] += 2.0*J;</span>
+<span class="lineNum">     193 </span>                :            :   }
+<span class="lineNum">     194 </span>                :            : 
+<span class="lineNum">     195 </span>                :<span class="lineNoCov">          0 :   m_timestamp.emplace_back( &quot;Compute left-hand side matrix&quot;, t.dsec() );</span>
+<span class="lineNum">     196 </span>                :            : 
+<span class="lineNum">     197 </span>                :<span class="lineNoCov">          0 :   m_lsmproxy.ckLocalBranch()-&gt;charelhs( thisIndex, lhs );</span>
+<span class="lineNum">     198 </span>                :<span class="lineNoCov">          0 : }</span>
+<a name="199"><span class="lineNum">     199 </span>                :            : </a>
+<span class="lineNum">     200 </span>                :            : void
+<span class="lineNum">     201 </span>                :<span class="lineNoCov">          0 : Performer::rhs( tk::real mult,</span>
+<span class="lineNum">     202 </span>                :            :                 tk::real dt,
+<span class="lineNum">     203 </span>                :            :                 const std::map&lt; std::size_t, tk::real &gt;&amp; sol,
+<span class="lineNum">     204 </span>                :            :                 std::map&lt; std::size_t, tk::real &gt;&amp; newrhs )
+<span class="lineNum">     205 </span>                :            : //******************************************************************************
+<span class="lineNum">     206 </span>                :            : // Compute right-hand side of PDE
+<span class="lineNum">     207 </span>                :            : //! \param[in] mult Multiplier differentiating the different stages in
+<span class="lineNum">     208 </span>                :            : //!    multi-stage time stepping
+<span class="lineNum">     209 </span>                :            : //! \param[in] dt Size of time step
+<span class="lineNum">     210 </span>                :            : //! \param[in] sol Solution vector at current stage
+<span class="lineNum">     211 </span>                :            : //! \param[inout] newrhs Right-hand side vector computed
+<span class="lineNum">     212 </span>                :            : //! \author J. Bakosi
+<span class="lineNum">     213 </span>                :            : //******************************************************************************
+<span class="lineNum">     214 </span>                :            : {
+<span class="lineNum">     215 </span>                :<span class="lineNoCov">          0 :   tk::Timer t;</span>
+<span class="lineNum">     216 </span>                :            : 
+<span class="lineNum">     217 </span>                :<span class="lineNoCov">          0 :   const auto&amp; x = m_coord[0];</span>
+<span class="lineNum">     218 </span>                :<span class="lineNoCov">          0 :   const auto&amp; y = m_coord[1];</span>
+<span class="lineNum">     219 </span>                :<span class="lineNoCov">          0 :   const auto&amp; z = m_coord[2];</span>
 <span class="lineNum">     220 </span>                :            : 
-<span class="lineNum">     221 </span>                :            :     // consistent mass
-<span class="lineNum">     222 </span>                :            :     std::array&lt; std::array&lt; tk::real, 4 &gt;, 4 &gt; mass;  // nnode*nnode [4][4]
-<span class="lineNum">     223 </span>                :            :     // diagonal
-<span class="lineNum">     224 </span>                :<span class="lineNoCov">          0 :     mass[0][0] = mass[1][1] = mass[2][2] = mass[3][3] = J/60.0;</span>
-<span class="lineNum">     225 </span>                :            :     // off-diagonal
-<span class="lineNum">     226 </span>                :<span class="lineNoCov">          0 :     mass[0][1] = mass[0][2] = mass[0][3] =</span>
-<span class="lineNum">     227 </span>                :<span class="lineNoCov">          0 :     mass[1][0] = mass[1][2] = mass[1][3] =</span>
-<span class="lineNum">     228 </span>                :<span class="lineNoCov">          0 :     mass[2][0] = mass[2][1] = mass[2][3] =</span>
-<span class="lineNum">     229 </span>                :<span class="lineNoCov">          0 :     mass[3][0] = mass[3][1] = mass[3][2] = J/120.0;</span>
-<span class="lineNum">     230 </span>                :            : 
-<span class="lineNum">     231 </span>                :            :     // prescribed shear velocity
-<span class="lineNum">     232 </span>                :            :     std::array&lt; std::array&lt; tk::real, 4 &gt;, 3 &gt; vel;  // ndim*nnode [3][4]
-<span class="lineNum">     233 </span>                :<span class="lineNoCov">          0 :     vel[0][0] = U0 + LAMBDA * y[a];  vel[1][0] = 0.0;  vel[2][0] = 0.0;</span>
-<span class="lineNum">     234 </span>                :<span class="lineNoCov">          0 :     vel[0][1] = U0 + LAMBDA * y[b];  vel[1][1] = 0.0;  vel[2][1] = 0.0;</span>
-<span class="lineNum">     235 </span>                :<span class="lineNoCov">          0 :     vel[0][2] = U0 + LAMBDA * y[c];  vel[1][2] = 0.0;  vel[2][2] = 0.0;</span>
-<span class="lineNum">     236 </span>                :<span class="lineNoCov">          0 :     vel[0][3] = U0 + LAMBDA * y[d];  vel[1][3] = 0.0;  vel[2][3] = 0.0;</span>
-<span class="lineNum">     237 </span>                :            : 
-<span class="lineNum">     238 </span>                :            :     // shape function derivatives
-<span class="lineNum">     239 </span>                :            :     std::array&lt; std::array&lt; tk::real, 3 &gt;, 4 &gt; grad;  // nnode*ndim [4][3]
-<span class="lineNum">     240 </span>                :<span class="lineNoCov">          0 :     grad[1] = tk::crossdiv( ca, da, J );</span>
-<span class="lineNum">     241 </span>                :<span class="lineNoCov">          0 :     grad[2] = tk::crossdiv( ba, da, J );</span>
-<span class="lineNum">     242 </span>                :<span class="lineNoCov">          0 :     grad[3] = tk::crossdiv( ba, ca, J );</span>
-<span class="lineNum">     243 </span>                :<span class="lineNoCov">          0 :     for (std::size_t i=0; i&lt;3; ++i)</span>
-<span class="lineNum">     244 </span>                :<span class="lineNoCov">          0 :       grad[0][i] = -grad[1][i]-grad[2][i]-grad[3][i];</span>
-<span class="lineNum">     245 </span>                :            : 
-<span class="lineNum">     246 </span>                :            :     // add mass contribution to rhs
-<span class="lineNum">     247 </span>                :<span class="lineNoCov">          0 :     for (std::size_t i=0; i&lt;4; ++i) {</span>
-<span class="lineNum">     248 </span>                :<span class="lineNoCov">          0 :       const auto g = m_gid[ m_inpoel[e*4+i] ];  // global node id</span>
-<span class="lineNum">     249 </span>                :<span class="lineNoCov">          0 :       const auto&amp; u = unk[g];                   // ref to unknown at g</span>
-<span class="lineNum">     250 </span>                :<span class="lineNoCov">          0 :       auto&amp; r = m_rhs[g];                       // ref to rhs at g</span>
-<span class="lineNum">     251 </span>                :<span class="lineNoCov">          0 :       for (std::size_t j=0; j&lt;4; ++j)           // add contribution to rhs</span>
-<span class="lineNum">     252 </span>                :<span class="lineNoCov">          0 :         r += mass[i][j] * 1.5;//u;</span>
-<span class="lineNum">     253 </span>                :            :     }
-<span class="lineNum">     254 </span>                :            : 
-<span class="lineNum">     255 </span>                :            : //     // add advection contribution to rhs
-<span class="lineNum">     256 </span>                :            : //     for (std::size_t i=0; i&lt;4; ++i) {
-<span class="lineNum">     257 </span>                :            : //       const auto g = m_gid[ m_inpoel[e*4+i] ];  // global node id
-<span class="lineNum">     258 </span>                :            : //       auto&amp; r = m_rhs[g];                       // ref to rhs at g
-<span class="lineNum">     259 </span>                :            : //       for (std::size_t j=0; j&lt;4; ++j)           // add contribution to rhs
-<span class="lineNum">     260 </span>                :            : //         for (std::size_t k=0; k&lt;3; ++k)
-<span class="lineNum">     261 </span>                :            : //           for (std::size_t l=0; l&lt;4; ++l)
-<span class="lineNum">     262 </span>                :            : //             r -= mult*m_dt*( mass[i][j] * vel[k][j] * grad[l][k] *
-<span class="lineNum">     263 </span>                :            : //                              unk[ m_gid[ m_inpoel[e*4+l] ] ] );
-<span class="lineNum">     264 </span>                :            : //     }
-<span class="lineNum">     265 </span>                :            : // 
-<span class="lineNum">     266 </span>                :            : //     // add diffusion contribution to rhs
-<span class="lineNum">     267 </span>                :            : //     for (std::size_t i=0; i&lt;4; ++i) {
-<span class="lineNum">     268 </span>                :            : //       const auto g = m_gid[ m_inpoel[e*4+i] ];  // global node id
-<span class="lineNum">     269 </span>                :            : //       auto&amp; r = m_rhs[g];                       // ref to rhs at g
-<span class="lineNum">     270 </span>                :            : //       for (std::size_t j=0; j&lt;4; ++j) {         // add contribution to rhs
-<span class="lineNum">     271 </span>                :            : //         const auto&amp; u = unk[ m_gid[ m_inpoel[e*4+j] ] ];  // ref to unknown
-<span class="lineNum">     272 </span>                :            : //         for (std::size_t k=0; k&lt;3; ++k)
-<span class="lineNum">     273 </span>                :            : //           r -= mult*m_dt*( grad[i][k] * grad[j][k] * u );
-<span class="lineNum">     274 </span>                :            : //       }
-<span class="lineNum">     275 </span>                :            : //     }
-<span class="lineNum">     276 </span>                :            :   }
-<span class="lineNum">     277 </span>                :            : 
-<span class="lineNum">     278 </span>                :<span class="lineNoCov">          0 :   m_timestamp.emplace_back( &quot;Compute right-hand side vector&quot;, t.dsec() );</span>
-<span class="lineNum">     279 </span>                :            : 
-<span class="lineNum">     280 </span>                :<span class="lineNoCov">          0 :   m_lsmproxy.ckLocalBranch()-&gt;charerhs( thisIndex, m_rhs );</span>
-<span class="lineNum">     281 </span>                :<span class="lineNoCov">          0 : }</span>
-<a name="282"><span class="lineNum">     282 </span>                :            : </a>
-<span class="lineNum">     283 </span>                :            : void
-<span class="lineNum">     284 </span>                :<span class="lineNoCov">          0 : Performer::initIds( const std::vector&lt; std::size_t &gt;&amp; gelem )</span>
-<span class="lineNum">     285 </span>                :            : //******************************************************************************
-<span class="lineNum">     286 </span>                :            : //! Initialize local-&gt;global, global-&gt;local node ids, element connectivity
-<span class="lineNum">     287 </span>                :            : //! \param[in] gelem Set of unique owned global element ids
-<span class="lineNum">     288 </span>                :            : //! \author J. Bakosi
-<span class="lineNum">     289 </span>                :            : //******************************************************************************
-<span class="lineNum">     290 </span>                :            : {
-<span class="lineNum">     291 </span>                :<span class="lineNoCov">          0 :   tk::Timer t;</span>
-<span class="lineNum">     292 </span>                :            : 
-<span class="lineNum">     293 </span>                :            :   // Build unique global node ids of owned elements
-<span class="lineNum">     294 </span>                :<span class="lineNoCov">          0 :   for (auto e : gelem) {</span>
-<span class="lineNum">     295 </span>                :<span class="lineNoCov">          0 :     m_gid.push_back( g_tetinpoel[e*4] );</span>
-<span class="lineNum">     296 </span>                :<span class="lineNoCov">          0 :     m_gid.push_back( g_tetinpoel[e*4+1] );</span>
-<span class="lineNum">     297 </span>                :<span class="lineNoCov">          0 :     m_gid.push_back( g_tetinpoel[e*4+2] );</span>
-<span class="lineNum">     298 </span>                :<span class="lineNoCov">          0 :     m_gid.push_back( g_tetinpoel[e*4+3] );</span>
+<span class="lineNum">     221 </span>                :<span class="lineNoCov">          0 :   const tk::real U0 = 0.5;</span>
+<span class="lineNum">     222 </span>                :<span class="lineNoCov">          0 :   const tk::real LAMBDA = 5.0e-4;</span>
+<span class="lineNum">     223 </span>                :<span class="lineNoCov">          0 :   const tk::real D = 10.0;</span>
+<span class="lineNum">     224 </span>                :            : 
+<span class="lineNum">     225 </span>                :<span class="lineNoCov">          0 :   newrhs.clear();</span>
+<span class="lineNum">     226 </span>                :            : 
+<span class="lineNum">     227 </span>                :<span class="lineNoCov">          0 :   for (std::size_t e=0; e&lt;m_inpoel.size()/4; ++e) {</span>
+<span class="lineNum">     228 </span>                :<span class="lineNoCov">          0 :     const auto a = m_inpoel[e*4+0];</span>
+<span class="lineNum">     229 </span>                :<span class="lineNoCov">          0 :     const auto b = m_inpoel[e*4+1];</span>
+<span class="lineNum">     230 </span>                :<span class="lineNoCov">          0 :     const auto c = m_inpoel[e*4+2];</span>
+<span class="lineNum">     231 </span>                :<span class="lineNoCov">          0 :     const auto d = m_inpoel[e*4+3];</span>
+<span class="lineNum">     232 </span>                :            : 
+<span class="lineNum">     233 </span>                :            :     // compute element Jacobi determinant
+<span class="lineNum">     234 </span>                :<span class="lineNoCov">          0 :     std::array&lt; tk::real, 3 &gt; ba{{ x[b]-x[a], y[b]-y[a], z[b]-z[a] }},</span>
+<span class="lineNum">     235 </span>                :<span class="lineNoCov">          0 :                               ca{{ x[c]-x[a], y[c]-y[a], z[c]-z[a] }},</span>
+<span class="lineNum">     236 </span>                :<span class="lineNoCov">          0 :                               da{{ x[d]-x[a], y[d]-y[a], z[d]-z[a] }};</span>
+<span class="lineNum">     237 </span>                :<span class="lineNoCov">          0 :     const auto J = tk::triple( ba, ca, da );</span>
+<span class="lineNum">     238 </span>                :            : 
+<span class="lineNum">     239 </span>                :            :     // construct tetrahedron element-level matrices
+<span class="lineNum">     240 </span>                :            : 
+<span class="lineNum">     241 </span>                :            :     // consistent mass
+<span class="lineNum">     242 </span>                :            :     std::array&lt; std::array&lt; tk::real, 4 &gt;, 4 &gt; mass;  // nnode*nnode [4][4]
+<span class="lineNum">     243 </span>                :            :     // diagonal
+<span class="lineNum">     244 </span>                :<span class="lineNoCov">          0 :     mass[0][0] = mass[1][1] = mass[2][2] = mass[3][3] = J/60.0;</span>
+<span class="lineNum">     245 </span>                :            :     // off-diagonal
+<span class="lineNum">     246 </span>                :<span class="lineNoCov">          0 :     mass[0][1] = mass[0][2] = mass[0][3] =</span>
+<span class="lineNum">     247 </span>                :<span class="lineNoCov">          0 :     mass[1][0] = mass[1][2] = mass[1][3] =</span>
+<span class="lineNum">     248 </span>                :<span class="lineNoCov">          0 :     mass[2][0] = mass[2][1] = mass[2][3] =</span>
+<span class="lineNum">     249 </span>                :<span class="lineNoCov">          0 :     mass[3][0] = mass[3][1] = mass[3][2] = J/120.0;</span>
+<span class="lineNum">     250 </span>                :            : 
+<span class="lineNum">     251 </span>                :            :     // prescribed shear velocity
+<span class="lineNum">     252 </span>                :            :     std::array&lt; std::array&lt; tk::real, 4 &gt;, 3 &gt; vel;  // ndim*nnode [3][4]
+<span class="lineNum">     253 </span>                :<span class="lineNoCov">          0 :     vel[0][0] = U0 + LAMBDA*y[a];  vel[1][0] = 0.0;  vel[2][0] = 0.0;</span>
+<span class="lineNum">     254 </span>                :<span class="lineNoCov">          0 :     vel[0][1] = U0 + LAMBDA*y[b];  vel[1][1] = 0.0;  vel[2][1] = 0.0;</span>
+<span class="lineNum">     255 </span>                :<span class="lineNoCov">          0 :     vel[0][2] = U0 + LAMBDA*y[c];  vel[1][2] = 0.0;  vel[2][2] = 0.0;</span>
+<span class="lineNum">     256 </span>                :<span class="lineNoCov">          0 :     vel[0][3] = U0 + LAMBDA*y[d];  vel[1][3] = 0.0;  vel[2][3] = 0.0;</span>
+<span class="lineNum">     257 </span>                :            : 
+<span class="lineNum">     258 </span>                :            :     // shape function derivatives
+<span class="lineNum">     259 </span>                :            :     std::array&lt; std::array&lt; tk::real, 3 &gt;, 4 &gt; grad;  // nnode*ndim [4][3]
+<span class="lineNum">     260 </span>                :<span class="lineNoCov">          0 :     grad[1] = tk::crossdiv( ca, da, J );</span>
+<span class="lineNum">     261 </span>                :<span class="lineNoCov">          0 :     grad[2] = tk::crossdiv( da, ba, J );</span>
+<span class="lineNum">     262 </span>                :<span class="lineNoCov">          0 :     grad[3] = tk::crossdiv( ba, ca, J );</span>
+<span class="lineNum">     263 </span>                :<span class="lineNoCov">          0 :     for (std::size_t i=0; i&lt;3; ++i)</span>
+<span class="lineNum">     264 </span>                :<span class="lineNoCov">          0 :       grad[0][i] = -grad[1][i]-grad[2][i]-grad[3][i];</span>
+<span class="lineNum">     265 </span>                :            : 
+<span class="lineNum">     266 </span>                :            :     // solution at nodes at time n
+<span class="lineNum">     267 </span>                :<span class="lineNoCov">          0 :     std::array&lt; tk::real, 4 &gt; u {{ tk::ref( m_u, m_gid[a] ),</span>
+<span class="lineNum">     268 </span>                :<span class="lineNoCov">          0 :                                    tk::ref( m_u, m_gid[b] ),</span>
+<span class="lineNum">     269 </span>                :<span class="lineNoCov">          0 :                                    tk::ref( m_u, m_gid[c] ),</span>
+<span class="lineNum">     270 </span>                :<span class="lineNoCov">          0 :                                    tk::ref( m_u, m_gid[d] ) }};</span>
+<span class="lineNum">     271 </span>                :            :     // solution at nodes at time n (at stage 0) and n+1/2 (at stage 1)
+<span class="lineNum">     272 </span>                :<span class="lineNoCov">          0 :     std::array&lt; tk::real, 4 &gt; s {{ tk::ref( sol, m_gid[a] ),</span>
+<span class="lineNum">     273 </span>                :<span class="lineNoCov">          0 :                                    tk::ref( sol, m_gid[b] ),</span>
+<span class="lineNum">     274 </span>                :<span class="lineNoCov">          0 :                                    tk::ref( sol, m_gid[c] ),</span>
+<span class="lineNum">     275 </span>                :<span class="lineNoCov">          0 :                                    tk::ref( sol, m_gid[d] ) }};</span>
+<span class="lineNum">     276 </span>                :            :     // pointers to rhs at nodes
+<span class="lineNum">     277 </span>                :<span class="lineNoCov">          0 :     std::array&lt; tk::real*, 4 &gt; r {{ &amp;newrhs[ m_gid[a] ],</span>
+<span class="lineNum">     278 </span>                :<span class="lineNoCov">          0 :                                     &amp;newrhs[ m_gid[b] ],</span>
+<span class="lineNum">     279 </span>                :<span class="lineNoCov">          0 :                                     &amp;newrhs[ m_gid[c] ],</span>
+<span class="lineNum">     280 </span>                :<span class="lineNoCov">          0 :                                     &amp;newrhs[ m_gid[d] ] }};</span>
+<span class="lineNum">     281 </span>                :            : 
+<span class="lineNum">     282 </span>                :            :     // add mass contribution to rhs
+<span class="lineNum">     283 </span>                :<span class="lineNoCov">          0 :     for (std::size_t i=0; i&lt;4; ++i)</span>
+<span class="lineNum">     284 </span>                :<span class="lineNoCov">          0 :       for (std::size_t j=0; j&lt;4; ++j)</span>
+<span class="lineNum">     285 </span>                :<span class="lineNoCov">          0 :         *r[i] += mass[i][j] * u[j];</span>
+<span class="lineNum">     286 </span>                :            : 
+<span class="lineNum">     287 </span>                :            :     // add advection contribution to rhs
+<span class="lineNum">     288 </span>                :<span class="lineNoCov">          0 :     for (std::size_t i=0; i&lt;4; ++i)</span>
+<span class="lineNum">     289 </span>                :<span class="lineNoCov">          0 :       for (std::size_t j=0; j&lt;4; ++j)</span>
+<span class="lineNum">     290 </span>                :<span class="lineNoCov">          0 :         for (std::size_t k=0; k&lt;3; ++k)</span>
+<span class="lineNum">     291 </span>                :<span class="lineNoCov">          0 :           for (std::size_t l=0; l&lt;4; ++l)</span>
+<span class="lineNum">     292 </span>                :<span class="lineNoCov">          0 :             *r[i] -= mult * dt * mass[i][j] * vel[k][j] * grad[l][k] * s[l];</span>
+<span class="lineNum">     293 </span>                :            : 
+<span class="lineNum">     294 </span>                :            :     // add diffusion contribution to rhs
+<span class="lineNum">     295 </span>                :<span class="lineNoCov">          0 :     for (std::size_t i=0; i&lt;4; ++i)</span>
+<span class="lineNum">     296 </span>                :<span class="lineNoCov">          0 :       for (std::size_t j=0; j&lt;4; ++j)</span>
+<span class="lineNum">     297 </span>                :<span class="lineNoCov">          0 :         for (std::size_t k=0; k&lt;3; ++k)</span>
+<span class="lineNum">     298 </span>                :<span class="lineNoCov">          0 :           *r[i] -= mult * dt * D * J/6.0 * grad[i][k] * grad[j][k] * s[j];</span>
 <span class="lineNum">     299 </span>                :            :   }
-<span class="lineNum">     300 </span>                :<span class="lineNoCov">          0 :   tk::unique( m_gid );</span>
-<span class="lineNum">     301 </span>                :            : 
-<span class="lineNum">     302 </span>                :            :   // Assign local node ids to global node ids
-<span class="lineNum">     303 </span>                :<span class="lineNoCov">          0 :   const auto lnode = assignLid( m_gid );</span>
-<span class="lineNum">     304 </span>                :            : 
-<span class="lineNum">     305 </span>                :            :   // Generate element connectivity for owned elements using local point ids
-<span class="lineNum">     306 </span>                :<span class="lineNoCov">          0 :   for (auto e : gelem) {</span>
-<span class="lineNum">     307 </span>                :<span class="lineNoCov">          0 :     m_inpoel.push_back( tk::lid( lnode, g_tetinpoel[e*4] ) );</span>
-<span class="lineNum">     308 </span>                :<span class="lineNoCov">          0 :     m_inpoel.push_back( tk::lid( lnode, g_tetinpoel[e*4+1] ) );</span>
-<span class="lineNum">     309 </span>                :<span class="lineNoCov">          0 :     m_inpoel.push_back( tk::lid( lnode, g_tetinpoel[e*4+2] ) );</span>
-<span class="lineNum">     310 </span>                :<span class="lineNoCov">          0 :     m_inpoel.push_back( tk::lid( lnode, g_tetinpoel[e*4+3] ) );</span>
-<span class="lineNum">     311 </span>                :            :   }
-<span class="lineNum">     312 </span>                :            : 
-<span class="lineNum">     313 </span>                :            :   // Send off number of columns per row to linear system merger
-<span class="lineNum">     314 </span>                :<span class="lineNoCov">          0 :   m_lsmproxy.ckLocalBranch()-&gt;charerow( thisProxy, thisIndex, m_gid );</span>
+<span class="lineNum">     300 </span>                :            : 
+<span class="lineNum">     301 </span>                :<span class="lineNoCov">          0 :   m_timestamp.emplace_back( &quot;Compute right-hand side vector&quot;, t.dsec() );</span>
+<span class="lineNum">     302 </span>                :            : 
+<span class="lineNum">     303 </span>                :<span class="lineNoCov">          0 :   m_lsmproxy.ckLocalBranch()-&gt;charerhs( thisIndex, newrhs );</span>
+<span class="lineNum">     304 </span>                :<span class="lineNoCov">          0 : }</span>
+<a name="305"><span class="lineNum">     305 </span>                :            : </a>
+<span class="lineNum">     306 </span>                :            : void
+<span class="lineNum">     307 </span>                :<span class="lineNoCov">          0 : Performer::initIds( const std::vector&lt; std::size_t &gt;&amp; gelem )</span>
+<span class="lineNum">     308 </span>                :            : //******************************************************************************
+<span class="lineNum">     309 </span>                :            : //! Initialize local-&gt;global, global-&gt;local node ids, element connectivity
+<span class="lineNum">     310 </span>                :            : //! \param[in] gelem Set of unique owned global element ids
+<span class="lineNum">     311 </span>                :            : //! \author J. Bakosi
+<span class="lineNum">     312 </span>                :            : //******************************************************************************
+<span class="lineNum">     313 </span>                :            : {
+<span class="lineNum">     314 </span>                :<span class="lineNoCov">          0 :   tk::Timer t;</span>
 <span class="lineNum">     315 </span>                :            : 
-<span class="lineNum">     316 </span>                :            :   m_timestamp.emplace_back( &quot;Initialize mesh point ids, element connectivity&quot;,
-<span class="lineNum">     317 </span>                :<span class="lineNoCov">          0 :                             t.dsec() );</span>
-<span class="lineNum">     318 </span>                :<span class="lineNoCov">          0 : }</span>
-<a name="319"><span class="lineNum">     319 </span>                :            : </a>
-<span class="lineNum">     320 </span>                :            : std::map&lt; std::size_t, std::size_t &gt;
-<span class="lineNum">     321 </span>                :<span class="lineNoCov">          0 : Performer::assignLid( const std::vector&lt; std::size_t &gt;&amp; gid ) const</span>
-<span class="lineNum">     322 </span>                :            : //******************************************************************************
-<span class="lineNum">     323 </span>                :            : //! Assign local ids to global ids
-<span class="lineNum">     324 </span>                :            : //! \param[in] gid
-<span class="lineNum">     325 </span>                :            : //! \return Map associating global ids to local ids
-<span class="lineNum">     326 </span>                :            : //! \author J. Bakosi
-<span class="lineNum">     327 </span>                :            : //******************************************************************************
-<span class="lineNum">     328 </span>                :            : {
-<span class="lineNum">     329 </span>                :<span class="lineNoCov">          0 :   std::map&lt; std::size_t, std::size_t &gt; lid;</span>
-<span class="lineNum">     330 </span>                :<span class="lineNoCov">          0 :   std::size_t l = 0;</span>
-<span class="lineNum">     331 </span>                :<span class="lineNoCov">          0 :   for (auto p : gid) lid[p] = l++;</span>
-<span class="lineNum">     332 </span>                :<span class="lineNoCov">          0 :   return lid;</span>
-<span class="lineNum">     333 </span>                :            : }
-<a name="334"><span class="lineNum">     334 </span>                :            : </a>
-<span class="lineNum">     335 </span>                :            : void
-<span class="lineNum">     336 </span>                :<span class="lineNoCov">          0 : Performer::initCoords()</span>
-<span class="lineNum">     337 </span>                :            : //******************************************************************************
-<span class="lineNum">     338 </span>                :            : //  Read coordinates of mesh nodes from file
-<span class="lineNum">     339 </span>                :            : //! \author J. Bakosi
-<span class="lineNum">     340 </span>                :            : //******************************************************************************
-<span class="lineNum">     341 </span>                :            : {
-<span class="lineNum">     342 </span>                :<span class="lineNoCov">          0 :   tk::Timer t;</span>
-<span class="lineNum">     343 </span>                :            : 
-<span class="lineNum">     344 </span>                :            :   tk::ExodusIIMeshReader
-<span class="lineNum">     345 </span>                :<span class="lineNoCov">          0 :     er( g_inputdeck.get&lt; tag::cmd, tag::io, tag::input &gt;() );</span>
-<span class="lineNum">     346 </span>                :            : 
-<span class="lineNum">     347 </span>                :<span class="lineNoCov">          0 :   auto&amp; x = m_coord[0];</span>
-<span class="lineNum">     348 </span>                :<span class="lineNoCov">          0 :   auto&amp; y = m_coord[1];</span>
-<span class="lineNum">     349 </span>                :<span class="lineNoCov">          0 :   auto&amp; z = m_coord[2];</span>
-<span class="lineNum">     350 </span>                :<span class="lineNoCov">          0 :   if (!g_meshfilemap.empty())</span>
-<span class="lineNum">     351 </span>                :<span class="lineNoCov">          0 :     for (auto p : m_gid) er.readNode( g_meshfilemap[p], x, y, z );</span>
-<span class="lineNum">     352 </span>                :            :   else
-<span class="lineNum">     353 </span>                :<span class="lineNoCov">          0 :     for (auto p : m_gid) er.readNode( p, x, y, z );</span>
-<span class="lineNum">     354 </span>                :            : 
-<span class="lineNum">     355 </span>                :<span class="lineNoCov">          0 :   m_timestamp.emplace_back( &quot;Read mesh point coordinates from file&quot;, t.dsec() );</span>
-<span class="lineNum">     356 </span>                :<span class="lineNoCov">          0 : }</span>
+<span class="lineNum">     316 </span>                :            :   // Build unique global node ids of owned elements
+<span class="lineNum">     317 </span>                :<span class="lineNoCov">          0 :   for (auto e : gelem) {</span>
+<span class="lineNum">     318 </span>                :<span class="lineNoCov">          0 :     m_gid.push_back( g_tetinpoel[e*4] );</span>
+<span class="lineNum">     319 </span>                :<span class="lineNoCov">          0 :     m_gid.push_back( g_tetinpoel[e*4+1] );</span>
+<span class="lineNum">     320 </span>                :<span class="lineNoCov">          0 :     m_gid.push_back( g_tetinpoel[e*4+2] );</span>
+<span class="lineNum">     321 </span>                :<span class="lineNoCov">          0 :     m_gid.push_back( g_tetinpoel[e*4+3] );</span>
+<span class="lineNum">     322 </span>                :            :   }
+<span class="lineNum">     323 </span>                :<span class="lineNoCov">          0 :   tk::unique( m_gid );</span>
+<span class="lineNum">     324 </span>                :            : 
+<span class="lineNum">     325 </span>                :            :   // Assign local node ids to global node ids
+<span class="lineNum">     326 </span>                :<span class="lineNoCov">          0 :   const auto lnode = assignLid( m_gid );</span>
+<span class="lineNum">     327 </span>                :            : 
+<span class="lineNum">     328 </span>                :            :   // Generate element connectivity for owned elements using local point ids
+<span class="lineNum">     329 </span>                :<span class="lineNoCov">          0 :   for (auto e : gelem) {</span>
+<span class="lineNum">     330 </span>                :<span class="lineNoCov">          0 :     m_inpoel.push_back( tk::val( lnode, g_tetinpoel[e*4] ) );</span>
+<span class="lineNum">     331 </span>                :<span class="lineNoCov">          0 :     m_inpoel.push_back( tk::val( lnode, g_tetinpoel[e*4+1] ) );</span>
+<span class="lineNum">     332 </span>                :<span class="lineNoCov">          0 :     m_inpoel.push_back( tk::val( lnode, g_tetinpoel[e*4+2] ) );</span>
+<span class="lineNum">     333 </span>                :<span class="lineNoCov">          0 :     m_inpoel.push_back( tk::val( lnode, g_tetinpoel[e*4+3] ) );</span>
+<span class="lineNum">     334 </span>                :            :   }
+<span class="lineNum">     335 </span>                :            : 
+<span class="lineNum">     336 </span>                :            :   // Send off number of columns per row to linear system merger
+<span class="lineNum">     337 </span>                :<span class="lineNoCov">          0 :   m_lsmproxy.ckLocalBranch()-&gt;charerow( thisProxy, thisIndex, m_gid );</span>
+<span class="lineNum">     338 </span>                :            : 
+<span class="lineNum">     339 </span>                :<span class="lineNoCov">          0 :   m_timestamp.emplace_back( &quot;Initialize mesh point ids, element connectivity&quot;,</span>
+<span class="lineNum">     340 </span>                :<span class="lineNoCov">          0 :                             t.dsec() );</span>
+<span class="lineNum">     341 </span>                :<span class="lineNoCov">          0 : }</span>
+<a name="342"><span class="lineNum">     342 </span>                :            : </a>
+<span class="lineNum">     343 </span>                :            : std::map&lt; std::size_t, std::size_t &gt;
+<span class="lineNum">     344 </span>                :<span class="lineNoCov">          0 : Performer::assignLid( const std::vector&lt; std::size_t &gt;&amp; gid ) const</span>
+<span class="lineNum">     345 </span>                :            : //******************************************************************************
+<span class="lineNum">     346 </span>                :            : //! Assign local ids to global ids
+<span class="lineNum">     347 </span>                :            : //! \param[in] gid
+<span class="lineNum">     348 </span>                :            : //! \return Map associating global ids to local ids
+<span class="lineNum">     349 </span>                :            : //! \author J. Bakosi
+<span class="lineNum">     350 </span>                :            : //******************************************************************************
+<span class="lineNum">     351 </span>                :            : {
+<span class="lineNum">     352 </span>                :<span class="lineNoCov">          0 :   std::map&lt; std::size_t, std::size_t &gt; lid;</span>
+<span class="lineNum">     353 </span>                :<span class="lineNoCov">          0 :   std::size_t l = 0;</span>
+<span class="lineNum">     354 </span>                :<span class="lineNoCov">          0 :   for (auto p : gid) lid[p] = l++;</span>
+<span class="lineNum">     355 </span>                :<span class="lineNoCov">          0 :   return lid;</span>
+<span class="lineNum">     356 </span>                :            : }
 <a name="357"><span class="lineNum">     357 </span>                :            : </a>
 <span class="lineNum">     358 </span>                :            : void
-<span class="lineNum">     359 </span>                :<span class="lineNoCov">          0 : Performer::updateSolution( const std::map&lt; std::size_t, tk::real &gt;&amp; sol )</span>
+<span class="lineNum">     359 </span>                :<span class="lineNoCov">          0 : Performer::initCoords()</span>
 <span class="lineNum">     360 </span>                :            : //******************************************************************************
-<span class="lineNum">     361 </span>                :            : // Update solution vector
+<span class="lineNum">     361 </span>                :            : //  Read coordinates of mesh nodes from file
 <span class="lineNum">     362 </span>                :            : //! \author J. Bakosi
 <span class="lineNum">     363 </span>                :            : //******************************************************************************
 <span class="lineNum">     364 </span>                :            : {
-<span class="lineNum">     365 </span>                :<span class="lineNoCov">          0 :   for (const auto&amp; r : sol) m_uf[ r.first ] = r.second;</span>
+<span class="lineNum">     365 </span>                :<span class="lineNoCov">          0 :   tk::Timer t;</span>
 <span class="lineNum">     366 </span>                :            : 
-<span class="lineNum">     367 </span>                :<span class="lineNoCov">          0 :   if (m_uf.size() == m_gid.size()) {</span>
-<span class="lineNum">     368 </span>                :<span class="lineNoCov">          0 :     ++m_it;</span>
-<span class="lineNum">     369 </span>                :<span class="lineNoCov">          0 :     m_t += 1.0;</span>
-<span class="lineNum">     370 </span>                :<span class="lineNoCov">          0 :     writeFields( m_uf );</span>
-<span class="lineNum">     371 </span>                :            :   }
-<span class="lineNum">     372 </span>                :<span class="lineNoCov">          0 : }</span>
-<a name="373"><span class="lineNum">     373 </span>                :            : </a>
-<span class="lineNum">     374 </span>                :            : void
-<span class="lineNum">     375 </span>                :<span class="lineNoCov">          0 : Performer::writeMesh()</span>
-<span class="lineNum">     376 </span>                :            : //******************************************************************************
-<span class="lineNum">     377 </span>                :            : // Output chare mesh to file
-<span class="lineNum">     378 </span>                :            : //! \author J. Bakosi
-<span class="lineNum">     379 </span>                :            : //******************************************************************************
-<span class="lineNum">     380 </span>                :            : {
-<span class="lineNum">     381 </span>                :<span class="lineNoCov">          0 :   tk::Timer t;</span>
-<span class="lineNum">     382 </span>                :            : 
-<span class="lineNum">     383 </span>                :            :   // Create mesh object initializing element connectivity and point coords
-<span class="lineNum">     384 </span>                :<span class="lineNoCov">          0 :   tk::UnsMesh mesh( m_inpoel, m_coord );</span>
-<span class="lineNum">     385 </span>                :            : 
-<span class="lineNum">     386 </span>                :            :   // Create ExodusII writer
-<span class="lineNum">     387 </span>                :            :   tk::ExodusIIMeshWriter
-<span class="lineNum">     388 </span>                :<span class="lineNoCov">          0 :     ew( g_inputdeck.get&lt; tag::cmd, tag::io, tag::output &gt;() + &quot;_&quot; +</span>
-<span class="lineNum">     389 </span>                :            :           std::to_string( m_id ),
-<span class="lineNum">     390 </span>                :<span class="lineNoCov">          0 :         tk::ExoWriter::CREATE );</span>
-<span class="lineNum">     391 </span>                :            : 
-<span class="lineNum">     392 </span>                :            :   // Write chare mesh
-<span class="lineNum">     393 </span>                :<span class="lineNoCov">          0 :   ew.writeMesh( mesh );</span>
-<span class="lineNum">     394 </span>                :            : 
-<span class="lineNum">     395 </span>                :<span class="lineNoCov">          0 :   m_timestamp.emplace_back( &quot;Write chare mesh to file&quot;, t.dsec() );</span>
-<span class="lineNum">     396 </span>                :<span class="lineNoCov">          0 : }</span>
-<a name="397"><span class="lineNum">     397 </span>                :            : </a>
-<span class="lineNum">     398 </span>                :            : void
-<span class="lineNum">     399 </span>                :<span class="lineNoCov">          0 : Performer::writeChareId( const tk::ExodusIIMeshWriter&amp; ew ) const</span>
-<span class="lineNum">     400 </span>                :            : //******************************************************************************
-<span class="lineNum">     401 </span>                :            : // Output chare id field to file
-<span class="lineNum">     402 </span>                :            : //! \param[in] ew ExodusII mesh-based writer object
-<span class="lineNum">     403 </span>                :            : //! \author J. Bakosi
-<span class="lineNum">     404 </span>                :            : //******************************************************************************
-<span class="lineNum">     405 </span>                :            : {
-<span class="lineNum">     406 </span>                :            :   // Write elem chare id field to mesh
-<span class="lineNum">     407 </span>                :<span class="lineNoCov">          0 :   std::vector&lt; tk::real &gt; chid( m_inpoel.size()/4, static_cast&lt;tk::real&gt;(m_id) );</span>
-<span class="lineNum">     408 </span>                :<span class="lineNoCov">          0 :   ew.writeElemScalar( m_it+1, 1, chid );</span>
-<span class="lineNum">     409 </span>                :<span class="lineNoCov">          0 : }</span>
-<a name="410"><span class="lineNum">     410 </span>                :            : </a>
-<span class="lineNum">     411 </span>                :            : void
-<span class="lineNum">     412 </span>                :<span class="lineNoCov">          0 : Performer::writeSolution( const tk::ExodusIIMeshWriter&amp; ew,</span>
-<span class="lineNum">     413 </span>                :            :                           const std::map&lt; std::size_t, tk::real &gt;&amp; u ) const
-<span class="lineNum">     414 </span>                :            : //******************************************************************************
-<span class="lineNum">     415 </span>                :            : // Output solution to file
-<span class="lineNum">     416 </span>                :            : //! \param[in] ew ExodusII mesh-based writer object
-<span class="lineNum">     417 </span>                :            : //! \author J. Bakosi
-<span class="lineNum">     418 </span>                :            : //******************************************************************************
-<span class="lineNum">     419 </span>                :            : {
-<span class="lineNum">     420 </span>                :<span class="lineNoCov">          0 :   std::vector&lt; tk::real &gt; sol;</span>
-<span class="lineNum">     421 </span>                :<span class="lineNoCov">          0 :   for (const auto&amp; p : u) sol.push_back( p.second );</span>
-<span class="lineNum">     422 </span>                :<span class="lineNoCov">          0 :   ew.writeNodeScalar( m_it+1, 1, sol );</span>
-<span class="lineNum">     423 </span>                :<span class="lineNoCov">          0 : }</span>
-<a name="424"><span class="lineNum">     424 </span>                :            : </a>
-<span class="lineNum">     425 </span>                :            : void
-<span class="lineNum">     426 </span>                :<span class="lineNoCov">          0 : Performer::writeMeta() const</span>
-<span class="lineNum">     427 </span>                :            : //******************************************************************************
-<span class="lineNum">     428 </span>                :            : // Output mesh-based fields metadata to file
-<span class="lineNum">     429 </span>                :            : //! \author J. Bakosi
-<span class="lineNum">     430 </span>                :            : //******************************************************************************
-<span class="lineNum">     431 </span>                :            : {
-<span class="lineNum">     432 </span>                :            :   // Create ExodusII writer
-<span class="lineNum">     433 </span>                :            :   tk::ExodusIIMeshWriter
-<span class="lineNum">     434 </span>                :<span class="lineNoCov">          0 :     ew( g_inputdeck.get&lt; tag::cmd, tag::io, tag::output &gt;() + &quot;_&quot; +</span>
-<span class="lineNum">     435 </span>                :            :           std::to_string( m_id ),
-<span class="lineNum">     436 </span>                :<span class="lineNoCov">          0 :         tk::ExoWriter::OPEN );</span>
-<span class="lineNum">     437 </span>                :            : 
-<span class="lineNum">     438 </span>                :<span class="lineNoCov">          0 :   ew.writeElemVarNames( { &quot;Chare Id&quot; } );</span>
-<span class="lineNum">     439 </span>                :<span class="lineNoCov">          0 :   ew.writeNodeVarNames( { &quot;Scalar&quot; } );</span>
-<span class="lineNum">     440 </span>                :<span class="lineNoCov">          0 : }</span>
-<a name="441"><span class="lineNum">     441 </span>                :            : </a>
-<span class="lineNum">     442 </span>                :            : void
-<span class="lineNum">     443 </span>                :<span class="lineNoCov">          0 : Performer::writeFields( const std::map&lt; std::size_t, tk::real &gt;&amp; u )</span>
+<span class="lineNum">     367 </span>                :            :   tk::ExodusIIMeshReader
+<span class="lineNum">     368 </span>                :<span class="lineNoCov">          0 :     er( g_inputdeck.get&lt; tag::cmd, tag::io, tag::input &gt;() );</span>
+<span class="lineNum">     369 </span>                :            : 
+<span class="lineNum">     370 </span>                :<span class="lineNoCov">          0 :   auto&amp; x = m_coord[0];</span>
+<span class="lineNum">     371 </span>                :<span class="lineNoCov">          0 :   auto&amp; y = m_coord[1];</span>
+<span class="lineNum">     372 </span>                :<span class="lineNoCov">          0 :   auto&amp; z = m_coord[2];</span>
+<span class="lineNum">     373 </span>                :<span class="lineNoCov">          0 :   if (!g_meshfilemap.empty())</span>
+<span class="lineNum">     374 </span>                :<span class="lineNoCov">          0 :     for (auto p : m_gid) er.readNode( g_meshfilemap[p], x, y, z );</span>
+<span class="lineNum">     375 </span>                :            :   else
+<span class="lineNum">     376 </span>                :<span class="lineNoCov">          0 :     for (auto p : m_gid) er.readNode( p, x, y, z );</span>
+<span class="lineNum">     377 </span>                :            : 
+<span class="lineNum">     378 </span>                :<span class="lineNoCov">          0 :   m_timestamp.emplace_back( &quot;Read mesh point coordinates from file&quot;, t.dsec() );</span>
+<span class="lineNum">     379 </span>                :<span class="lineNoCov">          0 : }</span>
+<a name="380"><span class="lineNum">     380 </span>                :            : </a>
+<span class="lineNum">     381 </span>                :            : void
+<span class="lineNum">     382 </span>                :<span class="lineNoCov">          0 : Performer::writeMesh()</span>
+<span class="lineNum">     383 </span>                :            : //******************************************************************************
+<span class="lineNum">     384 </span>                :            : // Output chare mesh to file
+<span class="lineNum">     385 </span>                :            : //! \author J. Bakosi
+<span class="lineNum">     386 </span>                :            : //******************************************************************************
+<span class="lineNum">     387 </span>                :            : {
+<span class="lineNum">     388 </span>                :<span class="lineNoCov">          0 :   tk::Timer t;</span>
+<span class="lineNum">     389 </span>                :            : 
+<span class="lineNum">     390 </span>                :            :   // Create mesh object initializing element connectivity and point coords
+<span class="lineNum">     391 </span>                :<span class="lineNoCov">          0 :   tk::UnsMesh mesh( m_inpoel, m_coord );</span>
+<span class="lineNum">     392 </span>                :            : 
+<span class="lineNum">     393 </span>                :            :   // Create ExodusII writer
+<span class="lineNum">     394 </span>                :            :   tk::ExodusIIMeshWriter
+<span class="lineNum">     395 </span>                :<span class="lineNoCov">          0 :     ew( g_inputdeck.get&lt; tag::cmd, tag::io, tag::output &gt;() + &quot;_&quot; +</span>
+<span class="lineNum">     396 </span>                :<span class="lineNoCov">          0 :           std::to_string( m_id ),</span>
+<span class="lineNum">     397 </span>                :<span class="lineNoCov">          0 :         tk::ExoWriter::CREATE );</span>
+<span class="lineNum">     398 </span>                :            : 
+<span class="lineNum">     399 </span>                :            :   // Write chare mesh
+<span class="lineNum">     400 </span>                :<span class="lineNoCov">          0 :   ew.writeMesh( mesh );</span>
+<span class="lineNum">     401 </span>                :            : 
+<span class="lineNum">     402 </span>                :<span class="lineNoCov">          0 :   m_timestamp.emplace_back( &quot;Write chare mesh to file&quot;, t.dsec() );</span>
+<span class="lineNum">     403 </span>                :<span class="lineNoCov">          0 : }</span>
+<a name="404"><span class="lineNum">     404 </span>                :            : </a>
+<span class="lineNum">     405 </span>                :            : void
+<span class="lineNum">     406 </span>                :<span class="lineNoCov">          0 : Performer::writeChareId( const tk::ExodusIIMeshWriter&amp; ew,</span>
+<span class="lineNum">     407 </span>                :            :                          uint64_t it ) const
+<span class="lineNum">     408 </span>                :            : //******************************************************************************
+<span class="lineNum">     409 </span>                :            : // Output chare id field to file
+<span class="lineNum">     410 </span>                :            : //! \param[in] ew ExodusII mesh-based writer object
+<span class="lineNum">     411 </span>                :            : //! \param[in] it Iteration count
+<span class="lineNum">     412 </span>                :            : //! \author J. Bakosi
+<span class="lineNum">     413 </span>                :            : //******************************************************************************
+<span class="lineNum">     414 </span>                :            : {
+<span class="lineNum">     415 </span>                :            :   // Write elem chare id field to mesh
+<span class="lineNum">     416 </span>                :<span class="lineNoCov">          0 :   std::vector&lt; tk::real &gt; chid( m_inpoel.size()/4, static_cast&lt;tk::real&gt;(m_id) );</span>
+<span class="lineNum">     417 </span>                :<span class="lineNoCov">          0 :   ew.writeElemScalar( it, 1, chid );</span>
+<span class="lineNum">     418 </span>                :<span class="lineNoCov">          0 : }</span>
+<a name="419"><span class="lineNum">     419 </span>                :            : </a>
+<span class="lineNum">     420 </span>                :            : void
+<span class="lineNum">     421 </span>                :<span class="lineNoCov">          0 : Performer::writeSolution( const tk::ExodusIIMeshWriter&amp; ew,</span>
+<span class="lineNum">     422 </span>                :            :                           uint64_t it,
+<span class="lineNum">     423 </span>                :            :                           int varid,
+<span class="lineNum">     424 </span>                :            :                           const std::map&lt; std::size_t, tk::real &gt;&amp; u ) const
+<span class="lineNum">     425 </span>                :            : //******************************************************************************
+<span class="lineNum">     426 </span>                :            : // Output solution to file
+<span class="lineNum">     427 </span>                :            : //! \param[in] ew ExodusII mesh-based writer object
+<span class="lineNum">     428 </span>                :            : //! \param[in] it Iteration count
+<span class="lineNum">     429 </span>                :            : //! \param[in] varid Exodus variable ID
+<span class="lineNum">     430 </span>                :            : //! \param[in] u Field to write
+<span class="lineNum">     431 </span>                :            : //! \author J. Bakosi
+<span class="lineNum">     432 </span>                :            : //******************************************************************************
+<span class="lineNum">     433 </span>                :            : {
+<span class="lineNum">     434 </span>                :<span class="lineNoCov">          0 :   std::vector&lt; tk::real &gt; sol;</span>
+<span class="lineNum">     435 </span>                :<span class="lineNoCov">          0 :   for (const auto&amp; p : u) sol.push_back( p.second );</span>
+<span class="lineNum">     436 </span>                :<span class="lineNoCov">          0 :   ew.writeNodeScalar( it, varid, sol );</span>
+<span class="lineNum">     437 </span>                :<span class="lineNoCov">          0 : }</span>
+<a name="438"><span class="lineNum">     438 </span>                :            : </a>
+<span class="lineNum">     439 </span>                :            : void
+<span class="lineNum">     440 </span>                :<span class="lineNoCov">          0 : Performer::writeMeta() const</span>
+<span class="lineNum">     441 </span>                :            : //******************************************************************************
+<span class="lineNum">     442 </span>                :            : // Output mesh-based fields metadata to file
+<span class="lineNum">     443 </span>                :            : //! \author J. Bakosi
 <span class="lineNum">     444 </span>                :            : //******************************************************************************
-<span class="lineNum">     445 </span>                :            : // Output mesh-based fields to file
-<span class="lineNum">     446 </span>                :            : //! \author J. Bakosi
-<span class="lineNum">     447 </span>                :            : //******************************************************************************
-<span class="lineNum">     448 </span>                :            : {
-<span class="lineNum">     449 </span>                :<span class="lineNoCov">          0 :   tk::Timer t;</span>
-<span class="lineNum">     450 </span>                :            : 
-<span class="lineNum">     451 </span>                :            :   // Create ExodusII writer
-<span class="lineNum">     452 </span>                :            :   tk::ExodusIIMeshWriter
-<span class="lineNum">     453 </span>                :<span class="lineNoCov">          0 :     ew( g_inputdeck.get&lt; tag::cmd, tag::io, tag::output &gt;() + &quot;_&quot; +</span>
-<span class="lineNum">     454 </span>                :            :           std::to_string( m_id ),
-<span class="lineNum">     455 </span>                :<span class="lineNoCov">          0 :         tk::ExoWriter::OPEN );</span>
-<span class="lineNum">     456 </span>                :            : 
-<span class="lineNum">     457 </span>                :            :   // Write time stamp
-<span class="lineNum">     458 </span>                :<span class="lineNoCov">          0 :   ew.writeTimeStamp( m_it+1, m_t );</span>
-<span class="lineNum">     459 </span>                :            : 
-<span class="lineNum">     460 </span>                :            :   // Write mesh-based fields
-<span class="lineNum">     461 </span>                :<span class="lineNoCov">          0 :   writeChareId( ew );</span>
-<span class="lineNum">     462 </span>                :<span class="lineNoCov">          0 :   writeSolution( ew, u );</span>
-<span class="lineNum">     463 </span>                :            : 
-<span class="lineNum">     464 </span>                :<span class="lineNoCov">          0 :   m_timestamp.emplace_back( &quot;Write mesh-based fields to file&quot;, t.dsec() );</span>
-<span class="lineNum">     465 </span>                :<span class="lineNoCov">          0 : }</span>
-<span class="lineNum">     466 </span>                :            : 
-<span class="lineNum">     467 </span>                :            : #if defined(__clang__) || defined(__GNUC__)
-<span class="lineNum">     468 </span>                :            :   #pragma GCC diagnostic push
-<span class="lineNum">     469 </span>                :            :   #pragma GCC diagnostic ignored &quot;-Wconversion&quot;
-<span class="lineNum">     470 </span>                :            : #endif
-<span class="lineNum">     471 </span>                :            : 
-<span class="lineNum">     472 </span>                :            : #include &quot;performer.def.h&quot;
-<a name="473"><span class="lineNum">     473 </span>                :            : </a>
-<span class="lineNum">     474 </span>                :            : #if defined(__clang__) || defined(__GNUC__)
-<span class="lineNum">     475 </span>                :<span class="lineNoCov">          0 :   #pragma GCC diagnostic pop</span>
-<span class="lineNum">     476 </span>                :            : #endif
+<span class="lineNum">     445 </span>                :            : {
+<span class="lineNum">     446 </span>                :            :   // Create ExodusII writer
+<span class="lineNum">     447 </span>                :            :   tk::ExodusIIMeshWriter
+<span class="lineNum">     448 </span>                :<span class="lineNoCov">          0 :     ew( g_inputdeck.get&lt; tag::cmd, tag::io, tag::output &gt;() + &quot;_&quot; +</span>
+<span class="lineNum">     449 </span>                :<span class="lineNoCov">          0 :           std::to_string( m_id ),</span>
+<span class="lineNum">     450 </span>                :<span class="lineNoCov">          0 :         tk::ExoWriter::OPEN );</span>
+<span class="lineNum">     451 </span>                :            : 
+<span class="lineNum">     452 </span>                :<span class="lineNoCov">          0 :   ew.writeElemVarNames( { &quot;Chare Id&quot; } );</span>
+<span class="lineNum">     453 </span>                :<span class="lineNoCov">          0 :   ew.writeNodeVarNames( { &quot;NumSol&quot;, &quot;AnSol&quot; } );</span>
+<span class="lineNum">     454 </span>                :<span class="lineNoCov">          0 : }</span>
+<a name="455"><span class="lineNum">     455 </span>                :            : </a>
+<span class="lineNum">     456 </span>                :            : void
+<span class="lineNum">     457 </span>                :<span class="lineNoCov">          0 : Performer::writeFields( tk::real time )</span>
+<span class="lineNum">     458 </span>                :            : //******************************************************************************
+<span class="lineNum">     459 </span>                :            : // Output mesh-based fields to file
+<span class="lineNum">     460 </span>                :            : //! \param[in] time Physical time
+<span class="lineNum">     461 </span>                :            : //! \author J. Bakosi
+<span class="lineNum">     462 </span>                :            : //******************************************************************************
+<span class="lineNum">     463 </span>                :            : {
+<span class="lineNum">     464 </span>                :<span class="lineNoCov">          0 :   tk::Timer t;</span>
+<span class="lineNum">     465 </span>                :            : 
+<span class="lineNum">     466 </span>                :            :   // Increase field output iteration count
+<span class="lineNum">     467 </span>                :<span class="lineNoCov">          0 :   ++m_itf;</span>
+<span class="lineNum">     468 </span>                :            : 
+<span class="lineNum">     469 </span>                :            :   // Create ExodusII writer
+<span class="lineNum">     470 </span>                :            :   tk::ExodusIIMeshWriter
+<span class="lineNum">     471 </span>                :<span class="lineNoCov">          0 :     ew( g_inputdeck.get&lt; tag::cmd, tag::io, tag::output &gt;() + &quot;_&quot; +</span>
+<span class="lineNum">     472 </span>                :<span class="lineNoCov">          0 :           std::to_string( m_id ),</span>
+<span class="lineNum">     473 </span>                :<span class="lineNoCov">          0 :         tk::ExoWriter::OPEN );</span>
+<span class="lineNum">     474 </span>                :            : 
+<span class="lineNum">     475 </span>                :            :   // Write time stamp
+<span class="lineNum">     476 </span>                :<span class="lineNoCov">          0 :   ew.writeTimeStamp( m_itf, time );</span>
+<span class="lineNum">     477 </span>                :            : 
+<span class="lineNum">     478 </span>                :            :   // Write mesh-based fields
+<span class="lineNum">     479 </span>                :<span class="lineNoCov">          0 :   writeChareId( ew, m_itf );</span>
+<span class="lineNum">     480 </span>                :<span class="lineNoCov">          0 :   writeSolution( ew, m_itf, 1, m_u );</span>
+<span class="lineNum">     481 </span>                :            : 
+<span class="lineNum">     482 </span>                :            :   // Analytical solution for this time
+<span class="lineNum">     483 </span>                :<span class="lineNoCov">          0 :   m_un.clear();</span>
+<span class="lineNum">     484 </span>                :<span class="lineNoCov">          0 :   for (std::size_t i=0; i&lt;m_gid.size(); ++i)</span>
+<span class="lineNum">     485 </span>                :<span class="lineNoCov">          0 :     m_un[ m_gid[i] ] = ansol_shear( i, time );</span>
+<span class="lineNum">     486 </span>                :<span class="lineNoCov">          0 :   writeSolution( ew, m_itf, 2, m_un );</span>
+<span class="lineNum">     487 </span>                :            : 
+<span class="lineNum">     488 </span>                :<span class="lineNoCov">          0 :   m_timestamp.emplace_back( &quot;Write mesh-based fields to file&quot;, t.dsec() );</span>
+<span class="lineNum">     489 </span>                :<span class="lineNoCov">          0 : }</span>
+<a name="490"><span class="lineNum">     490 </span>                :            : </a>
+<span class="lineNum">     491 </span>                :            : void
+<span class="lineNum">     492 </span>                :<span class="lineNoCov">          0 : Performer::advance( uint8_t stage, tk::real dt, uint64_t it, tk::real t )</span>
+<span class="lineNum">     493 </span>                :            : //******************************************************************************
+<span class="lineNum">     494 </span>                :            : // Advance equations to next stage in multi-stage time stepping
+<span class="lineNum">     495 </span>                :            : //! \param[in] stage Stage in multi-stage time stepping
+<span class="lineNum">     496 </span>                :            : //! \param[in] dt Size of time step
+<span class="lineNum">     497 </span>                :            : //! \param[in] it Iteration count
+<span class="lineNum">     498 </span>                :            : //! \param[in] t Physical time
+<span class="lineNum">     499 </span>                :            : //! \author J. Bakosi
+<span class="lineNum">     500 </span>                :            : //******************************************************************************
+<span class="lineNum">     501 </span>                :            : {
+<span class="lineNum">     502 </span>                :            :   // Re-enable SDAG waits for rebuilding the right-hand side vector only
+<span class="lineNum">     503 </span>                :<span class="lineNoCov">          0 :   m_lsmproxy.ckLocalBranch()-&gt;enable_wait4rhs();</span>
+<span class="lineNum">     504 </span>                :            : 
+<span class="lineNum">     505 </span>                :            :   // Update local copy of time step stage
+<span class="lineNum">     506 </span>                :<span class="lineNoCov">          0 :   m_stage = stage;</span>
+<span class="lineNum">     507 </span>                :            : 
+<span class="lineNum">     508 </span>                :            :   // Advance stage in multi-stage time stepping by updating the rhs
+<span class="lineNum">     509 </span>                :<span class="lineNoCov">          0 :   if (m_stage &lt; 1) {</span>
+<span class="lineNum">     510 </span>                :            : 
+<span class="lineNum">     511 </span>                :<span class="lineNoCov">          0 :     rhs( 0.5, dt, m_u, m_uf );</span>
+<span class="lineNum">     512 </span>                :            : 
+<span class="lineNum">     513 </span>                :            :   } else {
+<span class="lineNum">     514 </span>                :            : 
+<span class="lineNum">     515 </span>                :            :     // Update local copy of physical time and iteration count at the final stage
+<span class="lineNum">     516 </span>                :<span class="lineNoCov">          0 :     m_t = t;</span>
+<span class="lineNum">     517 </span>                :<span class="lineNoCov">          0 :     m_it = it;</span>
+<span class="lineNum">     518 </span>                :            : 
+<span class="lineNum">     519 </span>                :<span class="lineNoCov">          0 :     rhs( 1.0, dt, m_uf, m_un );</span>
+<span class="lineNum">     520 </span>                :            : 
+<span class="lineNum">     521 </span>                :            :   }
+<span class="lineNum">     522 </span>                :<span class="lineNoCov">          0 : }</span>
+<a name="523"><span class="lineNum">     523 </span>                :            : </a>
+<span class="lineNum">     524 </span>                :            : void
+<span class="lineNum">     525 </span>                :<span class="lineNoCov">          0 : Performer::updateSolution( const std::map&lt; std::size_t, tk::real &gt;&amp; sol )</span>
+<span class="lineNum">     526 </span>                :            : //******************************************************************************
+<span class="lineNum">     527 </span>                :            : // Update solution vector
+<span class="lineNum">     528 </span>                :            : //! \author J. Bakosi
+<span class="lineNum">     529 </span>                :            : //******************************************************************************
+<span class="lineNum">     530 </span>                :            : {
+<span class="lineNum">     531 </span>                :            :   // Lambda to tell the Charm++ runtime system to call back to
+<span class="lineNum">     532 </span>                :            :   // Conductor::evaluateTime() once all Performer chares have received the
+<span class="lineNum">     533 </span>                :            :   // update. The reduction is done via creating a callback that invokes the
+<span class="lineNum">     534 </span>                :            :   // typed reduction client, where m_hostproxy is the proxy on which the
+<a name="535"><span class="lineNum">     535 </span>                :            :   // reduction target method, evaluateTime(), is called upon completion of the</a>
+<span class="lineNum">     536 </span>                :            :   // reduction.
+<span class="lineNum">     537 </span>                :<span class="lineNoCov">          0 :   auto evaluateTime = [this](){</span>
+<span class="lineNum">     538 </span>                :<span class="lineNoCov">          0 :     contribute(</span>
+<span class="lineNum">     539 </span>                :<span class="lineNoCov">          0 :       CkCallback( CkReductionTarget( Conductor, evaluateTime ), m_hostproxy ) );</span>
+<span class="lineNum">     540 </span>                :<span class="lineNoCov">          0 :   };</span>
+<span class="lineNum">     541 </span>                :            : 
+<span class="lineNum">     542 </span>                :            :   // Receive update of solution vector
+<span class="lineNum">     543 </span>                :<span class="lineNoCov">          0 :   for (const auto&amp; s : sol) m_ur[ s.first ] = s.second;</span>
+<span class="lineNum">     544 </span>                :            : 
+<span class="lineNum">     545 </span>                :            :   // If all contributions we own have been received, continue by updating a
+<span class="lineNum">     546 </span>                :            :   // different solution vector depending on time step stage
+<span class="lineNum">     547 </span>                :<span class="lineNoCov">          0 :   if (m_ur.size() == m_gid.size()) {</span>
+<span class="lineNum">     548 </span>                :<span class="lineNoCov">          0 :     if (m_stage &lt; 1) {</span>
+<span class="lineNum">     549 </span>                :<span class="lineNoCov">          0 :       m_uf = std::move( m_ur );</span>
+<span class="lineNum">     550 </span>                :            :     } else {
+<span class="lineNum">     551 </span>                :<span class="lineNoCov">          0 :       m_u = std::move( m_ur );</span>
+<span class="lineNum">     552 </span>                :<span class="lineNoCov">          0 :       if (!((m_it+1) % g_inputdeck.get&lt; tag::interval, tag::field &gt;()))</span>
+<span class="lineNum">     553 </span>                :<span class="lineNoCov">          0 :         writeFields( m_t + g_inputdeck.get&lt; tag::discr, tag::dt &gt;() );</span>
+<span class="lineNum">     554 </span>                :            :     }
+<span class="lineNum">     555 </span>                :<span class="lineNoCov">          0 :     evaluateTime();</span>
+<span class="lineNum">     556 </span>                :            :   }
+<span class="lineNum">     557 </span>                :<span class="lineNoCov">          0 : }</span>
+<span class="lineNum">     558 </span>                :            : 
+<span class="lineNum">     559 </span>                :            : #if defined(__clang__) || defined(__GNUC__)
+<span class="lineNum">     560 </span>                :            :   #pragma GCC diagnostic push
+<span class="lineNum">     561 </span>                :            :   #pragma GCC diagnostic ignored &quot;-Wconversion&quot;
+<span class="lineNum">     562 </span>                :            : #endif
+<span class="lineNum">     563 </span>                :            : 
+<span class="lineNum">     564 </span>                :            : #include &quot;performer.def.h&quot;
+<a name="565"><span class="lineNum">     565 </span>                :            : </a>
+<span class="lineNum">     566 </span>                :            : #if defined(__clang__) || defined(__GNUC__)
+<span class="lineNum">     567 </span>                :<span class="lineNoCov">          0 :   #pragma GCC diagnostic pop</span>
+<span class="lineNum">     568 </span>                :            : #endif
 </pre>
       </td>
     </tr>
@@ -556,7 +648,7 @@
 
   <table width="100%" border=0 cellspacing=0 cellpadding=0>
     <tr><td class="ruler"><img src="../glass.png" width=3 height=3 alt=""></td></tr>
-    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.11</a></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.12</a></td></tr>
   </table>
   <br>
 

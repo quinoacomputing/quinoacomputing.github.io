@@ -14,7 +14,7 @@ var searchData=
   ['dirichlet',['dirichlet',['../namespacekw.html#aad9538170b17e7f5409fc709f7161a96',1,'kw']]],
   ['dirichletcoeffpolicies',['DirichletCoeffPolicies',['../namespacewalker.html#affe17f2d7f33918861c5a982d2097bf4',1,'walker']]],
   ['dirichletparameters',['DirichletParameters',['../namespacewalker_1_1ctr.html#a272b138480e0f8e9b166712bf59af50c',1,'walker::ctr']]],
-  ['discretization',['discretization',['../namespaceinciter_1_1ctr.html#ae37a89341952ccd18e313ae0f55b2151',1,'inciter::ctr::discretization()'],['../namespacewalker_1_1ctr.html#a2dec00532bc48e95d36a806b3eae1495',1,'walker::ctr::discretization()']]],
+  ['discretization',['discretization',['../namespaceinciter_1_1ctr.html#a034a4453261d1fbdb4bf69ae3b9c6033',1,'inciter::ctr::discretization()'],['../namespacewalker_1_1ctr.html#a2dec00532bc48e95d36a806b3eae1495',1,'walker::ctr::discretization()']]],
   ['dmpi',['dmpi',['../namespacekw.html#ae707e9e74a4bf799c889277fd767bfbf',1,'kw']]],
   ['dsec',['Dsec',['../classtk_1_1_timer.html#ac1e4b53f806eeb46879f9d0acec4c68b',1,'tk::Timer']]],
   ['dt',['dt',['../namespacekw.html#a089bdbb2c32ac6788c54ae93e093a8b8',1,'kw']]]

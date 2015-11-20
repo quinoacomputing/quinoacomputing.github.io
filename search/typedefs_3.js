@@ -3,7 +3,7 @@ var searchData=
   ['charmutil_5fgroup',['CharmUtil_group',['../namespacetut.html#a42c61e17739df8995c7b35edabc08bce',1,'tut']]],
   ['charmutil_5fobject',['CharmUtil_object',['../namespacetut.html#a7e3702639262b1ed0bab40300cd54261',1,'tut']]],
   ['cja',['cja',['../namespacekw.html#a6bb7d3227b2b4f5c16e36fa248cdc9e7',1,'kw']]],
-  ['cja_5faccurate',['cja_accurate',['../namespacekw.html#a18fd297857fc9afaf52708c028b26690',1,'kw']]],
+  ['cja_5faccurate',['cja_accurate',['../namespacekw.html#a40bfb1296068d8fd80a80e28c32c802f',1,'kw']]],
   ['clock',['clock',['../classtk_1_1_timer.html#ae2820e459eee7cd63045a42f6bb9ec76',1,'tk::Timer']]],
   ['coeff',['coeff',['../namespacekw.html#a7c1e5cdf9dd0d15dfb36f9921b621578',1,'kw']]],
   ['constant',['constant',['../namespacekw.html#a66f3535a1ca46f7f86f58c932ec4b595',1,'kw']]],

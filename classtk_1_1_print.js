@@ -6,7 +6,6 @@ var classtk_1_1_print =
     [ "endsubsection", "classtk_1_1_print.html#ae4b58bc31ef42dbee41b47f2209ace96", null ],
     [ "headerInciter", "classtk_1_1_print.html#ab8465cdbbdc9bb4a3134810b507ea190", null ],
     [ "headerMeshConv", "classtk_1_1_print.html#ae7b6794cf6e91c762c5f45262a2ed5df", null ],
-    [ "headerRegTest", "classtk_1_1_print.html#a9877d6e8fa736b811f06936290be053a", null ],
     [ "headerRNGTest", "classtk_1_1_print.html#a6e58f3cfe28f04abec8c61d63090ad8d", null ],
     [ "headerUnitTest", "classtk_1_1_print.html#afbcefbde86063d8b83cd38a0c8848a93", null ],
     [ "headerWalker", "classtk_1_1_print.html#afa1d441908864a3ae05153cc7764fa8d", null ],

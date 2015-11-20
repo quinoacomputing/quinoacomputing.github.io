@@ -6,12 +6,12 @@ var searchData=
   ['gamma_5finfo',['gamma_info',['../structkw_1_1gamma__info.html',1,'kw']]],
   ['gammacoeffconst',['GammaCoeffConst',['../classwalker_1_1_gamma_coeff_const.html',1,'walker']]],
   ['gap',['Gap',['../structtag_1_1_gap.html',1,'tag']]],
-  ['gaussian_5fmethod',['gaussian_method',['../structtk_1_1mkl_1_1gaussian__method.html',1,'tk::mkl']]],
   ['gaussian_5fmethod',['gaussian_method',['../structtag_1_1gaussian__method.html',1,'tag']]],
+  ['gaussian_5fmethod',['gaussian_method',['../structtk_1_1mkl_1_1gaussian__method.html',1,'tk::mkl']]],
   ['gaussian_5fmethod_5finfo',['gaussian_method_info',['../structkw_1_1gaussian__method__info.html',1,'kw']]],
   ['gcd',['GCD',['../structtag_1_1_g_c_d.html',1,'tag']]],
-  ['gendir',['gendir',['../structwalker_1_1deck_1_1gendir.html',1,'walker::deck']]],
   ['gendir',['gendir',['../structtag_1_1gendir.html',1,'tag']]],
+  ['gendir',['gendir',['../structwalker_1_1deck_1_1gendir.html',1,'walker::deck']]],
   ['gendir_5finfo',['gendir_info',['../structkw_1_1gendir__info.html',1,'kw']]],
   ['generalizeddirichlet',['GeneralizedDirichlet',['../classwalker_1_1_generalized_dirichlet.html',1,'walker']]],
   ['generalizeddirichletcoeffconst',['GeneralizedDirichletCoeffConst',['../classwalker_1_1_generalized_dirichlet_coeff_const.html',1,'walker']]],
@@ -24,7 +24,6 @@ var searchData=
   ['gmshmeshwriter',['GmshMeshWriter',['../classtk_1_1_gmsh_mesh_writer.html',1,'tk']]],
   ['gmshtxt_5finfo',['gmshtxt_info',['../structkw_1_1gmshtxt__info.html',1,'kw']]],
   ['group',['group',['../structtag_1_1group.html',1,'tag']]],
-  ['group',['group',['../structregtest_1_1cmd_1_1group.html',1,'regtest::cmd']]],
   ['group',['group',['../structunittest_1_1cmd_1_1group.html',1,'unittest::cmd']]],
   ['group_5finfo',['group_info',['../structkw_1_1group__info.html',1,'kw']]]
 ];

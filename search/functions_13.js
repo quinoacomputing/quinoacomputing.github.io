@@ -1,5 +1,6 @@
 var searchData=
 [
+  ['val',['val',['../namespacetk.html#a8d7ac39952a908f3c5d6f6ae7e560b85',1,'tk']]],
   ['value',['value',['../classtk_1_1_toggle.html#aa78c2cd392216fe0fb68773390bcfa60',1,'tk::Toggle']]],
   ['variance',['variance',['../namespacetk.html#a56ab5269f94bf65a0efcb6be3347325a',1,'tk::variance()'],['../namespacetk_1_1ctr.html#a2265bca65a531ff6394a09bc48beb975',1,'tk::ctr::variance()']]],
   ['vbase',['VBase',['../structtut_1_1_factory__common_1_1_v_base.html#a21040b2c8bff30647e6090fb84a13f4d',1,'tut::Factory_common::VBase::VBase(T x)'],['../structtut_1_1_factory__common_1_1_v_base.html#a3185c8c474d27badca55a0a89da26765',1,'tut::Factory_common::VBase::VBase(std::function&lt; T()&gt; x)'],['../structtut_1_1_factory__common_1_1_v_base.html#a5f1eb7661271289976d7ae1bf0f7b9ea',1,'tut::Factory_common::VBase::VBase(const VBase &amp;x)'],['../structtut_1_1_factory__common_1_1_v_base.html#afaf23b6e12e4e30cba138bbfbcc38a02',1,'tut::Factory_common::VBase::VBase(VBase &amp;&amp;x) noexcept'],['../structtut_1_1_v_base.html#a8ce546ae9805785cfbcd5e67f4cc756d',1,'tut::VBase::VBase(std::function&lt; T()&gt; c, ConstrArgs...args)'],['../structtut_1_1_v_base.html#a219d594281d52c7614fa12eae56b2923',1,'tut::VBase::VBase(const VBase &amp;x)'],['../structtut_1_1_v_base.html#a7b2b7855713ed28a87fe6cf1fa29ef18',1,'tut::VBase::VBase(VBase &amp;&amp;) noexcept=default']]],

@@ -27,6 +27,6 @@ var searchData=
   ['gmshmeshreader',['GmshMeshReader',['../classtk_1_1_gmsh_mesh_reader.html#a456604e8eb840f033cee46dc46552f3c',1,'tk::GmshMeshReader']]],
   ['gmshmeshwriter',['GmshMeshWriter',['../classtk_1_1_gmsh_mesh_writer.html#a57f5e08fcdebc8c4f1cad2fe5d5deaa9',1,'tk::GmshMeshWriter']]],
   ['group',['group',['../classtk_1_1_toggle.html#ac94dd097af189c12cbe902183da73617',1,'tk::Toggle']]],
-  ['grpperfstat',['grpPerfstat',['../classinciter_1_1_conductor.html#ad75f2fe1438796b466f037c231be403a',1,'inciter::Conductor']]],
-  ['grptimestamp',['grpTimestamp',['../classinciter_1_1_conductor.html#a811ef9c66c05ff97746fb6c15da51707',1,'inciter::Conductor']]]
+  ['grpperfstat',['grpPerfstat',['../classinciter_1_1_conductor.html#a521bcbcdfa71b1cf66cd40f4167edf36',1,'inciter::Conductor']]],
+  ['grptimestamp',['grpTimestamp',['../classinciter_1_1_conductor.html#a6ed849e2b221bb920d16342eea76b74d',1,'inciter::Conductor']]]
 ];

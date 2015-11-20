@@ -3,7 +3,6 @@ var _init_8h =
     [ "HeaderType", "_init_8h.html#a3032aaeb67d38d01181590cd7f0acc7d", [
       [ "INCITER", "_init_8h.html#a3032aaeb67d38d01181590cd7f0acc7da0086b9196365933536bdfd5c618264bd", null ],
       [ "RNGTEST", "_init_8h.html#a3032aaeb67d38d01181590cd7f0acc7da74844ca6f13566155f9e7e0128faf928", null ],
-      [ "REGTEST", "_init_8h.html#a3032aaeb67d38d01181590cd7f0acc7dad10d9759c6b71ea71a78e3a55bafc4d5", null ],
       [ "UNITTEST", "_init_8h.html#a3032aaeb67d38d01181590cd7f0acc7da1da36e94317447fef2b931d5e54de247", null ],
       [ "MESHCONV", "_init_8h.html#a3032aaeb67d38d01181590cd7f0acc7da30bd7cdef7eab119eaa17baa6ed75c35", null ],
       [ "WALKER", "_init_8h.html#a3032aaeb67d38d01181590cd7f0acc7da351468df7e784e7c87401bf0f31e1bfa", null ]

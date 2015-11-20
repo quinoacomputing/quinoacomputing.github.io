@@ -4,7 +4,6 @@ var annotated =
     [ "inciter", "namespaceinciter.html", "namespaceinciter" ],
     [ "kw", "namespacekw.html", "namespacekw" ],
     [ "meshconv", "namespacemeshconv.html", "namespacemeshconv" ],
-    [ "regtest", "namespaceregtest.html", "namespaceregtest" ],
     [ "rngtest", "namespacerngtest.html", "namespacerngtest" ],
     [ "tag", "namespacetag.html", "namespacetag" ],
     [ "tk", "namespacetk.html", "namespacetk" ],

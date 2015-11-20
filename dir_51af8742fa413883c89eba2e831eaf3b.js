@@ -44,6 +44,7 @@ var dir_51af8742fa413883c89eba2e831eaf3b =
     [ "Reader.h", "_reader_8h.html", [
       [ "Reader", "classtk_1_1_reader.html", "classtk_1_1_reader" ]
     ] ],
+    [ "Reducer.h", "_reducer_8h.html", "_reducer_8h" ],
     [ "str_const.h", "str__const_8h.html", [
       [ "str_const", "classtk_1_1str__const.html", "classtk_1_1str__const" ]
     ] ],

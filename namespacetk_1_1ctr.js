@@ -8,6 +8,7 @@ var namespacetk_1_1ctr =
     [ "MKLGaussianMethod", "classtk_1_1ctr_1_1_m_k_l_gaussian_method.html", "classtk_1_1ctr_1_1_m_k_l_gaussian_method" ],
     [ "MKLUniformMethod", "classtk_1_1ctr_1_1_m_k_l_uniform_method.html", "classtk_1_1ctr_1_1_m_k_l_uniform_method" ],
     [ "ncomponents", "classtk_1_1ctr_1_1ncomponents.html", "classtk_1_1ctr_1_1ncomponents" ],
+    [ "PartitioningAlgorithm", "classtk_1_1ctr_1_1_partitioning_algorithm.html", "classtk_1_1ctr_1_1_partitioning_algorithm" ],
     [ "PDFCentering", "classtk_1_1ctr_1_1_p_d_f_centering.html", "classtk_1_1ctr_1_1_p_d_f_centering" ],
     [ "PDFFile", "classtk_1_1ctr_1_1_p_d_f_file.html", "classtk_1_1ctr_1_1_p_d_f_file" ],
     [ "PDFInfo", "structtk_1_1ctr_1_1_p_d_f_info.html", "structtk_1_1ctr_1_1_p_d_f_info" ],

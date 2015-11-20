@@ -7,6 +7,7 @@ var _inciter_2_input_deck_2_grammar_8h =
     [ "discretization_parameters", "structinciter_1_1deck_1_1discretization__parameters.html", null ],
     [ "scalar", "structinciter_1_1deck_1_1scalar.html", null ],
     [ "equations", "structinciter_1_1deck_1_1equations.html", null ],
+    [ "plotvar", "structinciter_1_1deck_1_1plotvar.html", null ],
     [ "inciter", "structinciter_1_1deck_1_1inciter.html", null ],
     [ "keywords", "structinciter_1_1deck_1_1keywords.html", null ],
     [ "read_file", "structinciter_1_1deck_1_1read__file.html", null ],
