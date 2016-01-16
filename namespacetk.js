@@ -26,6 +26,7 @@ var namespacetk =
     [ "HasTypedefAlias", "structtk_1_1_has_typedef_alias.html", "structtk_1_1_has_typedef_alias" ],
     [ "HasTypedefExpectType", "structtk_1_1_has_typedef_expect_type.html", "structtk_1_1_has_typedef_expect_type" ],
     [ "HasTypedefProxy", "structtk_1_1_has_typedef_proxy.html", "structtk_1_1_has_typedef_proxy" ],
+    [ "HyperMeshReader", "classtk_1_1_hyper_mesh_reader.html", "classtk_1_1_hyper_mesh_reader" ],
     [ "if_", "structtk_1_1if__.html", "structtk_1_1if__" ],
     [ "if_< false, Then, Else >", "structtk_1_1if___3_01false_00_01_then_00_01_else_01_4.html", "structtk_1_1if___3_01false_00_01_then_00_01_else_01_4" ],
     [ "LinearMap", "classtk_1_1_linear_map.html", "classtk_1_1_linear_map" ],

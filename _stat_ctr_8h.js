@@ -13,6 +13,7 @@ var _stat_ctr_8h =
     [ "central", "_stat_ctr_8h.html#a8880e25bee1cf36951562ef960855662", null ],
     [ "lookup", "_stat_ctr_8h.html#a4749bdbcd17cf3bc95cd10509895ce65", null ],
     [ "mean", "_stat_ctr_8h.html#a8bb4e2fb54817366873d9c0455b47dd5", null ],
+    [ "numPDF", "_stat_ctr_8h.html#abbf4a0edb859f31c0643dd812042558a", null ],
     [ "operator+", "_stat_ctr_8h.html#a67c57f4af72608befd368727c026428f", null ],
     [ "operator+", "_stat_ctr_8h.html#a6acd17b27dee1af7eda05cc4c83abba8", null ],
     [ "operator+=", "_stat_ctr_8h.html#aaabeaa460262ba129011934c34a545b3", null ],

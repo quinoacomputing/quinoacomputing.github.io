@@ -2,10 +2,12 @@ var _inciter_2_input_deck_2_grammar_8h =
 [
     [ "register_eq", "structinciter_1_1deck_1_1register__eq.html", "structinciter_1_1deck_1_1register__eq" ],
     [ "check_eq", "structinciter_1_1deck_1_1check__eq.html", "structinciter_1_1deck_1_1check__eq" ],
+    [ "store_option", "structinciter_1_1deck_1_1store__option.html", "structinciter_1_1deck_1_1store__option" ],
     [ "scan_eq", "structinciter_1_1deck_1_1scan__eq.html", null ],
     [ "check_errors", "structinciter_1_1deck_1_1check__errors.html", null ],
     [ "discretization_parameters", "structinciter_1_1deck_1_1discretization__parameters.html", null ],
     [ "scalar", "structinciter_1_1deck_1_1scalar.html", null ],
+    [ "partitioning", "structinciter_1_1deck_1_1partitioning.html", null ],
     [ "equations", "structinciter_1_1deck_1_1equations.html", null ],
     [ "plotvar", "structinciter_1_1deck_1_1plotvar.html", null ],
     [ "inciter", "structinciter_1_1deck_1_1inciter.html", null ],

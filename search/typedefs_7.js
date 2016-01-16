@@ -12,5 +12,6 @@ var searchData=
   ['glob',['glob',['../namespacekw.html#a6e17ff0856e98fddb773cb1758ce67e1',1,'kw']]],
   ['gmshbin',['gmshbin',['../namespacekw.html#a65ed8e0ad53549581aee14cf273b95f6',1,'kw']]],
   ['gmshtxt',['gmshtxt',['../namespacekw.html#a2cd7d0411e95499a0564b041e8788ff5',1,'kw']]],
-  ['group',['Group',['../classtk_1_1_lin_sys_merger.html#a227e7127f4075b65f312b405e2584737',1,'tk::LinSysMerger::Group()'],['../namespacekw.html#a637d4a30692a8d1329d9042a7931c366',1,'kw::group()']]]
+  ['gno_5ft',['gno_t',['../classtk_1_1zoltan_1_1_geometric_mesh_elem_adapter.html#afa9c629a02c6d3576d1287a3a43e2d9d',1,'tk::zoltan::GeometricMeshElemAdapter']]],
+  ['group',['Group',['../classinciter_1_1_partitioner.html#a86cb69c9ddd90fae7d0ad56ee16ada30',1,'inciter::Partitioner::Group()'],['../classtk_1_1_lin_sys_merger.html#a227e7127f4075b65f312b405e2584737',1,'tk::LinSysMerger::Group()'],['../namespacekw.html#a637d4a30692a8d1329d9042a7931c366',1,'kw::group()']]]
 ];

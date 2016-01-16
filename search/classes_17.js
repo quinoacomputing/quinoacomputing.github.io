@@ -1,7 +1,7 @@
 var searchData=
 [
-  ['w',['w',['../structbreeze_1_1deck_1_1w.html',1,'breeze::deck']]],
   ['w',['W',['../structtut_1_1_writer__common_1_1_w.html',1,'tut::Writer_common']]],
+  ['w',['w',['../structbreeze_1_1deck_1_1w.html',1,'breeze::deck']]],
   ['walker',['walker',['../structwalker_1_1deck_1_1walker.html',1,'walker::deck']]],
   ['walker_5finfo',['walker_info',['../structkw_1_1walker__info.html',1,'kw']]],
   ['walkerdriver',['WalkerDriver',['../classwalker_1_1_walker_driver.html',1,'walker']]],

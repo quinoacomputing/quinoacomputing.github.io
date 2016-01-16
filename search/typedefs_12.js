@@ -1,6 +1,7 @@
 var searchData=
 [
   ['scalar',['scalar',['../namespacekw.html#a3caf095aae48b4535080be57720fdbcb',1,'kw']]],
+  ['scalar_5ft',['scalar_t',['../classtk_1_1zoltan_1_1_geometric_mesh_elem_adapter.html#ae8df7562f31c48a682a249aa91ab0e41',1,'tk::zoltan::GeometricMeshElemAdapter']]],
   ['scalareqparameters',['ScalarEqParameters',['../namespaceinciter_1_1ctr.html#a95c7dc513d36f1f3491f6c027533456e',1,'inciter::ctr']]],
   ['sde_5fb',['sde_b',['../namespacekw.html#ac084f76b4f3774894982991ef9e0c647',1,'kw']]],
   ['sde_5fbprime',['sde_bprime',['../namespacekw.html#a7db42a55ae0b6ad983a540dfdfc2e85b',1,'kw']]],
@@ -19,7 +20,7 @@ var searchData=
   ['sde_5ftheta',['sde_theta',['../namespacekw.html#a3032f3c4ff70cae8b0f555542f41d5ba',1,'kw']]],
   ['seconds',['seconds',['../classtk_1_1_timer.html#a145a8a0c1287ad2eb5347c22c08860a4',1,'tk::Timer']]],
   ['seed',['seed',['../namespacekw.html#a84f4c5573ba8a2991e768ca0e6ccb8c4',1,'kw']]],
-  ['selects',['selects',['../namespaceinciter_1_1ctr.html#a4cd9abb7d64b532c5753055cec3390f6',1,'inciter::ctr::selects()'],['../namespacerngtest_1_1ctr.html#a6ea2dcabba811ebb1af9a318753d6b3b',1,'rngtest::ctr::selects()'],['../namespacewalker_1_1ctr.html#a0add6a231b1ee55947d0d62252a3df9a',1,'walker::ctr::selects()']]],
+  ['selects',['selects',['../namespaceinciter_1_1ctr.html#a2fbc2e0c3d0428219a88fb4034d80ffd',1,'inciter::ctr::selects()'],['../namespacerngtest_1_1ctr.html#a6ea2dcabba811ebb1af9a318753d6b3b',1,'rngtest::ctr::selects()'],['../namespacewalker_1_1ctr.html#a0add6a231b1ee55947d0d62252a3df9a',1,'walker::ctr::selects()']]],
   ['seq_5flong',['seq_long',['../namespacekw.html#a36008f97ed5ec75a0e2fd36f5f3c51f9',1,'kw']]],
   ['seq_5fmed',['seq_med',['../namespacekw.html#a1f3cd82ec76fa0bd4ec1752e24fa5429',1,'kw']]],
   ['seq_5fshort',['seq_short',['../namespacekw.html#a95f4f09e1ea3f2281c679ce8c96507db',1,'kw']]],

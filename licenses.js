@@ -17,7 +17,8 @@ var licenses =
       [ "14. Libstdc++ for standard C++ containers and algorithms", "licenses.html#libstdcpp_license", null ],
       [ "15. Libc++ for standard C++ containers and algorithms", "licenses.html#libcpp_license", null ],
       [ "16. OpenMPI for the message passing interface", "licenses.html#openmpi_license", null ],
-      [ "17. Intel Math Kernel Library for BLAS/LAPACK and random number generation", "licenses.html#mkl_license", null ]
+      [ "17. Intel Math Kernel Library for BLAS/LAPACK and random number generation", "licenses.html#mkl_license", null ],
+      [ "18. PugiXML for XML format reading and writing", "licenses.html#pugixml_license", null ]
     ] ],
     [ "Compilers", "licenses.html#compiler_web", [
       [ "1. Clang C++ compiler", "licenses.html#clang_web", null ],

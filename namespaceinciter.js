@@ -8,5 +8,6 @@ var namespaceinciter =
     [ "InciterDriver", "classinciter_1_1_inciter_driver.html", "classinciter_1_1_inciter_driver" ],
     [ "InciterPrint", "classinciter_1_1_inciter_print.html", "classinciter_1_1_inciter_print" ],
     [ "InputDeckParser", "classinciter_1_1_input_deck_parser.html", "classinciter_1_1_input_deck_parser" ],
+    [ "Partitioner", "classinciter_1_1_partitioner.html", "classinciter_1_1_partitioner" ],
     [ "Performer", "classinciter_1_1_performer.html", "classinciter_1_1_performer" ]
 ];

@@ -2,7 +2,7 @@ var classwalker_1_1_beta =
 [
     [ "ncomp_t", "classwalker_1_1_beta.html#a50a109fb7917bb3c28c6dd6f93661187", null ],
     [ "Beta", "classwalker_1_1_beta.html#ac0d02692b10a906c5da10b0d80797f12", null ],
-    [ "advance", "classwalker_1_1_beta.html#a09aa7a62e21a3c6643884775d2c534f1", null ],
+    [ "advance", "classwalker_1_1_beta.html#a8a6f06b7290fee5d0f798fcaba178b7d", null ],
     [ "initialize", "classwalker_1_1_beta.html#ae0d5a6ec5b7641875862d66d3fc3f67d", null ],
     [ "coeff", "classwalker_1_1_beta.html#af9a317d9fa6027208be2feabac8ba4bd", null ],
     [ "m_b", "classwalker_1_1_beta.html#a8cb111835e15052a577d9e2629856e4b", null ],

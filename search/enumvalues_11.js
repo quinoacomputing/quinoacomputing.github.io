@@ -2,7 +2,6 @@ var searchData=
 [
   ['raw',['RAW',['../namespacewalker_1_1ctr.html#a073db7656ce7d82e9ef0321698253b57a633d6abff0a3fc22404347728d195059',1,'walker::ctr']]],
   ['rcb',['RCB',['../namespacetk_1_1ctr.html#a180736a871ec765b3614343e6b853f1dac382c91f3607204804fd503efb6a5681',1,'tk::ctr']]],
-  ['rhs',['RHS',['../classtk_1_1_lin_sys_merger.html#a2fbe692f16f50ec745785a81f0c78ce5ae80302656805aeec44dc5d789d653c6b',1,'tk::LinSysMerger']]],
   ['rib',['RIB',['../namespacetk_1_1ctr.html#a180736a871ec765b3614343e6b853f1da969dfd176e67b221d6389edcaeb08efc',1,'tk::ctr']]],
   ['rngsse',['RNGSSE',['../namespacetk_1_1ctr.html#a13e328475bb9cd39458a944f1fdff7ffadb690b56d8116c11aa0363c298bb82c2',1,'tk::ctr']]],
   ['rngsse_5fgm19',['RNGSSE_GM19',['../namespacetk_1_1ctr.html#aa1b0831f9e998d8133473f63480b3ecba72a23ff4dad8bacf03d36dfbff65a0a3',1,'tk::ctr']]],

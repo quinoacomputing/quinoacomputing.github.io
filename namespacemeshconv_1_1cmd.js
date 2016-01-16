@@ -5,5 +5,6 @@ var namespacemeshconv_1_1cmd =
     [ "io", "structmeshconv_1_1cmd_1_1io.html", null ],
     [ "keywords", "structmeshconv_1_1cmd_1_1keywords.html", null ],
     [ "read_string", "structmeshconv_1_1cmd_1_1read__string.html", null ],
+    [ "reorder", "structmeshconv_1_1cmd_1_1reorder.html", null ],
     [ "verbose", "structmeshconv_1_1cmd_1_1verbose.html", null ]
 ];

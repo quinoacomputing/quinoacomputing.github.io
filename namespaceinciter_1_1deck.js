@@ -6,9 +6,11 @@ var namespaceinciter_1_1deck =
     [ "equations", "structinciter_1_1deck_1_1equations.html", null ],
     [ "inciter", "structinciter_1_1deck_1_1inciter.html", null ],
     [ "keywords", "structinciter_1_1deck_1_1keywords.html", null ],
+    [ "partitioning", "structinciter_1_1deck_1_1partitioning.html", null ],
     [ "plotvar", "structinciter_1_1deck_1_1plotvar.html", null ],
     [ "read_file", "structinciter_1_1deck_1_1read__file.html", null ],
     [ "register_eq", "structinciter_1_1deck_1_1register__eq.html", "structinciter_1_1deck_1_1register__eq" ],
     [ "scalar", "structinciter_1_1deck_1_1scalar.html", null ],
-    [ "scan_eq", "structinciter_1_1deck_1_1scan__eq.html", null ]
+    [ "scan_eq", "structinciter_1_1deck_1_1scan__eq.html", null ],
+    [ "store_option", "structinciter_1_1deck_1_1store__option.html", "structinciter_1_1deck_1_1store__option" ]
 ];

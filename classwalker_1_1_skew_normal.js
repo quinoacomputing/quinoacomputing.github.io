@@ -2,7 +2,7 @@ var classwalker_1_1_skew_normal =
 [
     [ "ncomp_t", "classwalker_1_1_skew_normal.html#abdfa487c23d7afc542cfff51851bf4c8", null ],
     [ "SkewNormal", "classwalker_1_1_skew_normal.html#a3ba7992bcebad128b5761bc425fab51c", null ],
-    [ "advance", "classwalker_1_1_skew_normal.html#a72b3b7c197444446a13de2a0ceb90620", null ],
+    [ "advance", "classwalker_1_1_skew_normal.html#a2df401fcd0468ef02167d7c36d43a78b", null ],
     [ "initialize", "classwalker_1_1_skew_normal.html#a196efb99b324369c9235cd1597d997de", null ],
     [ "coeff", "classwalker_1_1_skew_normal.html#ad090330ea2c461d3d7e9e8ddb2d6e0a1", null ],
     [ "m_c", "classwalker_1_1_skew_normal.html#a5c9caea3145c11f86b07d660918233b0", null ],

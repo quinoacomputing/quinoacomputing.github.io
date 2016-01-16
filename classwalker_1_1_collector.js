@@ -6,7 +6,7 @@ var classwalker_1_1_collector =
     [ "chareOrd", "classwalker_1_1_collector.html#a826e2ca2ff2d2f298d20fd0c87581ab4", null ],
     [ "chareOrdPDF", "classwalker_1_1_collector.html#a073b82fd1adc74fd84af941811fe08e0", null ],
     [ "checkin", "classwalker_1_1_collector.html#a3aab59be0f436648f31f8c3df3290083", null ],
-    [ "registerOrdPDFMerger", "classwalker_1_1_collector.html#a76b93ab98d2fca05d5dbe5956057c825", null ],
+    [ "registerPDFMerger", "classwalker_1_1_collector.html#a10552a8f82d83de051f0793d2baabf59", null ],
     [ "m_cenbpdf", "classwalker_1_1_collector.html#ad679f3fb81931e2b5554d591cfc54808", null ],
     [ "m_centpdf", "classwalker_1_1_collector.html#aea4b463ddaeab7b3dac402f4a3a80a49", null ],
     [ "m_central", "classwalker_1_1_collector.html#a5793ab5bfba377a8343f1afeaf119ed4", null ],

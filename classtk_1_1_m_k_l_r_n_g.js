@@ -7,6 +7,7 @@ var classtk_1_1_m_k_l_r_n_g =
     [ "MKLRNG", "classtk_1_1_m_k_l_r_n_g.html#a3c438dac4a1e508861e831a230bfbbdf", null ],
     [ "beta", "classtk_1_1_m_k_l_r_n_g.html#afb25e2fcee6c7cf939e4b2436e2be280", null ],
     [ "deleteStreams", "classtk_1_1_m_k_l_r_n_g.html#a950caed144e05ec1457ec356252d71b1", null ],
+    [ "errchk", "classtk_1_1_m_k_l_r_n_g.html#ab42d35668896a75fe69225406b972369", null ],
     [ "gaussian", "classtk_1_1_m_k_l_r_n_g.html#a260e3741c2aab5e91f43dded0a243a1f", null ],
     [ "operator=", "classtk_1_1_m_k_l_r_n_g.html#a49e6c17ebf7e1681209dbeaa6f383550", null ],
     [ "operator=", "classtk_1_1_m_k_l_r_n_g.html#a4ef33abe6e65dab1510f9d137ee39268", null ],
