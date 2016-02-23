@@ -23,11 +23,12 @@ var NAVTREE =
     [ "Git subtree with TPLs and tools", "subtree.html", null ],
     [ "Inhomogeneity strategy", "inhomogeneity.html", null ],
     [ "Input/Output for PIC-based inhomogeneity strategy", "io.html", null ],
-    [ "Particle data layout", "layout.html", [
+    [ "Data layout design", "layout.html", [
       [ "Data layout requirements and design", "layout.html#layout_req", null ],
       [ "Possibilities", "layout.html#layout_possibilities", null ],
       [ "Discussion", "layout.html#layout_discussion", null ],
       [ "Assessment of the Blaze library that offers a similar choice", "layout.html#layout_blaze", null ],
+      [ "Assessment of the Kokkos library that offers a similar choice", "layout.html#layout_kokkos", null ],
       [ "Requirements", "layout.html#layout_requirements", null ],
       [ "Zero-runtime-cost data-layout wrappers with type-based compile-time dispatch", "layout.html#layout_zerocost", null ],
       [ "Test of zero-cost", "layout.html#layout_test", null ],
@@ -59,15 +60,15 @@ var NAVTREE =
         [ "Enumerator", "namespacemembers_eval.html", null ]
       ] ]
     ] ],
-    [ "Classes", null, [
-      [ "Class List", "annotated.html", "annotated" ],
+    [ "Classes", "annotated.html", [
+      [ "Class List", "annotated.html", "annotated_dup" ],
       [ "Class Index", "classes.html", null ],
       [ "Class Hierarchy", "hierarchy.html", "hierarchy" ],
       [ "Class Members", "functions.html", [
         [ "All", "functions.html", "functions_dup" ],
         [ "Functions", "functions_func.html", "functions_func" ],
         [ "Variables", "functions_vars.html", "functions_vars" ],
-        [ "Typedefs", "functions_type.html", null ],
+        [ "Typedefs", "functions_type.html", "functions_type" ],
         [ "Enumerations", "functions_enum.html", null ],
         [ "Enumerator", "functions_eval.html", null ],
         [ "Related Functions", "functions_rela.html", null ]
@@ -87,27 +88,28 @@ var NAVTREE =
 
 var NAVTREEINDEX =
 [
-"_assessment_8_c.html",
-"_crush_8h_source.html",
-"_keywords_8h.html#a355d7e6d2cc7816606362b0d63702486",
-"_mesh_factory_8h.html#a43d2f365ad601e02c8d64479adfd4a7fa834c8a77b335ad1c7bb2b632b6857339",
-"_r_n_g_test_2_input_deck_2_parser_8_c_source.html",
-"_test_system_components_8h.html#ab43c976471c567425e9fa3608e6ca70d",
-"classbreeze_1_1ctr_1_1_mix.html",
-"classrngtest_1_1_test_u01_props.html#a5981f46b29856540c0079b07c030c438",
-"classtk_1_1_exception.html#ae2e2fcb9b6a452daf021073fd437c9da",
-"classtk_1_1_print.html#a9217169acea2ede4b37d7aefc39bea20",
-"classtk_1_1_uns_mesh.html#aa271a359fbefbf064b0df8fdfed43f6e",
-"classwalker_1_1_diff_eq_stack.html#a67b8835629119e72a4bdd9972ec63431",
-"classwalker_1_1_ornstein_uhlenbeck_coeff_const.html#a4dd5273d57b9fa962e44fb39f6ffabbb",
-"licenses.html#exodusii_license",
-"structkw_1_1betapdf__info.html#ac5086a4e4195c259063c53f303fd7a8d",
-"structkw_1_1mixmassfracbeta__info.html",
-"structkw_1_1sde___s__info.html#a6b2c9eeb9d0cba1a2861bc7600ba0526",
-"structkw_1_1virtualization__info_1_1expect.html",
-"structtk_1_1_has_function_expect_description.html#ad46becb34c03523909bf6eca0225fa79",
-"structtk_1_1tuple_1_1tagged__tuple.html#af2ed6345bd825c47f1a49da70682012c",
-"structwalker_1_1_init_delta.html#a7d39b47f12b00f7adf6bc7f94bca3bf0"
+"Boost_license.html",
+"_control_2_walker_2_types_8h.html#a3724c4925a63a5a27b8e36bea72f8df5",
+"_keywords_8h.html#a00f2d1ab433098517545475c207ea9dd",
+"_mesh_conv_2_cmd_line_2_cmd_line_8h.html",
+"_r_n_g_s_s_e_seq_len_8h.html#a1eb1d485ec88b469d4b86274cf8f1753aa35c2b02966b1563e5bf7b81b8b0cf77",
+"_test_print_8h.html#a7b5ea24d2a2bae1e06afe31e98cc0c97",
+"class_main.html#ae328a87d9a958946b6ed5e57f66c4980",
+"classinciter_1_1ctr_1_1_cmd_line.html#a8c72efee8630170b9f74a83e2289b1cd",
+"classtk_1_1_control.html#a23a09efce36dce4c523d63fc3c670e26",
+"classtk_1_1_m_k_l_r_n_g.html#a78d495d454c2a26c7726fb9ce9e40fad",
+"classtk_1_1_toggle.html#ac7968f1f6da0197c265dbae3e60cbace",
+"classwalker_1_1_beta.html#a50a109fb7917bb3c28c6dd6f93661187",
+"classwalker_1_1_mix_mass_fraction_beta.html#a8df145072b5c67a6fdc415fca6533308",
+"functions_l.html",
+"rngtest_example_crush_all.html#rngtest_example_crush_all_output",
+"structkw_1_1gmshtxt__info.html#a93c0eb097e88744ac63396db711bd8f2",
+"structkw_1_1partitioning__info.html#accd2161d49c070dda8ef77543ea0abc9",
+"structkw_1_1seed__info_1_1expect.html",
+"structtag_1_1_s.html",
+"structtk_1_1ctr_1_1_term.html#aa2fd0b20afceeb3521c284bd9048bf98",
+"structtut_1_1_has__common_1_1yes_expect_type_1_1expect.html#ae66290cabab60c32ca38b0651d8e9c01",
+"walker_example_numfracbeta.html#walker_example_numfracbeta_results"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronisation';

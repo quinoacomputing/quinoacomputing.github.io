@@ -1,8 +1,6 @@
 var searchData=
 [
-  ['scalar',['scalar',['../namespacekw.html#a3caf095aae48b4535080be57720fdbcb',1,'kw']]],
   ['scalar_5ft',['scalar_t',['../classtk_1_1zoltan_1_1_geometric_mesh_elem_adapter.html#ae8df7562f31c48a682a249aa91ab0e41',1,'tk::zoltan::GeometricMeshElemAdapter']]],
-  ['scalareqparameters',['ScalarEqParameters',['../namespaceinciter_1_1ctr.html#a95c7dc513d36f1f3491f6c027533456e',1,'inciter::ctr']]],
   ['sde_5fb',['sde_b',['../namespacekw.html#ac084f76b4f3774894982991ef9e0c647',1,'kw']]],
   ['sde_5fbprime',['sde_bprime',['../namespacekw.html#a7db42a55ae0b6ad983a540dfdfc2e85b',1,'kw']]],
   ['sde_5fc',['sde_c',['../namespacekw.html#a54fc3143ab101cf71d46d7a426b8b21a',1,'kw']]],
@@ -20,7 +18,7 @@ var searchData=
   ['sde_5ftheta',['sde_theta',['../namespacekw.html#a3032f3c4ff70cae8b0f555542f41d5ba',1,'kw']]],
   ['seconds',['seconds',['../classtk_1_1_timer.html#a145a8a0c1287ad2eb5347c22c08860a4',1,'tk::Timer']]],
   ['seed',['seed',['../namespacekw.html#a84f4c5573ba8a2991e768ca0e6ccb8c4',1,'kw']]],
-  ['selects',['selects',['../namespaceinciter_1_1ctr.html#a2fbc2e0c3d0428219a88fb4034d80ffd',1,'inciter::ctr::selects()'],['../namespacerngtest_1_1ctr.html#a6ea2dcabba811ebb1af9a318753d6b3b',1,'rngtest::ctr::selects()'],['../namespacewalker_1_1ctr.html#a0add6a231b1ee55947d0d62252a3df9a',1,'walker::ctr::selects()']]],
+  ['selects',['selects',['../namespaceinciter_1_1ctr.html#a6ed6b01cb5a076228fb9c48edbc2cf8c',1,'inciter::ctr::selects()'],['../namespacerngtest_1_1ctr.html#a6ea2dcabba811ebb1af9a318753d6b3b',1,'rngtest::ctr::selects()'],['../namespacewalker_1_1ctr.html#a0add6a231b1ee55947d0d62252a3df9a',1,'walker::ctr::selects()']]],
   ['seq_5flong',['seq_long',['../namespacekw.html#a36008f97ed5ec75a0e2fd36f5f3c51f9',1,'kw']]],
   ['seq_5fmed',['seq_med',['../namespacekw.html#a1f3cd82ec76fa0bd4ec1752e24fa5429',1,'kw']]],
   ['seq_5fshort',['seq_short',['../namespacekw.html#a95f4f09e1ea3f2281c679ce8c96507db',1,'kw']]],
@@ -29,7 +27,7 @@ var searchData=
   ['siloerrorhandler',['SiloErrorHandler',['../namespacetk.html#a40ff0a76887b93164712b9ce9192fdd2',1,'tk']]],
   ['skewnormal',['skewnormal',['../namespacekw.html#a304a1e8f5dd678ba5057cac07d756df1',1,'kw']]],
   ['skewnormalcoeffpolicies',['SkewNormalCoeffPolicies',['../namespacewalker.html#a05fd510a5493bf8e33ca138f4334e39e',1,'walker']]],
-  ['skewnormalparameters',['SkewNormalParameters',['../namespacewalker_1_1ctr.html#ac02ddf7822301ee7381b481b45cff4ec',1,'walker::ctr']]],
+  ['skewnormalparameters',['SkewNormalParameters',['../namespacewalker_1_1ctr.html#a1b5039f6a7ee8944dabfcb3c9c525ee4',1,'walker::ctr']]],
   ['slm_5fc0',['SLM_C0',['../namespacekw.html#ac31de96c947afa4efa735b100995acbb',1,'kw']]],
   ['slot_5fcyl',['slot_cyl',['../namespacekw.html#ad75b6d3727f6580520ac40132750e14b',1,'kw']]],
   ['smallcrush',['smallcrush',['../namespacekw.html#a7c7034302e8f2e78c6a50ed2b704ea88',1,'kw']]],

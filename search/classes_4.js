@@ -1,5 +1,7 @@
 var searchData=
 [
+  ['datalayout',['DataLayout',['../classtk_1_1_data_layout.html',1,'tk']]],
+  ['datalayout_5fcommon',['DataLayout_common',['../structtut_1_1_data_layout__common.html',1,'tut']]],
   ['decay_5finfo',['decay_info',['../structkw_1_1decay__info.html',1,'kw']]],
   ['depvar',['depvar',['../structtag_1_1depvar.html',1,'tag']]],
   ['depvar',['depvar',['../structwalker_1_1ctr_1_1_input_deck_1_1depvar.html',1,'walker::ctr::InputDeck']]],
@@ -11,13 +13,13 @@ var searchData=
   ['diagornsteinuhlenbeckcoeffconst',['DiagOrnsteinUhlenbeckCoeffConst',['../classwalker_1_1_diag_ornstein_uhlenbeck_coeff_const.html',1,'walker']]],
   ['diagou',['diagou',['../structtag_1_1diagou.html',1,'tag']]],
   ['diffeq',['diffeq',['../structtag_1_1diffeq.html',1,'tag']]],
-  ['diffeq',['DiffEq',['../classinciter_1_1ctr_1_1_diff_eq.html',1,'inciter::ctr']]],
   ['diffeq',['DiffEq',['../classwalker_1_1ctr_1_1_diff_eq.html',1,'walker::ctr']]],
   ['diffeq',['DiffEq',['../classwalker_1_1_diff_eq.html',1,'walker']]],
   ['diffeqstack',['DiffEqStack',['../classwalker_1_1_diff_eq_stack.html',1,'walker']]],
+  ['diffusivity',['diffusivity',['../structtag_1_1diffusivity.html',1,'tag']]],
   ['dirichlet',['dirichlet',['../structtag_1_1dirichlet.html',1,'tag']]],
-  ['dirichlet',['dirichlet',['../structwalker_1_1deck_1_1dirichlet.html',1,'walker::deck']]],
   ['dirichlet',['Dirichlet',['../classwalker_1_1_dirichlet.html',1,'walker']]],
+  ['dirichlet',['dirichlet',['../structwalker_1_1deck_1_1dirichlet.html',1,'walker::deck']]],
   ['dirichlet_5finfo',['dirichlet_info',['../structkw_1_1dirichlet__info.html',1,'kw']]],
   ['dirichletcoeffconst',['DirichletCoeffConst',['../classwalker_1_1_dirichlet_coeff_const.html',1,'walker']]],
   ['discr',['discr',['../structtag_1_1discr.html',1,'tag']]],

@@ -1,12 +1,12 @@
 var searchData=
 [
+  ['datalayout_2eh',['DataLayout.h',['../_data_layout_8h.html',1,'']]],
   ['deriveddata_2ec',['DerivedData.C',['../_derived_data_8_c.html',1,'']]],
   ['deriveddata_2eh',['DerivedData.h',['../_derived_data_8h.html',1,'']]],
   ['diagornsteinuhlenbeck_2eh',['DiagOrnsteinUhlenbeck.h',['../_diag_ornstein_uhlenbeck_8h.html',1,'']]],
   ['diagornsteinuhlenbeckcoeffpolicy_2eh',['DiagOrnsteinUhlenbeckCoeffPolicy.h',['../_diag_ornstein_uhlenbeck_coeff_policy_8h.html',1,'']]],
   ['diagou_2edox',['DiagOU.dox',['../_diag_o_u_8dox.html',1,'']]],
   ['diffeq_2edox',['diffeq.dox',['../diffeq_8dox.html',1,'']]],
-  ['diffeq_2eh',['DiffEq.h',['../_control_2_inciter_2_options_2_diff_eq_8h.html',1,'']]],
   ['diffeq_2eh',['DiffEq.h',['../_control_2_walker_2_options_2_diff_eq_8h.html',1,'']]],
   ['diffeq_2eh',['DiffEq.h',['../_diff_eq_2_diff_eq_8h.html',1,'']]],
   ['diffeqstack_2ec',['DiffEqStack.C',['../_diff_eq_stack_8_c.html',1,'']]],

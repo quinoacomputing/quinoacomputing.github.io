@@ -2,8 +2,8 @@ var classwalker_1_1_number_fraction_beta =
 [
     [ "ncomp_t", "classwalker_1_1_number_fraction_beta.html#a6847c722a827ac12d3bfca0ce47d8f7d", null ],
     [ "NumberFractionBeta", "classwalker_1_1_number_fraction_beta.html#ab8eb8f571adba5bf9dc82879b70a3e5a", null ],
-    [ "advance", "classwalker_1_1_number_fraction_beta.html#a86cbb6cc44e0c04c5665801d4f7a0720", null ],
-    [ "initialize", "classwalker_1_1_number_fraction_beta.html#a474efb30f063473d0b887b86a0b9dbd1", null ],
+    [ "advance", "classwalker_1_1_number_fraction_beta.html#aa9b0681a34afb7f69416c917b7a98565", null ],
+    [ "initialize", "classwalker_1_1_number_fraction_beta.html#ab33ce4bb93765e7a11a511ab2992396c", null ],
     [ "rho", "classwalker_1_1_number_fraction_beta.html#a96e435c6b1bf6a3cbe96ce84784b68b2", null ],
     [ "vol", "classwalker_1_1_number_fraction_beta.html#a7297a92b2c63db3b9e7e36840b2f6499", null ],
     [ "coeff", "classwalker_1_1_number_fraction_beta.html#a7329d361317b9051855fdd803dc1f27e", null ],

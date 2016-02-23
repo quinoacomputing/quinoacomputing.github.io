@@ -2,8 +2,8 @@ var classwalker_1_1_ornstein_uhlenbeck =
 [
     [ "ncomp_t", "classwalker_1_1_ornstein_uhlenbeck.html#adf60195a327333f61770e4521042903e", null ],
     [ "OrnsteinUhlenbeck", "classwalker_1_1_ornstein_uhlenbeck.html#a36a7d9a220b87f71c829ca0fb3d826dc", null ],
-    [ "advance", "classwalker_1_1_ornstein_uhlenbeck.html#a4435e61871a37f9a80d46fa5e12b7ac0", null ],
-    [ "initialize", "classwalker_1_1_ornstein_uhlenbeck.html#ac246de8e2edcfe5f2f3ccc0cf331da42", null ],
+    [ "advance", "classwalker_1_1_ornstein_uhlenbeck.html#a0b49dc817c8dfba4bf4a09839d7a8927", null ],
+    [ "initialize", "classwalker_1_1_ornstein_uhlenbeck.html#a2fa58b1c239ad4c70bd967da4bb4b928", null ],
     [ "coeff", "classwalker_1_1_ornstein_uhlenbeck.html#a7b100092e59670fa5b5b9509d10ad396", null ],
     [ "m_c", "classwalker_1_1_ornstein_uhlenbeck.html#afe0198e4ab6dea3d4becc757892efdaf", null ],
     [ "m_depvar", "classwalker_1_1_ornstein_uhlenbeck.html#a3a4a7bab39b67aa6147cc81f5b0b36da", null ],

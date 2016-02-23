@@ -11,6 +11,6 @@ var classwalker_1_1_integrator =
     [ "setup", "classwalker_1_1_integrator.html#afbe2f1dd721922195c065a217a9fb834", null ],
     [ "m_collproxy", "classwalker_1_1_integrator.html#a5213f01abfa2e87d34622c3049ed7a7d", null ],
     [ "m_hostproxy", "classwalker_1_1_integrator.html#a8635a8ec203412c0e100b7425e7b3650", null ],
-    [ "m_particles", "classwalker_1_1_integrator.html#aed314a34e091a802c6279a5bdb4f9a48", null ],
+    [ "m_particles", "classwalker_1_1_integrator.html#a29ad6fb7e9a1610353e07f47cd37b438", null ],
     [ "m_stat", "classwalker_1_1_integrator.html#a258cf0bb3220c498d9eceee6add1abad", null ]
 ];

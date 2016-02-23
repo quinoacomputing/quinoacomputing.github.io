@@ -2,12 +2,11 @@ var searchData=
 [
   ['reader_2ec',['Reader.C',['../_reader_8_c.html',1,'']]],
   ['reader_2eh',['Reader.h',['../_reader_8h.html',1,'']]],
-  ['reducer_2eh',['Reducer.h',['../_reducer_8h.html',1,'']]],
   ['reorder_2ec',['Reorder.C',['../_reorder_8_c.html',1,'']]],
   ['reorder_2eh',['Reorder.h',['../_reorder_8h.html',1,'']]],
   ['rng_2edox',['rng.dox',['../rng_8dox.html',1,'']]],
-  ['rng_2eh',['RNG.h',['../_control_2_options_2_r_n_g_8h.html',1,'']]],
   ['rng_2eh',['RNG.h',['../_r_n_g_2_r_n_g_8h.html',1,'']]],
+  ['rng_2eh',['RNG.h',['../_control_2_options_2_r_n_g_8h.html',1,'']]],
   ['rngparam_2eh',['RNGParam.h',['../_r_n_g_param_8h.html',1,'']]],
   ['rngprint_2ec',['RNGPrint.C',['../_r_n_g_print_8_c.html',1,'']]],
   ['rngprint_2eh',['RNGPrint.h',['../_r_n_g_print_8h.html',1,'']]],

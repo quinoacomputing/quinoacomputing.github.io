@@ -2,8 +2,8 @@ var classwalker_1_1_gamma =
 [
     [ "ncomp_t", "classwalker_1_1_gamma.html#a40ab25a23fecd1232362598e8ea77567", null ],
     [ "Gamma", "classwalker_1_1_gamma.html#abce1f689559ebedf63a867cb0d05828c", null ],
-    [ "advance", "classwalker_1_1_gamma.html#a32673a395780fd0a7a4dff5d059686fa", null ],
-    [ "initialize", "classwalker_1_1_gamma.html#a24dfee6b9fa1ad1c9a1cd058f7bf8c7d", null ],
+    [ "advance", "classwalker_1_1_gamma.html#aea8d9313f8aaf432ca0513d0823fdbe3", null ],
+    [ "initialize", "classwalker_1_1_gamma.html#a9b632eb1bdc8496a0ed4bdcb43184e0d", null ],
     [ "coeff", "classwalker_1_1_gamma.html#a9a1cb786daa8696d006573515ecf7145", null ],
     [ "m_b", "classwalker_1_1_gamma.html#ae9db13f6c1f16c37fa6b9663076f8f06", null ],
     [ "m_c", "classwalker_1_1_gamma.html#abf7cdfcd0baa222c9a783dc1fe6400c9", null ],

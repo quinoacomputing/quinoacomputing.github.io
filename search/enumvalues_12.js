@@ -1,6 +1,5 @@
 var searchData=
 [
-  ['scalar',['SCALAR',['../namespaceinciter_1_1ctr.html#ae4bc4f68ef5bea272172699cb45f279ea8f3d9a4b6a7b7f2c7afa61ca113d0db9',1,'inciter::ctr']]],
   ['scientific',['SCIENTIFIC',['../namespacetk_1_1ctr.html#a2dcc2f212babfbd14671a39286adfaadaba3fc8d7ed55e1aeae64e5a01ffa1454',1,'tk::ctr']]],
   ['shear_5fdiff',['SHEAR_DIFF',['../namespaceinciter_1_1ctr.html#a6233f49244094f9b305675039fe62482ae5366b4b8e289382db29b457e4df3064',1,'inciter::ctr']]],
   ['short',['SHORT',['../namespacetk_1_1ctr.html#a1eb1d485ec88b469d4b86274cf8f1753aa35c2b02966b1563e5bf7b81b8b0cf77',1,'tk::ctr']]],

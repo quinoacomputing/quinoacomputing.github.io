@@ -1,0 +1,26 @@
+var NAVTREEINDEX21 =
+{
+"walker_example_numfracbeta.html#walker_example_numfracbeta_results":[19,9,3],
+"walker_example_numfracbeta.html#walker_example_numfracbeta_run":[19,9,1],
+"walker_example_ou.html":[19,6],
+"walker_example_ou.html#walker_example_ou_control":[19,6,0],
+"walker_example_ou.html#walker_example_ou_moments":[19,6,3],
+"walker_example_ou.html#walker_example_ou_output":[19,6,2],
+"walker_example_ou.html#walker_example_ou_pdf":[19,6,4],
+"walker_example_ou.html#walker_example_ou_run":[19,6,1],
+"walker_example_skewnormal.html":[19,4],
+"walker_example_skewnormal.html#walker_example_skewnormal_control":[19,4,0],
+"walker_example_skewnormal.html#walker_example_skewnormal_output":[19,4,2],
+"walker_example_skewnormal.html#walker_example_skewnormal_results":[19,4,3],
+"walker_example_skewnormal.html#walker_example_skewnormal_run":[19,4,1],
+"why.html":[0],
+"why.html#correct":[0,1],
+"why.html#documented":[0,7],
+"why.html#exascale":[0,0],
+"why.html#friendly":[0,6],
+"why.html#fun":[0,8],
+"why.html#language":[0,4],
+"why.html#optimized":[0,2],
+"why.html#outsource":[0,3],
+"why.html#productivity":[0,5]
+};

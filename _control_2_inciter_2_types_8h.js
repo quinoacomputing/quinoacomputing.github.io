@@ -1,10 +1,11 @@
 var _control_2_inciter_2_types_8h =
 [
+    [ "AdvDiffPDEParameters", "_control_2_inciter_2_types_8h.html#aabf0e2c750efb4b28c1e87e71ba0e6b2", null ],
     [ "discretization", "_control_2_inciter_2_types_8h.html#a034a4453261d1fbdb4bf69ae3b9c6033", null ],
+    [ "EulerPDEParameters", "_control_2_inciter_2_types_8h.html#ad21fc0175c12798c10fcf8f1a95dd2ca", null ],
     [ "intervals", "_control_2_inciter_2_types_8h.html#a3b0340ef8c0e0f68648f6f2e7af96322", null ],
     [ "ios", "_control_2_inciter_2_types_8h.html#a89d188004933cb441ac29ef857db678b", null ],
     [ "Location", "_control_2_inciter_2_types_8h.html#a240d46049abdc14c8f6ec45c005e06b2", null ],
-    [ "parameters", "_control_2_inciter_2_types_8h.html#a7093518dd19b5a6ca3d2929090661331", null ],
-    [ "ScalarEqParameters", "_control_2_inciter_2_types_8h.html#a95c7dc513d36f1f3491f6c027533456e", null ],
-    [ "selects", "_control_2_inciter_2_types_8h.html#a2fbc2e0c3d0428219a88fb4034d80ffd", null ]
+    [ "parameters", "_control_2_inciter_2_types_8h.html#a6791e372aa8d8d0565d0c5b721cc10d5", null ],
+    [ "selects", "_control_2_inciter_2_types_8h.html#a6ed6b01cb5a076228fb9c48edbc2cf8c", null ]
 ];

@@ -7,7 +7,9 @@ var namespacetut =
       [ "noProxy", "structtut_1_1_charm_util__common_1_1no_proxy.html", null ],
       [ "yesProxy", "structtut_1_1_charm_util__common_1_1yes_proxy.html", "structtut_1_1_charm_util__common_1_1yes_proxy" ]
     ] ],
+    [ "ContainerUtil_common", "structtut_1_1_container_util__common.html", "structtut_1_1_container_util__common" ],
     [ "Control_common", "structtut_1_1_control__common.html", "structtut_1_1_control__common" ],
+    [ "DataLayout_common", "structtut_1_1_data_layout__common.html", null ],
     [ "DerivedData_common", "structtut_1_1_derived_data__common.html", null ],
     [ "eq1", "structtut_1_1eq1.html", null ],
     [ "eq2", "structtut_1_1eq2.html", null ],
@@ -46,9 +48,6 @@ var namespacetut =
     [ "MKLBetaMethod_common", "structtut_1_1_m_k_l_beta_method__common.html", "structtut_1_1_m_k_l_beta_method__common" ],
     [ "MKLGaussianMethod_common", "structtut_1_1_m_k_l_gaussian_method__common.html", "structtut_1_1_m_k_l_gaussian_method__common" ],
     [ "MKLUniformMethod_common", "structtut_1_1_m_k_l_uniform_method__common.html", "structtut_1_1_m_k_l_uniform_method__common" ],
-    [ "ParticleProperties_common", "structtut_1_1_particle_properties__common.html", [
-      [ "Test", "structtut_1_1_particle_properties__common_1_1_test.html", "structtut_1_1_particle_properties__common_1_1_test" ]
-    ] ],
     [ "Print_common", "structtut_1_1_print__common.html", "structtut_1_1_print__common" ],
     [ "ProcessControl_common", "structtut_1_1_process_control__common.html", null ],
     [ "PUPUtil_common", "structtut_1_1_p_u_p_util__common.html", null ],

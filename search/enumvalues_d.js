@@ -2,7 +2,7 @@ var searchData=
 [
   ['netgen',['NETGEN',['../namespacetk.html#a748833535365d6e320da5fcb7d213c30a8d2dc7a7e41c392a0da416ec0626e676',1,'tk::NETGEN()'],['../namespacetk.html#a43d2f365ad601e02c8d64479adfd4a7fa8d2dc7a7e41c392a0da416ec0626e676',1,'tk::NETGEN()']]],
   ['no_5fbattery',['NO_BATTERY',['../namespacerngtest_1_1ctr.html#a151ceec1487ba03f04e1bcf5b3d10194a012d5205bceecda00a3dab4df16d49bd',1,'rngtest::ctr']]],
-  ['no_5fdiffeq',['NO_DIFFEQ',['../namespaceinciter_1_1ctr.html#ae4bc4f68ef5bea272172699cb45f279eaa525371f16783775387889fc7c70289a',1,'inciter::ctr::NO_DIFFEQ()'],['../namespacewalker_1_1ctr.html#a4592cfa71c6e4c64a71c5691df56c79faa525371f16783775387889fc7c70289a',1,'walker::ctr::NO_DIFFEQ()']]],
+  ['no_5fdiffeq',['NO_DIFFEQ',['../namespacewalker_1_1ctr.html#a4592cfa71c6e4c64a71c5691df56c79faa525371f16783775387889fc7c70289a',1,'walker::ctr']]],
   ['no_5fenergy',['NO_ENERGY',['../namespacebreeze_1_1ctr.html#ae2e6f781962574e1a4f783489ac826a6a3fea31dd1628db98ac08bab5106d82fa',1,'breeze::ctr']]],
   ['no_5ffrequency',['NO_FREQUENCY',['../namespacebreeze_1_1ctr.html#a7d23918087617d4d55bc7e97b4a83946a8e82beef7acb51b245f4980ae0c7336e',1,'breeze::ctr']]],
   ['no_5fhydro',['NO_HYDRO',['../namespacebreeze_1_1ctr.html#ad5187be17594fa9b2288ab72a6468475a5e0671131d4f7a37e990177afd5da302',1,'breeze::ctr']]],
@@ -11,8 +11,8 @@ var searchData=
   ['no_5fmix',['NO_MIX',['../namespacebreeze_1_1ctr.html#a31a8397db3a2501db9a0cda27686debaaacfbc52462e1e6982ee6f906ae1a6793',1,'breeze::ctr']]],
   ['no_5fmixrate',['NO_MIXRATE',['../namespacebreeze_1_1ctr.html#a60dc899ec64c13c74fe35b6bafc986f1a32f38407d23b5eb3d61237c5528cffbd',1,'breeze::ctr']]],
   ['no_5fmontecarlo',['NO_MONTECARLO',['../namespacebreeze_1_1ctr.html#a93d7eabfeb900a7fd026b3229b6f5094ae92152a96cb7801a3653f5f08f6dbbaa',1,'breeze::ctr']]],
+  ['no_5fpde',['NO_PDE',['../namespaceinciter_1_1ctr.html#a4d32924310d75184ecf855cd0600f219ac3de4378b532dcad1626077909c48a0e',1,'inciter::ctr']]],
   ['no_5fposition',['NO_POSITION',['../namespacebreeze_1_1ctr.html#a69bcef65fff9ede6d57e81762d685613afc7dbc82a9918b59581658b86a318f19',1,'breeze::ctr']]],
-  ['no_5fprob',['NO_PROB',['../namespaceinciter_1_1ctr.html#a6233f49244094f9b305675039fe62482ad1cfc0aa0f7ffa1ffd20db137cb180d7',1,'inciter::ctr']]],
   ['no_5frng',['NO_RNG',['../namespacetk_1_1ctr.html#aa1b0831f9e998d8133473f63480b3ecba8e8c8b5f07aa0fd1ade83d253bb4eebc',1,'tk::ctr']]],
   ['nobeta',['NOBETA',['../namespacetk_1_1grm.html#a86dbe384e8ce31796b7eb5f6ac87e1a3a3454fc9df3dd05c535a99a45dd267495',1,'tk::grm']]],
   ['nobins',['NOBINS',['../namespacetk_1_1grm.html#a86dbe384e8ce31796b7eb5f6ac87e1a3ad591593674d66752b771b1a4599da7b3',1,'tk::grm']]],

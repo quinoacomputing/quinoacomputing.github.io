@@ -1,6 +1,6 @@
 var classtk_1_1_statistics =
 [
-    [ "Statistics", "classtk_1_1_statistics.html#a1492bf39f167955246c063d89d437f93", null ],
+    [ "Statistics", "classtk_1_1_statistics.html#a2c0df8f566384ef98bc1392953571d4b", null ],
     [ "accumulateCen", "classtk_1_1_statistics.html#ac2fe918cba77b8489089c73c75fcc5ed", null ],
     [ "accumulateCenPDF", "classtk_1_1_statistics.html#a41802ef7a0db37101af673c54d9a4f76", null ],
     [ "accumulateOrd", "classtk_1_1_statistics.html#a47e322bb109abb70bdfb05ac24027ff6", null ],
@@ -40,5 +40,5 @@ var classtk_1_1_statistics =
     [ "m_ordTerm", "classtk_1_1_statistics.html#ad7b5832087f2aa38aff30037f3686505", null ],
     [ "m_ordtpdf", "classtk_1_1_statistics.html#a86e44394ce4b7e70cd56ff8db5560002", null ],
     [ "m_ordupdf", "classtk_1_1_statistics.html#a7e41e30d8dba65cd60f8a778d73974b7", null ],
-    [ "m_particles", "classtk_1_1_statistics.html#aac6dcc364d4f119bf12f4738e409c31c", null ]
+    [ "m_particles", "classtk_1_1_statistics.html#a6b2ef1c485588a67aab41d346054ed18", null ]
 ];
