@@ -42,6 +42,8 @@ var searchData=
   ['mklbetamethod_5fobject',['MKLBetaMethod_object',['../namespacetut.html#ac397a17e233623d4da1073d7075c5a27',1,'tut']]],
   ['mklgaussianmethod_5fgroup',['MKLGaussianMethod_group',['../namespacetut.html#a01eae45fbfde913138510aeeb4da10a5',1,'tut']]],
   ['mklgaussianmethod_5fobject',['MKLGaussianMethod_object',['../namespacetut.html#a9673265630c3f23a8b3842a8d9669a72',1,'tut']]],
+  ['mklrng_5fgroup',['MKLRNG_group',['../namespacetut.html#ad59d573eb46e7ad849f831ea88d8ff63',1,'tut']]],
+  ['mklrng_5fobject',['MKLRNG_object',['../namespacetut.html#aea4c1af9d204d54d8c6faad68fc254e8',1,'tut']]],
   ['mkluniformmethod_5fgroup',['MKLUniformMethod_group',['../namespacetut.html#a4bbd1e9a9a288061f2bffbcab8640a20',1,'tut']]],
   ['mkluniformmethod_5fobject',['MKLUniformMethod_object',['../namespacetut.html#a6aec926a16ed4bcd747f1e560f2211d0',1,'tut']]],
   ['montecarlo_5fhomdecay',['montecarlo_homdecay',['../namespacekw.html#a691a337f3a00eedac58eadae73694202',1,'kw']]],

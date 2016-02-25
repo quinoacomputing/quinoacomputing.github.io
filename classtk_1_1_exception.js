@@ -4,7 +4,6 @@ var classtk_1_1_exception =
     [ "~Exception", "classtk_1_1_exception.html#a3155ddd526b441d3d5fb6b64f90b2dc5", null ],
     [ "Exception", "classtk_1_1_exception.html#a9b9da5b570ae67cfd7cf8e4a875cef93", null ],
     [ "Exception", "classtk_1_1_exception.html#ae1198174272435dede9adef793fc9f39", null ],
-    [ "echoSymbols", "classtk_1_1_exception.html#a575815a408d6f672efdbd209006cb0e3", null ],
     [ "echoTrace", "classtk_1_1_exception.html#a98bc4bc0d8ef380a2b90c5815a80f53a", null ],
     [ "func", "classtk_1_1_exception.html#a219a7caf05e53633886d7959cd324155", null ],
     [ "handleException", "classtk_1_1_exception.html#aef3989f5d076c0282329daa2a646b1c6", null ],

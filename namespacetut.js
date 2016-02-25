@@ -47,12 +47,15 @@ var namespacetut =
     [ "Migrated", "structtut_1_1_migrated.html", "structtut_1_1_migrated" ],
     [ "MKLBetaMethod_common", "structtut_1_1_m_k_l_beta_method__common.html", "structtut_1_1_m_k_l_beta_method__common" ],
     [ "MKLGaussianMethod_common", "structtut_1_1_m_k_l_gaussian_method__common.html", "structtut_1_1_m_k_l_gaussian_method__common" ],
+    [ "MKLRNG_common", "structtut_1_1_m_k_l_r_n_g__common.html", null ],
     [ "MKLUniformMethod_common", "structtut_1_1_m_k_l_uniform_method__common.html", "structtut_1_1_m_k_l_uniform_method__common" ],
     [ "Print_common", "structtut_1_1_print__common.html", "structtut_1_1_print__common" ],
     [ "ProcessControl_common", "structtut_1_1_process_control__common.html", null ],
     [ "PUPUtil_common", "structtut_1_1_p_u_p_util__common.html", null ],
     [ "Reader_common", "structtut_1_1_reader__common.html", null ],
     [ "RNG_common", "structtut_1_1_r_n_g__common.html", "structtut_1_1_r_n_g__common" ],
+    [ "RNGOptions_common", "structtut_1_1_r_n_g_options__common.html", "structtut_1_1_r_n_g_options__common" ],
+    [ "RNGSSE_common", "structtut_1_1_r_n_g_s_s_e__common.html", null ],
     [ "StrConvUtil_common", "structtut_1_1_str_conv_util__common.html", null ],
     [ "StringParser_common", "structtut_1_1_string_parser__common.html", [
       [ "parser", "structtut_1_1_string_parser__common_1_1parser.html", "structtut_1_1_string_parser__common_1_1parser" ]

@@ -199,6 +199,11 @@ var NAVTREEINDEX0 =
 "_control_2_options_2_r_n_g_8h.html#aa1b0831f9e998d8133473f63480b3ecbae4388e805256457d34b3b6637b258ed2":[22,0,1,1,3,7,3,11],
 "_control_2_options_2_r_n_g_8h.html#af176a3bacd8979ebdb32e7f4cf2c4324":[22,0,1,1,3,7,5],
 "_control_2_options_2_r_n_g_8h_source.html":[22,0,1,1,3,7],
+"_control_2_options_2_test_r_n_g_8h.html":[22,0,1,13,0,1,0,3],
+"_control_2_options_2_test_r_n_g_8h.html#a59e86017f207e3dff70a853cf80e090b":[22,0,1,13,0,1,0,3,3],
+"_control_2_options_2_test_r_n_g_8h.html#aced3e9ffeba04069a23cda395a7360a6":[22,0,1,13,0,1,0,3,1],
+"_control_2_options_2_test_r_n_g_8h.html#af3c64d71abfa77a2d9c2d74a6a7b304c":[22,0,1,13,0,1,0,3,2],
+"_control_2_options_2_test_r_n_g_8h_source.html":[22,0,1,13,0,1,0,3],
 "_control_2_r_n_g_test_2_options_2_battery_8h.html":[22,0,1,1,4,2,0],
 "_control_2_r_n_g_test_2_options_2_battery_8h.html#a151ceec1487ba03f04e1bcf5b3d10194":[22,0,1,1,4,2,0,1],
 "_control_2_r_n_g_test_2_options_2_battery_8h.html#a151ceec1487ba03f04e1bcf5b3d10194a012d5205bceecda00a3dab4df16d49bd":[22,0,1,1,4,2,0,1,0],
@@ -244,10 +249,5 @@ var NAVTREEINDEX0 =
 "_control_2_walker_2_options_2_init_policy_8h_source.html":[22,0,1,1,6,2,2],
 "_control_2_walker_2_types_8h.html":[22,0,1,1,6,4],
 "_control_2_walker_2_types_8h.html#a091b5583ea31da82a072097bd9391f1b":[22,0,1,1,6,4,9],
-"_control_2_walker_2_types_8h.html#a0add6a231b1ee55947d0d62252a3df9a":[22,0,1,1,6,4,17],
-"_control_2_walker_2_types_8h.html#a1b5039f6a7ee8944dabfcb3c9c525ee4":[22,0,1,1,6,4,18],
-"_control_2_walker_2_types_8h.html#a284f3119a4c19eac3a970b3b3a12cded":[22,0,1,1,6,4,15],
-"_control_2_walker_2_types_8h.html#a2dec00532bc48e95d36a806b3eae1495":[22,0,1,1,6,4,3],
-"_control_2_walker_2_types_8h.html#a2e82acb9fb4be90e23d639f4b4c26bd3":[22,0,1,1,6,4,12],
-"_control_2_walker_2_types_8h.html#a3318d5f74a1f5879014390868d3692fa":[22,0,1,1,6,4,2]
+"_control_2_walker_2_types_8h.html#a0add6a231b1ee55947d0d62252a3df9a":[22,0,1,1,6,4,17]
 };

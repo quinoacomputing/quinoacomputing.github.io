@@ -1,14 +1,15 @@
 var classtk_1_1_m_k_l_r_n_g =
 [
     [ "ncomp_t", "classtk_1_1_m_k_l_r_n_g.html#a39d682763f9d8d6682826179707b302d", null ],
-    [ "MKLRNG", "classtk_1_1_m_k_l_r_n_g.html#a006e1412ae801416d48c4e2baa68bff2", null ],
-    [ "~MKLRNG", "classtk_1_1_m_k_l_r_n_g.html#a4bd345f98f1470900d34fbb1f17cc02e", null ],
+    [ "MKLRNG", "classtk_1_1_m_k_l_r_n_g.html#a03d50dc6a9815a453ec4510780d11e36", null ],
+    [ "~MKLRNG", "classtk_1_1_m_k_l_r_n_g.html#adc2ef31ff234c6da4c8dcd1d5f48bf17", null ],
     [ "MKLRNG", "classtk_1_1_m_k_l_r_n_g.html#aec29938762cd8d65b36866f4a650be18", null ],
     [ "MKLRNG", "classtk_1_1_m_k_l_r_n_g.html#a3c438dac4a1e508861e831a230bfbbdf", null ],
     [ "beta", "classtk_1_1_m_k_l_r_n_g.html#afb25e2fcee6c7cf939e4b2436e2be280", null ],
     [ "deleteStreams", "classtk_1_1_m_k_l_r_n_g.html#a950caed144e05ec1457ec356252d71b1", null ],
     [ "errchk", "classtk_1_1_m_k_l_r_n_g.html#ab42d35668896a75fe69225406b972369", null ],
     [ "gaussian", "classtk_1_1_m_k_l_r_n_g.html#a260e3741c2aab5e91f43dded0a243a1f", null ],
+    [ "nthreads", "classtk_1_1_m_k_l_r_n_g.html#a182853f1f0aa848f5d21b812653843db", null ],
     [ "operator=", "classtk_1_1_m_k_l_r_n_g.html#a49e6c17ebf7e1681209dbeaa6f383550", null ],
     [ "operator=", "classtk_1_1_m_k_l_r_n_g.html#a4ef33abe6e65dab1510f9d137ee39268", null ],
     [ "uniform", "classtk_1_1_m_k_l_r_n_g.html#a7445df43a264c59cd11aeeea5cff0a4b", null ],

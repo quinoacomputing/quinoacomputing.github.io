@@ -137,7 +137,7 @@ var searchData=
   ['containerutil_5fcommon',['ContainerUtil_common',['../structtut_1_1_container_util__common.html',1,'tut']]],
   ['containerutil_5fgroup',['ContainerUtil_group',['../namespacetut.html#a08071c20b2c608c7d400e6a874d3e29d',1,'tut']]],
   ['containerutil_5fobject',['ContainerUtil_object',['../namespacetut.html#ab0c2560cdd5cadd71279b2b0db84e650',1,'tut']]],
-  ['control',['control',['../structtut_1_1_control__common.html#af76d59428969d1bca7eb726cb68f1a29',1,'tut::Control_common::control()'],['../namespacekw.html#abf2032a14d63e077c66573ac950c686f',1,'kw::control()'],['../namespacetut.html#a9d402c1a92e3045e7552b7ca59c2da72',1,'tut::Control()']]],
+  ['control',['control',['../structtut_1_1_control__common.html#af76d59428969d1bca7eb726cb68f1a29',1,'tut::Control_common::control()'],['../namespacetut.html#a9d402c1a92e3045e7552b7ca59c2da72',1,'tut::Control()'],['../namespacekw.html#abf2032a14d63e077c66573ac950c686f',1,'kw::control()']]],
   ['control',['control',['../structtag_1_1control.html',1,'tag']]],
   ['control',['control',['../structrngtest_1_1cmd_1_1control.html',1,'rngtest::cmd']]],
   ['control',['Control',['../classtk_1_1_control.html',1,'tk']]],

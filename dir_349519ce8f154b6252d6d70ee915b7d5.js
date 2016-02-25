@@ -9,7 +9,8 @@ var dir_349519ce8f154b6252d6d70ee915b7d5 =
       [ "Model", "structtk_1_1_r_n_g_1_1_model.html", "structtk_1_1_r_n_g_1_1_model" ]
     ] ],
     [ "RNGSSE.h", "_r_n_g_s_s_e_8h.html", [
-      [ "RNGSSE", "classtk_1_1_r_n_g_s_s_e.html", "classtk_1_1_r_n_g_s_s_e" ]
+      [ "RNGSSE", "classtk_1_1_r_n_g_s_s_e.html", "classtk_1_1_r_n_g_s_s_e" ],
+      [ "Adaptor", "structtk_1_1_r_n_g_s_s_e_1_1_adaptor.html", "structtk_1_1_r_n_g_s_s_e_1_1_adaptor" ]
     ] ],
     [ "RNGStack.C", "_r_n_g_stack_8_c.html", null ],
     [ "RNGStack.h", "_r_n_g_stack_8h.html", "_r_n_g_stack_8h" ]
