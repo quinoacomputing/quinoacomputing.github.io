@@ -1,5 +1,6 @@
 var NAVTREEINDEX17 =
 {
+"structkw_1_1sde__sigmasq__info.html":[21,0,2,123],
 "structkw_1_1sde__sigmasq__info.html#a061298e2bf6cc98a9e5b60aecf57befd":[21,0,2,123,1],
 "structkw_1_1sde__sigmasq__info.html#a4c122c7add1132c1429241d0f86d968b":[21,0,2,123,3],
 "structkw_1_1sde__sigmasq__info.html#aedf69b25238a2d1a44c444d97ed2df81":[21,0,2,123,2],
@@ -248,6 +249,5 @@ var NAVTREEINDEX17 =
 "structtag_1_1_birthday_spacings.html":[21,0,5,10],
 "structtag_1_1_close_pairs.html":[21,0,5,21],
 "structtag_1_1_close_pairs_bit_match.html":[21,0,5,22],
-"structtag_1_1_collision.html":[21,0,5,26],
-"structtag_1_1_collision_over.html":[21,0,5,27]
+"structtag_1_1_collision.html":[21,0,5,26]
 };

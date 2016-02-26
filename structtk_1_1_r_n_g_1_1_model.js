@@ -4,6 +4,7 @@ var structtk_1_1_r_n_g_1_1_model =
     [ "beta", "structtk_1_1_r_n_g_1_1_model.html#ada73cf3bf5b93f429b58045a0fc83e5b", null ],
     [ "copy", "structtk_1_1_r_n_g_1_1_model.html#a4392f96425f13fb5fb63ae86536ad8aa", null ],
     [ "gaussian", "structtk_1_1_r_n_g_1_1_model.html#a6b6c5041942b0849853f7a53136b2405", null ],
+    [ "nthreads", "structtk_1_1_r_n_g_1_1_model.html#ad0a2719db9d2240cac3e04031a184468", null ],
     [ "uniform", "structtk_1_1_r_n_g_1_1_model.html#a72006014976572def52077a3dc48647f", null ],
     [ "data", "structtk_1_1_r_n_g_1_1_model.html#a9f67a81ae1edf8da6377c9cbe0df1aad", null ]
 ];

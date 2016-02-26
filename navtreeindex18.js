@@ -1,5 +1,6 @@
 var NAVTREEINDEX18 =
 {
+"structtag_1_1_collision_over.html":[21,0,5,27],
 "structtag_1_1_collision_permut.html":[21,0,5,28],
 "structtag_1_1_coupon_collector.html":[21,0,5,31],
 "structtag_1_1_fourier3.html":[21,0,5,48],
@@ -206,14 +207,16 @@ var NAVTREEINDEX18 =
 "structtk_1_1_r_n_g_1_1_concept.html#a132b36e91a3910594bc9867f56e4058d":[21,0,6,41,0,0],
 "structtk_1_1_r_n_g_1_1_concept.html#a2701531d0f580b09cfbdca29bb196bc1":[21,0,6,41,0,2],
 "structtk_1_1_r_n_g_1_1_concept.html#a2e623f4e119ac35712f0a3b954f9e00f":[21,0,6,41,0,3],
-"structtk_1_1_r_n_g_1_1_concept.html#ab9e1eeec2e01b32409d74674c25204d2":[21,0,6,41,0,4],
+"structtk_1_1_r_n_g_1_1_concept.html#a52b6942d33d2b9608a4c0b3882e08826":[21,0,6,41,0,4],
+"structtk_1_1_r_n_g_1_1_concept.html#ab9e1eeec2e01b32409d74674c25204d2":[21,0,6,41,0,5],
 "structtk_1_1_r_n_g_1_1_concept.html#ae19094bc9c9bc366d0a971e9937c095f":[21,0,6,41,0,1],
 "structtk_1_1_r_n_g_1_1_model.html":[21,0,6,41,1],
 "structtk_1_1_r_n_g_1_1_model.html#a4392f96425f13fb5fb63ae86536ad8aa":[21,0,6,41,1,2],
 "structtk_1_1_r_n_g_1_1_model.html#a6b6c5041942b0849853f7a53136b2405":[21,0,6,41,1,3],
 "structtk_1_1_r_n_g_1_1_model.html#a6da5573e4519dadcf738f7867c359da5":[21,0,6,41,1,0],
-"structtk_1_1_r_n_g_1_1_model.html#a72006014976572def52077a3dc48647f":[21,0,6,41,1,4],
-"structtk_1_1_r_n_g_1_1_model.html#a9f67a81ae1edf8da6377c9cbe0df1aad":[21,0,6,41,1,5],
+"structtk_1_1_r_n_g_1_1_model.html#a72006014976572def52077a3dc48647f":[21,0,6,41,1,5],
+"structtk_1_1_r_n_g_1_1_model.html#a9f67a81ae1edf8da6377c9cbe0df1aad":[21,0,6,41,1,6],
+"structtk_1_1_r_n_g_1_1_model.html#ad0a2719db9d2240cac3e04031a184468":[21,0,6,41,1,4],
 "structtk_1_1_r_n_g_1_1_model.html#ada73cf3bf5b93f429b58045a0fc83e5b":[21,0,6,41,1,1],
 "structtk_1_1_r_n_g_s_s_e_1_1_adaptor.html":[21,0,6,43,0],
 "structtk_1_1_r_n_g_s_s_e_1_1_adaptor.html#a150554c2257a01752db5c0eb095c535d":[21,0,6,43,0,4],
@@ -246,8 +249,5 @@ var NAVTREEINDEX18 =
 "structtk_1_1_vec_strs_msg.html#ab596c90b0ece07746482b59237e17b07":[21,0,6,59,0],
 "structtk_1_1_vec_strs_msg.html#ab688e262418ad46e1f6a35b51d946f88":[21,0,6,59,3],
 "structtk_1_1_vec_strs_msg.html#abeff98f59cd1ce6525a3954aa3ab9f90":[21,0,6,59,2],
-"structtk_1_1ctr_1_1_case_insensitive_char_less.html":[21,0,6,0,0],
-"structtk_1_1ctr_1_1_case_insensitive_char_less.html#a19147dae665292be06654416b2ce7a4f":[21,0,6,0,0,0],
-"structtk_1_1ctr_1_1_help_kw.html":[21,0,6,0,1],
-"structtk_1_1ctr_1_1_help_kw.html#a286c7241bbdbf3aed53ac809987cc1c1":[21,0,6,0,1,3]
+"structtk_1_1ctr_1_1_case_insensitive_char_less.html":[21,0,6,0,0]
 };

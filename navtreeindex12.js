@@ -1,5 +1,6 @@
 var NAVTREEINDEX12 =
 {
+"classwalker_1_1_mix_mass_frac_beta_coeff_monte_carlo_hom_decay.html#a162c16630c72311bb27c7ede1dabff36":[21,0,9,29,2],
 "classwalker_1_1_mix_mass_frac_beta_coeff_monte_carlo_hom_decay.html#a3bb6664bc39d966df516890804f07a96":[21,0,9,29,0],
 "classwalker_1_1_mix_mass_frac_beta_coeff_monte_carlo_hom_decay.html#aac69aee2b41cb32047d6ced8ac735425":[21,0,9,29,3],
 "classwalker_1_1_mix_mass_frac_beta_coeff_monte_carlo_hom_decay.html#ae10327a483709c643ccc37b2d927a801":[21,0,9,29,1],
@@ -248,6 +249,5 @@ var NAVTREEINDEX12 =
 "functions_func_g.html":[21,3,1,6],
 "functions_func_h.html":[21,3,1,7],
 "functions_func_i.html":[21,3,1,8],
-"functions_func_l.html":[21,3,1,9],
-"functions_func_m.html":[21,3,1,10]
+"functions_func_l.html":[21,3,1,9]
 };

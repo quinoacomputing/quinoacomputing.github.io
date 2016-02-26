@@ -9,7 +9,7 @@ var searchData=
   ['accurate_5finfo',['accurate_info',['../structkw_1_1accurate__info.html',1,'kw']]],
   ['adaptor',['Adaptor',['../structtk_1_1_r_n_g_s_s_e_1_1_adaptor.html',1,'tk::RNGSSE']]],
   ['adaptor',['Adaptor',['../structtk_1_1_r_n_g_s_s_e_1_1_adaptor.html#a5b3fc40ac29f2995e5b8b996b6f55cde',1,'tk::RNGSSE::Adaptor']]],
-  ['add',['add',['../classinciter_1_1_partitioner.html#a3413a4e0b4bfa83eaa24e9a728849384',1,'inciter::Partitioner::add()'],['../classrngtest_1_1_test_u01_stack.html#a1c988f071071a90890f961845cb1ac5a',1,'rngtest::TestU01Stack::add()'],['../classtk_1_1_bi_p_d_f.html#a6f73d052829352c7f6c485e292ca2622',1,'tk::BiPDF::add()'],['../classtk_1_1_tri_p_d_f.html#aa07c77768b49755067d8dd4d3c8f43f9',1,'tk::TriPDF::add()'],['../classtk_1_1_uni_p_d_f.html#aca79db4acf6627a3da2da116e7082de3',1,'tk::UniPDF::add()']]],
+  ['add',['add',['../classinciter_1_1_partitioner.html#a3413a4e0b4bfa83eaa24e9a728849384',1,'inciter::Partitioner::add()'],['../classrngtest_1_1_test_u01_stack.html#a1c988f071071a90890f961845cb1ac5a',1,'rngtest::TestU01Stack::add()'],['../classtk_1_1_bi_p_d_f.html#a6f73d052829352c7f6c485e292ca2622',1,'tk::BiPDF::add()'],['../classtk_1_1_tri_p_d_f.html#aa07c77768b49755067d8dd4d3c8f43f9',1,'tk::TriPDF::add()'],['../classtk_1_1_uni_p_d_f.html#aca79db4acf6627a3da2da116e7082de3',1,'tk::UniPDF::add()'],['../structtut_1_1_r_n_g__common.html#a54aaeeead07de20c67962101c472a1e0',1,'tut::RNG_common::add()']]],
   ['add_5fdepvar',['add_depvar',['../structtk_1_1grm_1_1add__depvar.html',1,'tk::grm']]],
   ['addlhs',['addlhs',['../classtk_1_1_lin_sys_merger.html#a67ecd5b9393223a6b9fe83366fb2a3b0',1,'tk::LinSysMerger']]],
   ['addncomp',['addncomp',['../structtk_1_1ctr_1_1ncomponents_1_1addncomp.html',1,'tk::ctr::ncomponents']]],

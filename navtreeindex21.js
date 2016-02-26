@@ -1,5 +1,11 @@
 var NAVTREEINDEX21 =
 {
+"update__copyright_8sh_source.html":[22,0,0,2],
+"update__doc_8sh.html":[22,0,0,3],
+"update__doc_8sh_source.html":[22,0,0,3],
+"walker_doc.html":[2],
+"walker_example_beta.html":[19,7],
+"walker_example_beta.html#walker_example_beta_control":[19,7,0],
 "walker_example_beta.html#walker_example_beta_output":[19,7,2],
 "walker_example_beta.html#walker_example_beta_results":[19,7,3],
 "walker_example_beta.html#walker_example_beta_run":[19,7,1],
