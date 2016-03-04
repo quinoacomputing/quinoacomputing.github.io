@@ -1,5 +1,7 @@
 var NAVTREEINDEX18 =
 {
+"structtag_1_1_close_pairs_bit_match.html":[21,0,5,22],
+"structtag_1_1_collision.html":[21,0,5,26],
 "structtag_1_1_collision_over.html":[21,0,5,27],
 "structtag_1_1_collision_permut.html":[21,0,5,28],
 "structtag_1_1_coupon_collector.html":[21,0,5,31],
@@ -247,7 +249,5 @@ var NAVTREEINDEX18 =
 "structtk_1_1_vec_strs_msg.html":[21,0,6,59],
 "structtk_1_1_vec_strs_msg.html#a47cbc97fd0d0feb3f0508968dbdc32b4":[21,0,6,59,1],
 "structtk_1_1_vec_strs_msg.html#ab596c90b0ece07746482b59237e17b07":[21,0,6,59,0],
-"structtk_1_1_vec_strs_msg.html#ab688e262418ad46e1f6a35b51d946f88":[21,0,6,59,3],
-"structtk_1_1_vec_strs_msg.html#abeff98f59cd1ce6525a3954aa3ab9f90":[21,0,6,59,2],
-"structtk_1_1ctr_1_1_case_insensitive_char_less.html":[21,0,6,0,0]
+"structtk_1_1_vec_strs_msg.html#ab688e262418ad46e1f6a35b51d946f88":[21,0,6,59,3]
 };

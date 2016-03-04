@@ -1,5 +1,7 @@
 var NAVTREEINDEX17 =
 {
+"structkw_1_1sde__rho2__info_1_1expect.html#a925fedc00834adefb895ef5bbddfa561":[21,0,2,121,0,0],
+"structkw_1_1sde__rho2__info_1_1expect.html#aa8b273bd83e1102ef7cde8c8a3d48172":[21,0,2,121,0,1],
 "structkw_1_1sde__sigmasq__info.html":[21,0,2,123],
 "structkw_1_1sde__sigmasq__info.html#a061298e2bf6cc98a9e5b60aecf57befd":[21,0,2,123,1],
 "structkw_1_1sde__sigmasq__info.html#a4c122c7add1132c1429241d0f86d968b":[21,0,2,123,3],
@@ -247,7 +249,5 @@ var NAVTREEINDEX17 =
 "structtag_1_1_appearance_spacings.html":[21,0,5,1],
 "structtag_1_1_auto_corr.html":[21,0,5,3],
 "structtag_1_1_birthday_spacings.html":[21,0,5,10],
-"structtag_1_1_close_pairs.html":[21,0,5,21],
-"structtag_1_1_close_pairs_bit_match.html":[21,0,5,22],
-"structtag_1_1_collision.html":[21,0,5,26]
+"structtag_1_1_close_pairs.html":[21,0,5,21]
 };

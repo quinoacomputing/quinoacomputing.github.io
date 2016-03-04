@@ -103,13 +103,13 @@ var NAVTREEINDEX =
 "classwalker_1_1_mix_mass_frac_beta_coeff_monte_carlo_hom_decay.html#a162c16630c72311bb27c7ede1dabff36",
 "functions_func_m.html",
 "namespaceunittest_1_1ctr.html",
-"structkw_1_1gaussian__method__info.html",
-"structkw_1_1ornstein__uhlenbeck__info.html#a4c3a691a91631b5e0e8f302309ffa45d",
-"structkw_1_1sde__sigmasq__info.html",
-"structtag_1_1_collision_over.html",
-"structtk_1_1ctr_1_1_case_insensitive_char_less.html#a19147dae665292be06654416b2ce7a4f",
-"structtut_1_1_factory__common_1_1_v_base_1_1_model.html#a6a746fcdc3344c19d8b36979b5bde212",
-"update__copyright_8sh_source.html"
+"structkw_1_1gamma__info.html#a7301ce97e79f1a454869cab0d18273e3",
+"structkw_1_1numfracbeta__info.html#acb8831e3a0495a67817c4b8f860150a1",
+"structkw_1_1sde__rho2__info_1_1expect.html#a925fedc00834adefb895ef5bbddfa561",
+"structtag_1_1_close_pairs_bit_match.html",
+"structtk_1_1_vec_strs_msg.html#abeff98f59cd1ce6525a3954aa3ab9f90",
+"structtut_1_1_factory__common_1_1_v_base_1_1_model.html#a0fb5beefc54baedae8c1c210f8e581ff",
+"unittest_doc.html"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronisation';
