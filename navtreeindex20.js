@@ -1,5 +1,6 @@
 var NAVTREEINDEX20 =
 {
+"structtut_1_1_factory__common_1_1_v_base_1_1_model.html":[21,0,7,12,2,1],
 "structtut_1_1_factory__common_1_1_v_base_1_1_model.html#a0fb5beefc54baedae8c1c210f8e581ff":[21,0,7,12,2,1,1],
 "structtut_1_1_factory__common_1_1_v_base_1_1_model.html#a2ad834bd57019b9fc91da5bf5ed57a82":[21,0,7,12,2,1,2],
 "structtut_1_1_factory__common_1_1_v_base_1_1_model.html#a6a746fcdc3344c19d8b36979b5bde212":[21,0,7,12,2,1,3],
@@ -248,6 +249,5 @@ var NAVTREEINDEX20 =
 "structwalker_1_1deck_1_1store__option.html":[21,0,9,2,24],
 "structwalker_1_1deck_1_1store__option.html#af12dbb05cc8301c44558ba11a6516b66":[21,0,9,2,24,0],
 "structwalker_1_1deck_1_1walker.html":[21,0,9,2,25],
-"structwalker_1_1deck_1_1wright__fisher.html":[21,0,9,2,26],
-"subtree.html":[9]
+"structwalker_1_1deck_1_1wright__fisher.html":[21,0,9,2,26]
 };

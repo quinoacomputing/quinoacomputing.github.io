@@ -1,6 +1,6 @@
 var classwalker_1_1_mix_mass_fraction_beta =
 [
-    [ "ncomp_t", "classwalker_1_1_mix_mass_fraction_beta.html#a9e60eb6da6b514cf17cb5ed7863ca5f9", null ],
+    [ "ncomp_t", "classwalker_1_1_mix_mass_fraction_beta.html#a86977006af006c98f05f615db9570581", null ],
     [ "MixMassFractionBeta", "classwalker_1_1_mix_mass_fraction_beta.html#a984591041b8dcf7734369c7f5dd65ef6", null ],
     [ "advance", "classwalker_1_1_mix_mass_fraction_beta.html#a34df0739596b5554e3db32b1a09f422f", null ],
     [ "derived", "classwalker_1_1_mix_mass_fraction_beta.html#a2e338ba358c35bc4926acdf420bb686a", null ],

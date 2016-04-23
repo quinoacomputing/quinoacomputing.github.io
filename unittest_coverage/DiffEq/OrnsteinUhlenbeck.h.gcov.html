@@ -24,7 +24,7 @@
           </tr>
           <tr>
             <td class="headerItem">Commit:</td>
-            <td class="headerValue">refs/heads/master:refs/heads/master</td>
+            <td class="headerValue">refs/heads/master:3eeb6128c2bec03511fbf755f6be786ce5b29b90</td>
             <td></td>
             <td class="headerItem">Lines:</td>
             <td class="headerCovTableEntry">0</td>
@@ -33,7 +33,7 @@
           </tr>
           <tr>
             <td class="headerItem">Date:</td>
-            <td class="headerValue">2016-03-03 17:44:08</td>
+            <td class="headerValue">2016-04-22 07:43:42</td>
             <td></td>
             <td class="headerItem">Functions:</td>
             <td class="headerCovTableEntry">0</td>
@@ -76,7 +76,7 @@
 <span class="lineNum">       2 </span>                :            : /*!
 <span class="lineNum">       3 </span>                :            :   \file      src/DiffEq/OrnsteinUhlenbeck.h
 <span class="lineNum">       4 </span>                :            :   \author    J. Bakosi
-<span class="lineNum">       5 </span>                :            :   \date      Sat 30 Jan 2016 09:12:17 PM MST
+<span class="lineNum">       5 </span>                :            :   \date      Sun 03 Apr 2016 06:04:57 PM MDT
 <span class="lineNum">       6 </span>                :            :   \copyright 2012-2016, Jozsef Bakosi.
 <span class="lineNum">       7 </span>                :            :   \brief     System of Ornstein-Uhlenbeck SDEs
 <span class="lineNum">       8 </span>                :            :   \details   This file implements the time integration of a system of stochastic
@@ -133,114 +133,116 @@
 <span class="lineNum">      59 </span>                :            : #include &quot;InitPolicy.h&quot;
 <span class="lineNum">      60 </span>                :            : #include &quot;OrnsteinUhlenbeckCoeffPolicy.h&quot;
 <span class="lineNum">      61 </span>                :            : #include &quot;RNG.h&quot;
-<span class="lineNum">      62 </span>                :            : 
-<span class="lineNum">      63 </span>                :            : namespace walker {
+<span class="lineNum">      62 </span>                :            : #include &quot;Particles.h&quot;
+<span class="lineNum">      63 </span>                :            : #include &quot;SystemComponents.h&quot;
 <span class="lineNum">      64 </span>                :            : 
-<span class="lineNum">      65 </span>                :            : extern ctr::InputDeck g_inputdeck;
-<span class="lineNum">      66 </span>                :            : extern std::map&lt; tk::ctr::RawRNGType, tk::RNG &gt; g_rng;
-<span class="lineNum">      67 </span>                :            : 
-<span class="lineNum">      68 </span>                :            : //! \brief Ornstein-Uhlenbeck SDE used polymorphically with DiffEq
-<span class="lineNum">      69 </span>                :            : //! \details The template arguments specify policies and are used to configure
-<span class="lineNum">      70 </span>                :            : //!   the behavior of the class. The policies are:
-<span class="lineNum">      71 </span>                :            : //!   - Init - initialization policy, see DiffEq/InitPolicy.h
-<span class="lineNum">      72 </span>                :            : //!   - Coefficients - coefficients policy, see
-<a name="73"><span class="lineNum">      73 </span>                :            : //!       DiffEq/OrnsteinUhlenbeckCoeffPolicy.h</a>
-<span class="lineNum">      74 </span>                :            : template&lt; class Init, class Coefficients &gt;
-<span class="lineNum">      75 </span>                :<span class="lineNoCov">          0 : class OrnsteinUhlenbeck {</span>
-<span class="lineNum">      76 </span>                :            : 
-<span class="lineNum">      77 </span>                :            :   private:
-<span class="lineNum">      78 </span>                :            :     using ncomp_t = kw::ncomp::info::expect::type;
-<span class="lineNum">      79 </span>                :            : 
-<span class="lineNum">      80 </span>                :            :   public:
-<span class="lineNum">      81 </span>                :            :     //! \brief Constructor
-<span class="lineNum">      82 </span>                :            :     //! \param[in] c Index specifying which system of Ornstein-Uhlenbeck SDEs to
-<span class="lineNum">      83 </span>                :            :     //!   construct. There can be multiple ornstein-uhlenbeck ... end blocks in
-<span class="lineNum">      84 </span>                :            :     //!   a control file. This index specifies which Ornstein-Uhlenbeck SDE
-<span class="lineNum">      85 </span>                :            :     //!   system to instantiate. The index corresponds to the order in which the
-<a name="86"><span class="lineNum">      86 </span>                :            :     //!   ornstein-uhlenbeck ... end blocks are given the control file.</a>
-<span class="lineNum">      87 </span>                :            :     //! \author J. Bakosi
-<span class="lineNum">      88 </span>                :<span class="lineNoCov">          0 :     explicit OrnsteinUhlenbeck( ncomp_t c ) :</span>
-<span class="lineNum">      89 </span>                :            :       m_c( c ),
-<span class="lineNum">      90 </span>                :<span class="lineNoCov">          0 :       m_depvar( g_inputdeck.get&lt; tag::param, tag::ou, tag::depvar &gt;().at(c) ),</span>
-<span class="lineNum">      91 </span>                :<span class="lineNoCov">          0 :       m_ncomp( g_inputdeck.get&lt; tag::component &gt;().get&lt; tag::ou &gt;().at(c) ),</span>
-<span class="lineNum">      92 </span>                :<span class="lineNoCov">          0 :       m_offset( g_inputdeck.get&lt; tag::component &gt;().offset&lt; tag::ou &gt;(c) ),</span>
-<span class="lineNum">      93 </span>                :<span class="lineNoCov">          0 :       m_rng( g_rng.at( tk::ctr::raw(</span>
-<span class="lineNum">      94 </span>                :<span class="lineNoCov">          0 :         g_inputdeck.get&lt; tag::param, tag::ou, tag::rng &gt;().at(c) ) ) ),</span>
-<span class="lineNum">      95 </span>                :            :       coeff( m_ncomp,
-<span class="lineNum">      96 </span>                :<span class="lineNoCov">          0 :              g_inputdeck.get&lt; tag::param, tag::ou, tag::sigmasq &gt;().at(c),</span>
-<span class="lineNum">      97 </span>                :<span class="lineNoCov">          0 :              g_inputdeck.get&lt; tag::param, tag::ou, tag::theta &gt;().at(c),</span>
-<span class="lineNum">      98 </span>                :<span class="lineNoCov">          0 :              g_inputdeck.get&lt; tag::param, tag::ou, tag::mu &gt;().at(c),</span>
-<span class="lineNum">      99 </span>                :<span class="lineNoCov">          0 :              m_sigma, m_theta, m_mu )</span>
-<span class="lineNum">     100 </span>                :            :     {
-<span class="lineNum">     101 </span>                :            :       // Compute diffusion matrix using Cholesky-decomposition
-<span class="lineNum">     102 </span>                :<span class="lineNoCov">          0 :       lapack_int n = static_cast&lt; lapack_int &gt;( m_ncomp );</span>
-<span class="lineNum">     103 </span>                :            :       lapack_int info =
-<span class="lineNum">     104 </span>                :<span class="lineNoCov">          0 :         LAPACKE_dpotrf( LAPACK_ROW_MAJOR, 'U', n, m_sigma.data(), n );</span>
-<span class="lineNum">     105 </span>                :<span class="lineNoCov">          0 :       Assert( info == 0, &quot;Error in Cholesky-decomposition&quot; );</span>
-<span class="lineNum">     106 </span>                :<span class="lineNoCov">          0 :     }</span>
-<span class="lineNum">     107 </span>                :            : 
-<span class="lineNum">     108 </span>                :            :     //! Initalize SDE, prepare for time integration
-<span class="lineNum">     109 </span>                :            :     //! \param[in] stream Thread (or more precisely stream) ID 
-<a name="110"><span class="lineNum">     110 </span>                :            :     //! \param[inout] particles Array of particle properties </a>
-<span class="lineNum">     111 </span>                :            :     //! \author J. Bakosi
-<span class="lineNum">     112 </span>                :<span class="lineNoCov">          0 :     void initialize( int stream, tk::Particles&amp; particles ) {</span>
-<span class="lineNum">     113 </span>                :            :       //! Set initial conditions using initialization policy
-<span class="lineNum">     114 </span>                :<span class="lineNoCov">          0 :       Init::template</span>
-<span class="lineNum">     115 </span>                :            :         init&lt; tag::ou &gt;
-<span class="lineNum">     116 </span>                :<span class="lineNoCov">          0 :             ( g_inputdeck, m_rng, stream, particles, m_c, m_ncomp, m_offset );</span>
-<span class="lineNum">     117 </span>                :<span class="lineNoCov">          0 :     }</span>
-<span class="lineNum">     118 </span>                :            : 
-<span class="lineNum">     119 </span>                :            :     //! \brief Advance particles according to the system of Orsntein-Uhlenbeck
-<span class="lineNum">     120 </span>                :            :     //!   SDEs
-<span class="lineNum">     121 </span>                :            :     //! \param[inout] particles Array of particle properties
-<span class="lineNum">     122 </span>                :            :     //! \param[in] stream Thread (or more precisely stream) ID
-<span class="lineNum">     123 </span>                :            :     //! \param[in] dt Time step size
-<span class="lineNum">     124 </span>                :            :     //! \param[in] t Physical time
-<a name="125"><span class="lineNum">     125 </span>                :            :     //! \param[in] moments Map of statistical moments</a>
-<span class="lineNum">     126 </span>                :            :     //! \author J. Bakosi
-<span class="lineNum">     127 </span>                :<span class="lineNoCov">          0 :     void advance( tk::Particles&amp; particles,</span>
-<span class="lineNum">     128 </span>                :            :                   int stream,
-<span class="lineNum">     129 </span>                :            :                   tk::real dt,
-<span class="lineNum">     130 </span>                :            :                   tk::real t,
-<span class="lineNum">     131 </span>                :            :                   const std::map&lt; tk::ctr::Product, tk::real &gt;&amp; moments )
-<span class="lineNum">     132 </span>                :            :     {
-<span class="lineNum">     133 </span>                :<span class="lineNoCov">          0 :       const auto npar = particles.nunk();</span>
-<span class="lineNum">     134 </span>                :<span class="lineNoCov">          0 :       for (auto p=decltype(npar){0}; p&lt;npar; ++p) {</span>
-<span class="lineNum">     135 </span>                :            :         // Generate Gaussian random numbers with zero mean and unit variance
-<span class="lineNum">     136 </span>                :<span class="lineNoCov">          0 :         tk::real dW[ m_ncomp ];</span>
-<span class="lineNum">     137 </span>                :<span class="lineNoCov">          0 :         m_rng.gaussian( stream, m_ncomp, dW );</span>
-<span class="lineNum">     138 </span>                :            : 
-<span class="lineNum">     139 </span>                :            :         // Advance all m_ncomp scalars
-<span class="lineNum">     140 </span>                :<span class="lineNoCov">          0 :         for (ncomp_t i=0; i&lt;m_ncomp; ++i) {</span>
-<span class="lineNum">     141 </span>                :<span class="lineNoCov">          0 :           tk::real&amp; par = particles( p, i, m_offset );</span>
-<span class="lineNum">     142 </span>                :<span class="lineNoCov">          0 :           par += m_theta[i]*(m_mu[i] - par)*dt;</span>
-<span class="lineNum">     143 </span>                :<span class="lineNoCov">          0 :           for (ncomp_t j=0; j&lt;m_ncomp; ++j) {</span>
-<span class="lineNum">     144 </span>                :<span class="lineNoCov">          0 :             tk::real d = m_sigma[ j*m_ncomp+i ] * sqrt(dt);     // use transpose</span>
-<span class="lineNum">     145 </span>                :<span class="lineNoCov">          0 :             par += d*dW[j];</span>
-<span class="lineNum">     146 </span>                :            :           }
-<span class="lineNum">     147 </span>                :            :         }
-<span class="lineNum">     148 </span>                :            :       }
-<span class="lineNum">     149 </span>                :<span class="lineNoCov">          0 :     }</span>
-<span class="lineNum">     150 </span>                :            : 
-<span class="lineNum">     151 </span>                :            :   private:
-<span class="lineNum">     152 </span>                :            :     const ncomp_t m_c;                  //!&lt; Equation system index
-<span class="lineNum">     153 </span>                :            :     const char m_depvar;                //!&lt; Dependent variable
-<span class="lineNum">     154 </span>                :            :     const ncomp_t m_ncomp;              //!&lt; Number of components
-<span class="lineNum">     155 </span>                :            :     const ncomp_t m_offset;             //!&lt; Offset SDE operates from
-<span class="lineNum">     156 </span>                :            :     const tk::RNG&amp; m_rng;               //!&lt; Random number generator
-<span class="lineNum">     157 </span>                :            : 
-<span class="lineNum">     158 </span>                :            :     //! Coefficients
-<span class="lineNum">     159 </span>                :            :     std::vector&lt; kw::sde_sigmasq::info::expect::type &gt; m_sigma;
-<span class="lineNum">     160 </span>                :            :     std::vector&lt; kw::sde_theta::info::expect::type &gt; m_theta;
-<span class="lineNum">     161 </span>                :            :     std::vector&lt; kw::sde_mu::info::expect::type &gt; m_mu;
-<span class="lineNum">     162 </span>                :            : 
-<span class="lineNum">     163 </span>                :            :     //! Coefficients policy
-<span class="lineNum">     164 </span>                :            :     Coefficients coeff;
-<span class="lineNum">     165 </span>                :            : };
-<span class="lineNum">     166 </span>                :            : 
-<span class="lineNum">     167 </span>                :            : } // walker::
+<span class="lineNum">      65 </span>                :            : namespace walker {
+<span class="lineNum">      66 </span>                :            : 
+<span class="lineNum">      67 </span>                :            : extern ctr::InputDeck g_inputdeck;
+<span class="lineNum">      68 </span>                :            : extern std::map&lt; tk::ctr::RawRNGType, tk::RNG &gt; g_rng;
+<span class="lineNum">      69 </span>                :            : 
+<span class="lineNum">      70 </span>                :            : //! \brief Ornstein-Uhlenbeck SDE used polymorphically with DiffEq
+<span class="lineNum">      71 </span>                :            : //! \details The template arguments specify policies and are used to configure
+<span class="lineNum">      72 </span>                :            : //!   the behavior of the class. The policies are:
+<span class="lineNum">      73 </span>                :            : //!   - Init - initialization policy, see DiffEq/InitPolicy.h
+<span class="lineNum">      74 </span>                :            : //!   - Coefficients - coefficients policy, see
+<a name="75"><span class="lineNum">      75 </span>                :            : //!       DiffEq/OrnsteinUhlenbeckCoeffPolicy.h</a>
+<span class="lineNum">      76 </span>                :            : template&lt; class Init, class Coefficients &gt;
+<span class="lineNum">      77 </span>                :<span class="lineNoCov">          0 : class OrnsteinUhlenbeck {</span>
+<span class="lineNum">      78 </span>                :            : 
+<span class="lineNum">      79 </span>                :            :   private:
+<span class="lineNum">      80 </span>                :            :     using ncomp_t = tk::ctr::ncomp_type;
+<span class="lineNum">      81 </span>                :            : 
+<span class="lineNum">      82 </span>                :            :   public:
+<span class="lineNum">      83 </span>                :            :     //! \brief Constructor
+<span class="lineNum">      84 </span>                :            :     //! \param[in] c Index specifying which system of Ornstein-Uhlenbeck SDEs to
+<span class="lineNum">      85 </span>                :            :     //!   construct. There can be multiple ornstein-uhlenbeck ... end blocks in
+<span class="lineNum">      86 </span>                :            :     //!   a control file. This index specifies which Ornstein-Uhlenbeck SDE
+<span class="lineNum">      87 </span>                :            :     //!   system to instantiate. The index corresponds to the order in which the
+<a name="88"><span class="lineNum">      88 </span>                :            :     //!   ornstein-uhlenbeck ... end blocks are given the control file.</a>
+<span class="lineNum">      89 </span>                :            :     //! \author J. Bakosi
+<span class="lineNum">      90 </span>                :<span class="lineNoCov">          0 :     explicit OrnsteinUhlenbeck( ncomp_t c ) :</span>
+<span class="lineNum">      91 </span>                :            :       m_c( c ),
+<span class="lineNum">      92 </span>                :<span class="lineNoCov">          0 :       m_depvar( g_inputdeck.get&lt; tag::param, tag::ou, tag::depvar &gt;().at(c) ),</span>
+<span class="lineNum">      93 </span>                :<span class="lineNoCov">          0 :       m_ncomp( g_inputdeck.get&lt; tag::component &gt;().get&lt; tag::ou &gt;().at(c) ),</span>
+<span class="lineNum">      94 </span>                :<span class="lineNoCov">          0 :       m_offset( g_inputdeck.get&lt; tag::component &gt;().offset&lt; tag::ou &gt;(c) ),</span>
+<span class="lineNum">      95 </span>                :<span class="lineNoCov">          0 :       m_rng( g_rng.at( tk::ctr::raw(</span>
+<span class="lineNum">      96 </span>                :<span class="lineNoCov">          0 :         g_inputdeck.get&lt; tag::param, tag::ou, tag::rng &gt;().at(c) ) ) ),</span>
+<span class="lineNum">      97 </span>                :            :       coeff( m_ncomp,
+<span class="lineNum">      98 </span>                :<span class="lineNoCov">          0 :              g_inputdeck.get&lt; tag::param, tag::ou, tag::sigmasq &gt;().at(c),</span>
+<span class="lineNum">      99 </span>                :<span class="lineNoCov">          0 :              g_inputdeck.get&lt; tag::param, tag::ou, tag::theta &gt;().at(c),</span>
+<span class="lineNum">     100 </span>                :<span class="lineNoCov">          0 :              g_inputdeck.get&lt; tag::param, tag::ou, tag::mu &gt;().at(c),</span>
+<span class="lineNum">     101 </span>                :<span class="lineNoCov">          0 :              m_sigma, m_theta, m_mu )</span>
+<span class="lineNum">     102 </span>                :            :     {
+<span class="lineNum">     103 </span>                :            :       // Compute diffusion matrix using Cholesky-decomposition
+<span class="lineNum">     104 </span>                :<span class="lineNoCov">          0 :       lapack_int n = static_cast&lt; lapack_int &gt;( m_ncomp );</span>
+<span class="lineNum">     105 </span>                :            :       lapack_int info =
+<span class="lineNum">     106 </span>                :<span class="lineNoCov">          0 :         LAPACKE_dpotrf( LAPACK_ROW_MAJOR, 'U', n, m_sigma.data(), n );</span>
+<span class="lineNum">     107 </span>                :<span class="lineNoCov">          0 :       Assert( info == 0, &quot;Error in Cholesky-decomposition&quot; );</span>
+<span class="lineNum">     108 </span>                :<span class="lineNoCov">          0 :     }</span>
+<span class="lineNum">     109 </span>                :            : 
+<span class="lineNum">     110 </span>                :            :     //! Initalize SDE, prepare for time integration
+<span class="lineNum">     111 </span>                :            :     //! \param[in] stream Thread (or more precisely stream) ID 
+<a name="112"><span class="lineNum">     112 </span>                :            :     //! \param[inout] particles Array of particle properties </a>
+<span class="lineNum">     113 </span>                :            :     //! \author J. Bakosi
+<span class="lineNum">     114 </span>                :<span class="lineNoCov">          0 :     void initialize( int stream, tk::Particles&amp; particles ) {</span>
+<span class="lineNum">     115 </span>                :            :       //! Set initial conditions using initialization policy
+<span class="lineNum">     116 </span>                :<span class="lineNoCov">          0 :       Init::template</span>
+<span class="lineNum">     117 </span>                :            :         init&lt; tag::ou &gt;
+<span class="lineNum">     118 </span>                :<span class="lineNoCov">          0 :             ( g_inputdeck, m_rng, stream, particles, m_c, m_ncomp, m_offset );</span>
+<span class="lineNum">     119 </span>                :<span class="lineNoCov">          0 :     }</span>
+<span class="lineNum">     120 </span>                :            : 
+<span class="lineNum">     121 </span>                :            :     //! \brief Advance particles according to the system of Orsntein-Uhlenbeck
+<span class="lineNum">     122 </span>                :            :     //!   SDEs
+<span class="lineNum">     123 </span>                :            :     //! \param[inout] particles Array of particle properties
+<span class="lineNum">     124 </span>                :            :     //! \param[in] stream Thread (or more precisely stream) ID
+<span class="lineNum">     125 </span>                :            :     //! \param[in] dt Time step size
+<span class="lineNum">     126 </span>                :            :     //! \param[in] t Physical time
+<a name="127"><span class="lineNum">     127 </span>                :            :     //! \param[in] moments Map of statistical moments</a>
+<span class="lineNum">     128 </span>                :            :     //! \author J. Bakosi
+<span class="lineNum">     129 </span>                :<span class="lineNoCov">          0 :     void advance( tk::Particles&amp; particles,</span>
+<span class="lineNum">     130 </span>                :            :                   int stream,
+<span class="lineNum">     131 </span>                :            :                   tk::real dt,
+<span class="lineNum">     132 </span>                :            :                   tk::real t,
+<span class="lineNum">     133 </span>                :            :                   const std::map&lt; tk::ctr::Product, tk::real &gt;&amp; moments )
+<span class="lineNum">     134 </span>                :            :     {
+<span class="lineNum">     135 </span>                :<span class="lineNoCov">          0 :       const auto npar = particles.nunk();</span>
+<span class="lineNum">     136 </span>                :<span class="lineNoCov">          0 :       for (auto p=decltype(npar){0}; p&lt;npar; ++p) {</span>
+<span class="lineNum">     137 </span>                :            :         // Generate Gaussian random numbers with zero mean and unit variance
+<span class="lineNum">     138 </span>                :<span class="lineNoCov">          0 :         tk::real dW[ m_ncomp ];</span>
+<span class="lineNum">     139 </span>                :<span class="lineNoCov">          0 :         m_rng.gaussian( stream, m_ncomp, dW );</span>
+<span class="lineNum">     140 </span>                :            : 
+<span class="lineNum">     141 </span>                :            :         // Advance all m_ncomp scalars
+<span class="lineNum">     142 </span>                :<span class="lineNoCov">          0 :         for (ncomp_t i=0; i&lt;m_ncomp; ++i) {</span>
+<span class="lineNum">     143 </span>                :<span class="lineNoCov">          0 :           tk::real&amp; par = particles( p, i, m_offset );</span>
+<span class="lineNum">     144 </span>                :<span class="lineNoCov">          0 :           par += m_theta[i]*(m_mu[i] - par)*dt;</span>
+<span class="lineNum">     145 </span>                :<span class="lineNoCov">          0 :           for (ncomp_t j=0; j&lt;m_ncomp; ++j) {</span>
+<span class="lineNum">     146 </span>                :<span class="lineNoCov">          0 :             tk::real d = m_sigma[ j*m_ncomp+i ] * sqrt(dt);     // use transpose</span>
+<span class="lineNum">     147 </span>                :<span class="lineNoCov">          0 :             par += d*dW[j];</span>
+<span class="lineNum">     148 </span>                :            :           }
+<span class="lineNum">     149 </span>                :            :         }
+<span class="lineNum">     150 </span>                :            :       }
+<span class="lineNum">     151 </span>                :<span class="lineNoCov">          0 :     }</span>
+<span class="lineNum">     152 </span>                :            : 
+<span class="lineNum">     153 </span>                :            :   private:
+<span class="lineNum">     154 </span>                :            :     const ncomp_t m_c;                  //!&lt; Equation system index
+<span class="lineNum">     155 </span>                :            :     const char m_depvar;                //!&lt; Dependent variable
+<span class="lineNum">     156 </span>                :            :     const ncomp_t m_ncomp;              //!&lt; Number of components
+<span class="lineNum">     157 </span>                :            :     const ncomp_t m_offset;             //!&lt; Offset SDE operates from
+<span class="lineNum">     158 </span>                :            :     const tk::RNG&amp; m_rng;               //!&lt; Random number generator
+<span class="lineNum">     159 </span>                :            : 
+<span class="lineNum">     160 </span>                :            :     //! Coefficients
+<span class="lineNum">     161 </span>                :            :     std::vector&lt; kw::sde_sigmasq::info::expect::type &gt; m_sigma;
+<span class="lineNum">     162 </span>                :            :     std::vector&lt; kw::sde_theta::info::expect::type &gt; m_theta;
+<span class="lineNum">     163 </span>                :            :     std::vector&lt; kw::sde_mu::info::expect::type &gt; m_mu;
+<span class="lineNum">     164 </span>                :            : 
+<span class="lineNum">     165 </span>                :            :     //! Coefficients policy
+<span class="lineNum">     166 </span>                :            :     Coefficients coeff;
+<span class="lineNum">     167 </span>                :            : };
 <span class="lineNum">     168 </span>                :            : 
-<span class="lineNum">     169 </span>                :            : #endif // OrnsteinUhlenbeck_h
+<span class="lineNum">     169 </span>                :            : } // walker::
+<span class="lineNum">     170 </span>                :            : 
+<span class="lineNum">     171 </span>                :            : #endif // OrnsteinUhlenbeck_h
 </pre>
       </td>
     </tr>

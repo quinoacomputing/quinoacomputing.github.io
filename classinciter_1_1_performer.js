@@ -31,6 +31,7 @@ var classinciter_1_1_performer =
     [ "m_lid", "classinciter_1_1_performer.html#a4b52505b108e7c5810d794c84b14276d", null ],
     [ "m_linsysmerger", "classinciter_1_1_performer.html#a737ebcd2abef91043f943fe291bc003e", null ],
     [ "m_nsol", "classinciter_1_1_performer.html#a454f471e3a0ffc8de144a20571e451cc", null ],
+    [ "m_outFilename", "classinciter_1_1_performer.html#acbcf3a9c8e4dc39abe1d81788751a9de", null ],
     [ "m_psup", "classinciter_1_1_performer.html#aefb9c84ad45daf1fa828a59f72884815", null ],
     [ "m_stage", "classinciter_1_1_performer.html#a9c51fe1254b5ee5f2d2471f8282b53eb", null ],
     [ "m_t", "classinciter_1_1_performer.html#a61851859fd82cabc7eb8c6d89f7590e5", null ],

@@ -7,7 +7,7 @@ var searchData=
   ['w',['W',['../structtut_1_1_writer__common_1_1_w.html#a927354e43245650ba07f2c45fe73fa2e',1,'tut::Writer_common::W']]],
   ['w',['w',['../structbreeze_1_1deck_1_1w.html',1,'breeze::deck']]],
   ['waitfor',['waitfor',['../namespacetk.html#a5d61711de49d010da4785f7cb6ad2d9b',1,'tk']]],
-  ['walker',['walker',['../namespacewalker.html',1,'walker'],['../namespacekw.html#a68c0b773394ff6446390516b5606527a',1,'kw::walker()'],['../namespacetk.html#a3032aaeb67d38d01181590cd7f0acc7da351468df7e784e7c87401bf0f31e1bfa',1,'tk::WALKER()']]],
+  ['walker',['walker',['../namespacewalker.html',1,'walker'],['../namespacetk.html#a3032aaeb67d38d01181590cd7f0acc7da351468df7e784e7c87401bf0f31e1bfa',1,'tk::WALKER()'],['../namespacekw.html#a68c0b773394ff6446390516b5606527a',1,'kw::walker()']]],
   ['walker',['walker',['../structwalker_1_1deck_1_1walker.html',1,'walker::deck']]],
   ['walker_2ec',['Walker.C',['../_walker_8_c.html',1,'']]],
   ['walker_2edox',['walker.dox',['../walker_8dox.html',1,'']]],

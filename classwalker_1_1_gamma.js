@@ -1,6 +1,6 @@
 var classwalker_1_1_gamma =
 [
-    [ "ncomp_t", "classwalker_1_1_gamma.html#a40ab25a23fecd1232362598e8ea77567", null ],
+    [ "ncomp_t", "classwalker_1_1_gamma.html#a78de30e8c3dacd42291e5516ebbd35eb", null ],
     [ "Gamma", "classwalker_1_1_gamma.html#abce1f689559ebedf63a867cb0d05828c", null ],
     [ "advance", "classwalker_1_1_gamma.html#aea8d9313f8aaf432ca0513d0823fdbe3", null ],
     [ "initialize", "classwalker_1_1_gamma.html#a9b632eb1bdc8496a0ed4bdcb43184e0d", null ],

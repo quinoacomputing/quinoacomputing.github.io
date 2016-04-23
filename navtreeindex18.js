@@ -1,5 +1,6 @@
 var NAVTREEINDEX18 =
 {
+"structtag_1_1_close_pairs.html":[21,0,5,21],
 "structtag_1_1_close_pairs_bit_match.html":[21,0,5,22],
 "structtag_1_1_collision.html":[21,0,5,26],
 "structtag_1_1_collision_over.html":[21,0,5,27],
@@ -248,6 +249,5 @@ var NAVTREEINDEX18 =
 "structtk_1_1_tri_p_d_f_1_1key__hash.html#aee0eef8e2d6247793bb4c12166260e03":[21,0,6,54,0,0],
 "structtk_1_1_vec_strs_msg.html":[21,0,6,59],
 "structtk_1_1_vec_strs_msg.html#a47cbc97fd0d0feb3f0508968dbdc32b4":[21,0,6,59,1],
-"structtk_1_1_vec_strs_msg.html#ab596c90b0ece07746482b59237e17b07":[21,0,6,59,0],
-"structtk_1_1_vec_strs_msg.html#ab688e262418ad46e1f6a35b51d946f88":[21,0,6,59,3]
+"structtk_1_1_vec_strs_msg.html#ab596c90b0ece07746482b59237e17b07":[21,0,6,59,0]
 };

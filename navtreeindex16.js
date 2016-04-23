@@ -1,5 +1,6 @@
 var NAVTREEINDEX16 =
 {
+"structkw_1_1numfracbeta__info.html#aa49cf73d4342fd53df6d490ff09d875a":[21,0,2,79,1],
 "structkw_1_1numfracbeta__info.html#acb8831e3a0495a67817c4b8f860150a1":[21,0,2,79,0],
 "structkw_1_1ornstein__uhlenbeck__info.html":[21,0,2,80],
 "structkw_1_1ornstein__uhlenbeck__info.html#a4c3a691a91631b5e0e8f302309ffa45d":[21,0,2,80,2],
@@ -248,6 +249,5 @@ var NAVTREEINDEX16 =
 "structkw_1_1sde__rho2__info.html":[21,0,2,121],
 "structkw_1_1sde__rho2__info.html#a5e2211c921f034d32eac5e2fc06e6289":[21,0,2,121,2],
 "structkw_1_1sde__rho2__info.html#a65e59496204cf3cfbf8ffb741bffa35e":[21,0,2,121,1],
-"structkw_1_1sde__rho2__info.html#ae58f77ce9ba485cc1682177702acd294":[21,0,2,121,3],
-"structkw_1_1sde__rho2__info_1_1expect.html":[21,0,2,121,0]
+"structkw_1_1sde__rho2__info.html#ae58f77ce9ba485cc1682177702acd294":[21,0,2,121,3]
 };

@@ -5,6 +5,6 @@ var classtk_1_1hypre_1_1_hypre_matrix =
     [ "create", "classtk_1_1hypre_1_1_hypre_matrix.html#a51a6fa96ea67c8cd696b97ed9a2a06a7", null ],
     [ "get", "classtk_1_1hypre_1_1_hypre_matrix.html#a113846b50574ee955ac4aa5338d5b67b", null ],
     [ "print", "classtk_1_1hypre_1_1_hypre_matrix.html#a6821e2f9b70931b858876eb1c2271212", null ],
-    [ "set", "classtk_1_1hypre_1_1_hypre_matrix.html#a3e0a1ad09edace335a847bb06a782ec4", null ],
+    [ "set", "classtk_1_1hypre_1_1_hypre_matrix.html#aab0b19556bceff4ed233cf80961ff613", null ],
     [ "m_A", "classtk_1_1hypre_1_1_hypre_matrix.html#ac414b815bc7c84c32f56b0b4c2ca6dfb", null ]
 ];

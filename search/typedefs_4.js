@@ -11,7 +11,7 @@ var searchData=
   ['diag_5fou',['diag_ou',['../namespacekw.html#a355d7e6d2cc7816606362b0d63702486',1,'kw']]],
   ['diagornsteinuhlenbeckcoeffpolicies',['DiagOrnsteinUhlenbeckCoeffPolicies',['../namespacewalker.html#a4bd971eb799077656f7116db3f0932a4',1,'walker']]],
   ['diagornsteinuhlenbeckparameters',['DiagOrnsteinUhlenbeckParameters',['../namespacewalker_1_1ctr.html#afb5fcbb642cca00724370839e7a0f6d4',1,'walker::ctr']]],
-  ['diffeqfactory',['DiffEqFactory',['../namespacewalker.html#a7ed26aa1d9dffdf0f09aa0a8b20bc90e',1,'walker']]],
+  ['diffeqfactory',['DiffEqFactory',['../namespacewalker.html#a5499a752c142cddd741277d77e101bf5',1,'walker']]],
   ['diffeqkey',['DiffEqKey',['../namespacewalker_1_1ctr.html#ab452f8fe7a986b01b99b58d2c16554d0',1,'walker::ctr']]],
   ['dirichlet',['dirichlet',['../namespacekw.html#aad9538170b17e7f5409fc709f7161a96',1,'kw']]],
   ['dirichletcoeffpolicies',['DirichletCoeffPolicies',['../namespacewalker.html#affe17f2d7f33918861c5a982d2097bf4',1,'walker']]],

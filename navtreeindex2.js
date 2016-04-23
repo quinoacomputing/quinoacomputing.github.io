@@ -1,6 +1,5 @@
 var NAVTREEINDEX2 =
 {
-"_keyword_8h.html":[22,0,1,1,12],
 "_keyword_8h_source.html":[22,0,1,1,12],
 "_keywords_8h.html":[22,0,1,1,13],
 "_keywords_8h.html#a00501cf8702e6a823d61baa09753fd43":[22,0,1,1,13,359],
@@ -249,5 +248,6 @@ var NAVTREEINDEX2 =
 "_mass_8h.html#aca5973388992945abf4d99db47c27952":[22,0,1,1,0,1,3,1],
 "_mass_8h.html#aca5973388992945abf4d99db47c27952a36b84f8e3fba5bf993e3ba352d62d146":[22,0,1,1,0,1,3,1,1],
 "_mass_8h.html#aca5973388992945abf4d99db47c27952ac619bf8007c4ce47ab206d028301d25a":[22,0,1,1,0,1,3,1,0],
-"_mass_8h_source.html":[22,0,1,1,0,1,3]
+"_mass_8h_source.html":[22,0,1,1,0,1,3],
+"_mass_fraction_beta_8h.html":[22,0,1,2,14]
 };
