@@ -1,3 +1,121 @@
+var NAVTREE =
+[
+  [ "Quinoa", "index.html", [
+    [ "Goals", "why.html", [
+      [ "Designed for the exascale era", "why.html#exascale", null ],
+      [ "Verified and proven to be correct", "why.html#correct", null ],
+      [ "Optimized for performance, power, and reliability", "why.html#optimized", null ],
+      [ "Advanced computer science outsourced to experts", "why.html#outsource", null ],
+      [ "Using a language that can cope with complexity", "why.html#language", null ],
+      [ "Highly-valued programmer productivity", "why.html#productivity", null ],
+      [ "User and developer friendly", "why.html#friendly", null ],
+      [ "Well documented", "why.html#documented", null ],
+      [ "Fun to work on", "why.html#fun", null ]
+    ] ],
+    [ "Inciter: Solve a PDE on unstructured meshes", "inciter_doc.html", null ],
+    [ "Walker: Random walker for stochastic differential equations", "walker_doc.html", null ],
+    [ "RNGTest: Random number generator test suite", "rngtest_doc.html", null ],
+    [ "UnitTest: Unit test suite", "unittest_doc.html", null ],
+    [ "MeshConv: Mesh file converter", "meshconv_doc.html", null ],
+    [ "Algorithm design", "algorithm.html", null ],
+    [ "Concurrency", "concurrency.html", null ],
+    [ "Differential equations", "diffeq.html", null ],
+    [ "Git subtree with TPLs and tools", "subtree.html", null ],
+    [ "Inhomogeneity strategy", "inhomogeneity.html", null ],
+    [ "Input/Output for PIC-based inhomogeneity strategy", "io.html", null ],
+    [ "Data layout design", "layout.html", [
+      [ "Data layout requirements and design", "layout.html#layout_req", null ],
+      [ "Possibilities", "layout.html#layout_possibilities", null ],
+      [ "Discussion", "layout.html#layout_discussion", null ],
+      [ "Assessment of the Blaze library that offers a similar choice", "layout.html#layout_blaze", null ],
+      [ "Assessment of the Kokkos library that offers a similar choice", "layout.html#layout_kokkos", null ],
+      [ "Requirements", "layout.html#layout_requirements", null ],
+      [ "Zero-runtime-cost data-layout wrappers with type-based compile-time dispatch", "layout.html#layout_zerocost", null ],
+      [ "Test of zero-cost", "layout.html#layout_test", null ],
+      [ "Debug assembly", "layout.html#layout_debugasm", null ],
+      [ "Excerpt from the Intel® 64 and IA-32 Architectures Software Developer Manual", "layout.html#layout_excerpt1", null ],
+      [ "Optimized assembly", "layout.html#layout_optasm", null ],
+      [ "Excerpt from the Intel® 64 and IA-32 Architectures Software Developer Manual", "layout.html#layout_excerpt2", null ],
+      [ "Control file used for benchmark", "layout.html#layout_input", null ],
+      [ "Ptr - Working with raw pointers", "layout.html#layout_ptr", null ],
+      [ "Par - Access via particle-major layout policy", "layout.html#layout_par", null ],
+      [ "Comparison of the algorithms", "layout.html#layout_comparison", null ],
+      [ "Conclusion", "layout.html#layout_conclusion", null ]
+    ] ],
+    [ "Third-party libraries licenses, compilers, and tools", "licenses.html", "licenses" ],
+    [ "Code coverage reports", "coverage.html", null ],
+    [ "How to generate logos", "logo.html", null ],
+    [ "Random number generators", "rng.html", null ],
+    [ "Random number generators input", "rngs_input.html", null ],
+    [ "Statistics output", "statistics_output.html", null ],
+    [ "Examples", "examples.html", "examples" ],
+    [ "Namespaces", null, [
+      [ "Namespace List", "namespaces.html", "namespaces" ],
+      [ "Namespace Members", "namespacemembers.html", [
+        [ "All", "namespacemembers.html", "namespacemembers_dup" ],
+        [ "Functions", "namespacemembers_func.html", null ],
+        [ "Variables", "namespacemembers_vars.html", null ],
+        [ "Typedefs", "namespacemembers_type.html", "namespacemembers_type" ],
+        [ "Enumerations", "namespacemembers_enum.html", null ],
+        [ "Enumerator", "namespacemembers_eval.html", null ]
+      ] ]
+    ] ],
+    [ "Classes", null, [
+      [ "Class List", "annotated.html", "annotated" ],
+      [ "Class Index", "classes.html", null ],
+      [ "Class Hierarchy", "hierarchy.html", "hierarchy" ],
+      [ "Class Members", "functions.html", [
+        [ "All", "functions.html", "functions_dup" ],
+        [ "Functions", "functions_func.html", "functions_func" ],
+        [ "Variables", "functions_vars.html", "functions_vars" ],
+        [ "Typedefs", "functions_type.html", "functions_type" ],
+        [ "Enumerations", "functions_enum.html", null ],
+        [ "Enumerator", "functions_eval.html", null ],
+        [ "Related Functions", "functions_rela.html", null ]
+      ] ]
+    ] ],
+    [ "Files", null, [
+      [ "File List", "files.html", "files" ],
+      [ "File Members", "globals.html", [
+        [ "All", "globals.html", null ],
+        [ "Functions", "globals_func.html", null ],
+        [ "Variables", "globals_vars.html", null ],
+        [ "Macros", "globals_defs.html", null ]
+      ] ]
+    ] ]
+  ] ]
+];
+
+var NAVTREEINDEX =
+[
+"_adv_diff_8h.html",
+"_control_2_walker_2_types_8h.html#a56d1ca1b75a04216d7435a51b8d79201",
+"_integrator_8h_source.html",
+"_mass_8h.html#aca5973388992945abf4d99db47c27952",
+"_process_exception_8_c.html#a33193650243074c527b53b3ad70f3ff3",
+"_test_m_k_l_beta_method_8h.html",
+"build__openmpi_8sh.html",
+"classinciter_1_1_partitioner.html#aa7f5688e6ba8f266d5feda6921b54646",
+"classrngtest_1_1_test_u01_stack.html#aa0fdb80682e771c4108b808854ee9629",
+"classtk_1_1_gmsh_mesh_writer.html#a0e6dba9de350a53f321cc8967d718d8a",
+"classtk_1_1_reader.html#ad6ab06f4a78a5ad3466f1d2d91a52a79",
+"classtk_1_1ctr_1_1_r_n_g_s_s_e_seq_len.html",
+"classwalker_1_1_gamma.html#abf7cdfcd0baa222c9a783dc1fe6400c9",
+"classwalker_1_1ctr_1_1_input_deck.html#a9287fbea74c0295995f84f24d0600d89",
+"namespacemembers_0x6b.html",
+"structkw_1_1centering__info_1_1expect.html#a798337bb26d5d89eac3a9f6956b0b348",
+"structkw_1_1mkl__mcg31__info.html#a21145ae30592115e181028ca4003b7fb",
+"structkw_1_1sde___s__info_1_1expect.html",
+"structkw_1_1virtualization__info.html",
+"structtk_1_1_has_function_expect_choices.html",
+"structtk_1_1rngsse_1_1seed.html",
+"structtut_1_1tag4.html"
+];
+
+var SYNCONMSG = 'click to disable panel synchronisation';
+var SYNCOFFMSG = 'click to enable panel synchronisation';
+var SYNCONMSG = 'click to disable panel synchronisation';
+var SYNCOFFMSG = 'click to enable panel synchronisation';
 var navTreeSubIndices = new Array();
 
 function getData(varName)
@@ -18,21 +136,6 @@ function stripPath2(uri)
   var s = uri.substring(i+1);
   var m = uri.substring(0,i+1).match(/\/d\w\/d\w\w\/$/);
   return m ? uri.substring(i-6) : s;
-}
-
-function hashValue()
-{
-  return $(location).attr('hash').substring(1).replace(/[^\w\-]/g,'');
-}
-
-function hashUrl()
-{
-  return '#'+hashValue();
-}
-
-function pathName()
-{
-  return $(location).attr('pathname').replace(/[^-A-Za-z0-9+&@#/%?=~_|!:,.;\(\)]/g, '');
 }
 
 function localStorageSupported()
@@ -57,7 +160,7 @@ function deleteLink()
 {
   if (localStorageSupported()) {
     window.localStorage.setItem('navpath','');
-  }
+  } 
 }
 
 function cachedLink()
@@ -105,7 +208,7 @@ function createIndent(o,domNode,node,level)
     node.expandToggle.onclick = function() {
       if (node.expanded) {
         $(node.getChildrenUL()).slideUp("fast");
-        node.plus_img.src = node.relpath+"arrowright.png";
+        node.plus_img.src = node.relpath+"ftv2pnode.png";
         node.expanded = false;
       } else {
         expandNode(o, node, false, false);
@@ -113,13 +216,13 @@ function createIndent(o,domNode,node,level)
     }
     node.expandToggle.appendChild(imgNode);
     domNode.appendChild(node.expandToggle);
-    imgNode.src = node.relpath+"arrowright.png";
+    imgNode.src = node.relpath+"ftv2pnode.png";
   } else {
     var span = document.createElement("span");
     span.style.display = 'inline-block';
     span.style.width   = 16*(level+1)+'px';
     span.style.height  = '22px';
-    span.innerHTML = '&#160;';
+    span.innerHTML = '&nbsp;';
     domNode.appendChild(span);
   } 
 }
@@ -129,13 +232,11 @@ var animationInProgress = false;
 function gotoAnchor(anchor,aname,updateLocation)
 {
   var pos, docContent = $('#doc-content');
-  var ancParent = $(anchor.parent());
-  if (ancParent.hasClass('memItemLeft') ||
-      ancParent.hasClass('fieldname') ||
-      ancParent.hasClass('fieldtype') ||
-      ancParent.is(':header'))
+  if (anchor.parent().attr('class')=='memItemLeft' ||
+      anchor.parent().attr('class')=='fieldtype' ||
+      anchor.parent().is(':header')) 
   {
-    pos = ancParent.position().top;
+    pos = anchor.parent().position().top;
   } else if (anchor.position()) {
     pos = anchor.position().top;
   }
@@ -193,7 +294,7 @@ function newNode(o, po, text, link, childrenData, lastNode)
     a.className = stripPath(link.replace('#',':'));
     if (link.indexOf('#')!=-1) {
       var aname = '#'+link.split('#')[1];
-      var srcPage = stripPath(pathName());
+      var srcPage = stripPath($(location).attr('pathname'));
       var targetPage = stripPath(link.split('#')[0]);
       a.href = srcPage!=targetPage ? url : "javascript:void(0)"; 
       a.onclick = function(){
@@ -269,9 +370,9 @@ function expandNode(o, node, imm, showRoot)
         $(node.getChildrenUL()).slideDown("fast");
       }
       if (node.isLast) {
-        node.plus_img.src = node.relpath+"arrowdown.png";
+        node.plus_img.src = node.relpath+"ftv2mlastnode.png";
       } else {
-        node.plus_img.src = node.relpath+"arrowdown.png";
+        node.plus_img.src = node.relpath+"ftv2mnode.png";
       }
       node.expanded = true;
     }
@@ -287,13 +388,14 @@ function glowEffect(n,duration)
 
 function highlightAnchor()
 {
-  var aname = hashUrl();
+  var aname = $(location).attr('hash');
   var anchor = $(aname);
   if (anchor.parent().attr('class')=='memItemLeft'){
-    var rows = $('.memberdecls tr[class$="'+hashValue()+'"]');
+    var rows = $('.memberdecls tr[class$="'+
+               window.location.hash.substring(1)+'"]');
     glowEffect(rows.children(),300); // member without details
-  } else if (anchor.parent().attr('class')=='fieldname'){
-    glowEffect(anchor.parent().parent(),1000); // enum value
+  } else if (anchor.parents().slice(2).prop('tagName')=='TR') {
+    glowEffect(anchor.parents('div.memitem'),1000); // enum value
   } else if (anchor.parent().attr('class')=='fieldtype'){
     glowEffect(anchor.parent().parent(),1000); // struct field
   } else if (anchor.parent().is(":header")) {
@@ -308,7 +410,7 @@ function selectAndHighlight(hash,n)
 {
   var a;
   if (hash) {
-    var link=stripPath(pathName())+':'+hash.substring(1);
+    var link=stripPath($(location).attr('pathname'))+':'+hash.substring(1);
     a=$('.item a[class$="'+link+'"]');
   }
   if (a && a.length) {
@@ -341,7 +443,11 @@ function showNode(o, node, index, hash)
         getNode(o, node);
       }
       $(node.getChildrenUL()).css({'display':'block'});
-      node.plus_img.src = node.relpath+"arrowdown.png";
+      if (node.isLast) {
+        node.plus_img.src = node.relpath+"ftv2mlastnode.png";
+      } else {
+        node.plus_img.src = node.relpath+"ftv2mnode.png";
+      }
       node.expanded = true;
       var n = node.children[o.breadcrumbs[index]];
       if (index+1<o.breadcrumbs.length) {
@@ -415,13 +521,14 @@ function navTo(o,root,hash,relpath)
   if (link) {
     var parts = link.split('#');
     root = parts[0];
-    if (parts.length>1) hash = '#'+parts[1].replace(/[^\w\-]/g,'');
+    if (parts.length>1) hash = '#'+parts[1];
     else hash='';
   }
   if (hash.match(/^#l\d+$/)) {
     var anchor=$('a[name='+hash.substring(1)+']');
     glowEffect(anchor.parent(),1000); // line number
     hash=''; // strip line number anchors
+    //root=root.replace(/_source\./,'.'); // source link to doc link
   }
   var url=root+hash;
   var i=-1;
@@ -455,7 +562,7 @@ function toggleSyncButton(relpath)
   if (navSync.hasClass('sync')) {
     navSync.removeClass('sync');
     showSyncOff(navSync,relpath);
-    storeLink(stripPath2(pathName())+hashUrl());
+    storeLink(stripPath2($(location).attr('pathname'))+$(location).attr('hash'));
   } else {
     navSync.addClass('sync');
     showSyncOn(navSync,relpath);
@@ -479,7 +586,7 @@ function initNavTree(toroot,relpath)
   o.node.expanded = false;
   o.node.isLast = true;
   o.node.plus_img = document.createElement("img");
-  o.node.plus_img.src = relpath+"arrowright.png";
+  o.node.plus_img.src = relpath+"ftv2pnode.png";
   o.node.plus_img.width = 16;
   o.node.plus_img.height = 22;
 
@@ -495,7 +602,7 @@ function initNavTree(toroot,relpath)
   }
 
   $(window).load(function(){
-    navTo(o,toroot,hashUrl(),relpath);
+    navTo(o,toroot,window.location.hash,relpath);
     showRoot();
   });
 
@@ -503,20 +610,21 @@ function initNavTree(toroot,relpath)
      if (window.location.hash && window.location.hash.length>1){
        var a;
        if ($(location).attr('hash')){
-         var clslink=stripPath(pathName())+':'+hashValue();
-         a=$('.item a[class$="'+clslink.replace(/</g,'\\3c ')+'"]');
+         var clslink=stripPath($(location).attr('pathname'))+':'+
+                               $(location).attr('hash').substring(1);
+         a=$('.item a[class$="'+clslink+'"]');
        }
        if (a==null || !$(a).parent().parent().hasClass('selected')){
          $('.item').removeClass('selected');
          $('.item').removeAttr('id');
        }
-       var link=stripPath2(pathName());
-       navTo(o,link,hashUrl(),relpath);
+       var link=stripPath2($(location).attr('pathname'));
+       navTo(o,link,$(location).attr('hash'),relpath);
      } else if (!animationInProgress) {
        $('#doc-content').scrollTop(0);
        $('.item').removeClass('selected');
        $('.item').removeAttr('id');
-       navTo(o,toroot,hashUrl(),relpath);
+       navTo(o,toroot,window.location.hash,relpath);
      }
   })
 }

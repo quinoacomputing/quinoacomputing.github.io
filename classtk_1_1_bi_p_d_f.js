@@ -10,6 +10,8 @@ var classtk_1_1_bi_p_d_f =
     [ "addPDF", "classtk_1_1_bi_p_d_f.html#ad54242f0bb818e27e337dee4337be27d", null ],
     [ "binsize", "classtk_1_1_bi_p_d_f.html#aedbc730d8028b91873b4702406ff6b76", null ],
     [ "extents", "classtk_1_1_bi_p_d_f.html#a46f46a37fd1ddfb7587a615910b09251", null ],
+    [ "m_nsample", "classtk_1_1_bi_p_d_f.html#a6ea724ed8150fde3e2df3a868762764c", null ],
+    [ "m_nsample", "classtk_1_1_bi_p_d_f.html#a6ea724ed8150fde3e2df3a868762764c", null ],
     [ "map", "classtk_1_1_bi_p_d_f.html#a03eff57c14dcd216a6ba8c2214eedd58", null ],
     [ "nsample", "classtk_1_1_bi_p_d_f.html#a0ddd5d610995a52448230b44a5274755", null ],
     [ "pup", "classtk_1_1_bi_p_d_f.html#ab547e0ecb7a1df2269f17009b0d84ef6", null ],
