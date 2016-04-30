@@ -49,6 +49,8 @@ var searchData=
   ['bipdf_2eh',['BiPDF.h',['../_bi_p_d_f_8h.html',1,'']]],
   ['birthdayspacings',['BirthdaySpacings',['../structtag_1_1_birthday_spacings.html',1,'tag']]],
   ['birthdayspacings',['BirthdaySpacings',['../classrngtest_1_1_test_u01_stack.html#a2532d71acdca9a4a4c43b65e3c6251b9',1,'rngtest::TestU01Stack::BirthdaySpacings()'],['../classrngtest_1_1_test_u01_stack.html#ae0db6fba53d8c2832b7c85b16fdfdc5e',1,'rngtest::TestU01Stack::BirthdaySpacings(unif01_Gen *gen, sres_Poisson *res, const std::tuple&lt; long, long, int, long, int, int &gt; &amp;xargs)']]],
+  ['blas_20license',['BLAS license',['../_b_l_a_s_license.html',1,'licenses']]],
+  ['blas_5flicense_2edox',['BLAS_license.dox',['../_b_l_a_s__license_8dox.html',1,'']]],
   ['block',['block',['../structtk_1_1grm_1_1block.html',1,'tk::grm']]],
   ['boost_20license',['Boost license',['../_boost_license.html',1,'licenses']]],
   ['boost_5flicense_2edox',['Boost_license.dox',['../_boost__license_8dox.html',1,'']]],

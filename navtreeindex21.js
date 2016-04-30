@@ -1,5 +1,12 @@
 var NAVTREEINDEX21 =
 {
+"structtut_1_1charm_1_1tag_1_1email.html":[21,0,8,0,0,2],
+"structtut_1_1charm_1_1tag_1_1name.html":[21,0,8,0,0,0],
+"structtut_1_1eq1.html":[21,0,8,40],
+"structtut_1_1eq2.html":[21,0,8,41],
+"structtut_1_1tag1.html":[21,0,8,28],
+"structtut_1_1tag2.html":[21,0,8,29],
+"structtut_1_1tag3.html":[21,0,8,30],
 "structtut_1_1tag4.html":[21,0,8,31],
 "structtut_1_1tag5.html":[21,0,8,32],
 "structtut_1_1tag6.html":[21,0,8,33],

@@ -1,5 +1,12 @@
 var NAVTREEINDEX20 =
 {
+"structtk_1_1mkl_1_1seed.html":[21,0,7,3,1],
+"structtk_1_1mkl_1_1uniform__method.html":[21,0,7,3,2],
+"structtk_1_1rngsse_1_1insert__seq.html":[21,0,7,4,0],
+"structtk_1_1rngsse_1_1insert__seq.html#aa078291946145b884257d838014abc35":[21,0,7,4,0,0],
+"structtk_1_1rngsse_1_1rng.html":[21,0,7,4,1],
+"structtk_1_1rngsse_1_1rngs.html":[21,0,7,4,5],
+"structtk_1_1rngsse_1_1rngsse__seq.html":[21,0,7,4,3],
 "structtk_1_1rngsse_1_1seed.html":[21,0,7,4,2],
 "structtk_1_1rngsse_1_1seqlen.html":[21,0,7,4,4],
 "structtk_1_1tuple_1_1extract__impl.html":[21,0,7,5,7],
@@ -242,12 +249,5 @@ var NAVTREEINDEX20 =
 "structtut_1_1_writer__common.html":[21,0,8,23],
 "structtut_1_1_writer__common_1_1_w.html":[21,0,8,23,0],
 "structtut_1_1_writer__common_1_1_w.html#a927354e43245650ba07f2c45fe73fa2e":[21,0,8,23,0,0],
-"structtut_1_1charm_1_1tag_1_1age.html":[21,0,8,0,0,1],
-"structtut_1_1charm_1_1tag_1_1email.html":[21,0,8,0,0,2],
-"structtut_1_1charm_1_1tag_1_1name.html":[21,0,8,0,0,0],
-"structtut_1_1eq1.html":[21,0,8,40],
-"structtut_1_1eq2.html":[21,0,8,41],
-"structtut_1_1tag1.html":[21,0,8,28],
-"structtut_1_1tag2.html":[21,0,8,29],
-"structtut_1_1tag3.html":[21,0,8,30]
+"structtut_1_1charm_1_1tag_1_1age.html":[21,0,8,0,0,1]
 };

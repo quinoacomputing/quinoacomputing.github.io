@@ -34,6 +34,8 @@ var searchData=
   ['advdiffproblem_2eh',['AdvDiffProblem.h',['../_adv_diff_problem_8h.html',1,'']]],
   ['advdiffproblems',['AdvDiffProblems',['../namespaceinciter.html#aceb24a672a8adf8e92d9f7f19cb8033f',1,'inciter']]],
   ['advdiffproblemsheardiff',['AdvDiffProblemShearDiff',['../classinciter_1_1_adv_diff_problem_shear_diff.html',1,'inciter']]],
+  ['aec_20license',['AEC license',['../_a_e_c_license.html',1,'licenses']]],
+  ['aec_5flicense_2edox',['AEC_license.dox',['../_a_e_c__license_8dox.html',1,'']]],
   ['age',['age',['../structtut_1_1charm_1_1tag_1_1age.html',1,'tut::charm::tag']]],
   ['age',['age',['../structtut_1_1_tagged_tuple__common_1_1age.html',1,'tut::TaggedTuple_common']]],
   ['algorithm',['algorithm',['../namespacekw.html#ad4bef6b683a7db31347e8fe3531453bc',1,'kw::algorithm()'],['../algorithm.html',1,'(Global Namespace)']]],
