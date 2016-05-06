@@ -2,7 +2,7 @@ var classwalker_1_1_generalized_dirichlet =
 [
     [ "ncomp_t", "classwalker_1_1_generalized_dirichlet.html#a2137c05abe9ba1ea038784fc8b6420b7", null ],
     [ "GeneralizedDirichlet", "classwalker_1_1_generalized_dirichlet.html#ab56e9c39ca8a0914740d66820455b9eb", null ],
-    [ "advance", "classwalker_1_1_generalized_dirichlet.html#ad24740a37107793176fe6c61c3390cc6", null ],
+    [ "advance", "classwalker_1_1_generalized_dirichlet.html#a74dde66140f3130b5f7bd2a3607b854b", null ],
     [ "initialize", "classwalker_1_1_generalized_dirichlet.html#a5c47b31f2f72f508e0b6860a82295cd1", null ],
     [ "coeff", "classwalker_1_1_generalized_dirichlet.html#ac2e5244503911fa059723ead37cc0ce6", null ],
     [ "m_b", "classwalker_1_1_generalized_dirichlet.html#ad331eaac722c855162faad5aea178b99", null ],

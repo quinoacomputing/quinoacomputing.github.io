@@ -1,7 +1,7 @@
 var namespacetut =
 [
     [ "charm", "namespacetut_1_1charm.html", "namespacetut_1_1charm" ],
-    [ "TestArray", "structtut_1_1_test_array.html", "structtut_1_1_test_array" ],
+    [ "TestArray", "classtut_1_1_test_array.html", "classtut_1_1_test_array" ],
     [ "CharmUtil_common", "structtut_1_1_charm_util__common.html", [
       [ "noProxy", "structtut_1_1_charm_util__common_1_1no_proxy.html", null ],
       [ "yesProxy", "structtut_1_1_charm_util__common_1_1yes_proxy.html", "structtut_1_1_charm_util__common_1_1yes_proxy" ]
@@ -12,7 +12,7 @@ var namespacetut =
     [ "ExceptionMPI_common", "structtut_1_1_exception_m_p_i__common.html", null ],
     [ "Factory_common", "structtut_1_1_factory__common.html", "structtut_1_1_factory__common" ],
     [ "VBase", "structtut_1_1_v_base.html", "structtut_1_1_v_base" ],
-    [ "CharmChild", "structtut_1_1_charm_child.html", "structtut_1_1_charm_child" ],
+    [ "CharmChild", "classtut_1_1_charm_child.html", "classtut_1_1_charm_child" ],
     [ "Flip_map_common", "structtut_1_1_flip__map__common.html", null ],
     [ "Has_common", "structtut_1_1_has__common.html", [
       [ "noAlias", "structtut_1_1_has__common_1_1no_alias.html", null ],
@@ -38,12 +38,12 @@ var namespacetut =
     [ "Print_common", "structtut_1_1_print__common.html", "structtut_1_1_print__common" ],
     [ "ProcessControl_common", "structtut_1_1_process_control__common.html", null ],
     [ "PUPUtil_common", "structtut_1_1_p_u_p_util__common.html", null ],
-    [ "Migrated", "structtut_1_1_migrated.html", "structtut_1_1_migrated" ],
+    [ "Migrated", "classtut_1_1_migrated.html", "classtut_1_1_migrated" ],
     [ "Reader_common", "structtut_1_1_reader__common.html", null ],
     [ "StrConvUtil_common", "structtut_1_1_str_conv_util__common.html", null ],
     [ "TaggedTuple_common", "structtut_1_1_tagged_tuple__common.html", "structtut_1_1_tagged_tuple__common" ],
     [ "Timer_common", "structtut_1_1_timer__common.html", "structtut_1_1_timer__common" ],
-    [ "CharmTimer", "structtut_1_1_charm_timer.html", "structtut_1_1_charm_timer" ],
+    [ "CharmTimer", "classtut_1_1_charm_timer.html", "classtut_1_1_charm_timer" ],
     [ "Vector_common", "structtut_1_1_vector__common.html", "structtut_1_1_vector__common" ],
     [ "Writer_common", "structtut_1_1_writer__common.html", [
       [ "W", "structtut_1_1_writer__common_1_1_w.html", "structtut_1_1_writer__common_1_1_w" ]

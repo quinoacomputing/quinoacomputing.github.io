@@ -19,6 +19,5 @@ var classwalker_1_1_mix_mass_fraction_beta =
     [ "m_r", "classwalker_1_1_mix_mass_fraction_beta.html#a7c90ce51f8c85c9a64312a732f1c46ee", null ],
     [ "m_rho2", "classwalker_1_1_mix_mass_fraction_beta.html#aa1e86708c4202b7bb408adb6a2f4a19e", null ],
     [ "m_rng", "classwalker_1_1_mix_mass_fraction_beta.html#a9a3a7767adec621926b1690d377fa727", null ],
-    [ "m_S", "classwalker_1_1_mix_mass_fraction_beta.html#a1fa92a8c29c7d6d300629d507e46985f", null ],
-    [ "m_t", "classwalker_1_1_mix_mass_fraction_beta.html#a48a8d497840caa9d50f7d451f1ff3284", null ]
+    [ "m_S", "classwalker_1_1_mix_mass_fraction_beta.html#a1fa92a8c29c7d6d300629d507e46985f", null ]
 ];

@@ -1,7 +1,7 @@
 var _r_n_g_test_8_c =
 [
     [ "Main", "class_main.html", "class_main" ],
-    [ "execute", "structexecute.html", "structexecute" ],
+    [ "execute", "classexecute.html", "classexecute" ],
     [ "operator|", "_r_n_g_test_8_c.html#a499be0324eec72f33c3c13e205993f5a", null ],
     [ "operator|", "_r_n_g_test_8_c.html#a8b49123c3710b0c1522b49240bcc9e8a", null ],
     [ "g_rng", "_r_n_g_test_8_c.html#ae9ff2411ca1b9de6721a0f8c8efd671b", null ],

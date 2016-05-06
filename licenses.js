@@ -20,8 +20,9 @@ var licenses =
       [ "17. AEC for adaptive entropy coding", "licenses.html#aec_license", null ],
       [ "18. Libstdc++ for standard C++ containers and algorithms", "licenses.html#libstdcpp_license", null ],
       [ "19. Libc++ for standard C++ containers and algorithms", "licenses.html#libcpp_license", null ],
-      [ "20. OpenMPI for the message passing interface", "licenses.html#openmpi_license", null ],
-      [ "21. Intel Math Kernel Library for BLAS/LAPACK and random number generation", "licenses.html#mkl_license", null ]
+      [ "20. Musl-libc for standard C library", "licenses.html#musllibc_license", null ],
+      [ "21. OpenMPI for the message passing interface", "licenses.html#openmpi_license", null ],
+      [ "22. Intel Math Kernel Library for BLAS/LAPACK and random number generation", "licenses.html#mkl_license", null ]
     ] ],
     [ "Compilers", "licenses.html#compiler_web", [
       [ "1. Clang C++ compiler", "licenses.html#clang_web", null ],
@@ -57,6 +58,7 @@ var licenses =
     [ "AEC license", "_a_e_c_license.html", null ],
     [ "LibStdC++ license", "_lib_std_c_p_p_license.html", null ],
     [ "LibC++ license", "_lib_c_p_p_license.html", null ],
+    [ "Musllibc license", "_musllibc_license.html", null ],
     [ "OpenMPI license", "_open_m_p_i_license.html", null ],
     [ "MKL license", "_m_k_l_license.html", null ]
 ];

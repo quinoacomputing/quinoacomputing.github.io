@@ -2,7 +2,7 @@ var classwalker_1_1_mass_fraction_beta =
 [
     [ "ncomp_t", "classwalker_1_1_mass_fraction_beta.html#a47a8d65ec90f95e14684f67d826681c3", null ],
     [ "MassFractionBeta", "classwalker_1_1_mass_fraction_beta.html#ab0719d732bbb310417ae8b5cd83bddc0", null ],
-    [ "advance", "classwalker_1_1_mass_fraction_beta.html#a2def479855c18f8bf40e4ee683174657", null ],
+    [ "advance", "classwalker_1_1_mass_fraction_beta.html#a0f661ed0ca50858bf0eee596787b9738", null ],
     [ "initialize", "classwalker_1_1_mass_fraction_beta.html#a1c53ed81f782e275c21060f47a5d4996", null ],
     [ "rho", "classwalker_1_1_mass_fraction_beta.html#a2ef745e5886aa78bc5113ec7446c3e6a", null ],
     [ "vol", "classwalker_1_1_mass_fraction_beta.html#a326c167f9b5cd263a5cc4a90f2112b58", null ],

@@ -1,5 +1,7 @@
 var structrngtest_1_1_stat_test_1_1_concept =
 [
+    [ "Concept", "structrngtest_1_1_stat_test_1_1_concept.html#ac2621a40674ff0a223fc273fc91b3ecd", null ],
+    [ "Concept", "structrngtest_1_1_stat_test_1_1_concept.html#aa77f2b7265debccbd6b7ba1bb071cbaa", null ],
     [ "~Concept", "structrngtest_1_1_stat_test_1_1_concept.html#a4b9e36bc3264fe9108dc863caba3e117", null ],
     [ "copy", "structrngtest_1_1_stat_test_1_1_concept.html#a15a65c65b34c1220fd193d30b7529582", null ],
     [ "names", "structrngtest_1_1_stat_test_1_1_concept.html#a587e4eb123382f8e0c7d2ac81c4d9961", null ],

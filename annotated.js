@@ -11,6 +11,6 @@ var annotated =
     [ "tut", "namespacetut.html", "namespacetut" ],
     [ "unittest", "namespaceunittest.html", "namespaceunittest" ],
     [ "walker", "namespacewalker.html", "namespacewalker" ],
-    [ "execute", "structexecute.html", "structexecute" ],
+    [ "execute", "classexecute.html", "classexecute" ],
     [ "Main", "class_main.html", "class_main" ]
 ];

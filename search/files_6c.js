@@ -6,6 +6,8 @@ var searchData=
   ['libstdcpp_5flicense_2edox',['LibStdCPP_license.dox',['../_lib_std_c_p_p__license_8dox.html',1,'']]],
   ['licenses_2edox',['licenses.dox',['../licenses_8dox.html',1,'']]],
   ['linearmap_2ec',['LinearMap.C',['../_linear_map_8_c.html',1,'']]],
+  ['linearmap_2edecl_2eh',['linearmap.decl.h',['../linearmap_8decl_8h.html',1,'']]],
+  ['linearmap_2edef_2eh',['linearmap.def.h',['../linearmap_8def_8h.html',1,'']]],
   ['linearmap_2eh',['LinearMap.h',['../_linear_map_8h.html',1,'']]],
   ['linsysmerger_2ec',['LinSysMerger.C',['../_lin_sys_merger_8_c.html',1,'']]],
   ['linsysmerger_2eh',['LinSysMerger.h',['../_lin_sys_merger_8h.html',1,'']]],

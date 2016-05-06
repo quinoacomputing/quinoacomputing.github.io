@@ -1,7 +1,7 @@
 var _unit_test_8_c =
 [
     [ "Main", "class_main.html", "class_main" ],
-    [ "execute", "structexecute.html", "structexecute" ],
+    [ "execute", "classexecute.html", "classexecute" ],
     [ "main", "_unit_test_8_c.html#a3c04138a5bfe5d72780bb7e82a18e627", null ],
     [ "operator|", "_unit_test_8_c.html#a047970e5d576955be59782ac461ca674", null ],
     [ "g_charmpass", "_unit_test_8_c.html#a27a1727ab3bc78cdb803d68f6ecb5f9f", null ],

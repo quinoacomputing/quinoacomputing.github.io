@@ -12,6 +12,8 @@ var classtk_1_1_tri_p_d_f =
     [ "extents", "classtk_1_1_tri_p_d_f.html#a47efcfd2054e786e3736ff1e7b3c3d73", null ],
     [ "m_nsample", "classtk_1_1_tri_p_d_f.html#a53647715fabfbfc54fcac8b15a688458", null ],
     [ "m_nsample", "classtk_1_1_tri_p_d_f.html#a53647715fabfbfc54fcac8b15a688458", null ],
+    [ "m_pdf", "classtk_1_1_tri_p_d_f.html#acaa341a7cb7000c8731c6d94183a9e9c", null ],
+    [ "m_pdf", "classtk_1_1_tri_p_d_f.html#acaa341a7cb7000c8731c6d94183a9e9c", null ],
     [ "map", "classtk_1_1_tri_p_d_f.html#a62b521649767203ad07aac29c183459a", null ],
     [ "nsample", "classtk_1_1_tri_p_d_f.html#aaba33addb7ce111f1e0bd757ac80aa31", null ],
     [ "pup", "classtk_1_1_tri_p_d_f.html#a8db322b881a721f8397d4ba85daf1a56", null ],

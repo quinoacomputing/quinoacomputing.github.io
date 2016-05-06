@@ -12,6 +12,8 @@ var classtk_1_1_bi_p_d_f =
     [ "extents", "classtk_1_1_bi_p_d_f.html#a46f46a37fd1ddfb7587a615910b09251", null ],
     [ "m_nsample", "classtk_1_1_bi_p_d_f.html#a6ea724ed8150fde3e2df3a868762764c", null ],
     [ "m_nsample", "classtk_1_1_bi_p_d_f.html#a6ea724ed8150fde3e2df3a868762764c", null ],
+    [ "m_pdf", "classtk_1_1_bi_p_d_f.html#aaf7f4cd0eaff88ae0ced660fff5e84fa", null ],
+    [ "m_pdf", "classtk_1_1_bi_p_d_f.html#aaf7f4cd0eaff88ae0ced660fff5e84fa", null ],
     [ "map", "classtk_1_1_bi_p_d_f.html#a03eff57c14dcd216a6ba8c2214eedd58", null ],
     [ "nsample", "classtk_1_1_bi_p_d_f.html#a0ddd5d610995a52448230b44a5274755", null ],
     [ "pup", "classtk_1_1_bi_p_d_f.html#ab547e0ecb7a1df2269f17009b0d84ef6", null ],

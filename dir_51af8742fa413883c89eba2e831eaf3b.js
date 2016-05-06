@@ -33,7 +33,6 @@ var dir_51af8742fa413883c89eba2e831eaf3b =
       [ "make_list< T >", "structtk_1_1make__list_3_01_t_01_4.html", "structtk_1_1make__list_3_01_t_01_4" ],
       [ "make_list<>", "structtk_1_1make__list_3_4.html", "structtk_1_1make__list_3_4" ]
     ] ],
-    [ "Make_unique.h", "_make__unique_8h.html", "_make__unique_8h" ],
     [ "MeshNodes.h", "_mesh_nodes_8h.html", null ],
     [ "Msg.C", "_msg_8_c.html", null ],
     [ "Msg.h", "_msg_8h.html", "_msg_8h" ],

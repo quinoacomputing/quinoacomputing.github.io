@@ -12,5 +12,5 @@ var _test_control_8h =
     [ "Control_common", "structtut_1_1_control__common.html", "structtut_1_1_control__common" ],
     [ "Control_group", "_test_control_8h.html#acd72be9d49d9df1d06c5e43eca9386d7", null ],
     [ "Control_object", "_test_control_8h.html#acce6a2e0dbb5b456f55a2749c4ed7793", null ],
-    [ "Control", "_test_control_8h.html#a9d402c1a92e3045e7552b7ca59c2da72", null ]
+    [ "Control", "_test_control_8h.html#a74dd553d10d32041577b24d5182bf38a", null ]
 ];
