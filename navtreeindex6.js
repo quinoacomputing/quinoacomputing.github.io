@@ -1,5 +1,7 @@
 var NAVTREEINDEX6 =
 {
+"_zoltan_inter_op_8h.html":[22,0,1,5,6],
+"_zoltan_inter_op_8h.html#aed39aba24cadd698c01e18e95fd964b7":[22,0,1,5,6,0],
 "_zoltan_inter_op_8h_source.html":[22,0,1,5,6],
 "_zoltan_license.html":[13,12],
 "algorithm.html":[6],
@@ -247,7 +249,5 @@ var NAVTREEINDEX6 =
 "classinciter_1_1_partitioner.html#a23b0258af4481dd9896ba103a5d23326":[21,0,1,6,53],
 "classinciter_1_1_partitioner.html#a263b8cb295ea4e781abd0b29851b9dbf":[21,0,1,6,43],
 "classinciter_1_1_partitioner.html#a2752c355fd5be73ed779bdf5d8b5aa75":[21,0,1,6,51],
-"classinciter_1_1_partitioner.html#a29890eb55e8302458489583b6af9d023":[21,0,1,6,42],
-"classinciter_1_1_partitioner.html#a2fe4822b4e5be71ff70403b260140c0c":[21,0,1,6,14],
-"classinciter_1_1_partitioner.html#a3413a4e0b4bfa83eaa24e9a728849384":[21,0,1,6,2]
+"classinciter_1_1_partitioner.html#a29890eb55e8302458489583b6af9d023":[21,0,1,6,42]
 };

@@ -2,7 +2,7 @@ var searchData=
 [
   ['b',['b',['../structtag_1_1b.html',1,'tag']]],
   ['badprecision',['BADPRECISION',['../namespacetk_1_1grm.html#a86dbe384e8ce31796b7eb5f6ac87e1a3a9fbe53a80ac534622e981c88d28399af',1,'tk::grm']]],
-  ['bakosi',['Bakosi',['../update__copyright_8sh.html#a75429212fde4f2df06be52051c8f5135',1,'update_copyright.sh']]],
+  ['bakosi',['Bakosi',['../update__copyright_8sh.html#a22b1d83d3a58926c4e552c47c921e61f',1,'update_copyright.sh']]],
   ['base',['Base',['../structtut_1_1_factory__common_1_1_base.html',1,'tut::Factory_common']]],
   ['base',['Base',['../structtut_1_1_factory__common_1_1_base.html#ad42706702f9c454e47b1a44cf4f3775b',1,'tut::Factory_common::Base']]],
   ['base_5fadapter_5ft',['base_adapter_t',['../classtk_1_1zoltan_1_1_geometric_mesh_elem_adapter.html#ad0f9a5717e64db6d8f4e3b14b9214658',1,'tk::zoltan::GeometricMeshElemAdapter']]],

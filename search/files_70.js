@@ -50,6 +50,7 @@ var searchData=
   ['processexception_2ec',['ProcessException.C',['../_process_exception_8_c.html',1,'']]],
   ['processexception_2eh',['ProcessException.h',['../_process_exception_8h.html',1,'']]],
   ['pstreams_5flicense_2edox',['PStreams_license.dox',['../_p_streams__license_8dox.html',1,'']]],
+  ['pugixml_2eh',['pugixml.h',['../pugixml_8h.html',1,'']]],
   ['pugixml_5flicense_2edox',['PugiXML_license.dox',['../_pugi_x_m_l__license_8dox.html',1,'']]],
   ['pup_2eh',['pup.h',['../pup_8h.html',1,'']]],
   ['pup_5fstl_2eh',['pup_stl.h',['../pup__stl_8h.html',1,'']]],

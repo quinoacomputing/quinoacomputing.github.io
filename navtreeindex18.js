@@ -1,5 +1,9 @@
 var NAVTREEINDEX18 =
 {
+"structkw_1_1shear__diff__info.html#af62d221debd4c2d8c8fb97840a254888":[21,0,2,135,3],
+"structkw_1_1shear__diff__info_1_1expect.html":[21,0,2,135,0],
+"structkw_1_1shear__diff__info_1_1expect.html#a77d15a0661e3df6f8c663938dce88feb":[21,0,2,135,0,0],
+"structkw_1_1skewnormal__info.html":[21,0,2,112],
 "structkw_1_1skewnormal__info.html#a2eefed1d0bcfbf4dfec9e8d1eb019284":[21,0,2,112,0],
 "structkw_1_1skewnormal__info.html#a3536d000b0ee5dd2ff8876a9381cccb5":[21,0,2,112,1],
 "structkw_1_1skewnormal__info.html#ab7bfda837e5199edb2e7e74db8fa2d8a":[21,0,2,112,2],
@@ -245,9 +249,5 @@ var NAVTREEINDEX18 =
 "structtag_1_1betapdf.html":[21,0,6,37],
 "structtag_1_1binsize.html":[21,0,6,25],
 "structtag_1_1bprime.html":[21,0,6,61],
-"structtag_1_1c.html":[21,0,6,66],
-"structtag_1_1c0.html":[21,0,6,67],
-"structtag_1_1c1.html":[21,0,6,68],
-"structtag_1_1c2.html":[21,0,6,69],
-"structtag_1_1c3.html":[21,0,6,70]
+"structtag_1_1c.html":[21,0,6,66]
 };

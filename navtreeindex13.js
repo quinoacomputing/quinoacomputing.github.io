@@ -1,5 +1,7 @@
 var NAVTREEINDEX13 =
 {
+"classwalker_1_1_walker_print.html":[21,0,10,39],
+"classwalker_1_1_walker_print.html#a139e10ee1fe6ab32db84485823bb74ad":[21,0,10,39,11],
 "classwalker_1_1_walker_print.html#a1db8e104f28b768fd0eb171eb0c89076":[21,0,10,39,1],
 "classwalker_1_1_walker_print.html#a27bd5de9254564229ba0c01b3497d965":[21,0,10,39,9],
 "classwalker_1_1_walker_print.html#a31030f1113a0eb183d11a3ccee5efa69":[21,0,10,39,4],
@@ -234,20 +236,18 @@ var NAVTREEINDEX13 =
 "globals_func.html":[22,1,1],
 "globals_vars.html":[22,1,2],
 "hierarchy.html":[21,2],
-"inciter_8decl_8h.html":[22,0,1,9,11],
-"inciter_8decl_8h_source.html":[22,0,1,9,11],
-"inciter_8def_8h.html":[22,0,1,9,12],
-"inciter_8def_8h_source.html":[22,0,1,9,12],
+"inciter_8decl_8h.html":[22,0,1,9,12],
+"inciter_8decl_8h_source.html":[22,0,1,9,12],
+"inciter_8def_8h.html":[22,0,1,9,13],
+"inciter_8def_8h_source.html":[22,0,1,9,13],
 "inciter_doc.html":[1],
 "index.html":[],
 "inhomogeneity.html":[10],
-"integrator_8decl_8h.html":[22,0,1,9,13],
-"integrator_8decl_8h_source.html":[22,0,1,9,13],
-"integrator_8def_8h.html":[22,0,1,9,14],
-"integrator_8def_8h_source.html":[22,0,1,9,14],
+"integrator_8decl_8h.html":[22,0,1,9,14],
+"integrator_8decl_8h_source.html":[22,0,1,9,14],
+"integrator_8def_8h.html":[22,0,1,9,15],
+"integrator_8def_8h_source.html":[22,0,1,9,15],
 "io.html":[11],
 "layout.html":[12],
-"layout.html#layout_blaze":[12,3],
-"layout.html#layout_comparison":[12,15],
-"layout.html#layout_conclusion":[12,16]
+"layout.html#layout_blaze":[12,3]
 };

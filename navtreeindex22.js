@@ -1,5 +1,9 @@
 var NAVTREEINDEX22 =
 {
+"walker_example_gamma.html#walker_example_gamma_run":[19,8,1],
+"walker_example_gendir.html":[19,3],
+"walker_example_gendir.html#walker_example_gendir_control":[19,3,0],
+"walker_example_gendir.html#walker_example_gendir_output":[19,3,2],
 "walker_example_gendir.html#walker_example_gendir_results":[19,3,3],
 "walker_example_gendir.html#walker_example_gendir_run":[19,3,1],
 "walker_example_massfracbeta.html":[19,10],
