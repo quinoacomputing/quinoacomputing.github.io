@@ -1,8 +1,8 @@
 var searchData=
 [
   ['macro_2eh',['Macro.h',['../_macro_8h.html',1,'']]],
-  ['mainpage_2edox',['mainpage.dox',['../mainpage_8dox.html',1,'']]],
   ['make_5flist_2eh',['Make_list.h',['../_make__list_8h.html',1,'']]],
+  ['make_5funique_2eh',['Make_unique.h',['../_make__unique_8h.html',1,'']]],
   ['mass_2eh',['Mass.h',['../_mass_8h.html',1,'']]],
   ['massfractionbeta_2edox',['MassFractionBeta.dox',['../_mass_fraction_beta_8dox.html',1,'']]],
   ['massfractionbeta_2eh',['MassFractionBeta.h',['../_mass_fraction_beta_8h.html',1,'']]],

@@ -1,5 +1,17 @@
 var NAVTREEINDEX21 =
 {
+"structtut_1_1_m_k_l_beta_method__common.html#a173f9a6d91af66422a4a5f3a657d87fa":[21,0,8,24,1],
+"structtut_1_1_m_k_l_beta_method__common.html#aefc2c2a5dc6fe8246ed5ca90a6710080":[21,0,8,24,0],
+"structtut_1_1_m_k_l_gaussian_method__common.html":[21,0,8,25],
+"structtut_1_1_m_k_l_gaussian_method__common.html#a1dc35f5f882b9fa57454bb9591806273":[21,0,8,25,0],
+"structtut_1_1_m_k_l_gaussian_method__common.html#ab80df794e58a7d091b181ca0ffa15b57":[21,0,8,25,1],
+"structtut_1_1_m_k_l_r_n_g__common.html":[21,0,8,49],
+"structtut_1_1_m_k_l_uniform_method__common.html":[21,0,8,26],
+"structtut_1_1_m_k_l_uniform_method__common.html#a668eb19c8d1286608ca58bf02afe4409":[21,0,8,26,0],
+"structtut_1_1_m_k_l_uniform_method__common.html#afbeb4cf2189132ae23e355100e8c8d3a":[21,0,8,26,1],
+"structtut_1_1_make__list__common.html":[21,0,8,12],
+"structtut_1_1_make__list__common_1_1_test.html":[21,0,8,12,0],
+"structtut_1_1_make__list__common_1_1_test.html#a94c2ed115f13e7ac80c1dedec527e97c":[21,0,8,12,0,0],
 "structtut_1_1_mesh__common.html":[21,0,8,44],
 "structtut_1_1_mesh__common.html#a7c71623b8111ac81d125a31bc6b0bb6c":[21,0,8,44,0],
 "structtut_1_1_p_u_p_util__common.html":[21,0,8,15],
@@ -237,17 +249,5 @@ var NAVTREEINDEX21 =
 "walker_example_beta.html#walker_example_beta_run":[19,7,1],
 "walker_example_diagou.html":[19,5],
 "walker_example_diagou.html#walker_example_diagou_control":[19,5,0],
-"walker_example_diagou.html#walker_example_diagou_moments":[19,5,3],
-"walker_example_diagou.html#walker_example_diagou_output":[19,5,2],
-"walker_example_diagou.html#walker_example_diagou_pdf":[19,5,4],
-"walker_example_diagou.html#walker_example_diagou_run":[19,5,1],
-"walker_example_dirichlet.html":[19,2],
-"walker_example_dirichlet.html#walker_example_dirichlet_control":[19,2,0],
-"walker_example_dirichlet.html#walker_example_dirichlet_output":[19,2,2],
-"walker_example_dirichlet.html#walker_example_dirichlet_results":[19,2,3],
-"walker_example_dirichlet.html#walker_example_dirichlet_run":[19,2,1],
-"walker_example_gamma.html":[19,8],
-"walker_example_gamma.html#walker_example_gamma_control":[19,8,0],
-"walker_example_gamma.html#walker_example_gamma_output":[19,8,2],
-"walker_example_gamma.html#walker_example_gamma_results":[19,8,3]
+"walker_example_diagou.html#walker_example_diagou_moments":[19,5,3]
 };

@@ -1,5 +1,11 @@
 var NAVTREEINDEX18 =
 {
+"structkw_1_1seqlen__info_1_1expect.html":[21,0,2,46,0],
+"structkw_1_1seqlen__info_1_1expect.html#a3524fc7e827b2c290e895ee31792603e":[21,0,2,46,0,1],
+"structkw_1_1seqlen__info_1_1expect.html#aabd74d8b6698fc956765e062f836615c":[21,0,2,46,0,0],
+"structkw_1_1shear__diff__info.html":[21,0,2,135],
+"structkw_1_1shear__diff__info.html#a5bd5c308503efa84be711aee3cfa28b9":[21,0,2,135,1],
+"structkw_1_1shear__diff__info.html#a8cbf1109fd0266ac6903ffb644c225fd":[21,0,2,135,2],
 "structkw_1_1shear__diff__info.html#af62d221debd4c2d8c8fb97840a254888":[21,0,2,135,3],
 "structkw_1_1shear__diff__info_1_1expect.html":[21,0,2,135,0],
 "structkw_1_1shear__diff__info_1_1expect.html#a77d15a0661e3df6f8c663938dce88feb":[21,0,2,135,0,0],
@@ -243,11 +249,5 @@ var NAVTREEINDEX18 =
 "structtag_1_1advdiff.html":[21,0,6,112],
 "structtag_1_1atwood.html":[21,0,6,57],
 "structtag_1_1b.html":[21,0,6,58],
-"structtag_1_1battery.html":[21,0,6,101],
-"structtag_1_1beta.html":[21,0,6,30],
-"structtag_1_1beta__method.html":[21,0,6,6],
-"structtag_1_1betapdf.html":[21,0,6,37],
-"structtag_1_1binsize.html":[21,0,6,25],
-"structtag_1_1bprime.html":[21,0,6,61],
-"structtag_1_1c.html":[21,0,6,66]
+"structtag_1_1battery.html":[21,0,6,101]
 };

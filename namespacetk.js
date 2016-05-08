@@ -20,6 +20,11 @@ var namespacetk =
     [ "make_list< T, Args... >", "structtk_1_1make__list_3_01_t_00_01_args_8_8_8_01_4.html", "structtk_1_1make__list_3_01_t_00_01_args_8_8_8_01_4" ],
     [ "make_list< T >", "structtk_1_1make__list_3_01_t_01_4.html", "structtk_1_1make__list_3_01_t_01_4" ],
     [ "make_list<>", "structtk_1_1make__list_3_4.html", "structtk_1_1make__list_3_4" ],
+    [ "_MakeUniq", "structtk_1_1___make_uniq.html", "structtk_1_1___make_uniq" ],
+    [ "_MakeUniq< _Tp[]>", "structtk_1_1___make_uniq_3_01___tp[]_4.html", "structtk_1_1___make_uniq_3_01___tp[]_4" ],
+    [ "_MakeUniq< _Tp[_Bound]>", "structtk_1_1___make_uniq_3_01___tp[___bound]_4.html", [
+      [ "__invalid_type", "structtk_1_1___make_uniq_3_01___tp[___bound]_4_1_1____invalid__type.html", null ]
+    ] ],
     [ "Msg", "structtk_1_1_msg.html", "structtk_1_1_msg" ],
     [ "StringsMsg", "structtk_1_1_strings_msg.html", "structtk_1_1_strings_msg" ],
     [ "VecStrsMsg", "structtk_1_1_vec_strs_msg.html", "structtk_1_1_vec_strs_msg" ],

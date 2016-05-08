@@ -1,5 +1,17 @@
 var NAVTREEINDEX22 =
 {
+"walker_example_diagou.html#walker_example_diagou_output":[19,5,2],
+"walker_example_diagou.html#walker_example_diagou_pdf":[19,5,4],
+"walker_example_diagou.html#walker_example_diagou_run":[19,5,1],
+"walker_example_dirichlet.html":[19,2],
+"walker_example_dirichlet.html#walker_example_dirichlet_control":[19,2,0],
+"walker_example_dirichlet.html#walker_example_dirichlet_output":[19,2,2],
+"walker_example_dirichlet.html#walker_example_dirichlet_results":[19,2,3],
+"walker_example_dirichlet.html#walker_example_dirichlet_run":[19,2,1],
+"walker_example_gamma.html":[19,8],
+"walker_example_gamma.html#walker_example_gamma_control":[19,8,0],
+"walker_example_gamma.html#walker_example_gamma_output":[19,8,2],
+"walker_example_gamma.html#walker_example_gamma_results":[19,8,3],
 "walker_example_gamma.html#walker_example_gamma_run":[19,8,1],
 "walker_example_gendir.html":[19,3],
 "walker_example_gendir.html#walker_example_gendir_control":[19,3,0],

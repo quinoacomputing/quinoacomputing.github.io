@@ -90,7 +90,7 @@ var searchData=
   ['driver',['Driver',['../classtk_1_1_driver.html',1,'tk']]],
   ['driver',['Driver',['../classtk_1_1_driver.html#a097098869c97d1ae42134620df2dab1e',1,'tk::Driver::Driver(T x)'],['../classtk_1_1_driver.html#a9533d1c25766b5de73bfe4f21e9a7a56',1,'tk::Driver::Driver(std::function&lt; T()&gt; x)'],['../classtk_1_1_driver.html#aaed4f38b9ece7fad26f058bb10e2e7ae',1,'tk::Driver::Driver(const Driver &amp;x)'],['../classtk_1_1_driver.html#a18756e5c5f812ced35926876150bc932',1,'tk::Driver::Driver(Driver &amp;&amp;) noexcept=default']]],
   ['driver_2eh',['Driver.h',['../_driver_8h.html',1,'']]],
-  ['dsec',['Dsec',['../classtk_1_1_timer.html#ac1e4b53f806eeb46879f9d0acec4c68b',1,'tk::Timer::Dsec()'],['../classtk_1_1_timer.html#a08304f78d80271af5adc8115d6d55a93',1,'tk::Timer::dsec() const ']]],
+  ['dsec',['dsec',['../classtk_1_1_timer.html#a08304f78d80271af5adc8115d6d55a93',1,'tk::Timer::dsec() const '],['../classtk_1_1_timer.html#ac1e4b53f806eeb46879f9d0acec4c68b',1,'tk::Timer::Dsec()']]],
   ['dt',['dt',['../structtag_1_1dt.html',1,'tag']]],
   ['dt',['dt',['../namespacekw.html#a089bdbb2c32ac6788c54ae93e093a8b8',1,'kw']]],
   ['dt_5finfo',['dt_info',['../structkw_1_1dt__info.html',1,'kw']]],
