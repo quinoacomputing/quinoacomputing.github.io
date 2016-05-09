@@ -1,0 +1,840 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html lang="en">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>Quinoa unit test code coverage report</title>
+  <link rel="stylesheet" type="text/css" href="../gcov.css">
+</head>
+<body>
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title">Quinoa unit test code coverage report</td></tr>
+    <tr><td class="ruler"><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../index.html">top level</a> - <a href="index.html">Inciter</a> - Partitioner.h<span style="font-size: 80%;"> (source / <a href="Partitioner.h.func-sort-c.html">functions</a>)</span></td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Commit:</td>
+            <td class="headerValue">3b0dc31</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">0</td>
+            <td class="headerCovTableEntry">244</td>
+            <td class="headerCovTableEntryLo">0.0 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2016-05-08 18:40:26</td>
+            <td></td>
+            <td class="headerItem">Functions:</td>
+            <td class="headerCovTableEntry">0</td>
+            <td class="headerCovTableEntry">40</td>
+            <td class="headerCovTableEntryLo">0.0 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Legend:</td>
+            <td class="headerValueLeg">            Lines:
+            <span class="coverLegendCov">hit</span>
+            <span class="coverLegendNoCov">not hit</span>
+            | Branches:
+            <span class="coverLegendCov">+</span> taken
+            <span class="coverLegendNoCov">-</span> not taken
+            <span class="coverLegendNoCov">#</span> not executed
+</td>
+            <td></td>
+            <td class="headerItem">Branches:</td>
+            <td class="headerCovTableEntry">0</td>
+            <td class="headerCovTableEntry">0</td>
+            <td class="headerCovTableEntryHi">-</td>
+          </tr>
+          <tr><td><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">           Branch data     Line data    Source code</pre>
+<pre class="source">
+<a name="1"><span class="lineNum">       1 </span>                :            : //******************************************************************************</a>
+<span class="lineNum">       2 </span>                :            : /*!
+<span class="lineNum">       3 </span>                :            :   \file      src/Inciter/Partitioner.h
+<span class="lineNum">       4 </span>                :            :   \author    J. Bakosi
+<span class="lineNum">       5 </span>                :            :   \date      Thu 05 May 2016 09:49:03 AM MDT
+<span class="lineNum">       6 </span>                :            :   \copyright 2012-2015, Jozsef Bakosi, 2016, Los Alamos National Security, LLC.
+<span class="lineNum">       7 </span>                :            :   \brief     Charm++ chare partitioner group used to perform mesh partitioning
+<span class="lineNum">       8 </span>                :            :   \details   Charm++ chare partitioner group used to parform mesh partitioning.
+<span class="lineNum">       9 </span>                :            : */
+<span class="lineNum">      10 </span>                :            : //******************************************************************************
+<span class="lineNum">      11 </span>                :            : #ifndef Partitioner_h
+<span class="lineNum">      12 </span>                :            : #define Partitioner_h
+<span class="lineNum">      13 </span>                :            : 
+<span class="lineNum">      14 </span>                :            : #include &lt;unordered_map&gt;
+<span class="lineNum">      15 </span>                :            : #include &lt;algorithm&gt;
+<span class="lineNum">      16 </span>                :            : #include &lt;numeric&gt;
+<span class="lineNum">      17 </span>                :            : 
+<span class="lineNum">      18 </span>                :            : #include &quot;ExodusIIMeshReader.h&quot;
+<span class="lineNum">      19 </span>                :            : #include &quot;ContainerUtil.h&quot;
+<span class="lineNum">      20 </span>                :            : #include &quot;ZoltanInterOp.h&quot;
+<span class="lineNum">      21 </span>                :            : #include &quot;Inciter/InputDeck/InputDeck.h&quot;
+<span class="lineNum">      22 </span>                :            : #include &quot;LinSysMerger.h&quot;
+<span class="lineNum">      23 </span>                :            : 
+<span class="lineNum">      24 </span>                :            : namespace inciter {
+<span class="lineNum">      25 </span>                :            : 
+<span class="lineNum">      26 </span>                :            : extern ctr::InputDeck g_inputdeck;
+<span class="lineNum">      27 </span>                :            : extern CkReduction::reducerType NodesMerger;
+<span class="lineNum">      28 </span>                :            : 
+<span class="lineNum">      29 </span>                :            : //! Partitioner Charm++ chare group class
+<span class="lineNum">      30 </span>                :            : //! \details Instantiations of Partitioner comprise a processor aware Charm++
+<span class="lineNum">      31 </span>                :            : //!   chare group. When instantiated, a new object is created on each PE and not
+<span class="lineNum">      32 </span>                :            : //!   more (as opposed to individual chares or chare array object elements). See
+<span class="lineNum">      33 </span>                :            : //!   also the Charm++ interface file partitioner.ci.
+<a name="34"><span class="lineNum">      34 </span>                :            : //! \author J. Bakosi</a>
+<span class="lineNum">      35 </span>                :            : template&lt; class HostProxy, class WorkerProxy, class LinSysMergerProxy &gt;
+<span class="lineNum">      36 </span>                :<span class="lineNoCov">          0 : class Partitioner : public CBase_Partitioner&lt; HostProxy,</span>
+<span class="lineNum">      37 </span>                :            :                                               WorkerProxy,
+<span class="lineNum">      38 </span>                :            :                                               LinSysMergerProxy &gt; {
+<span class="lineNum">      39 </span>                :            : 
+<span class="lineNum">      40 </span>                :            :   #if defined(__clang__)
+<span class="lineNum">      41 </span>                :            :     #pragma clang diagnostic push
+<span class="lineNum">      42 </span>                :            :     #pragma clang diagnostic ignored &quot;-Wunused-parameter&quot;
+<span class="lineNum">      43 </span>                :            :     #pragma clang diagnostic ignored &quot;-Wdeprecated-declarations&quot;
+<span class="lineNum">      44 </span>                :            :   #elif defined(__GNUC__)
+<span class="lineNum">      45 </span>                :            :     #pragma GCC diagnostic push
+<span class="lineNum">      46 </span>                :            :     #pragma GCC diagnostic ignored &quot;-Wunused-parameter&quot;
+<span class="lineNum">      47 </span>                :            :     #pragma GCC diagnostic ignored &quot;-Wdeprecated-declarations&quot;
+<span class="lineNum">      48 </span>                :            :   #endif
+<a name="49"><span class="lineNum">      49 </span>                :            :   // Include Charm++ SDAG code. See http://charm.cs.illinois.edu/manuals/html/</a>
+<span class="lineNum">      50 </span>                :            :   // charm++/manual.html, Sec. &quot;Structured Control Flow: Structured Dagger&quot;.
+<span class="lineNum">      51 </span>                :<span class="lineNoCov">          0 :   Partitioner_SDAG_CODE</span>
+<span class="lineNum">      52 </span>                :            :   #if defined(__clang__)
+<span class="lineNum">      53 </span>                :            :     #pragma clang diagnostic pop
+<span class="lineNum">      54 </span>                :            :   #elif defined(__GNUC__)
+<span class="lineNum">      55 </span>                :            :     #pragma GCC diagnostic pop
+<span class="lineNum">      56 </span>                :            :   #endif
+<span class="lineNum">      57 </span>                :            : 
+<span class="lineNum">      58 </span>                :            :   private:
+<span class="lineNum">      59 </span>                :            :     using Group =
+<span class="lineNum">      60 </span>                :            :       CBase_Partitioner&lt; HostProxy, WorkerProxy, LinSysMergerProxy &gt;;
+<span class="lineNum">      61 </span>                :            : 
+<span class="lineNum">      62 </span>                :            :   public:
+<span class="lineNum">      63 </span>                :            :     //! Constructor
+<span class="lineNum">      64 </span>                :            :     //! \param[in] host Host Charm++ proxy we are being called from
+<a name="65"><span class="lineNum">      65 </span>                :            :     //! \param[in] worker Worker Charm++ proxy we spawn work to</a>
+<span class="lineNum">      66 </span>                :            :     //! \param[in] lsm Linear system merger proxy (required by the workers)
+<span class="lineNum">      67 </span>                :<span class="lineNoCov">          0 :     Partitioner( const HostProxy&amp; host,</span>
+<span class="lineNum">      68 </span>                :            :                  const WorkerProxy&amp; worker,
+<span class="lineNum">      69 </span>                :            :                  const LinSysMergerProxy&amp; lsm ) :
+<span class="lineNum">      70 </span>                :            :       __dep(),
+<span class="lineNum">      71 </span>                :            :       m_host( host ),
+<span class="lineNum">      72 </span>                :            :       m_worker( worker ),
+<span class="lineNum">      73 </span>                :            :       m_linsysmerger( lsm ),
+<span class="lineNum">      74 </span>                :            :       m_npe( 0 ),
+<span class="lineNum">      75 </span>                :            :       m_req(),
+<span class="lineNum">      76 </span>                :            :       m_reordered( 0 ),
+<span class="lineNum">      77 </span>                :            :       m_start( 0 ),
+<span class="lineNum">      78 </span>                :            :       m_noffset( 0 ),
+<span class="lineNum">      79 </span>                :            :       m_nquery( 0 ),
+<span class="lineNum">      80 </span>                :            :       m_tetinpoel(),
+<span class="lineNum">      81 </span>                :            :       m_gelemid(),
+<span class="lineNum">      82 </span>                :            :       m_centroid(),
+<span class="lineNum">      83 </span>                :            :       m_nchare( 0 ),
+<span class="lineNum">      84 </span>                :            :       m_lower( 0 ),
+<span class="lineNum">      85 </span>                :            :       m_upper( 0 ),
+<span class="lineNum">      86 </span>                :            :       m_node(),
+<span class="lineNum">      87 </span>                :            :       m_comm(),
+<span class="lineNum">      88 </span>                :            :       m_communication(),
+<span class="lineNum">      89 </span>                :            :       m_id(),
+<span class="lineNum">      90 </span>                :            :       m_sid(),
+<span class="lineNum">      91 </span>                :            :       m_newid(),
+<span class="lineNum">      92 </span>                :            :       m_chcid(),
+<span class="lineNum">      93 </span>                :<span class="lineNoCov">          0 :       m_cost( 0.0 )</span>
+<span class="lineNum">      94 </span>                :            :     {
+<span class="lineNum">      95 </span>                :            :       tk::ExodusIIMeshReader
+<span class="lineNum">      96 </span>                :<span class="lineNoCov">          0 :         er( g_inputdeck.get&lt; tag::cmd, tag::io, tag::input &gt;() );</span>
+<span class="lineNum">      97 </span>                :            :       // Read our contiguously-numbered chunk of the mesh graph from file
+<span class="lineNum">      98 </span>                :<span class="lineNoCov">          0 :       readGraph( er );</span>
+<span class="lineNum">      99 </span>                :            :       // If a geometric partitioner is selected, compute element centroid
+<span class="lineNum">     100 </span>                :            :       // coordinates
+<span class="lineNum">     101 </span>                :<span class="lineNoCov">          0 :       const auto alg = g_inputdeck.get&lt; tag::selected, tag::partitioner &gt;();</span>
+<span class="lineNum">     102 </span>                :<span class="lineNoCov">          0 :       if ( alg == tk::ctr::PartitioningAlgorithmType::RCB ||</span>
+<span class="lineNum">     103 </span>                :            :            alg == tk::ctr::PartitioningAlgorithmType::RIB )
+<span class="lineNum">     104 </span>                :<span class="lineNoCov">          0 :         computeCentroids( er );</span>
+<span class="lineNum">     105 </span>                :            :       else
+<span class="lineNum">     106 </span>                :<span class="lineNoCov">          0 :         signal2host_setup_complete( m_host );</span>
+<span class="lineNum">     107 </span>                :<span class="lineNoCov">          0 :     }</span>
+<span class="lineNum">     108 </span>                :            : 
+<a name="109"><span class="lineNum">     109 </span>                :            :     //! Partition the computational mesh</a>
+<span class="lineNum">     110 </span>                :            :     //! \param[in] nchare Number of parts the mesh will be partitioned into
+<span class="lineNum">     111 </span>                :<span class="lineNoCov">          0 :     void partition( int nchare ) {</span>
+<span class="lineNum">     112 </span>                :<span class="lineNoCov">          0 :       m_nchare = nchare;</span>
+<span class="lineNum">     113 </span>                :<span class="lineNoCov">          0 :       const auto alg = g_inputdeck.get&lt; tag::selected, tag::partitioner &gt;();</span>
+<span class="lineNum">     114 </span>                :            :       const auto che = tk::zoltan::geomPartMesh( alg,
+<span class="lineNum">     115 </span>                :            :                                                  m_centroid,
+<span class="lineNum">     116 </span>                :            :                                                  m_gelemid,
+<span class="lineNum">     117 </span>                :<span class="lineNoCov">          0 :                                                  m_tetinpoel.size()/4,</span>
+<span class="lineNum">     118 </span>                :<span class="lineNoCov">          0 :                                                  nchare );</span>
+<span class="lineNum">     119 </span>                :<span class="lineNoCov">          0 :       Assert( che.size() == m_gelemid.size(), &quot;Size of ownership array does &quot;</span>
+<span class="lineNum">     120 </span>                :            :               &quot;not equal the number of mesh graph elements&quot; );
+<span class="lineNum">     121 </span>                :            :       // Construct global mesh node ids for each chare and distribute
+<span class="lineNum">     122 </span>                :<span class="lineNoCov">          0 :       distribute( chareNodes(che) );</span>
+<span class="lineNum">     123 </span>                :<span class="lineNoCov">          0 :     }</span>
+<span class="lineNum">     124 </span>                :            : 
+<span class="lineNum">     125 </span>                :            :     //! Receive number of uniquely assigned global mesh node IDs from lower PEs
+<span class="lineNum">     126 </span>                :            :     //! \details This function computes the offset each PE will need to start
+<span class="lineNum">     127 </span>                :            :     //!   assigning its new node IDs from (for those nodes that are not assigned
+<span class="lineNum">     128 </span>                :            :     //!   new IDs by any PEs with lower indices). The offset for a PE is the
+<span class="lineNum">     129 </span>                :            :     //!   offset for the previous PE plus the number of node IDs the previous PE
+<span class="lineNum">     130 </span>                :            :     //!   (uniquely) assigns new IDs for minus the number of node IDs the
+<span class="lineNum">     131 </span>                :            :     //!   previous PE receives from others (lower PEs). This is computed here in
+<span class="lineNum">     132 </span>                :            :     //!   a parallel/distributed fashion by each PE sending its number of node
+<span class="lineNum">     133 </span>                :            :     //!   IDs (that it uniquely assigns) to all PEs. Note that each PE would
+<span class="lineNum">     134 </span>                :            :     //!   only need to send this information to higher PEs, but instead this
+<span class="lineNum">     135 </span>                :            :     //!   function is called in a broadcast fashion, because that is more
+<span class="lineNum">     136 </span>                :            :     //!   efficient than individual calls to only the higher PEs. Therefore when
+<span class="lineNum">     137 </span>                :            :     //!   computing the offsets, we only count the lower PEs. When this is done,
+<span class="lineNum">     138 </span>                :            :     //!   we have the precise communication map as well as the start offset on
+<a name="139"><span class="lineNum">     139 </span>                :            :     //!   all PEs and so we can start the distributed global mesh node ID</a>
+<span class="lineNum">     140 </span>                :            :     //!   reordering.
+<span class="lineNum">     141 </span>                :<span class="lineNoCov">          0 :     void offset( int pe, std::size_t u ) {</span>
+<span class="lineNum">     142 </span>                :<span class="lineNoCov">          0 :       if (pe &lt; CkMyPe()) m_start += u;</span>
+<span class="lineNum">     143 </span>                :<span class="lineNoCov">          0 :       if (++m_noffset == static_cast&lt;std::size_t&gt;(CkNumPes())) reorder();</span>
+<span class="lineNum">     144 </span>                :<span class="lineNoCov">          0 :     }</span>
+<span class="lineNum">     145 </span>                :            : 
+<span class="lineNum">     146 </span>                :            :     //! Request new global node IDs for old node IDs
+<a name="147"><span class="lineNum">     147 </span>                :            :     //! \param[in] pe PE request coming from and to which we send new IDs to</a>
+<span class="lineNum">     148 </span>                :            :     //! \param[in] id Set of old node IDs whose new IDs are requested
+<span class="lineNum">     149 </span>                :<span class="lineNoCov">          0 :     void request( int pe, const std::set&lt; std::size_t &gt;&amp; id ) {</span>
+<span class="lineNum">     150 </span>                :            :       // Queue up requesting PE and node IDs
+<span class="lineNum">     151 </span>                :<span class="lineNoCov">          0 :       m_req.push_back( { pe, id } );</span>
+<span class="lineNum">     152 </span>                :            :       // Trigger SDAG wait, signaling that node IDs have been requested from us
+<span class="lineNum">     153 </span>                :<span class="lineNoCov">          0 :       trigger_nodes_requested();</span>
+<span class="lineNum">     154 </span>                :<span class="lineNoCov">          0 :     }</span>
+<span class="lineNum">     155 </span>                :            : 
+<a name="156"><span class="lineNum">     156 </span>                :            :     //! Receive new (reordered) global node IDs</a>
+<span class="lineNum">     157 </span>                :            :     //! \param[in] id Map associating new to old node IDs
+<span class="lineNum">     158 </span>                :<span class="lineNoCov">          0 :     void neworder( const std::unordered_map&lt; std::size_t, std::size_t &gt;&amp; id ) {</span>
+<span class="lineNum">     159 </span>                :            :       // Signal to the runtime system that we have participated in reordering
+<span class="lineNum">     160 </span>                :<span class="lineNoCov">          0 :       trigger_participated();</span>
+<span class="lineNum">     161 </span>                :            :       // Store new node IDs associated to old ones
+<span class="lineNum">     162 </span>                :<span class="lineNoCov">          0 :       for (const auto&amp; p : id) m_newid[ p.first ] = p.second;</span>
+<span class="lineNum">     163 </span>                :<span class="lineNoCov">          0 :       m_reordered += id.size();   // count up number of reordered nodes</span>
+<span class="lineNum">     164 </span>                :            :       // If we have reordered all our node IDs, send result to host
+<span class="lineNum">     165 </span>                :<span class="lineNoCov">          0 :       if (m_reordered == m_id.size()) reordered();</span>
+<span class="lineNum">     166 </span>                :<span class="lineNoCov">          0 :     }</span>
+<span class="lineNum">     167 </span>                :            : 
+<a name="168"><span class="lineNum">     168 </span>                :            :     //! Receive mesh node IDs associated to chares we own</a>
+<span class="lineNum">     169 </span>                :            :     //! \param[in] n Mesh node indices associated to chare IDs
+<span class="lineNum">     170 </span>                :<span class="lineNoCov">          0 :     void add( int frompe,</span>
+<span class="lineNum">     171 </span>                :            :               const std::unordered_map&lt; int, std::vector&lt; std::size_t &gt; &gt;&amp; n )
+<span class="lineNum">     172 </span>                :            :     {
+<span class="lineNum">     173 </span>                :<span class="lineNoCov">          0 :       for (const auto&amp; c : n) {</span>
+<span class="lineNum">     174 </span>                :<span class="lineNoCov">          0 :         Assert( pe(c.first) == CkMyPe(), &quot;PE &quot; + std::to_string(CkMyPe()) +</span>
+<span class="lineNum">     175 </span>                :            :                 &quot; received a chareid-nodeidx-vector pair whose chare it does&quot;
+<span class="lineNum">     176 </span>                :            :                 &quot; not own&quot; );
+<span class="lineNum">     177 </span>                :<span class="lineNoCov">          0 :         auto&amp; ch = m_node[ c.first ];</span>
+<span class="lineNum">     178 </span>                :<span class="lineNoCov">          0 :         ch.insert( end(ch), begin(c.second), end(c.second) );</span>
+<span class="lineNum">     179 </span>                :            :       }
+<span class="lineNum">     180 </span>                :<span class="lineNoCov">          0 :       Group::thisProxy[ frompe ].recv();</span>
+<span class="lineNum">     181 </span>                :<span class="lineNoCov">          0 :     }</span>
+<a name="182"><span class="lineNum">     182 </span>                :            : </a>
+<span class="lineNum">     183 </span>                :            :     //! Acknowledge received node IDs
+<span class="lineNum">     184 </span>                :<span class="lineNoCov">          0 :     void recv() {</span>
+<span class="lineNum">     185 </span>                :<span class="lineNoCov">          0 :       --m_npe;</span>
+<span class="lineNum">     186 </span>                :<span class="lineNoCov">          0 :       if (recvnodes()) flatten();</span>
+<span class="lineNum">     187 </span>                :<span class="lineNoCov">          0 :     }</span>
+<span class="lineNum">     188 </span>                :            : 
+<a name="189"><span class="lineNum">     189 </span>                :            :     //! Receive lower bound of node IDs our PE operates on after reordering</a>
+<span class="lineNum">     190 </span>                :            :     //! \param[in] low Lower bound of node IDs assigned to us
+<span class="lineNum">     191 </span>                :<span class="lineNoCov">          0 :     void lower( std::size_t low ) {</span>
+<span class="lineNum">     192 </span>                :<span class="lineNoCov">          0 :       m_lower = low;</span>
+<span class="lineNum">     193 </span>                :<span class="lineNoCov">          0 :       trigger_lower();</span>
+<span class="lineNum">     194 </span>                :<span class="lineNoCov">          0 :     }</span>
+<span class="lineNum">     195 </span>                :            : 
+<span class="lineNum">     196 </span>                :            :     //! \brief Compute the variance of the communication cost of merging the
+<span class="lineNum">     197 </span>                :            :     //!   linear system
+<span class="lineNum">     198 </span>                :            :     //! \param[in] av Average of the communication cost
+<span class="lineNum">     199 </span>                :            :     //! \details Computing the standard deviation is done via computing and
+<a name="200"><span class="lineNum">     200 </span>                :            :     //!   summing up the variances on each PE and asynchronously reducing the</a>
+<span class="lineNum">     201 </span>                :            :     //!   sum to our host.
+<span class="lineNum">     202 </span>                :<span class="lineNoCov">          0 :     void stdCost( tk::real av )</span>
+<span class="lineNum">     203 </span>                :<span class="lineNoCov">          0 :     { signal2host_stdcost( m_host, (m_cost-av)*(m_cost-av) ); }</span>
+<span class="lineNum">     204 </span>                :            : 
+<a name="205"><span class="lineNum">     205 </span>                :            :     //! \brief Start gathering global node IDs this PE will need to receive</a>
+<span class="lineNum">     206 </span>                :            :     //!   (instead of assign) during reordering
+<span class="lineNum">     207 </span>                :<span class="lineNoCov">          0 :     void gather() { Group::thisProxy.query( CkMyPe(), m_id ); }</span>
+<span class="lineNum">     208 </span>                :            : 
+<span class="lineNum">     209 </span>                :            :     //! \brief Query our global node IDs by other PEs so they know if they
+<span class="lineNum">     210 </span>                :            :     //!   receive IDs for those from during reordering
+<span class="lineNum">     211 </span>                :            :     //! \param[in] pe Querying PE
+<span class="lineNum">     212 </span>                :            :     //! \param[in] id Vector of global mesh node IDs to query
+<span class="lineNum">     213 </span>                :            :     //! \details Note that every PE calls this function in a broadcast fashion,
+<span class="lineNum">     214 </span>                :            :     //!   including our own. However, to compute the correct result, this would
+<span class="lineNum">     215 </span>                :            :     //!   only be necessary for PEs whose ID is higher than ours. However, the
+<span class="lineNum">     216 </span>                :            :     //!   broadcast (calling everyone) is more efficient. Because of this we
+<span class="lineNum">     217 </span>                :            :     //!   only do the query for higher PEs here but return a mask to all
+<span class="lineNum">     218 </span>                :            :     //!   callers. This also results in a simpler logic, because every PE goes
+<a name="219"><span class="lineNum">     219 </span>                :            :     //!   through this single call path. The returned mask is simply a boolean</a>
+<span class="lineNum">     220 </span>                :            :     //!   array signaling if the node ID is found (owned).
+<span class="lineNum">     221 </span>                :<span class="lineNoCov">          0 :     void query( int pe, const std::vector&lt; std::size_t &gt;&amp; id ) {</span>
+<span class="lineNum">     222 </span>                :<span class="lineNoCov">          0 :       std::vector&lt; int &gt; own( id.size(), 0 );</span>
+<span class="lineNum">     223 </span>                :<span class="lineNoCov">          0 :       if (pe &gt; CkMyPe()) {</span>
+<span class="lineNum">     224 </span>                :<span class="lineNoCov">          0 :         for (std::size_t i=0; i&lt;id.size(); ++i) {</span>
+<span class="lineNum">     225 </span>                :<span class="lineNoCov">          0 :           const auto it = m_sid.find( id[i] );</span>
+<span class="lineNum">     226 </span>                :<span class="lineNoCov">          0 :           if (it != end(m_sid)) own[i] = 1;</span>
+<span class="lineNum">     227 </span>                :            :         }
+<span class="lineNum">     228 </span>                :            :       }
+<span class="lineNum">     229 </span>                :<span class="lineNoCov">          0 :       Group::thisProxy[ pe ].mask( CkMyPe(), own );</span>
+<span class="lineNum">     230 </span>                :<span class="lineNoCov">          0 :     }</span>
+<span class="lineNum">     231 </span>                :            : 
+<span class="lineNum">     232 </span>                :            :     //! Receive mask of to-be-received global mesh node IDs
+<span class="lineNum">     233 </span>                :            :     //! \param[in] pe The PE uniquely assigns the node IDs marked by 1 in rec
+<span class="lineNum">     234 </span>                :            :     //! \param[in] rec Mask vector containing 1 if the pe owns the node ID, 0 if
+<span class="lineNum">     235 </span>                :            :     //!   it does not
+<span class="lineNum">     236 </span>                :            :     //! \details Note that every PE will call this function, since query() was
+<span class="lineNum">     237 </span>                :            :     //!   called in a broadcast fashion and query() answers to every PE once.
+<span class="lineNum">     238 </span>                :            :     //!   This is more efficient than calling only the PEs from which we would
+<a name="239"><span class="lineNum">     239 </span>                :            :     //!   have to receive results from. Thus the incoming results are only</a>
+<span class="lineNum">     240 </span>                :            :     //!   interesting from PEs with lower IDs than ours.
+<span class="lineNum">     241 </span>                :<span class="lineNoCov">          0 :     void mask( int pe, const std::vector&lt; int &gt;&amp; rec ) {</span>
+<span class="lineNum">     242 </span>                :            :       // Associate global mesh node IDs to lower PEs we will need to receive
+<span class="lineNum">     243 </span>                :            :       // from during node reordering. The choice of associated container is
+<span class="lineNum">     244 </span>                :            :       // std::map, which is ordered (vs. unordered, hash-map). This is required
+<span class="lineNum">     245 </span>                :            :       // by the following operation that makes the mesh node IDs unique in the
+<span class="lineNum">     246 </span>                :            :       // communication map. (We are called in an unordered fashion, so we need
+<span class="lineNum">     247 </span>                :            :       // to collect from all PEs and then we need to make the node IDs unique,
+<span class="lineNum">     248 </span>                :            :       // keeping only the lowest PEs a node ID is associated with.)
+<span class="lineNum">     249 </span>                :<span class="lineNoCov">          0 :       if (pe &lt; CkMyPe()) {</span>
+<span class="lineNum">     250 </span>                :<span class="lineNoCov">          0 :         auto&amp; id = m_comm[ pe ];</span>
+<span class="lineNum">     251 </span>                :<span class="lineNoCov">          0 :         for (std::size_t i=0; i&lt;rec.size(); ++i)</span>
+<span class="lineNum">     252 </span>                :<span class="lineNoCov">          0 :           if (rec[i]) id.insert( m_id[i] );</span>
+<span class="lineNum">     253 </span>                :            :       }
+<span class="lineNum">     254 </span>                :<span class="lineNoCov">          0 :       if (++m_nquery == static_cast&lt;std::size_t&gt;(CkNumPes())) {</span>
+<span class="lineNum">     255 </span>                :            :         // Make sure we have received all we need
+<span class="lineNum">     256 </span>                :<span class="lineNoCov">          0 :         Assert( m_comm.size() == static_cast&lt;std::size_t&gt;(CkMyPe()),</span>
+<span class="lineNum">     257 </span>                :            :                 &quot;Communication map size on PE &quot; +
+<span class="lineNum">     258 </span>                :            :                 std::to_string(CkMyPe()) + &quot; must equal &quot; +
+<span class="lineNum">     259 </span>                :            :                 std::to_string(CkMyPe()) );
+<span class="lineNum">     260 </span>                :            :         // Fill new hash-map, keeping only unique node IDs obtained from the
+<span class="lineNum">     261 </span>                :            :         // lowest possible PEs
+<span class="lineNum">     262 </span>                :<span class="lineNoCov">          0 :         for (auto p=begin(m_comm); p!=end(m_comm); ++p) {</span>
+<span class="lineNum">     263 </span>                :<span class="lineNoCov">          0 :           auto&amp; u = m_communication[ p-&gt;first ];</span>
+<a name="264"><span class="lineNum">     264 </span>                :<span class="lineNoCov">          0 :           for (auto i : p-&gt;second)</span></a>
+<span class="lineNum">     265 </span>                :<span class="lineNoCov">          0 :             if (std::none_of( begin(m_comm), p,</span>
+<span class="lineNum">     266 </span>                :<span class="lineNoCov">          0 :                  [i](const typename decltype(m_comm)::value_type&amp; s)</span>
+<span class="lineNum">     267 </span>                :<span class="lineNoCov">          0 :                  { return s.second.find(i) != end(s.second); } )) {</span>
+<span class="lineNum">     268 </span>                :<span class="lineNoCov">          0 :               u.insert(i);</span>
+<span class="lineNum">     269 </span>                :            :             }
+<span class="lineNum">     270 </span>                :<span class="lineNoCov">          0 :           if (u.empty()) m_communication.erase( p-&gt;first );</span>
+<span class="lineNum">     271 </span>                :            :         }
+<span class="lineNum">     272 </span>                :            :         // Count up total number of nodes we will need receive durin reordering
+<span class="lineNum">     273 </span>                :<span class="lineNoCov">          0 :         std::size_t nrecv = 0;</span>
+<span class="lineNum">     274 </span>                :<span class="lineNoCov">          0 :         for (const auto&amp; u : m_communication) nrecv += u.second.size();</span>
+<span class="lineNum">     275 </span>                :            :         // Start computing PE offsets for node reordering
+<span class="lineNum">     276 </span>                :<span class="lineNoCov">          0 :         Group::thisProxy.offset( CkMyPe(), m_sid.size()-nrecv );</span>
+<span class="lineNum">     277 </span>                :            :       }
+<span class="lineNum">     278 </span>                :<span class="lineNoCov">          0 :     }</span>
+<span class="lineNum">     279 </span>                :            : 
+<span class="lineNum">     280 </span>                :            :   private:
+<span class="lineNum">     281 </span>                :            :     //! Host proxy
+<span class="lineNum">     282 </span>                :            :     HostProxy m_host;
+<span class="lineNum">     283 </span>                :            :     //! Worker proxy
+<span class="lineNum">     284 </span>                :            :     WorkerProxy m_worker;
+<span class="lineNum">     285 </span>                :            :     //! Linear system merger proxy
+<span class="lineNum">     286 </span>                :            :     LinSysMergerProxy m_linsysmerger;
+<span class="lineNum">     287 </span>                :            :     //! Number of fellow PEs to send elem IDs to
+<span class="lineNum">     288 </span>                :            :     std::size_t m_npe;
+<span class="lineNum">     289 </span>                :            :     //! Queue of requested node IDs from PEs
+<span class="lineNum">     290 </span>                :            :     std::vector&lt; std::pair&lt; int, std::set&lt; std::size_t &gt; &gt; &gt; m_req;
+<span class="lineNum">     291 </span>                :            :     //! Number of mesh nodes reordered
+<span class="lineNum">     292 </span>                :            :     std::size_t m_reordered;
+<span class="lineNum">     293 </span>                :            :     //! Starting global mesh node ID for node reordering
+<span class="lineNum">     294 </span>                :            :     std::size_t m_start;
+<span class="lineNum">     295 </span>                :            :     //! \brief Counter for number of offsets
+<span class="lineNum">     296 </span>                :            :     //! \details This counts the to-be-received node IDs received while
+<span class="lineNum">     297 </span>                :            :     //!   computing global mesh node ID offsets for each PE rquired for node
+<span class="lineNum">     298 </span>                :            :     //!   reordering later
+<span class="lineNum">     299 </span>                :            :     std::size_t m_noffset;
+<span class="lineNum">     300 </span>                :            :     //! \brief Counter for number of masks of to-be-received global mesh node
+<span class="lineNum">     301 </span>                :            :     //!   IDs received
+<span class="lineNum">     302 </span>                :            :     //! \details This counts the to-be-received node ID masks received while
+<span class="lineNum">     303 </span>                :            :     //!   gathering the node IDs that need to be received (instead of uniquely
+<span class="lineNum">     304 </span>                :            :     //!   assigned) by each PE
+<span class="lineNum">     305 </span>                :            :     std::size_t m_nquery;
+<span class="lineNum">     306 </span>                :            :     //! Tetrtahedron element connectivity of our chunk of the mesh
+<span class="lineNum">     307 </span>                :            :     std::vector&lt; std::size_t &gt; m_tetinpoel;
+<span class="lineNum">     308 </span>                :            :     //! Global element IDs we read (our chunk of the mesh)
+<span class="lineNum">     309 </span>                :            :     std::vector&lt; std::size_t &gt; m_gelemid;
+<span class="lineNum">     310 </span>                :            :     //! Element centroid coordinates of our chunk of the mesh
+<span class="lineNum">     311 </span>                :            :     std::array&lt; std::vector&lt; tk::real &gt;, 3 &gt; m_centroid;
+<span class="lineNum">     312 </span>                :            :     //! Total number of chares across all PEs
+<span class="lineNum">     313 </span>                :            :     int m_nchare;
+<span class="lineNum">     314 </span>                :            :     //! Lower bound of node IDs our PE operates on after reordering
+<span class="lineNum">     315 </span>                :            :     std::size_t m_lower;
+<span class="lineNum">     316 </span>                :            :     //! Upper bound of node IDs our PE operates on after reordering
+<span class="lineNum">     317 </span>                :            :     std::size_t m_upper;
+<span class="lineNum">     318 </span>                :            :     //! \brief Global mesh node ids associated to chares owned
+<span class="lineNum">     319 </span>                :            :     //! \details Before reordering this map stores (old) global mesh node IDs
+<span class="lineNum">     320 </span>                :            :     //!   corresponding to the ordering as in the mesh file. After reordering it
+<span class="lineNum">     321 </span>                :            :     //!   stores the (new) global node IDs the chares contribute to.
+<span class="lineNum">     322 </span>                :            :     std::unordered_map&lt; int, std::vector&lt; std::size_t &gt; &gt; m_node;
+<span class="lineNum">     323 </span>                :            :     //! \brief Temporary communication map used to receive global mesh node IDs
+<span class="lineNum">     324 </span>                :            :     //! \details This is an ordered map, as that facilitates making the node IDs
+<span class="lineNum">     325 </span>                :            :     //!   unique, storing only the lowest associated PE, efficient.
+<span class="lineNum">     326 </span>                :            :     std::map&lt; int, std::set&lt; std::size_t &gt; &gt; m_comm;
+<span class="lineNum">     327 </span>                :            :     //! \brief Communication map used for distributed mesh node reordering
+<span class="lineNum">     328 </span>                :            :     //! \details This map, on each PE, associates the list of global mesh point
+<span class="lineNum">     329 </span>                :            :     //!   indices to fellow PE IDs from which we will receive new node IDs
+<span class="lineNum">     330 </span>                :            :     //!   during reordering. Only data that will be received from PEs with a
+<span class="lineNum">     331 </span>                :            :     //!   lower index are stored.
+<span class="lineNum">     332 </span>                :            :     std::unordered_map&lt; int, std::set&lt; std::size_t &gt; &gt; m_communication;
+<span class="lineNum">     333 </span>                :            :     //! \brief Unique global node IDs chares on our PE will contribute to in a
+<span class="lineNum">     334 </span>                :            :     //!   linear system
+<span class="lineNum">     335 </span>                :            :     std::vector&lt; std::size_t &gt; m_id;
+<span class="lineNum">     336 </span>                :            :     //! \brief Global mesh node IDs associated in hash set
+<span class="lineNum">     337 </span>                :            :     //! \details These are the same global mesh node IDs as stored in m_id,
+<span class="lineNum">     338 </span>                :            :     //!   corresponding to the mesh ordering read from file, i.e., not yet
+<span class="lineNum">     339 </span>                :            :     //!   reordered. They are stored in a hash-set to enable constant-in-time
+<span class="lineNum">     340 </span>                :            :     //!   search needed by computing the communication maps required for
+<span class="lineNum">     341 </span>                :            :     //!   distributed reordering.
+<span class="lineNum">     342 </span>                :            :     std::unordered_set&lt; std::size_t &gt; m_sid;
+<span class="lineNum">     343 </span>                :            :     //! \brief Map associating new node IDs (as in producing contiguous-row-id
+<span class="lineNum">     344 </span>                :            :     //!   linear system contributions) to old node IDs (as in file)
+<span class="lineNum">     345 </span>                :            :     std::unordered_map&lt; std::size_t, std::size_t &gt; m_newid;
+<span class="lineNum">     346 </span>                :            :     //! \brief Maps associating old node IDs to new node IDs categorized by
+<span class="lineNum">     347 </span>                :            :     //!   chares.
+<span class="lineNum">     348 </span>                :            :     //! \details Maps associating old node IDs (as in file) to new node IDs (as
+<span class="lineNum">     349 </span>                :            :     //!   in producing contiguous-row-id linear system contributions) associated
+<span class="lineNum">     350 </span>                :            :     //!   to chare IDs (outer key). This is basically the inverse of m_newid and
+<span class="lineNum">     351 </span>                :            :     //!   categorized by chares.
+<span class="lineNum">     352 </span>                :            :     std::unordered_map&lt; int,
+<span class="lineNum">     353 </span>                :            :       std::unordered_map&lt; std::size_t, std::size_t &gt; &gt; m_chcid;
+<span class="lineNum">     354 </span>                :            :     //! Communication cost of linear system merging for our PE
+<span class="lineNum">     355 </span>                :            :     tk::real m_cost;
+<span class="lineNum">     356 </span>                :            : 
+<a name="357"><span class="lineNum">     357 </span>                :            :     //! Read our contiguously-numbered chunk of the mesh graph from file</a>
+<span class="lineNum">     358 </span>                :            :     //! \param[in] er ExodusII mesh reader
+<span class="lineNum">     359 </span>                :<span class="lineNoCov">          0 :     void readGraph( tk::ExodusIIMeshReader&amp; er ) {</span>
+<span class="lineNum">     360 </span>                :            :       // Get number of mesh points and number of tetrahedron elements in file
+<span class="lineNum">     361 </span>                :<span class="lineNoCov">          0 :       er.readElemBlockIDs();</span>
+<span class="lineNum">     362 </span>                :<span class="lineNoCov">          0 :       auto nel = er.nel( tk::ExoElemType::TET );</span>
+<span class="lineNum">     363 </span>                :            :       // Read our contiguously-numbered chunk of tetrahedron element
+<span class="lineNum">     364 </span>                :            :       // connectivity from file and also generate and store the list of global
+<span class="lineNum">     365 </span>                :            :       // element indices for our chunk of the mesh
+<span class="lineNum">     366 </span>                :<span class="lineNoCov">          0 :       auto chunk = nel / CkNumPes();</span>
+<span class="lineNum">     367 </span>                :<span class="lineNoCov">          0 :       auto from = CkMyPe() * chunk;</span>
+<span class="lineNum">     368 </span>                :<span class="lineNoCov">          0 :       auto till = from + chunk;</span>
+<span class="lineNum">     369 </span>                :<span class="lineNoCov">          0 :       if (CkMyPe() == CkNumPes()-1) till += nel % CkNumPes();</span>
+<span class="lineNum">     370 </span>                :            :       std::array&lt; std::size_t, 2 &gt; ext = { {static_cast&lt;std::size_t&gt;(from),
+<span class="lineNum">     371 </span>                :<span class="lineNoCov">          0 :                                             static_cast&lt;std::size_t&gt;(till-1)} };</span>
+<span class="lineNum">     372 </span>                :<span class="lineNoCov">          0 :       er.readElements( ext, tk::ExoElemType::TET, m_tetinpoel );</span>
+<span class="lineNum">     373 </span>                :<span class="lineNoCov">          0 :       m_gelemid.resize( static_cast&lt;std::size_t&gt;(till-from) );</span>
+<span class="lineNum">     374 </span>                :<span class="lineNoCov">          0 :       std::iota( begin(m_gelemid), end(m_gelemid), from );</span>
+<span class="lineNum">     375 </span>                :<span class="lineNoCov">          0 :       signal2host_graph_complete( m_host, m_gelemid.size() );</span>
+<span class="lineNum">     376 </span>                :<span class="lineNoCov">          0 :     }</span>
+<span class="lineNum">     377 </span>                :            : 
+<a name="378"><span class="lineNum">     378 </span>                :            :     // Compute element centroid coordinates</a>
+<span class="lineNum">     379 </span>                :            :     //! \param[in] er ExodusII mesh reader
+<span class="lineNum">     380 </span>                :<span class="lineNoCov">          0 :     void computeCentroids( tk::ExodusIIMeshReader&amp; er) {</span>
+<span class="lineNum">     381 </span>                :            :       // Construct unique global mesh point indices of our chunk
+<span class="lineNum">     382 </span>                :<span class="lineNoCov">          0 :       auto gid = m_tetinpoel;</span>
+<span class="lineNum">     383 </span>                :<span class="lineNoCov">          0 :       tk::unique( gid );</span>
+<span class="lineNum">     384 </span>                :            :       // Read node coordinates of our chunk of the mesh elements from file
+<span class="lineNum">     385 </span>                :<span class="lineNoCov">          0 :       auto coord = er.readNodes( tk::extents(gid) );</span>
+<span class="lineNum">     386 </span>                :            :       // Make room for element centroid coordinates
+<span class="lineNum">     387 </span>                :<span class="lineNoCov">          0 :       auto&amp; cx = m_centroid[0];</span>
+<span class="lineNum">     388 </span>                :<span class="lineNoCov">          0 :       auto&amp; cy = m_centroid[1];</span>
+<span class="lineNum">     389 </span>                :<span class="lineNoCov">          0 :       auto&amp; cz = m_centroid[2];</span>
+<span class="lineNum">     390 </span>                :<span class="lineNoCov">          0 :       auto num = m_tetinpoel.size()/4;</span>
+<span class="lineNum">     391 </span>                :<span class="lineNoCov">          0 :       cx.resize( num );</span>
+<span class="lineNum">     392 </span>                :<span class="lineNoCov">          0 :       cy.resize( num );</span>
+<span class="lineNum">     393 </span>                :<span class="lineNoCov">          0 :       cz.resize( num );</span>
+<span class="lineNum">     394 </span>                :            :       // Compute element centroids for our chunk of the mesh elements
+<span class="lineNum">     395 </span>                :<span class="lineNoCov">          0 :       for (std::size_t e=0; e&lt;num; ++e) {</span>
+<span class="lineNum">     396 </span>                :<span class="lineNoCov">          0 :         const auto&amp; a = tk::cref_find( coord, m_tetinpoel[e*4+0] );</span>
+<span class="lineNum">     397 </span>                :<span class="lineNoCov">          0 :         const auto&amp; b = tk::cref_find( coord, m_tetinpoel[e*4+1] );</span>
+<span class="lineNum">     398 </span>                :<span class="lineNoCov">          0 :         const auto&amp; c = tk::cref_find( coord, m_tetinpoel[e*4+2] );</span>
+<span class="lineNum">     399 </span>                :<span class="lineNoCov">          0 :         const auto&amp; d = tk::cref_find( coord, m_tetinpoel[e*4+3] );</span>
+<span class="lineNum">     400 </span>                :<span class="lineNoCov">          0 :         cx[e] = (a[0] + b[0] + c[0] + d[0]) / 4.0;</span>
+<span class="lineNum">     401 </span>                :<span class="lineNoCov">          0 :         cy[e] = (a[1] + b[1] + c[1] + d[1]) / 4.0;</span>
+<span class="lineNum">     402 </span>                :<span class="lineNoCov">          0 :         cz[e] = (a[2] + b[2] + c[2] + d[2]) / 4.0;</span>
+<span class="lineNum">     403 </span>                :            :       }
+<span class="lineNum">     404 </span>                :<span class="lineNoCov">          0 :       signal2host_setup_complete( m_host );</span>
+<span class="lineNum">     405 </span>                :<span class="lineNoCov">          0 :     }</span>
+<span class="lineNum">     406 </span>                :            : 
+<span class="lineNum">     407 </span>                :            :     //! Construct global mesh node ids for each chare
+<span class="lineNum">     408 </span>                :            :     //! \param[in] che Chares of elements: array of chare ownership IDs mapping
+<span class="lineNum">     409 </span>                :            :     //!   graph elements to Charm++ chares. Size: number of elements in the
+<span class="lineNum">     410 </span>                :            :     //!   chunk of the mesh graph on this PE.
+<span class="lineNum">     411 </span>                :            :     //! \return Vector of global mesh node ids connecting elements owned by each
+<span class="lineNum">     412 </span>                :            :     //!   chare on this PE
+<span class="lineNum">     413 </span>                :            :     //! \note The chare IDs, as keys in the map constructed here, are simply the
+<span class="lineNum">     414 </span>                :            :     //!   chare IDs returned by the partitioner assigning mesh elements to these
+<a name="415"><span class="lineNum">     415 </span>                :            :     //!   chares. It does not mean that these chare IDs are owned on this PE.</a>
+<span class="lineNum">     416 </span>                :            :     std::unordered_map&lt; int, std::vector&lt; std::size_t &gt; &gt;
+<span class="lineNum">     417 </span>                :<span class="lineNoCov">          0 :     chareNodes( const std::vector&lt; std::size_t &gt;&amp; che ) const</span>
+<span class="lineNum">     418 </span>                :            :     {
+<span class="lineNum">     419 </span>                :<span class="lineNoCov">          0 :       Assert( che.size() == m_gelemid.size(), &quot;The size of the global element &quot;</span>
+<span class="lineNum">     420 </span>                :            :               &quot;index and the chare element arrays must equal&quot; );
+<span class="lineNum">     421 </span>                :<span class="lineNoCov">          0 :       Assert( che.size() == m_tetinpoel.size()/4, &quot;The size of the mesh &quot;</span>
+<span class="lineNum">     422 </span>                :            :               &quot;connectivity / 4 and the chare element arrays must equal&quot; );
+<span class="lineNum">     423 </span>                :            :       // Categorize global mesh node ids of elements by chares
+<span class="lineNum">     424 </span>                :<span class="lineNoCov">          0 :       std::unordered_map&lt; int, std::vector&lt; std::size_t &gt; &gt; nodes;</span>
+<span class="lineNum">     425 </span>                :<span class="lineNoCov">          0 :       for (std::size_t e=0; e&lt;che.size(); ++e) {</span>
+<span class="lineNum">     426 </span>                :<span class="lineNoCov">          0 :         auto&amp; c = nodes[ static_cast&lt;int&gt;(che[e]) ];</span>
+<span class="lineNum">     427 </span>                :<span class="lineNoCov">          0 :         for (std::size_t n=0; n&lt;4; ++n) c.push_back( m_tetinpoel[e*4+n] );</span>
+<span class="lineNum">     428 </span>                :            :       }
+<span class="lineNum">     429 </span>                :            :       // Make sure all PEs have chares assigned
+<span class="lineNum">     430 </span>                :<span class="lineNoCov">          0 :       Assert( !nodes.empty(), &quot;No nodes have been assigned to chares on PE &quot; +</span>
+<span class="lineNum">     431 </span>                :            :               std::to_string(CkMyPe()) );
+<span class="lineNum">     432 </span>                :            :       // This check should always be done, hence ErrChk and not Assert, as it
+<span class="lineNum">     433 </span>                :            :       // can result from particular pathological combinations of (1) too large
+<span class="lineNum">     434 </span>                :            :       // degree of virtualization, (2) too many PEs, and/or (3) too small of a
+<span class="lineNum">     435 </span>                :            :       // mesh and not due to programmer error.
+<span class="lineNum">     436 </span>                :<span class="lineNoCov">          0 :       for(const auto&amp; c : nodes)</span>
+<span class="lineNum">     437 </span>                :<span class="lineNoCov">          0 :         ErrChk( !c.second.empty(),</span>
+<span class="lineNum">     438 </span>                :            :                 &quot;Overdecomposition of the mesh is too large compared to the &quot;
+<span class="lineNum">     439 </span>                :            :                 &quot;number of work units computed based on the degree of &quot;
+<span class="lineNum">     440 </span>                :            :                 &quot;virtualization desired. As a result, there would be at least &quot;
+<span class="lineNum">     441 </span>                :            :                 &quot;one work unit with no mesh elements to work on, i.e., nothing &quot;
+<span class="lineNum">     442 </span>                :            :                 &quot;to do. Solution 1: decrease the virtualization to a lower &quot;
+<span class="lineNum">     443 </span>                :            :                 &quot;value using the command-line argument '-u'. Solution 2: &quot;
+<span class="lineNum">     444 </span>                :            :                 &quot;decrease the number processing elements (PEs) using the &quot;
+<span class="lineNum">     445 </span>                :            :                 &quot;charmrun command-line argument '+pN' where N is the number of &quot;
+<span class="lineNum">     446 </span>                :            :                 &quot;PEs, which implicitly increases the size (and thus decreases &quot;
+<span class="lineNum">     447 </span>                :            :                 &quot;the number) of work units.)&quot; );
+<span class="lineNum">     448 </span>                :<span class="lineNoCov">          0 :       return nodes;</span>
+<span class="lineNum">     449 </span>                :            :     }
+<span class="lineNum">     450 </span>                :            : 
+<span class="lineNum">     451 </span>                :            :     //! Distribute global mesh node IDs to their owner PEs
+<span class="lineNum">     452 </span>                :            :     //! \param[in] n Global mesh node IDs connecting elements associated to
+<span class="lineNum">     453 </span>                :            :     //!   chare IDs on this PE resulting from partitioning the mesh elements.
+<span class="lineNum">     454 </span>                :            :     //!   Note that this data is moved in.
+<span class="lineNum">     455 </span>                :            :     //! \details Chare ids are distributed to PEs in a linear continguous order
+<span class="lineNum">     456 </span>                :            :     //!   with the last PE taking the remainder if the number of PEs is not
+<span class="lineNum">     457 </span>                :            :     //!   divisible by the number chares. For example, if nchare=7 and npe=3,
+<span class="lineNum">     458 </span>                :            :     //!   the chare distribution is PE0: 0 1, PE1: 2 3, and PE2: 4 5 6. As a
+<span class="lineNum">     459 </span>                :            :     //!   result of this distribution, all PEs will have their m_node map filled
+<a name="460"><span class="lineNum">     460 </span>                :            :     //!   with the global mesh node IDs associated to the Charm++ chare IDs each</a>
+<span class="lineNum">     461 </span>                :            :     //!   PE owns.
+<span class="lineNum">     462 </span>                :<span class="lineNoCov">          0 :     void distribute( std::unordered_map&lt; int, std::vector&lt; std::size_t &gt; &gt;&amp;&amp; n )</span>
+<span class="lineNum">     463 </span>                :            :     {
+<span class="lineNum">     464 </span>                :            :       int chunksize, mynchare;
+<span class="lineNum">     465 </span>                :<span class="lineNoCov">          0 :       std::tie( chunksize, mynchare ) = chareDistribution();</span>
+<span class="lineNum">     466 </span>                :<span class="lineNoCov">          0 :       for (int c=0; c&lt;mynchare; ++c) {</span>
+<span class="lineNum">     467 </span>                :<span class="lineNoCov">          0 :         auto chid = CkMyPe() * chunksize + c; // compute owned chare ID</span>
+<span class="lineNum">     468 </span>                :<span class="lineNoCov">          0 :         const auto it = n.find( chid );       // attempt to find its nodes</span>
+<span class="lineNum">     469 </span>                :<span class="lineNoCov">          0 :         if (it != end(n)) {                   // if found</span>
+<span class="lineNum">     470 </span>                :<span class="lineNoCov">          0 :           m_node.insert( *it );               // move over owned key-value pairs</span>
+<span class="lineNum">     471 </span>                :<span class="lineNoCov">          0 :           n.erase( it );                      // remove chare ID and nodes</span>
+<span class="lineNum">     472 </span>                :            :         }
+<span class="lineNum">     473 </span>                :<span class="lineNoCov">          0 :         Assert( n.find(chid) == end(n), &quot;Not all owned node IDs stored&quot; );</span>
+<span class="lineNum">     474 </span>                :            :       }
+<span class="lineNum">     475 </span>                :            :       // Construct export map associating those map entries (mesh node indices
+<span class="lineNum">     476 </span>                :            :       // associated to chare IDs) owned by chares we do not own. Outer key: PE
+<span class="lineNum">     477 </span>                :            :       // to export to, inner key: chare ID, value: vector of global node IDs
+<span class="lineNum">     478 </span>                :            :       std::unordered_map&lt; int,
+<span class="lineNum">     479 </span>                :<span class="lineNoCov">          0 :         std::unordered_map&lt; int, std::vector&lt; std::size_t &gt; &gt; &gt; exp;</span>
+<span class="lineNum">     480 </span>                :<span class="lineNoCov">          0 :       for (auto&amp;&amp; c : n) exp[ pe(c.first) ].insert( std::move(c) );</span>
+<span class="lineNum">     481 </span>                :            :       // Export chare IDs and node IDs we do not own to fellow PEs
+<span class="lineNum">     482 </span>                :<span class="lineNoCov">          0 :       m_npe = exp.size();</span>
+<span class="lineNum">     483 </span>                :<span class="lineNoCov">          0 :       for (const auto&amp; p : exp)</span>
+<span class="lineNum">     484 </span>                :<span class="lineNoCov">          0 :         Group::thisProxy[ p.first ].add( CkMyPe(), p.second );</span>
+<span class="lineNum">     485 </span>                :<span class="lineNoCov">          0 :       if (recvnodes()) flatten();</span>
+<span class="lineNum">     486 </span>                :<span class="lineNoCov">          0 :     }</span>
+<a name="487"><span class="lineNum">     487 </span>                :            : </a>
+<span class="lineNum">     488 </span>                :            :     //! Prepare owned mesh node IDs for reordering
+<span class="lineNum">     489 </span>                :<span class="lineNoCov">          0 :     void flatten() {</span>
+<span class="lineNum">     490 </span>                :            :       // Make sure we are not fed garbage
+<span class="lineNum">     491 </span>                :            :       int chunksize, mynchare;
+<span class="lineNum">     492 </span>                :<span class="lineNoCov">          0 :       std::tie( chunksize, mynchare ) = chareDistribution();</span>
+<span class="lineNum">     493 </span>                :<span class="lineNoCov">          0 :       Assert( m_node.size() == static_cast&lt;std::size_t&gt;(mynchare),</span>
+<span class="lineNum">     494 </span>                :            :               &quot;Global mesh nodes ids associated to chares on PE &quot; +
+<span class="lineNum">     495 </span>                :            :               std::to_string( CkMyPe() ) + &quot; is incomplete&quot; );
+<span class="lineNum">     496 </span>                :            :       // Flatten node IDs of elements our chares operate on
+<span class="lineNum">     497 </span>                :<span class="lineNoCov">          0 :       for (auto&amp; c : m_node)</span>
+<span class="lineNum">     498 </span>                :<span class="lineNoCov">          0 :         m_id.insert( end(m_id), begin(c.second), end(c.second) );</span>
+<span class="lineNum">     499 </span>                :            :       // Make node IDs unique, these need reordering on our PE
+<span class="lineNum">     500 </span>                :<span class="lineNoCov">          0 :       tk::unique( m_id );</span>
+<span class="lineNum">     501 </span>                :            :       // Store mesh node IDs in hash-set
+<span class="lineNum">     502 </span>                :<span class="lineNoCov">          0 :       std::copy( begin(m_id), end(m_id), std::inserter(m_sid,end(m_sid)) );</span>
+<span class="lineNum">     503 </span>                :            :       // Signal host that we are ready for computing the communication map,
+<span class="lineNum">     504 </span>                :            :       // required for parallel distributed global mesh node reordering
+<span class="lineNum">     505 </span>                :<span class="lineNoCov">          0 :       signal2host_flattened( m_host );</span>
+<span class="lineNum">     506 </span>                :<span class="lineNoCov">          0 :     }</span>
+<span class="lineNum">     507 </span>                :            : 
+<span class="lineNum">     508 </span>                :            :     //! Compute chare distribution
+<span class="lineNum">     509 </span>                :            :     //! \return Chunksize, i.e., number of chares per all PEs except the last
+<span class="lineNum">     510 </span>                :            :     //!   one, and the number of chares for my PE
+<a name="511"><span class="lineNum">     511 </span>                :            :     //! \details This computes a simple contiguous chare distribution across</a>
+<span class="lineNum">     512 </span>                :            :     //!   PEs.
+<span class="lineNum">     513 </span>                :<span class="lineNoCov">          0 :     std::pair&lt; int, int &gt; chareDistribution() const {</span>
+<span class="lineNum">     514 </span>                :<span class="lineNoCov">          0 :       auto chunksize = m_nchare / CkNumPes();</span>
+<span class="lineNum">     515 </span>                :<span class="lineNoCov">          0 :       auto mynchare = chunksize;</span>
+<span class="lineNum">     516 </span>                :<span class="lineNoCov">          0 :       if (CkMyPe() == CkNumPes()-1) mynchare += m_nchare % CkNumPes();</span>
+<span class="lineNum">     517 </span>                :<span class="lineNoCov">          0 :       return { chunksize, mynchare };</span>
+<span class="lineNum">     518 </span>                :            :     }
+<a name="519"><span class="lineNum">     519 </span>                :            : </a>
+<span class="lineNum">     520 </span>                :            :     //! Reorder global mesh node IDs
+<span class="lineNum">     521 </span>                :<span class="lineNoCov">          0 :     void reorder() {</span>
+<span class="lineNum">     522 </span>                :            :       // Activate SDAG waits for completing the reordering of our node IDs and
+<span class="lineNum">     523 </span>                :            :       // for having requests arrive from other PEs for some of our node IDs; and
+<span class="lineNum">     524 </span>                :            :       // for computing/receiving lower and upper bounds of global node IDs our
+<span class="lineNum">     525 </span>                :            :       // PE operates on after reordering
+<span class="lineNum">     526 </span>                :<span class="lineNoCov">          0 :       wait4prep();</span>
+<span class="lineNum">     527 </span>                :<span class="lineNoCov">          0 :       wait4bounds();</span>
+<span class="lineNum">     528 </span>                :            :       // In serial signal to the runtime system that we have participated in
+<span class="lineNum">     529 </span>                :            :       // reordering. This is required here because this is only triggered if
+<span class="lineNum">     530 </span>                :            :       // communication is required during mesh node reordering. See also
+<span class="lineNum">     531 </span>                :            :       // particioner.ci.
+<span class="lineNum">     532 </span>                :<span class="lineNoCov">          0 :       if (CkNumPes() == 1) trigger_participated();</span>
+<span class="lineNum">     533 </span>                :            :       // Send out request for new global node IDs for nodes we do not reorder
+<span class="lineNum">     534 </span>                :<span class="lineNoCov">          0 :       for (const auto&amp; c : m_communication)</span>
+<a name="535"><span class="lineNum">     535 </span>                :<span class="lineNoCov">          0 :         Group::thisProxy[ c.first ].request( CkMyPe(), c.second );</span></a>
+<span class="lineNum">     536 </span>                :            :       // Lambda to decide if node ID is being assigned a new ID by us
+<span class="lineNum">     537 </span>                :<span class="lineNoCov">          0 :       auto own = [ this ]( std::size_t p ) {</span>
+<span class="lineNum">     538 </span>                :            :         using Set = typename std::remove_reference&lt;
+<a name="539"><span class="lineNum">     539 </span>                :            :                       decltype(m_communication) &gt;::type::value_type;</a>
+<span class="lineNum">     540 </span>                :<span class="lineNoCov">          0 :         return !std::any_of( m_communication.cbegin(), m_communication.cend(),</span>
+<span class="lineNum">     541 </span>                :<span class="lineNoCov">          0 :                              [&amp;](const Set&amp; s)</span>
+<span class="lineNum">     542 </span>                :<span class="lineNoCov">          0 :                              { return s.second.find(p) != s.second.cend(); } );</span>
+<span class="lineNum">     543 </span>                :<span class="lineNoCov">          0 :       };</span>
+<span class="lineNum">     544 </span>                :            :       // Reorder our chunk of the mesh node IDs by looping through all of our
+<span class="lineNum">     545 </span>                :            :       // node IDs (resulting from reading our chunk of the mesh cells). We test
+<span class="lineNum">     546 </span>                :            :       // if we are to assign a new ID to a node ID, and if so, we assign new ID,
+<span class="lineNum">     547 </span>                :            :       // i.e., reorder, by constructing a map associating new to old IDs. We
+<span class="lineNum">     548 </span>                :            :       // also count up the reordered nodes.
+<span class="lineNum">     549 </span>                :<span class="lineNoCov">          0 :       for (const auto&amp; p : m_id)</span>
+<span class="lineNum">     550 </span>                :<span class="lineNoCov">          0 :         if (own(p)) {           </span>
+<span class="lineNum">     551 </span>                :<span class="lineNoCov">          0 :           m_newid[ p ] = m_start++;</span>
+<span class="lineNum">     552 </span>                :<span class="lineNoCov">          0 :           ++m_reordered;</span>
+<span class="lineNum">     553 </span>                :            :         }
+<span class="lineNum">     554 </span>                :            :       // Trigger SDAG wait, indicating that reordering own node IDs are complete
+<span class="lineNum">     555 </span>                :<span class="lineNoCov">          0 :       trigger_reorderowned_complete();</span>
+<span class="lineNum">     556 </span>                :            :       // If we have reordered all our nodes, compute and send result to host
+<span class="lineNum">     557 </span>                :<span class="lineNoCov">          0 :       if (m_reordered == m_id.size()) reordered();</span>
+<span class="lineNum">     558 </span>                :<span class="lineNoCov">          0 :     }</span>
+<span class="lineNum">     559 </span>                :            : 
+<a name="560"><span class="lineNum">     560 </span>                :            :     //! Test if all fellow PEs have received my node IDs contributions</a>
+<span class="lineNum">     561 </span>                :            :     //! \return True if all fellow PEs have received what I have sent them
+<span class="lineNum">     562 </span>                :<span class="lineNoCov">          0 :     bool recvnodes() const { return m_npe == 0; }</span>
+<span class="lineNum">     563 </span>                :            : 
+<span class="lineNum">     564 </span>                :            :     //! Return processing element for chare id
+<span class="lineNum">     565 </span>                :            :     //! \param[in] id Chare id
+<span class="lineNum">     566 </span>                :            :     //! \return PE that creates the chare
+<a name="567"><span class="lineNum">     567 </span>                :            :     //! \details This is computed based on a simple contiguous linear</a>
+<span class="lineNum">     568 </span>                :            :     //!   distribution of chare ids to PEs.
+<span class="lineNum">     569 </span>                :<span class="lineNoCov">          0 :     int pe( int id ) const {</span>
+<span class="lineNum">     570 </span>                :<span class="lineNoCov">          0 :       auto p = id / (m_nchare / CkNumPes());</span>
+<span class="lineNum">     571 </span>                :<span class="lineNoCov">          0 :       if (p &gt;= CkNumPes()) p = CkNumPes()-1;</span>
+<span class="lineNum">     572 </span>                :<span class="lineNoCov">          0 :       Assert( p &lt; CkNumPes(), &quot;Assigning to nonexistent PE&quot; );</span>
+<span class="lineNum">     573 </span>                :<span class="lineNoCov">          0 :       return p;</span>
+<span class="lineNum">     574 </span>                :            :     }
+<a name="575"><span class="lineNum">     575 </span>                :            : </a>
+<span class="lineNum">     576 </span>                :            :     //! Associate new node IDs to old ones and return them to the requestor(s)
+<span class="lineNum">     577 </span>                :<span class="lineNoCov">          0 :     void prepare() {</span>
+<span class="lineNum">     578 </span>                :            :       // Signal to the runtime system that we have participated in reordering
+<span class="lineNum">     579 </span>                :<span class="lineNoCov">          0 :       trigger_participated();</span>
+<span class="lineNum">     580 </span>                :<span class="lineNoCov">          0 :       for (const auto&amp; r : m_req) {</span>
+<span class="lineNum">     581 </span>                :<span class="lineNoCov">          0 :         std::unordered_map&lt; std::size_t, std::size_t &gt; n;</span>
+<span class="lineNum">     582 </span>                :<span class="lineNoCov">          0 :         for (auto p : r.second) n[ p ] = tk::cref_find( m_newid, p );</span>
+<span class="lineNum">     583 </span>                :<span class="lineNoCov">          0 :         Group::thisProxy[ r.first ].neworder( n );</span>
+<span class="lineNum">     584 </span>                :<span class="lineNoCov">          0 :         n.clear();</span>
+<span class="lineNum">     585 </span>                :            :       }
+<span class="lineNum">     586 </span>                :<span class="lineNoCov">          0 :       m_req.clear();    // Clear queue of requests just fulfilled</span>
+<span class="lineNum">     587 </span>                :<span class="lineNoCov">          0 :       wait4prep();      // Re-enable SDAG wait for preparing new node requests</span>
+<span class="lineNum">     588 </span>                :            :       // Re-enable trigger signaling that reordering of owned node IDs are
+<span class="lineNum">     589 </span>                :            :       // complete right away
+<span class="lineNum">     590 </span>                :<span class="lineNoCov">          0 :       trigger_reorderowned_complete();</span>
+<span class="lineNum">     591 </span>                :<span class="lineNoCov">          0 :     }</span>
+<span class="lineNum">     592 </span>                :            : 
+<span class="lineNum">     593 </span>                :            :     //! Compute final result of reordering and send it back to host
+<span class="lineNum">     594 </span>                :            :     //! \details This member function is called when both those node IDs that we
+<span class="lineNum">     595 </span>                :            :     //!   assign a new ordering to as well as those assigned new IDs by other
+<span class="lineNum">     596 </span>                :            :     //!   PEs have been reordered (and we contribute to) and we are ready (on
+<a name="597"><span class="lineNum">     597 </span>                :            :     //!   this PE) to compute our final result of the reordering and send it</a>
+<span class="lineNum">     598 </span>                :            :     //!   back to the host.
+<span class="lineNum">     599 </span>                :<span class="lineNoCov">          0 :     void reordered() {</span>
+<span class="lineNum">     600 </span>                :            :       // Construct maps associating old node IDs (as in file) to new node IDs
+<span class="lineNum">     601 </span>                :            :       // (as in producing contiguous-row-id linear system contributions)
+<span class="lineNum">     602 </span>                :            :       // associated to chare IDs (outer key). This is basically the inverse of
+<span class="lineNum">     603 </span>                :            :       // m_newid and categorized by chares. Note that m_node at this point still
+<span class="lineNum">     604 </span>                :            :       // contains the old global node IDs the chares contribute to.
+<span class="lineNum">     605 </span>                :<span class="lineNoCov">          0 :       for (const auto&amp; c : m_node) {</span>
+<span class="lineNum">     606 </span>                :<span class="lineNoCov">          0 :         auto&amp; m = m_chcid[ c.first ];</span>
+<span class="lineNum">     607 </span>                :<span class="lineNoCov">          0 :         for (auto p : c.second) m[ tk::cref_find(m_newid,p) ] = p;</span>
+<span class="lineNum">     608 </span>                :            :       }
+<span class="lineNum">     609 </span>                :            :       // Update our chare ID maps to now contain the new global node IDs
+<span class="lineNum">     610 </span>                :            :       // instead of the old ones
+<span class="lineNum">     611 </span>                :<span class="lineNoCov">          0 :       for (auto&amp; c : m_node)</span>
+<span class="lineNum">     612 </span>                :<span class="lineNoCov">          0 :         for (auto&amp; p : c.second)</span>
+<span class="lineNum">     613 </span>                :<span class="lineNoCov">          0 :           p = tk::cref_find( m_newid, p );</span>
+<span class="lineNum">     614 </span>                :            :       // Update unique global node IDs of chares our PE will contribute to the
+<span class="lineNum">     615 </span>                :            :       // new IDs resulting from reordering
+<span class="lineNum">     616 </span>                :<span class="lineNoCov">          0 :       for (auto&amp; p : m_id) p = tk::cref_find( m_newid, p );</span>
+<span class="lineNum">     617 </span>                :            :       // Compute lower and upper bounds of reordered node IDs our PE operates on
+<span class="lineNum">     618 </span>                :<span class="lineNoCov">          0 :       bounds();</span>
+<span class="lineNum">     619 </span>                :<span class="lineNoCov">          0 :     }</span>
+<span class="lineNum">     620 </span>                :            : 
+<span class="lineNum">     621 </span>                :            :     // Compute lower and upper bounds of reordered node IDs our PE operates on
+<span class="lineNum">     622 </span>                :            :     // \details This function computes the global row IDs at which the linear
+<span class="lineNum">     623 </span>                :            :     //   system will have a PE boundary. We simply find the largest node ID
+<span class="lineNum">     624 </span>                :            :     //   assigned on each PE by the reordering and use that as the upper global
+<span class="lineNum">     625 </span>                :            :     //   row index. Note that while this rarely results in equal number of rows
+<span class="lineNum">     626 </span>                :            :     //   assigned to PEs, potentially resulting in some load-imbalance, it
+<span class="lineNum">     627 </span>                :            :     //   yields a pretty good division reducing communication costs during the
+<span class="lineNum">     628 </span>                :            :     //   assembly of the linear system, which is more important than a slight
+<span class="lineNum">     629 </span>                :            :     //   (FLOP) load imbalance. Since the upper index for PE 1 is the same as
+<a name="630"><span class="lineNum">     630 </span>                :            :     //   the lower index for PE 2, etc. We build the upper indices and then the</a>
+<span class="lineNum">     631 </span>                :            :     //   lower indices for all PEs are communicated.
+<span class="lineNum">     632 </span>                :<span class="lineNoCov">          0 :     void bounds() {</span>
+<span class="lineNum">     633 </span>                :<span class="lineNoCov">          0 :       m_upper = 0;</span>
+<span class="lineNum">     634 </span>                :            :       using pair_type = std::pair&lt; const std::size_t, std::size_t &gt;;
+<a name="635"><span class="lineNum">     635 </span>                :<span class="lineNoCov">          0 :       for (const auto&amp; c : m_chcid) {</span></a>
+<span class="lineNum">     636 </span>                :<span class="lineNoCov">          0 :         auto x = std::max_element( begin(c.second), end(c.second),</span>
+<span class="lineNum">     637 </span>                :<span class="lineNoCov">          0 :                  []( const pair_type&amp; a, const pair_type&amp; b )</span>
+<span class="lineNum">     638 </span>                :<span class="lineNoCov">          0 :                  { return a.first &lt; b.first; } );</span>
+<span class="lineNum">     639 </span>                :<span class="lineNoCov">          0 :         if (x-&gt;first &gt; m_upper) m_upper = x-&gt;first;</span>
+<span class="lineNum">     640 </span>                :            :       }
+<span class="lineNum">     641 </span>                :            :       // The bounds are the dividers (global mesh point indices) at which the
+<span class="lineNum">     642 </span>                :            :       // linear system assembly is divided among PEs. However, Hypre and thus
+<span class="lineNum">     643 </span>                :            :       // LinSysMerger expect exclusive upper indices, so we increase the last
+<span class="lineNum">     644 </span>                :            :       // one by one here. Note that the cost calculation, Partitioner::cost()
+<span class="lineNum">     645 </span>                :            :       // also expects exclusive upper indices.
+<span class="lineNum">     646 </span>                :<span class="lineNoCov">          0 :       if (CkMyPe() == CkNumPes()-1) ++m_upper;</span>
+<span class="lineNum">     647 </span>                :            :       // Tell the runtime system that the upper bound has been computed
+<span class="lineNum">     648 </span>                :<span class="lineNoCov">          0 :       trigger_upper();</span>
+<span class="lineNum">     649 </span>                :            :       // Set lower index for PE 0 as 0
+<span class="lineNum">     650 </span>                :<span class="lineNoCov">          0 :       if (CkMyPe() == 0) lower(0);</span>
+<span class="lineNum">     651 </span>                :            :       // All PEs except the last one send their upper indices as the lower index
+<span class="lineNum">     652 </span>                :            :       // for PE+1
+<span class="lineNum">     653 </span>                :<span class="lineNoCov">          0 :       if (CkMyPe() &lt; CkNumPes()-1)</span>
+<span class="lineNum">     654 </span>                :<span class="lineNoCov">          0 :         Group::thisProxy[ CkMyPe()+1 ].lower( m_upper );</span>
+<span class="lineNum">     655 </span>                :<span class="lineNoCov">          0 :     }</span>
+<span class="lineNum">     656 </span>                :            : 
+<span class="lineNum">     657 </span>                :            :     //! \brief Create chare array elements on this PE and assign the global mesh
+<span class="lineNum">     658 </span>                :            :     //!   element IDs they will operate on
+<span class="lineNum">     659 </span>                :            :     //! \details We create chare array elements by calling the insert() member
+<span class="lineNum">     660 </span>                :            :     //!   function, which allows specifying the PE on which the array element is
+<span class="lineNum">     661 </span>                :            :     //!   created and we send each chare array element the global mesh element
+<a name="662"><span class="lineNum">     662 </span>                :            :     //!   connectivity, i.e., node IDs, it contributes to and the old-&gt;new node</a>
+<span class="lineNum">     663 </span>                :            :     //!   ID map.
+<span class="lineNum">     664 </span>                :<span class="lineNoCov">          0 :     void create() {</span>
+<span class="lineNum">     665 </span>                :            :       // Initiate asynchronous reduction across all Partitioner objects
+<span class="lineNum">     666 </span>                :            :       // computing the average communication cost of merging the linear system
+<span class="lineNum">     667 </span>                :<span class="lineNoCov">          0 :       signal2host_avecost( m_host );</span>
+<span class="lineNum">     668 </span>                :            :       // Compute linear distribution of chares assigned to us
+<span class="lineNum">     669 </span>                :<span class="lineNoCov">          0 :       auto chunksize = m_nchare / CkNumPes();</span>
+<span class="lineNum">     670 </span>                :<span class="lineNoCov">          0 :       auto mynchare = chunksize;</span>
+<span class="lineNum">     671 </span>                :<span class="lineNoCov">          0 :       if (CkMyPe() == CkNumPes()-1) mynchare += m_nchare % CkNumPes();</span>
+<span class="lineNum">     672 </span>                :            :       // Create worker chare array elements
+<span class="lineNum">     673 </span>                :<span class="lineNoCov">          0 :       for (int c=0; c&lt;mynchare; ++c) {</span>
+<span class="lineNum">     674 </span>                :            :         // Compute chare ID
+<span class="lineNum">     675 </span>                :<span class="lineNoCov">          0 :         auto cid = CkMyPe() * chunksize + c;</span>
+<span class="lineNum">     676 </span>                :            :         // Create array element
+<span class="lineNum">     677 </span>                :<span class="lineNoCov">          0 :         m_worker[ cid ].insert( m_host,</span>
+<span class="lineNum">     678 </span>                :            :                                 m_linsysmerger,
+<span class="lineNum">     679 </span>                :<span class="lineNoCov">          0 :                                 tk::cref_find( m_node, cid ),</span>
+<span class="lineNum">     680 </span>                :<span class="lineNoCov">          0 :                                 tk::cref_find( m_chcid, cid ),</span>
+<span class="lineNum">     681 </span>                :            :                                 CkMyPe() );
+<span class="lineNum">     682 </span>                :            :       }
+<span class="lineNum">     683 </span>                :<span class="lineNoCov">          0 :       m_worker.doneInserting();</span>
+<span class="lineNum">     684 </span>                :            :       // Broadcast our bounds of global node IDs to all linear system mergers
+<span class="lineNum">     685 </span>                :<span class="lineNoCov">          0 :       m_linsysmerger.bounds( CkMyPe(), m_lower, m_upper );</span>
+<span class="lineNum">     686 </span>                :<span class="lineNoCov">          0 :     }</span>
+<span class="lineNum">     687 </span>                :            : 
+<span class="lineNum">     688 </span>                :            :     //! Compute communication cost of linear system merging for our PE
+<span class="lineNum">     689 </span>                :            :     //! \param[in] lower Lower global row ID of linear system this PE works on
+<span class="lineNum">     690 </span>                :            :     //! \param[in] upper Upper global row ID of linear system this PE works on
+<span class="lineNum">     691 </span>                :            :     //! \return Communicatoin cost of merging the linear system for our PE
+<span class="lineNum">     692 </span>                :            :     //! \details The cost is a real number between 0 and 1, defined as the
+<span class="lineNum">     693 </span>                :            :     //!   number of mesh points we do not own, i.e., need to send to some other
+<a name="694"><span class="lineNum">     694 </span>                :            :     //!   PE, divided by the total number of points we contribute to. The lower</a>
+<span class="lineNum">     695 </span>                :            :     //!   the better.
+<span class="lineNum">     696 </span>                :<span class="lineNoCov">          0 :     tk::real cost( std::size_t lower, std::size_t upper ) {</span>
+<span class="lineNum">     697 </span>                :<span class="lineNoCov">          0 :       std::size_t ownpts = 0, compts = 0;</span>
+<span class="lineNum">     698 </span>                :<span class="lineNoCov">          0 :       for (auto p : m_id) if (p &gt;= lower &amp;&amp; p &lt; upper) ++ownpts; else ++compts;</span>
+<span class="lineNum">     699 </span>                :            :       return static_cast&lt;tk::real&gt;(compts) /
+<span class="lineNum">     700 </span>                :<span class="lineNoCov">          0 :              static_cast&lt;tk::real&gt;(ownpts + compts);</span>
+<span class="lineNum">     701 </span>                :            :     }
+<span class="lineNum">     702 </span>                :            : 
+<span class="lineNum">     703 </span>                :            :     //! \brief Signal back to host that we have done our part of reading the
+<span class="lineNum">     704 </span>                :            :     //!   mesh graph
+<a name="705"><span class="lineNum">     705 </span>                :            :     //! \details Signaling back is done via a Charm++ typed reduction, which</a>
+<span class="lineNum">     706 </span>                :            :     //!   also computes the sum of the number of mesh cells our PE operates on.
+<span class="lineNum">     707 </span>                :<span class="lineNoCov">          0 :     void signal2host_graph_complete( const CProxy_Conductor&amp; host,</span>
+<span class="lineNum">     708 </span>                :            :                                      uint64_t nelem ) {
+<span class="lineNum">     709 </span>                :<span class="lineNoCov">          0 :       Group::contribute(sizeof(uint64_t), &amp;nelem, CkReduction::sum_int,</span>
+<span class="lineNum">     710 </span>                :            :                         CkCallback( CkReductionTarget(Conductor,load), host ));
+<span class="lineNum">     711 </span>                :<span class="lineNoCov">          0 :     }</span>
+<span class="lineNum">     712 </span>                :            :     //! Compute average communication cost of merging the linear system
+<a name="713"><span class="lineNum">     713 </span>                :            :     //! \details This is done via a Charm++ typed reduction, adding up the cost</a>
+<span class="lineNum">     714 </span>                :            :     //!   across all PEs and reducing the result to our host chare.
+<span class="lineNum">     715 </span>                :<span class="lineNoCov">          0 :     void signal2host_avecost( const CProxy_Conductor&amp; host ) {</span>
+<span class="lineNum">     716 </span>                :<span class="lineNoCov">          0 :       m_cost = cost( m_lower, m_upper );</span>
+<span class="lineNum">     717 </span>                :<span class="lineNoCov">          0 :       Group::contribute( sizeof(tk::real), &amp;m_cost, CkReduction::sum_double,</span>
+<span class="lineNum">     718 </span>                :            :                          CkCallback( CkReductionTarget(Conductor,aveCost),
+<span class="lineNum">     719 </span>                :            :                          host ));
+<span class="lineNum">     720 </span>                :<span class="lineNoCov">          0 :     }</span>
+<span class="lineNum">     721 </span>                :            :     //! \brief Compute standard deviation of the communication cost of merging
+<span class="lineNum">     722 </span>                :            :     //!   the linear system
+<span class="lineNum">     723 </span>                :            :     //! \param[in] var Square of the communication cost minus the average for
+<span class="lineNum">     724 </span>                :            :     //!   our PE.
+<span class="lineNum">     725 </span>                :            :     //! \details This is done via a Charm++ typed reduction, adding up the
+<a name="726"><span class="lineNum">     726 </span>                :            :     //!   squares of the communication cost minus the average across all PEs and</a>
+<span class="lineNum">     727 </span>                :            :     //!   reducing the result to our host chare.
+<span class="lineNum">     728 </span>                :<span class="lineNoCov">          0 :     void signal2host_stdcost( const CProxy_Conductor&amp; host, tk::real var ) {</span>
+<span class="lineNum">     729 </span>                :<span class="lineNoCov">          0 :       Group::contribute( sizeof(tk::real), &amp;var, CkReduction::sum_double,</span>
+<span class="lineNum">     730 </span>                :            :                          CkCallback( CkReductionTarget(Conductor,stdCost),
+<span class="lineNum">     731 </span>                :            :                          host ));
+<a name="732"><span class="lineNum">     732 </span>                :<span class="lineNoCov">          0 :     }</span></a>
+<span class="lineNum">     733 </span>                :            :     //! Signal back to host that we are ready for partitioning the mesh
+<span class="lineNum">     734 </span>                :<span class="lineNoCov">          0 :     void signal2host_setup_complete( const CProxy_Conductor&amp; host ) {</span>
+<span class="lineNum">     735 </span>                :<span class="lineNoCov">          0 :       Group::contribute(</span>
+<span class="lineNum">     736 </span>                :            :         CkCallback(CkIndex_Conductor::redn_wrapper_partition(NULL), host ));
+<span class="lineNum">     737 </span>                :<span class="lineNoCov">          0 :     }</span>
+<a name="738"><span class="lineNum">     738 </span>                :            :     //! \brief Signal host that we are ready for computing the communication</a>
+<span class="lineNum">     739 </span>                :            :     //!   map, required for parallel distributed global mesh node reordering
+<span class="lineNum">     740 </span>                :<span class="lineNoCov">          0 :     void signal2host_flattened( const CProxy_Conductor&amp; host ) {</span>
+<span class="lineNum">     741 </span>                :<span class="lineNoCov">          0 :       Group::contribute(</span>
+<span class="lineNum">     742 </span>                :            :         CkCallback(CkIndex_Conductor::redn_wrapper_flattened(NULL), host ));
+<span class="lineNum">     743 </span>                :<span class="lineNoCov">          0 :     }</span>
+<span class="lineNum">     744 </span>                :            : };
+<span class="lineNum">     745 </span>                :            : 
+<span class="lineNum">     746 </span>                :            : } // inciter::
+<span class="lineNum">     747 </span>                :            : 
+<span class="lineNum">     748 </span>                :            : #define CK_TEMPLATES_ONLY
+<span class="lineNum">     749 </span>                :            : #include &quot;NoWarning/partitioner.def.h&quot;
+<span class="lineNum">     750 </span>                :            : #undef CK_TEMPLATES_ONLY
+<span class="lineNum">     751 </span>                :            : 
+<span class="lineNum">     752 </span>                :            : #endif // Partitioner_h
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.12</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

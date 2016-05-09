@@ -330,10 +330,10 @@ var hierarchy =
     [ "kw::pde_u0_info::expect", "structkw_1_1pde__u0__info_1_1expect.html", null ],
     [ "tag::extent", "structtag_1_1extent.html", null ],
     [ "tk::tuple::extract_impl< n, m, Ts >", "structtk_1_1tuple_1_1extract__impl.html", null ],
-    [ "tk::tuple::extract_impl< n, 0, T, Ts...>", "structtk_1_1tuple_1_1extract__impl_3_01n_00_010_00_01_t_00_01_ts_8_8_8_4.html", null ],
+    [ "tk::tuple::extract_impl< n, 0, T, Ts... >", "structtk_1_1tuple_1_1extract__impl_3_01n_00_010_00_01_t_00_01_ts_8_8_8_01_4.html", null ],
     [ "tk::tuple::extract_impl< n, m >", "structtk_1_1tuple_1_1extract__impl_3_01n_00_01m_01_4.html", null ],
-    [ "tk::tuple::extract_impl< n, m-1, Ts...>", "structtk_1_1tuple_1_1extract__impl.html", [
-      [ "tk::tuple::extract_impl< n, m, T, Ts...>", "structtk_1_1tuple_1_1extract__impl_3_01n_00_01m_00_01_t_00_01_ts_8_8_8_4.html", null ]
+    [ "tk::tuple::extract_impl< n, m-1, Ts... >", "structtk_1_1tuple_1_1extract__impl.html", [
+      [ "tk::tuple::extract_impl< n, m, T, Ts... >", "structtk_1_1tuple_1_1extract__impl_3_01n_00_01m_00_01_t_00_01_ts_8_8_8_01_4.html", null ]
     ] ],
     [ "tut::Factory_common", "structtut_1_1_factory__common.html", null ],
     [ "rngtest::TestU01Suite::Failed", "structrngtest_1_1_test_u01_suite_1_1_failed.html", null ],
@@ -525,11 +525,11 @@ var hierarchy =
     [ "kw::input_info", "structkw_1_1input__info.html", null ],
     [ "tk::DataLayout< Layout >::int2type< m >", "structtk_1_1_data_layout_1_1int2type.html", null ],
     [ "integral_constant", null, [
-      [ "tk::tuple::index< T, T, Ts...>", "structtk_1_1tuple_1_1index_3_01_t_00_01_t_00_01_ts_8_8_8_4.html", null ],
-      [ "tk::tuple::index< T, U, Ts...>", "structtk_1_1tuple_1_1index_3_01_t_00_01_u_00_01_ts_8_8_8_4.html", null ],
+      [ "tk::tuple::index< T, T, Ts... >", "structtk_1_1tuple_1_1index_3_01_t_00_01_t_00_01_ts_8_8_8_01_4.html", null ],
+      [ "tk::tuple::index< T, U, Ts... >", "structtk_1_1tuple_1_1index_3_01_t_00_01_u_00_01_ts_8_8_8_01_4.html", null ],
       [ "tk::tuple::tagged_tuple_size< const _Tp >", "structtk_1_1tuple_1_1tagged__tuple__size_3_01const_01___tp_01_4.html", null ],
       [ "tk::tuple::tagged_tuple_size< const volatile _Tp >", "structtk_1_1tuple_1_1tagged__tuple__size_3_01const_01volatile_01___tp_01_4.html", null ],
-      [ "tk::tuple::tagged_tuple_size< tagged_tuple< _Elements...> >", "structtk_1_1tuple_1_1tagged__tuple__size_3_01tagged__tuple_3_01___elements_8_8_8_4_01_4.html", null ],
+      [ "tk::tuple::tagged_tuple_size< tagged_tuple< _Elements... > >", "structtk_1_1tuple_1_1tagged__tuple__size_3_01tagged__tuple_3_01___elements_8_8_8_01_4_01_4.html", null ],
       [ "tk::tuple::tagged_tuple_size< volatile _Tp >", "structtk_1_1tuple_1_1tagged__tuple__size_3_01volatile_01___tp_01_4.html", null ]
     ] ],
     [ "tag::interval", "structtag_1_1interval.html", null ],
@@ -612,10 +612,10 @@ var hierarchy =
     [ "tag::ncomp", "structtag_1_1ncomp.html", null ],
     [ "kw::ncomp_info", "structkw_1_1ncomp__info.html", null ],
     [ "tk::HasTypedefProxy< T >::no", "structtk_1_1_has_typedef_proxy_1_1no.html", null ],
-    [ "tk::HasFunctionExpectChoices< T >::no", "structtk_1_1_has_function_expect_choices_1_1no.html", null ],
     [ "tk::HasTypedefAlias< T >::no", "structtk_1_1_has_typedef_alias_1_1no.html", null ],
     [ "tk::HasFunctionExpectDescription< T >::no", "structtk_1_1_has_function_expect_description_1_1no.html", null ],
     [ "tk::HasTypedefExpectType< T >::no", "structtk_1_1_has_typedef_expect_type_1_1no.html", null ],
+    [ "tk::HasFunctionExpectChoices< T >::no", "structtk_1_1_has_function_expect_choices_1_1no.html", null ],
     [ "tut::Has_common::noAlias", "structtut_1_1_has__common_1_1no_alias.html", null ],
     [ "kw::node_info", "structkw_1_1node__info.html", null ],
     [ "tut::Has_common::noExpectChoices", "structtut_1_1_has__common_1_1no_expect_choices.html", null ],
@@ -628,8 +628,8 @@ var hierarchy =
     [ "tag::nstep", "structtag_1_1nstep.html", null ],
     [ "kw::nstep_info", "structkw_1_1nstep__info.html", null ],
     [ "tk::tuple::nth_impl< n, Ts >", "structtk_1_1tuple_1_1nth__impl.html", null ],
-    [ "tk::tuple::nth_impl< 0, T, Ts...>", "structtk_1_1tuple_1_1nth__impl_3_010_00_01_t_00_01_ts_8_8_8_4.html", null ],
-    [ "tk::tuple::nth_impl< n, T, Ts...>", "structtk_1_1tuple_1_1nth__impl_3_01n_00_01_t_00_01_ts_8_8_8_4.html", null ],
+    [ "tk::tuple::nth_impl< 0, T, Ts... >", "structtk_1_1tuple_1_1nth__impl_3_010_00_01_t_00_01_ts_8_8_8_01_4.html", null ],
+    [ "tk::tuple::nth_impl< n, T, Ts... >", "structtk_1_1tuple_1_1nth__impl_3_01n_00_01_t_00_01_ts_8_8_8_01_4.html", null ],
     [ "walker::NumberFractionBeta< Init, Coefficients >", "classwalker_1_1_number_fraction_beta.html", null ],
     [ "walker::NumberFractionBetaCoeffConst", "classwalker_1_1_number_fraction_beta_coeff_const.html", null ],
     [ "tag::numfracbeta", "structtag_1_1numfracbeta.html", null ],
@@ -676,7 +676,9 @@ var hierarchy =
       [ "tk::grm::scan< Stack, keyword::pegtl_string, store_option< option, tag::selected, tags... > >", "structtk_1_1grm_1_1scan.html", [
         [ "breeze::deck::select_option< keyword, option, tags >", "structbreeze_1_1deck_1_1select__option.html", null ]
       ] ],
-      [ "tk::grm::scan< Stack, keyword::pegtl_string, tk::grm::store_back_option< Stack, use, ctr::DiffEq, tag::selected, tag::diffeq >, tk::grm::start_vector< Stack, tag::param, eq, tag::spike >, tk::grm::start_vector< Stack, tag::param, eq, tag::betapdf > >", "structtk_1_1grm_1_1scan.html", null ],
+      [ "tk::grm::scan< Stack, keyword::pegtl_string, tk::grm::store_back_option< Stack, use, ctr::DiffEq, tag::selected, tag::diffeq >, tk::grm::start_vector< Stack, tag::param, eq, tag::spike >, tk::grm::start_vector< Stack, tag::param, eq, tag::betapdf > >", "structtk_1_1grm_1_1scan.html", [
+        [ "walker::deck::scan_sde< keyword, eq >", "structwalker_1_1deck_1_1scan__sde.html", null ]
+      ] ],
       [ "tk::grm::scan< Stack, keyword::pegtl_string, tk::grm::store_back_option< Stack, use, ctr::PDE, tag::selected, tag::pde > >", "structtk_1_1grm_1_1scan.html", [
         [ "inciter::deck::scan_eq< keyword, eq >", "structinciter_1_1deck_1_1scan__eq.html", null ]
       ] ],
@@ -685,9 +687,7 @@ var hierarchy =
       ] ],
       [ "tk::grm::comment< Stack >", "structtk_1_1grm_1_1comment.html", null ],
       [ "tk::grm::readkw< Stack, token >", "structtk_1_1grm_1_1readkw.html", null ],
-      [ "tk::grm::scan< Stack, keywords, actions >", "structtk_1_1grm_1_1scan.html", [
-        [ "walker::deck::scan_sde< keyword, eq >", "structwalker_1_1deck_1_1scan__sde.html", null ]
-      ] ],
+      [ "tk::grm::scan< Stack, keywords, actions >", "structtk_1_1grm_1_1scan.html", null ],
       [ "tk::grm::scan_until< Stack, keywords, action, end >", "structtk_1_1grm_1_1scan__until.html", null ],
       [ "tk::grm::unknown< Stack, key, msg >", "structtk_1_1grm_1_1unknown.html", null ]
     ] ],
@@ -701,8 +701,8 @@ var hierarchy =
     ] ],
     [ "tag::partitioner", "structtag_1_1partitioner.html", null ],
     [ "kw::partitioning_info", "structkw_1_1partitioning__info.html", null ],
-    [ "inciter::PDE", "classinciter_1_1_p_d_e.html", null ],
     [ "tag::pde", "structtag_1_1pde.html", null ],
+    [ "inciter::PDE", "classinciter_1_1_p_d_e.html", null ],
     [ "kw::pde_diffusivity_info", "structkw_1_1pde__diffusivity__info.html", null ],
     [ "kw::pde_lambda_info", "structkw_1_1pde__lambda__info.html", null ],
     [ "kw::pde_u0_info", "structkw_1_1pde__u0__info.html", null ],
@@ -758,15 +758,15 @@ var hierarchy =
     [ "kw::reorder_info", "structkw_1_1reorder__info.html", null ],
     [ "tag::rho2", "structtag_1_1rho2.html", null ],
     [ "kw::rib_info", "structkw_1_1rib__info.html", null ],
-    [ "tk::RNG", "classtk_1_1_r_n_g.html", null ],
     [ "tag::rng", "structtag_1_1rng.html", null ],
+    [ "tk::RNG", "classtk_1_1_r_n_g.html", null ],
     [ "tut::RNG_common", "structtut_1_1_r_n_g__common.html", null ],
     [ "kw::rng_info", "structkw_1_1rng__info.html", null ],
     [ "tag::rngmkl", "structtag_1_1rngmkl.html", null ],
     [ "tut::RNGOptions_common", "structtut_1_1_r_n_g_options__common.html", null ],
     [ "kw::rngs_info", "structkw_1_1rngs__info.html", null ],
-    [ "tk::RNGSSE< State, SeqNumType, Generate >", "classtk_1_1_r_n_g_s_s_e.html", null ],
     [ "tag::rngsse", "structtag_1_1rngsse.html", null ],
+    [ "tk::RNGSSE< State, SeqNumType, Generate >", "classtk_1_1_r_n_g_s_s_e.html", null ],
     [ "tut::RNGSSE_common", "structtut_1_1_r_n_g_s_s_e__common.html", null ],
     [ "kw::rngsse_gm19_info", "structkw_1_1rngsse__gm19__info.html", null ],
     [ "kw::rngsse_gm29_info", "structkw_1_1rngsse__gm29__info.html", null ],
@@ -994,14 +994,14 @@ var hierarchy =
     [ "tut::Toggle_common", "structtut_1_1_toggle__common.html", null ],
     [ "tk::TriPDF", "classtk_1_1_tri_p_d_f.html", null ],
     [ "tk::tuple::tt_impl< S, T >", "structtk_1_1tuple_1_1tt__impl.html", null ],
-    [ "tk::tuple::tt_impl< extract< 2, 0, Ts...>, extract< 2, 1, Ts...> >", "structtk_1_1tuple_1_1tt__impl.html", [
+    [ "tk::tuple::tt_impl< extract< 2, 0, Ts... >, extract< 2, 1, Ts... > >", "structtk_1_1tuple_1_1tt__impl.html", [
       [ "tk::tuple::tagged_tuple< name, std::string, age, int, email, std::string >", "structtk_1_1tuple_1_1tagged__tuple.html", null ],
       [ "tk::tuple::tagged_tuple< tag::name, std::string, tag::age, int, tag::email, std::string >", "structtk_1_1tuple_1_1tagged__tuple.html", null ],
       [ "tk::tuple::tagged_tuple< tag::stat, bool, tag::pdf, bool >", "structtk_1_1tuple_1_1tagged__tuple.html", null ],
       [ "tk::tuple::tagged_tuple< Tags... >", "structtk_1_1tuple_1_1tagged__tuple.html", [
         [ "tk::ctr::ncomponents< Tags >", "classtk_1_1ctr_1_1ncomponents.html", null ]
       ] ],
-      [ "tk::tuple::tagged_tuple< Ts...>", "structtk_1_1tuple_1_1tagged__tuple.html", [
+      [ "tk::tuple::tagged_tuple< Ts... >", "structtk_1_1tuple_1_1tagged__tuple.html", [
         [ "tk::Control< tag::io, ios, tag::verbose, bool, tag::help, bool, tag::helpctr, bool, tag::cmdinfo, tk::ctr::HelpFactory, tag::ctrinfo, tk::ctr::HelpFactory, tag::helpkw, tk::ctr::HelpKw, tag::error, std::vector< std::string > >", "classtk_1_1_control.html", [
           [ "rngtest::ctr::CmdLine", "classrngtest_1_1ctr_1_1_cmd_line.html", null ]
         ] ],
@@ -1034,7 +1034,7 @@ var hierarchy =
     [ "tag::tty", "structtag_1_1tty.html", null ],
     [ "kw::ttyi_info", "structkw_1_1ttyi__info.html", null ],
     [ "tuple", null, [
-      [ "tk::tuple::tt_impl< typelist< Ss...>, typelist< Ts...> >", "structtk_1_1tuple_1_1tt__impl_3_01typelist_3_01_ss_8_8_8_4_00_01typelist_3_01_ts_8_8_8_4_01_4.html", null ]
+      [ "tk::tuple::tt_impl< typelist< Ss... >, typelist< Ts... > >", "structtk_1_1tuple_1_1tt__impl_3_01typelist_3_01_ss_8_8_8_01_4_00_01typelist_3_01_ts_8_8_8_01_4_01_4.html", null ]
     ] ],
     [ "kw::txt_float_default_info", "structkw_1_1txt__float__default__info.html", null ],
     [ "kw::txt_float_fixed_info", "structkw_1_1txt__float__fixed__info.html", null ],
@@ -1083,8 +1083,8 @@ var hierarchy =
     [ "walker::WalkerDriver", "classwalker_1_1_walker_driver.html", null ],
     [ "tk::Timer::Watch", "structtk_1_1_timer_1_1_watch.html", null ],
     [ "tag::WeightDistrib", "structtag_1_1_weight_distrib.html", null ],
-    [ "tag::wrightfisher", "structtag_1_1wrightfisher.html", null ],
     [ "walker::WrightFisher< Init, Coefficients >", "classwalker_1_1_wright_fisher.html", null ],
+    [ "tag::wrightfisher", "structtag_1_1wrightfisher.html", null ],
     [ "kw::wrightfisher_info", "structkw_1_1wrightfisher__info.html", null ],
     [ "walker::WrightFisherCoeffConst", "classwalker_1_1_wright_fisher_coeff_const.html", null ],
     [ "tk::Writer", "classtk_1_1_writer.html", [

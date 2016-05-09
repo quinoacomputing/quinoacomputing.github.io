@@ -1,122 +1,3 @@
-var NAVTREE =
-[
-  [ "Quinoa", "index.html", [
-    [ "Goals", "why.html", [
-      [ "Designed for the exascale era", "why.html#exascale", null ],
-      [ "Verified and proven to be correct", "why.html#correct", null ],
-      [ "Optimized for performance, power, and reliability", "why.html#optimized", null ],
-      [ "Advanced computer science outsourced to experts", "why.html#outsource", null ],
-      [ "Using a language that can cope with complexity", "why.html#language", null ],
-      [ "Highly-valued programmer productivity", "why.html#productivity", null ],
-      [ "User and developer friendly", "why.html#friendly", null ],
-      [ "Well documented", "why.html#documented", null ],
-      [ "Fun to work on", "why.html#fun", null ]
-    ] ],
-    [ "Inciter: Solve a PDE on unstructured meshes", "inciter_doc.html", null ],
-    [ "Walker: Random walker for stochastic differential equations", "walker_doc.html", null ],
-    [ "RNGTest: Random number generator test suite", "rngtest_doc.html", null ],
-    [ "UnitTest: Unit test suite", "unittest_doc.html", null ],
-    [ "MeshConv: Mesh file converter", "meshconv_doc.html", null ],
-    [ "Algorithm design", "algorithm.html", null ],
-    [ "Concurrency", "concurrency.html", null ],
-    [ "Differential equations", "diffeq.html", null ],
-    [ "Git subtree with TPLs and tools", "subtree.html", null ],
-    [ "Inhomogeneity strategy", "inhomogeneity.html", null ],
-    [ "Input/Output for PIC-based inhomogeneity strategy", "io.html", null ],
-    [ "Data layout design", "layout.html", [
-      [ "Data layout requirements and design", "layout.html#layout_req", null ],
-      [ "Possibilities", "layout.html#layout_possibilities", null ],
-      [ "Discussion", "layout.html#layout_discussion", null ],
-      [ "Assessment of the Blaze library that offers a similar choice", "layout.html#layout_blaze", null ],
-      [ "Assessment of the Kokkos library that offers a similar choice", "layout.html#layout_kokkos", null ],
-      [ "Requirements", "layout.html#layout_requirements", null ],
-      [ "Zero-runtime-cost data-layout wrappers with type-based compile-time dispatch", "layout.html#layout_zerocost", null ],
-      [ "Test of zero-cost", "layout.html#layout_test", null ],
-      [ "Debug assembly", "layout.html#layout_debugasm", null ],
-      [ "Excerpt from the Intel® 64 and IA-32 Architectures Software Developer Manual", "layout.html#layout_excerpt1", null ],
-      [ "Optimized assembly", "layout.html#layout_optasm", null ],
-      [ "Excerpt from the Intel® 64 and IA-32 Architectures Software Developer Manual", "layout.html#layout_excerpt2", null ],
-      [ "Control file used for benchmark", "layout.html#layout_input", null ],
-      [ "Ptr - Working with raw pointers", "layout.html#layout_ptr", null ],
-      [ "Par - Access via particle-major layout policy", "layout.html#layout_par", null ],
-      [ "Comparison of the algorithms", "layout.html#layout_comparison", null ],
-      [ "Conclusion", "layout.html#layout_conclusion", null ]
-    ] ],
-    [ "Third-party libraries licenses, compilers, and tools", "licenses.html", "licenses" ],
-    [ "Code coverage reports", "coverage.html", null ],
-    [ "How to generate logos", "logo.html", null ],
-    [ "Random number generators", "rng.html", null ],
-    [ "Random number generators input", "rngs_input.html", null ],
-    [ "Statistics output", "statistics_output.html", null ],
-    [ "Examples", "examples.html", "examples" ],
-    [ "Namespaces", null, [
-      [ "Namespace List", "namespaces.html", "namespaces" ],
-      [ "Namespace Members", "namespacemembers.html", [
-        [ "All", "namespacemembers.html", "namespacemembers_dup" ],
-        [ "Functions", "namespacemembers_func.html", null ],
-        [ "Variables", "namespacemembers_vars.html", null ],
-        [ "Typedefs", "namespacemembers_type.html", "namespacemembers_type" ],
-        [ "Enumerations", "namespacemembers_enum.html", null ],
-        [ "Enumerator", "namespacemembers_eval.html", null ]
-      ] ]
-    ] ],
-    [ "Classes", null, [
-      [ "Class List", "annotated.html", "annotated" ],
-      [ "Class Index", "classes.html", null ],
-      [ "Class Hierarchy", "hierarchy.html", "hierarchy" ],
-      [ "Class Members", "functions.html", [
-        [ "All", "functions.html", "functions_dup" ],
-        [ "Functions", "functions_func.html", "functions_func" ],
-        [ "Variables", "functions_vars.html", "functions_vars" ],
-        [ "Typedefs", "functions_type.html", "functions_type" ],
-        [ "Enumerations", "functions_enum.html", null ],
-        [ "Enumerator", "functions_eval.html", null ],
-        [ "Related Functions", "functions_rela.html", null ]
-      ] ]
-    ] ],
-    [ "Files", null, [
-      [ "File List", "files.html", "files" ],
-      [ "File Members", "globals.html", [
-        [ "All", "globals.html", null ],
-        [ "Functions", "globals_func.html", null ],
-        [ "Variables", "globals_vars.html", null ],
-        [ "Macros", "globals_defs.html", null ]
-      ] ]
-    ] ]
-  ] ]
-];
-
-var NAVTREEINDEX =
-[
-"_a_e_c_license.html",
-"_control_2_walker_2_types_8h.html#a50edc3e343b2ae45016d2667c0d2bdd9",
-"_init_8h_source.html",
-"_make__unique_8h.html#a9673c73139b1b3cfb2115976c8d4bda0",
-"_process_control_8_c_source.html",
-"_test_linear_map_8h.html#af93ae7e304c3677f06155b2f36ff88b4",
-"_zoltan2___partitioning_problem_8h.html",
-"classinciter_1_1_partitioner.html#a1efc884c6d615bfa0df4ac0436d7dfe4",
-"classrngtest_1_1_test_u01_stack.html#a4872aee1618174e887f3e5eccfe1442c",
-"classtk_1_1_exodus_i_i_mesh_writer.html#a1bf3741755a3eca721e9c6226a8df1ef",
-"classtk_1_1_r_n_g_print.html",
-"classtk_1_1ctr_1_1_m_k_l_uniform_method.html#a09d24913c021107d28cca583b5146470",
-"classwalker_1_1_dirichlet.html#a07eb71aa3dfb096ad1b6a536801de607",
-"classwalker_1_1_skew_normal_coeff_const.html#af533eacb5c9099711c34c732e23347b5",
-"integrator_8decl_8h_source.html",
-"structbreeze_1_1deck_1_1homrt.html",
-"structkw_1_1helpkw__info.html",
-"structkw_1_1pde__u0__info_1_1expect.html",
-"structkw_1_1seqlen__info_1_1expect.html",
-"structtag_1_1beta.html",
-"structtk_1_1ctr_1_1_term.html#ac12af8eeff10ad6420f9ddf8397e84e3",
-"structtut_1_1_m_k_l_beta_method__common.html#a173f9a6d91af66422a4a5f3a657d87fa",
-"walker_example_diagou.html#walker_example_diagou_output"
-];
-
-var SYNCONMSG = 'click to disable panel synchronisation';
-var SYNCOFFMSG = 'click to enable panel synchronisation';
-var SYNCONMSG = 'click to disable panel synchronisation';
-var SYNCOFFMSG = 'click to enable panel synchronisation';
 var navTreeSubIndices = new Array();
 
 function getData(varName)
@@ -137,6 +18,21 @@ function stripPath2(uri)
   var s = uri.substring(i+1);
   var m = uri.substring(0,i+1).match(/\/d\w\/d\w\w\/$/);
   return m ? uri.substring(i-6) : s;
+}
+
+function hashValue()
+{
+  return $(location).attr('hash').substring(1).replace(/[^\w\-]/g,'');
+}
+
+function hashUrl()
+{
+  return '#'+hashValue();
+}
+
+function pathName()
+{
+  return $(location).attr('pathname').replace(/[^-A-Za-z0-9+&@#/%?=~_|!:,.;\(\)]/g, '');
 }
 
 function localStorageSupported()
@@ -161,7 +57,7 @@ function deleteLink()
 {
   if (localStorageSupported()) {
     window.localStorage.setItem('navpath','');
-  } 
+  }
 }
 
 function cachedLink()
@@ -209,7 +105,7 @@ function createIndent(o,domNode,node,level)
     node.expandToggle.onclick = function() {
       if (node.expanded) {
         $(node.getChildrenUL()).slideUp("fast");
-        node.plus_img.src = node.relpath+"ftv2pnode.png";
+        node.plus_img.src = node.relpath+"arrowright.png";
         node.expanded = false;
       } else {
         expandNode(o, node, false, false);
@@ -217,13 +113,13 @@ function createIndent(o,domNode,node,level)
     }
     node.expandToggle.appendChild(imgNode);
     domNode.appendChild(node.expandToggle);
-    imgNode.src = node.relpath+"ftv2pnode.png";
+    imgNode.src = node.relpath+"arrowright.png";
   } else {
     var span = document.createElement("span");
     span.style.display = 'inline-block';
     span.style.width   = 16*(level+1)+'px';
     span.style.height  = '22px';
-    span.innerHTML = '&nbsp;';
+    span.innerHTML = '&#160;';
     domNode.appendChild(span);
   } 
 }
@@ -233,11 +129,13 @@ var animationInProgress = false;
 function gotoAnchor(anchor,aname,updateLocation)
 {
   var pos, docContent = $('#doc-content');
-  if (anchor.parent().attr('class')=='memItemLeft' ||
-      anchor.parent().attr('class')=='fieldtype' ||
-      anchor.parent().is(':header')) 
+  var ancParent = $(anchor.parent());
+  if (ancParent.hasClass('memItemLeft') ||
+      ancParent.hasClass('fieldname') ||
+      ancParent.hasClass('fieldtype') ||
+      ancParent.is(':header'))
   {
-    pos = anchor.parent().position().top;
+    pos = ancParent.position().top;
   } else if (anchor.position()) {
     pos = anchor.position().top;
   }
@@ -295,7 +193,7 @@ function newNode(o, po, text, link, childrenData, lastNode)
     a.className = stripPath(link.replace('#',':'));
     if (link.indexOf('#')!=-1) {
       var aname = '#'+link.split('#')[1];
-      var srcPage = stripPath($(location).attr('pathname'));
+      var srcPage = stripPath(pathName());
       var targetPage = stripPath(link.split('#')[0]);
       a.href = srcPage!=targetPage ? url : "javascript:void(0)"; 
       a.onclick = function(){
@@ -371,9 +269,9 @@ function expandNode(o, node, imm, showRoot)
         $(node.getChildrenUL()).slideDown("fast");
       }
       if (node.isLast) {
-        node.plus_img.src = node.relpath+"ftv2mlastnode.png";
+        node.plus_img.src = node.relpath+"arrowdown.png";
       } else {
-        node.plus_img.src = node.relpath+"ftv2mnode.png";
+        node.plus_img.src = node.relpath+"arrowdown.png";
       }
       node.expanded = true;
     }
@@ -389,14 +287,13 @@ function glowEffect(n,duration)
 
 function highlightAnchor()
 {
-  var aname = $(location).attr('hash');
+  var aname = hashUrl();
   var anchor = $(aname);
   if (anchor.parent().attr('class')=='memItemLeft'){
-    var rows = $('.memberdecls tr[class$="'+
-               window.location.hash.substring(1)+'"]');
+    var rows = $('.memberdecls tr[class$="'+hashValue()+'"]');
     glowEffect(rows.children(),300); // member without details
-  } else if (anchor.parents().slice(2).prop('tagName')=='TR') {
-    glowEffect(anchor.parents('div.memitem'),1000); // enum value
+  } else if (anchor.parent().attr('class')=='fieldname'){
+    glowEffect(anchor.parent().parent(),1000); // enum value
   } else if (anchor.parent().attr('class')=='fieldtype'){
     glowEffect(anchor.parent().parent(),1000); // struct field
   } else if (anchor.parent().is(":header")) {
@@ -411,7 +308,7 @@ function selectAndHighlight(hash,n)
 {
   var a;
   if (hash) {
-    var link=stripPath($(location).attr('pathname'))+':'+hash.substring(1);
+    var link=stripPath(pathName())+':'+hash.substring(1);
     a=$('.item a[class$="'+link+'"]');
   }
   if (a && a.length) {
@@ -444,11 +341,7 @@ function showNode(o, node, index, hash)
         getNode(o, node);
       }
       $(node.getChildrenUL()).css({'display':'block'});
-      if (node.isLast) {
-        node.plus_img.src = node.relpath+"ftv2mlastnode.png";
-      } else {
-        node.plus_img.src = node.relpath+"ftv2mnode.png";
-      }
+      node.plus_img.src = node.relpath+"arrowdown.png";
       node.expanded = true;
       var n = node.children[o.breadcrumbs[index]];
       if (index+1<o.breadcrumbs.length) {
@@ -522,14 +415,13 @@ function navTo(o,root,hash,relpath)
   if (link) {
     var parts = link.split('#');
     root = parts[0];
-    if (parts.length>1) hash = '#'+parts[1];
+    if (parts.length>1) hash = '#'+parts[1].replace(/[^\w\-]/g,'');
     else hash='';
   }
   if (hash.match(/^#l\d+$/)) {
     var anchor=$('a[name='+hash.substring(1)+']');
     glowEffect(anchor.parent(),1000); // line number
     hash=''; // strip line number anchors
-    //root=root.replace(/_source\./,'.'); // source link to doc link
   }
   var url=root+hash;
   var i=-1;
@@ -563,7 +455,7 @@ function toggleSyncButton(relpath)
   if (navSync.hasClass('sync')) {
     navSync.removeClass('sync');
     showSyncOff(navSync,relpath);
-    storeLink(stripPath2($(location).attr('pathname'))+$(location).attr('hash'));
+    storeLink(stripPath2(pathName())+hashUrl());
   } else {
     navSync.addClass('sync');
     showSyncOn(navSync,relpath);
@@ -587,7 +479,7 @@ function initNavTree(toroot,relpath)
   o.node.expanded = false;
   o.node.isLast = true;
   o.node.plus_img = document.createElement("img");
-  o.node.plus_img.src = relpath+"ftv2pnode.png";
+  o.node.plus_img.src = relpath+"arrowright.png";
   o.node.plus_img.width = 16;
   o.node.plus_img.height = 22;
 
@@ -603,7 +495,7 @@ function initNavTree(toroot,relpath)
   }
 
   $(window).load(function(){
-    navTo(o,toroot,window.location.hash,relpath);
+    navTo(o,toroot,hashUrl(),relpath);
     showRoot();
   });
 
@@ -611,21 +503,20 @@ function initNavTree(toroot,relpath)
      if (window.location.hash && window.location.hash.length>1){
        var a;
        if ($(location).attr('hash')){
-         var clslink=stripPath($(location).attr('pathname'))+':'+
-                               $(location).attr('hash').substring(1);
-         a=$('.item a[class$="'+clslink+'"]');
+         var clslink=stripPath(pathName())+':'+hashValue();
+         a=$('.item a[class$="'+clslink.replace(/</g,'\\3c ')+'"]');
        }
        if (a==null || !$(a).parent().parent().hasClass('selected')){
          $('.item').removeClass('selected');
          $('.item').removeAttr('id');
        }
-       var link=stripPath2($(location).attr('pathname'));
-       navTo(o,link,$(location).attr('hash'),relpath);
+       var link=stripPath2(pathName());
+       navTo(o,link,hashUrl(),relpath);
      } else if (!animationInProgress) {
        $('#doc-content').scrollTop(0);
        $('.item').removeClass('selected');
        $('.item').removeAttr('id');
-       navTo(o,toroot,window.location.hash,relpath);
+       navTo(o,toroot,hashUrl(),relpath);
      }
   })
 }

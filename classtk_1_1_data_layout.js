@@ -23,10 +23,9 @@ var classtk_1_1_data_layout =
     [ "operator[]", "classtk_1_1_data_layout.html#a77425f2d4e3b41a07ed5e7b16c04d16e", null ],
     [ "var", "classtk_1_1_data_layout.html#a6bd93feb7dcb6e638ab6eebb0e4441f5", null ],
     [ "var", "classtk_1_1_data_layout.html#a3806387c27b7a6b5e29743e7bed23949", null ],
-    [ "const", "classtk_1_1_data_layout.html#a4853b2d24e9e22789c7889527c12cca2", null ],
-    [ "m_nprop", "classtk_1_1_data_layout.html#a57ef624884fb965c2e1e0af246d609f6", null ],
+    [ "var", "classtk_1_1_data_layout.html#a9b9b3a9ca21059b3aa8e19570d81d300", null ],
+    [ "var", "classtk_1_1_data_layout.html#a656fa60511730c6da0e0e8764bf1804f", null ],
     [ "m_nprop", "classtk_1_1_data_layout.html#a445271e4e7a54e05445bd528f57f8005", null ],
     [ "m_nunk", "classtk_1_1_data_layout.html#a6c225fc5c0a46c40ef71ea7f40f18a90", null ],
-    [ "m_vec", "classtk_1_1_data_layout.html#a4516395fe50127ac99be6f55db149681", null ],
-    [ "unknown", "classtk_1_1_data_layout.html#aa141e4dfd0a2b4054ee66757cdffe896", null ]
+    [ "m_vec", "classtk_1_1_data_layout.html#a4516395fe50127ac99be6f55db149681", null ]
 ];
