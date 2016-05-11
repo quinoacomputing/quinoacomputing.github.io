@@ -1,12 +1,5 @@
 var NAVTREEINDEX18 =
 {
-"structkw_1_1txt__float__format__info.html#a0ef7fec701847c40634a93b008a6d8af":[22,0,2,146,1],
-"structkw_1_1txt__float__format__info.html#a58b153bc5fd3b4b25f126bb053b9ab11":[22,0,2,146,2],
-"structkw_1_1txt__float__format__info.html#ab195770fff0363963925b55148f135f6":[22,0,2,146,3],
-"structkw_1_1txt__float__format__info_1_1expect.html":[22,0,2,146,0],
-"structkw_1_1txt__float__format__info_1_1expect.html#a8cf9945b0c398d337a4677399128a633":[22,0,2,146,0,1],
-"structkw_1_1txt__float__format__info_1_1expect.html#aa2551548e10aea5108ad7140138f8c18":[22,0,2,146,0,0],
-"structkw_1_1txt__float__scientific__info.html":[22,0,2,147],
 "structkw_1_1txt__float__scientific__info.html#a085d3eeb393ee20c9671ddd92be9298d":[22,0,2,147,0],
 "structkw_1_1txt__float__scientific__info.html#aa45727848bb638e7e9188b1fcce6ccfe":[22,0,2,147,1],
 "structkw_1_1txt__float__scientific__info.html#ae614f8d13caa2a7263c64f7e36a1f45e":[22,0,2,147,2],
@@ -249,5 +242,12 @@ var NAVTREEINDEX18 =
 "structtag_1_1r.html":[22,0,5,112],
 "structtag_1_1rcomma.html":[22,0,5,114],
 "structtag_1_1reorder.html":[22,0,5,115],
-"structtag_1_1rho2.html":[22,0,5,116]
+"structtag_1_1rho2.html":[22,0,5,116],
+"structtag_1_1rng.html":[22,0,5,117],
+"structtag_1_1rngmkl.html":[22,0,5,118],
+"structtag_1_1rngsse.html":[22,0,5,119],
+"structtag_1_1seed.html":[22,0,5,126],
+"structtag_1_1selected.html":[22,0,5,127],
+"structtag_1_1seqlen.html":[22,0,5,128],
+"structtag_1_1sigmasq.html":[22,0,5,130]
 };

@@ -1,10 +1,16 @@
 var searchData=
 [
-  ['accurate',['accurate',['../namespacekw.html#aaefee0ab7c2ad02d2219b312f128fe28',1,'kw']]],
-  ['advdiff',['advdiff',['../namespacekw.html#a35962e4a32289684c1280603160efbc5',1,'kw']]],
-  ['advdiffpdeparameters',['AdvDiffPDEParameters',['../namespaceinciter_1_1ctr.html#aabf0e2c750efb4b28c1e87e71ba0e6b2',1,'inciter::ctr']]],
-  ['advdiffproblems',['AdvDiffProblems',['../namespaceinciter.html#aceb24a672a8adf8e92d9f7f19cb8033f',1,'inciter']]],
-  ['algorithm',['algorithm',['../namespacekw.html#ad4bef6b683a7db31347e8fe3531453bc',1,'kw']]],
-  ['alias',['alias',['../structkw_1_1help__info.html#a6052c59c0965b5f259e711c50e83fe9f',1,'kw::help_info::alias()'],['../structkw_1_1helpctr__info.html#a1bd3932b7e7c2be5a0fdc9745bf0401b',1,'kw::helpctr_info::alias()'],['../structkw_1_1helpkw__info.html#aa26cbf1642d3867b81427f15f5f0ab5f',1,'kw::helpkw_info::alias()'],['../structkw_1_1control__info.html#a19c0dacd5c4f71cd468197cf666145d3',1,'kw::control_info::alias()'],['../structkw_1_1verbose__info.html#a2ae20ed09c9cd5e1fb319387d39348c7',1,'kw::verbose_info::alias()'],['../structkw_1_1virtualization__info.html#a193df96c0e7545dc55b295f7acb407e8',1,'kw::virtualization_info::alias()'],['../structkw_1_1pdf__info.html#a6a4ff310614940bbf6cad21f480818c1',1,'kw::pdf_info::alias()'],['../structkw_1_1stat__info.html#aebf9818e9ebd21d764cb06b1ea731348',1,'kw::stat_info::alias()'],['../structkw_1_1input__info.html#aa373b786fb5f49fd265d112a60d18e51',1,'kw::input_info::alias()'],['../structkw_1_1output__info.html#adad50d4b6fbe2c9c37fefdc205e2cd66',1,'kw::output_info::alias()'],['../structkw_1_1reorder__info.html#a7f8beaa8e572afddfef39c56b02c215e',1,'kw::reorder_info::alias()'],['../structkw_1_1group__info.html#a4d0e7afcd4e58cbe70d7a3573522f95c',1,'kw::group_info::alias()'],['../structtut_1_1_has__common_1_1yes_alias.html#a63cb83c81c80f42b61e19f0cc19f8429',1,'tut::Has_common::yesAlias::alias()']]],
-  ['array',['Array',['../namespacetut_1_1charm.html#a041a11c3df55e8509a6823311e7fa867',1,'tut::charm']]]
+  ['base_5fadapter_5ft',['base_adapter_t',['../classtk_1_1zoltan_1_1_geometric_mesh_elem_adapter.html#ad0f9a5717e64db6d8f4e3b14b9214658',1,'tk::zoltan::GeometricMeshElemAdapter']]],
+  ['batteryfactory',['BatteryFactory',['../namespacerngtest.html#a27f5b52643c9bffce647cde2438d33c1',1,'rngtest']]],
+  ['beta',['beta',['../namespacekw.html#a71f30a160df5dc79cf114eea0a4ad97f',1,'kw']]],
+  ['beta_5fat',['Beta_At',['../namespacekw.html#ae119f30574acfd81119db24a156d391d',1,'kw']]],
+  ['beta_5fmethod',['beta_method',['../namespacekw.html#ab25a3aae3da7688e4a1843af8d1d2dc6',1,'kw']]],
+  ['betacoeffpolicies',['BetaCoeffPolicies',['../namespacewalker.html#af9ae6258ad44a778afd53cdbe4b668fd',1,'walker']]],
+  ['betaparameters',['BetaParameters',['../namespacewalker_1_1ctr.html#a50edc3e343b2ae45016d2667c0d2bdd9',1,'walker::ctr']]],
+  ['betapdf',['betapdf',['../namespacekw.html#aab1ee49e3ce28cb69a6e210fcf3152aa',1,'kw']]],
+  ['bigcrush',['bigcrush',['../namespacekw.html#a4c0ad3414fa6b4315f498936aee9a8ea',1,'kw']]],
+  ['boostoptionalint',['BoostOptionalInt',['../namespacetut_1_1charm.html#a752469d4174512553107b86c859315ce',1,'tut::charm']]],
+  ['boostoptionalstr',['BoostOptionalStr',['../namespacetut_1_1charm.html#a635d0a9cbfb0c2038b684c9c54991393',1,'tut::charm']]],
+  ['boxmuller',['boxmuller',['../namespacekw.html#ae2f0752b791fd58b5eb935ed2d44dab9',1,'kw']]],
+  ['boxmuller2',['boxmuller2',['../namespacekw.html#ae26604cec0dc9f087c8d078d8dbe280e',1,'kw']]]
 ];

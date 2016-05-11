@@ -7,11 +7,6 @@ var namespacetk =
     [ "rngsse", "namespacetk_1_1rngsse.html", "namespacetk_1_1rngsse" ],
     [ "tuple", "namespacetk_1_1tuple.html", "namespacetk_1_1tuple" ],
     [ "zoltan", "namespacetk_1_1zoltan.html", "namespacetk_1_1zoltan" ],
-    [ "_MakeUniq", "structtk_1_1___make_uniq.html", "structtk_1_1___make_uniq" ],
-    [ "_MakeUniq< _Tp[]>", "structtk_1_1___make_uniq_3_01___tp[]_4.html", "structtk_1_1___make_uniq_3_01___tp[]_4" ],
-    [ "_MakeUniq< _Tp[_Bound]>", "structtk_1_1___make_uniq_3_01___tp[___bound]_4.html", [
-      [ "__invalid_type", "structtk_1_1___make_uniq_3_01___tp[___bound]_4_1_1____invalid__type.html", null ]
-    ] ],
     [ "BiPDF", "classtk_1_1_bi_p_d_f.html", "classtk_1_1_bi_p_d_f" ],
     [ "Control", "classtk_1_1_control.html", "classtk_1_1_control" ],
     [ "DataLayout", "classtk_1_1_data_layout.html", "classtk_1_1_data_layout" ],
