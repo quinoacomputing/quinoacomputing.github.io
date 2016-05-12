@@ -1,5 +1,11 @@
 var NAVTREEINDEX10 =
 {
+"classtk_1_1_statistics.html#a74a7bc49a61a9f9ecdd92ec2b0b43ab1":[22,0,6,43,17],
+"classtk_1_1_statistics.html#a7c494ffdd2984c2126be72bd7824cc7c":[22,0,6,43,6],
+"classtk_1_1_statistics.html#a7ccae69fe2cc94707b9b577903f9381e":[22,0,6,43,26],
+"classtk_1_1_statistics.html#a7e41e30d8dba65cd60f8a778d73974b7":[22,0,6,43,39],
+"classtk_1_1_statistics.html#a80de7e91699089c06cbeb43465aa4164":[22,0,6,43,25],
+"classtk_1_1_statistics.html#a849a1b25a8e21070d4dda2d9ab74c686":[22,0,6,43,11],
 "classtk_1_1_statistics.html#a86e44394ce4b7e70cd56ff8db5560002":[22,0,6,43,38],
 "classtk_1_1_statistics.html#a88c790e142332da7809a507984187464":[22,0,6,43,16],
 "classtk_1_1_statistics.html#a89efc768e05c525902cade0c2e2540e0":[22,0,6,43,9],
@@ -243,11 +249,5 @@ var NAVTREEINDEX10 =
 "classtk_1_1zoltan_1_1_geometric_mesh_elem_adapter.html#a5dd26356a1a325e69deeac3f10819c8c":[22,0,6,6,0,11],
 "classtk_1_1zoltan_1_1_geometric_mesh_elem_adapter.html#a5df12f304fb7c7a3097c432c1971b82d":[22,0,6,6,0,5],
 "classtk_1_1zoltan_1_1_geometric_mesh_elem_adapter.html#a5ff37312097a8bd820cfab1f88890dfd":[22,0,6,6,0,9],
-"classtk_1_1zoltan_1_1_geometric_mesh_elem_adapter.html#a688b9f23ed8018971ae5bb5b810778b2":[22,0,6,6,0,10],
-"classtk_1_1zoltan_1_1_geometric_mesh_elem_adapter.html#a9fd145e0578e511c94e4149349bbdaac":[22,0,6,6,0,14],
-"classtk_1_1zoltan_1_1_geometric_mesh_elem_adapter.html#aabb1bead51a1bc64ab27c1bf0bb254e6":[22,0,6,6,0,6],
-"classtk_1_1zoltan_1_1_geometric_mesh_elem_adapter.html#ab42803d0ce8f329c53b1e079d9f15d48":[22,0,6,6,0,7],
-"classtk_1_1zoltan_1_1_geometric_mesh_elem_adapter.html#ab87ed694e974ea7e06f2d89026de0b90":[22,0,6,6,0,13],
-"classtk_1_1zoltan_1_1_geometric_mesh_elem_adapter.html#abf081726cc387df6d327e4c8ecaf9870":[22,0,6,6,0,3],
-"classtk_1_1zoltan_1_1_geometric_mesh_elem_adapter.html#ad0f9a5717e64db6d8f4e3b14b9214658":[22,0,6,6,0,0]
+"classtk_1_1zoltan_1_1_geometric_mesh_elem_adapter.html#a688b9f23ed8018971ae5bb5b810778b2":[22,0,6,6,0,10]
 };

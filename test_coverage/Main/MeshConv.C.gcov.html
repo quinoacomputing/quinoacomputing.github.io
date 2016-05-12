@@ -24,7 +24,7 @@
           </tr>
           <tr>
             <td class="headerItem">Commit:</td>
-            <td class="headerValue">c056ba8</td>
+            <td class="headerValue">caa16fa</td>
             <td></td>
             <td class="headerItem">Lines:</td>
             <td class="headerCovTableEntry">23</td>
@@ -33,7 +33,7 @@
           </tr>
           <tr>
             <td class="headerItem">Date:</td>
-            <td class="headerValue">2016-05-11 11:32:21</td>
+            <td class="headerValue">2016-05-11 22:10:52</td>
             <td></td>
             <td class="headerItem">Functions:</td>
             <td class="headerCovTableEntry">6</td>
@@ -72,7 +72,7 @@
       <td>
 <pre class="sourceHeading">           Branch data     Line data    Source code</pre>
 <pre class="source">
-<a name="1"><span class="lineNum">       1 </span>                :            : //******************************************************************************</a>
+<a name="1"><span class="lineNum">       1 </span>                :            : // *****************************************************************************</a>
 <span class="lineNum">       2 </span>                :            : /*!
 <span class="lineNum">       3 </span>                :            :   \file      src/Main/MeshConv.C
 <span class="lineNum">       4 </span>                :            :   \author    J. Bakosi
@@ -82,143 +82,141 @@
 <span class="lineNum">       8 </span>                :            :   \details   Mesh file converter Charm++ main chare. This file contains the
 <span class="lineNum">       9 </span>                :            :     definition of the Charm++ main chare, equivalent to main() in Charm++-land.
 <span class="lineNum">      10 </span>                :            : */
-<span class="lineNum">      11 </span>                :            : //******************************************************************************
+<span class="lineNum">      11 </span>                :            : // *****************************************************************************
 <span class="lineNum">      12 </span>                :            : 
 <span class="lineNum">      13 </span>                :            : #include &lt;vector&gt;
 <span class="lineNum">      14 </span>                :            : #include &lt;utility&gt;
 <span class="lineNum">      15 </span>                :            : #include &lt;iostream&gt;
 <span class="lineNum">      16 </span>                :            : 
-<span class="lineNum">      17 </span>                :            : #include &lt;boost/format.hpp&gt;
-<span class="lineNum">      18 </span>                :            : 
-<span class="lineNum">      19 </span>                :            : #include &quot;Print.h&quot;
-<span class="lineNum">      20 </span>                :            : #include &quot;Timer.h&quot;
-<span class="lineNum">      21 </span>                :            : #include &quot;Types.h&quot;
-<span class="lineNum">      22 </span>                :            : #include &quot;QuinoaConfig.h&quot;
-<span class="lineNum">      23 </span>                :            : #include &quot;Init.h&quot;
-<span class="lineNum">      24 </span>                :            : #include &quot;Tags.h&quot;
-<span class="lineNum">      25 </span>                :            : #include &quot;MeshConvDriver.h&quot;
-<span class="lineNum">      26 </span>                :            : #include &quot;MeshConv/CmdLine/CmdLine.h&quot;
-<span class="lineNum">      27 </span>                :            : #include &quot;MeshConv/CmdLine/Parser.h&quot;
-<span class="lineNum">      28 </span>                :            : #include &quot;ProcessException.h&quot;
-<span class="lineNum">      29 </span>                :            : 
-<span class="lineNum">      30 </span>                :            : #include &quot;NoWarning/charm.h&quot;
-<span class="lineNum">      31 </span>                :            : #include &quot;NoWarning/meshconv.decl.h&quot;
-<span class="lineNum">      32 </span>                :            : 
-<span class="lineNum">      33 </span>                :            : #if defined(__clang__)
-<span class="lineNum">      34 </span>                :            :   #pragma clang diagnostic push
-<span class="lineNum">      35 </span>                :            :   #pragma clang diagnostic ignored &quot;-Wmissing-variable-declarations&quot;
-<span class="lineNum">      36 </span>                :            : #endif
-<span class="lineNum">      37 </span>                :            : 
-<span class="lineNum">      38 </span>                :            : //! \brief Charm handle to the main proxy, facilitates call-back to finalize,
-<span class="lineNum">      39 </span>                :            : //!    etc., must be in global scope, unique per executable
-<span class="lineNum">      40 </span>                :            : CProxy_Main mainProxy;
-<span class="lineNum">      41 </span>                :            : 
-<span class="lineNum">      42 </span>                :            : #if defined(__clang__)
-<span class="lineNum">      43 </span>                :            :   #pragma clang diagnostic pop
-<span class="lineNum">      44 </span>                :            : #endif
-<span class="lineNum">      45 </span>                :            : 
-<a name="46"><span class="lineNum">      46 </span>                :            : //! \brief Charm++ main chare for the mesh converter executable, meshconv.</a>
-<span class="lineNum">      47 </span>                :            : //! \details Note that this object should not be in a namespace.
-<span class="lineNum">      48 </span>        [<span class="branchNoExec" title="Branch 9 was not executed"> # </span><span class="branchNoExec" title="Branch 10 was not executed"> # </span>]:<span class="lineNoCov">          0 : class Main : public CBase_Main {</span>
-<span class="lineNum">      49 </span>                :            : 
-<span class="lineNum">      50 </span>                :            :   public:
-<span class="lineNum">      51 </span>                :            :     //! \brief Constructor
-<span class="lineNum">      52 </span>                :            :     //! \details The main chare constructor is the main entry point of the
-<span class="lineNum">      53 </span>                :            :     //!   program, called by the Charm++ runtime system. The constructor does
-<span class="lineNum">      54 </span>                :            :     //!   basic initialization steps, e.g., parser the command-line, prints out
-<span class="lineNum">      55 </span>                :            :     //!   some useful information to screen (in verbose mode), and instantiates
-<span class="lineNum">      56 </span>                :            :     //!   a driver. Since Charm++ is fully asynchronous, the constructor
-<span class="lineNum">      57 </span>                :            :     //!   usually spawns asynchronous objects and immediately exits. Thus in the
-<span class="lineNum">      58 </span>                :            :     //!   body of the main chare constructor we fire up an 'execute' chare,
-<span class="lineNum">      59 </span>                :            :     //!   which then calls back to Main::execute(). Finishing the main chare
-<span class="lineNum">      60 </span>                :            :     //!   constructor the Charm++ runtime system then starts the
-<span class="lineNum">      61 </span>                :            :     //!   network-migration of all global-scope data (if any). The execute chare
-<span class="lineNum">      62 </span>                :            :     //!   calling back to Main::execute() signals the end of the migration of
-<span class="lineNum">      63 </span>                :            :     //!   the global-scope data. Then we are ready to execute the driver which
-<span class="lineNum">      64 </span>                :            :     //!   calls back to Main::finalize() when it finished. Then finalize() exits
-<a name="65"><span class="lineNum">      65 </span>                :            :     //!   by calling Charm++'s CkExit(), shutting down the runtime system.</a>
-<span class="lineNum">      66 </span>                :            :     //! \see http://charm.cs.illinois.edu/manuals/html/charm++/manual.html
-<span class="lineNum">      67 </span>                :<span class="lineCov">         18 :     Main( CkArgMsg* msg )</span>
-<span class="lineNum">      68 </span>                :            :     try :
-<span class="lineNum">      69 </span>                :            :       m_cmdline(),
-<span class="lineNum">      70 </span>                :            :       // Parse command line into m_cmdline using default simple pretty printer
-<span class="lineNum">      71 </span>                :            :       m_cmdParser( msg-&gt;argc, msg-&gt;argv, tk::Print(), m_cmdline ),
-<span class="lineNum">      72 </span>                :            :       // Create pretty printer initializing output streams based on command line
-<span class="lineNum">      73 </span>                :<span class="lineCov">          9 :       m_print( m_cmdline.get&lt; tag::verbose &gt;() ? std::cout : std::clog ),</span>
-<span class="lineNum">      74 </span>                :            :       // Create MeshConv driver
-<span class="lineNum">      75 </span>                :            :       m_driver( tk::Main&lt; meshconv::MeshConvDriver &gt;
-<span class="lineNum">      76 </span>                :            :                         ( msg-&gt;argc, msg-&gt;argv,
-<span class="lineNum">      77 </span>                :            :                           m_cmdline,
-<span class="lineNum">      78 </span>                :            :                           tk::HeaderType::MESHCONV,
-<span class="lineNum">      79 </span>                :            :                           MESHCONV_EXECUTABLE,
-<span class="lineNum">      80 </span>                :            :                           m_print ) ),
-<span class="lineNum">      81 </span>                :            :       m_timer(1),       // Start new timer measuring the total runtime
-<span class="lineNum">      82 </span>[<span class="branchCov" title="Branch 2 was taken 9 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>][<span class="branchCov" title="Branch 6 was taken 9 times"> + </span><span class="branchNoCov" title="Branch 7 was not taken"> - </span>]:<span class="lineCov">         18 :       m_timestamp()</span>
+<span class="lineNum">      17 </span>                :            : #include &quot;Print.h&quot;
+<span class="lineNum">      18 </span>                :            : #include &quot;Timer.h&quot;
+<span class="lineNum">      19 </span>                :            : #include &quot;Types.h&quot;
+<span class="lineNum">      20 </span>                :            : #include &quot;QuinoaConfig.h&quot;
+<span class="lineNum">      21 </span>                :            : #include &quot;Init.h&quot;
+<span class="lineNum">      22 </span>                :            : #include &quot;Tags.h&quot;
+<span class="lineNum">      23 </span>                :            : #include &quot;MeshConvDriver.h&quot;
+<span class="lineNum">      24 </span>                :            : #include &quot;MeshConv/CmdLine/CmdLine.h&quot;
+<span class="lineNum">      25 </span>                :            : #include &quot;MeshConv/CmdLine/Parser.h&quot;
+<span class="lineNum">      26 </span>                :            : #include &quot;ProcessException.h&quot;
+<span class="lineNum">      27 </span>                :            : 
+<span class="lineNum">      28 </span>                :            : #include &quot;NoWarning/charm.h&quot;
+<span class="lineNum">      29 </span>                :            : #include &quot;NoWarning/meshconv.decl.h&quot;
+<span class="lineNum">      30 </span>                :            : 
+<span class="lineNum">      31 </span>                :            : #if defined(__clang__)
+<span class="lineNum">      32 </span>                :            :   #pragma clang diagnostic push
+<span class="lineNum">      33 </span>                :            :   #pragma clang diagnostic ignored &quot;-Wmissing-variable-declarations&quot;
+<span class="lineNum">      34 </span>                :            : #endif
+<span class="lineNum">      35 </span>                :            : 
+<span class="lineNum">      36 </span>                :            : //! \brief Charm handle to the main proxy, facilitates call-back to finalize,
+<span class="lineNum">      37 </span>                :            : //!    etc., must be in global scope, unique per executable
+<span class="lineNum">      38 </span>                :            : CProxy_Main mainProxy;
+<span class="lineNum">      39 </span>                :            : 
+<span class="lineNum">      40 </span>                :            : #if defined(__clang__)
+<span class="lineNum">      41 </span>                :            :   #pragma clang diagnostic pop
+<span class="lineNum">      42 </span>                :            : #endif
+<span class="lineNum">      43 </span>                :            : 
+<a name="44"><span class="lineNum">      44 </span>                :            : //! \brief Charm++ main chare for the mesh converter executable, meshconv.</a>
+<span class="lineNum">      45 </span>                :            : //! \details Note that this object should not be in a namespace.
+<span class="lineNum">      46 </span>        [<span class="branchNoExec" title="Branch 9 was not executed"> # </span><span class="branchNoExec" title="Branch 10 was not executed"> # </span>]:<span class="lineNoCov">          0 : class Main : public CBase_Main {</span>
+<span class="lineNum">      47 </span>                :            : 
+<span class="lineNum">      48 </span>                :            :   public:
+<span class="lineNum">      49 </span>                :            :     //! \brief Constructor
+<span class="lineNum">      50 </span>                :            :     //! \details The main chare constructor is the main entry point of the
+<span class="lineNum">      51 </span>                :            :     //!   program, called by the Charm++ runtime system. The constructor does
+<span class="lineNum">      52 </span>                :            :     //!   basic initialization steps, e.g., parser the command-line, prints out
+<span class="lineNum">      53 </span>                :            :     //!   some useful information to screen (in verbose mode), and instantiates
+<span class="lineNum">      54 </span>                :            :     //!   a driver. Since Charm++ is fully asynchronous, the constructor
+<span class="lineNum">      55 </span>                :            :     //!   usually spawns asynchronous objects and immediately exits. Thus in the
+<span class="lineNum">      56 </span>                :            :     //!   body of the main chare constructor we fire up an 'execute' chare,
+<span class="lineNum">      57 </span>                :            :     //!   which then calls back to Main::execute(). Finishing the main chare
+<span class="lineNum">      58 </span>                :            :     //!   constructor the Charm++ runtime system then starts the
+<span class="lineNum">      59 </span>                :            :     //!   network-migration of all global-scope data (if any). The execute chare
+<span class="lineNum">      60 </span>                :            :     //!   calling back to Main::execute() signals the end of the migration of
+<span class="lineNum">      61 </span>                :            :     //!   the global-scope data. Then we are ready to execute the driver which
+<span class="lineNum">      62 </span>                :            :     //!   calls back to Main::finalize() when it finished. Then finalize() exits
+<a name="63"><span class="lineNum">      63 </span>                :            :     //!   by calling Charm++'s CkExit(), shutting down the runtime system.</a>
+<span class="lineNum">      64 </span>                :            :     //! \see http://charm.cs.illinois.edu/manuals/html/charm++/manual.html
+<span class="lineNum">      65 </span>                :<span class="lineCov">         18 :     Main( CkArgMsg* msg )</span>
+<span class="lineNum">      66 </span>                :            :     try :
+<span class="lineNum">      67 </span>                :            :       m_cmdline(),
+<span class="lineNum">      68 </span>                :            :       // Parse command line into m_cmdline using default simple pretty printer
+<span class="lineNum">      69 </span>                :            :       m_cmdParser( msg-&gt;argc, msg-&gt;argv, tk::Print(), m_cmdline ),
+<span class="lineNum">      70 </span>                :            :       // Create pretty printer initializing output streams based on command line
+<span class="lineNum">      71 </span>                :<span class="lineCov">          9 :       m_print( m_cmdline.get&lt; tag::verbose &gt;() ? std::cout : std::clog ),</span>
+<span class="lineNum">      72 </span>                :            :       // Create MeshConv driver
+<span class="lineNum">      73 </span>                :            :       m_driver( tk::Main&lt; meshconv::MeshConvDriver &gt;
+<span class="lineNum">      74 </span>                :            :                         ( msg-&gt;argc, msg-&gt;argv,
+<span class="lineNum">      75 </span>                :            :                           m_cmdline,
+<span class="lineNum">      76 </span>                :            :                           tk::HeaderType::MESHCONV,
+<span class="lineNum">      77 </span>                :            :                           MESHCONV_EXECUTABLE,
+<span class="lineNum">      78 </span>                :            :                           m_print ) ),
+<span class="lineNum">      79 </span>                :            :       m_timer(1),       // Start new timer measuring the total runtime
+<span class="lineNum">      80 </span>[<span class="branchCov" title="Branch 2 was taken 9 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>][<span class="branchCov" title="Branch 6 was taken 9 times"> + </span><span class="branchNoCov" title="Branch 7 was not taken"> - </span>]:<span class="lineCov">         18 :       m_timestamp()</span>
 <span class="lineNum">         </span>[<span class="branchCov" title="Branch 10 was taken 9 times"> + </span><span class="branchNoCov" title="Branch 11 was not taken"> - </span>][<span class="branchCov" title="Branch 13 was taken 9 times"> + </span><span class="branchNoCov" title="Branch 14 was not taken"> - </span>]
 <span class="lineNum">         </span>[<span class="branchCov" title="Branch 16 was taken 9 times"> + </span><span class="branchNoCov" title="Branch 17 was not taken"> - </span>][<span class="branchCov" title="Branch 19 was taken 9 times"> + </span><span class="branchNoCov" title="Branch 20 was not taken"> - </span>]
 <span class="lineNum">         </span>[<span class="branchCov" title="Branch 23 was taken 9 times"> + </span><span class="branchNoCov" title="Branch 24 was not taken"> - </span>][<span class="branchCov" title="Branch 26 was taken 9 times"> + </span><span class="branchNoCov" title="Branch 27 was not taken"> - </span>]
 <span class="lineNum">         </span>        [<span class="branchCov" title="Branch 32 was taken 9 times"> + </span><span class="branchNoCov" title="Branch 33 was not taken"> - </span>]
-<span class="lineNum">      83 </span>                :            :     {
-<span class="lineNum">      84 </span>        [<span class="branchCov" title="Branch 1 was taken 9 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">          9 :       delete msg;</span>
-<span class="lineNum">      85 </span>        [<span class="branchCov" title="Branch 1 was taken 9 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">          9 :       mainProxy = thisProxy;</span>
-<span class="lineNum">      86 </span>                :            :       // Fire up an asynchronous execute object, which when created at some
-<span class="lineNum">      87 </span>                :            :       // future point in time will call back to this-&gt;execute(). This is
-<span class="lineNum">      88 </span>                :            :       // necessary so that this-&gt;execute() can access already migrated
-<span class="lineNum">      89 </span>                :            :       // global-scope data.
-<span class="lineNum">      90 </span>        [<span class="branchCov" title="Branch 1 was taken 9 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">          9 :       CProxy_execute::ckNew();</span>
-<span class="lineNum">      91 </span>                :            :       // Start new timer measuring the migration of global-scope data
-<span class="lineNum">      92 </span>        [<span class="branchCov" title="Branch 1 was taken 9 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">          9 :       m_timer.emplace_back();</span>
-<a name="93"><span class="lineNum">      93 </span>        [<span class="branchNoExec" title="Branch 2 was not executed"> # </span><span class="branchNoExec" title="Branch 3 was not executed"> # </span>]:<span class="lineCov">          9 :     } catch (...) { tk::processExceptionCharm(); }</span></a>
-<span class="lineNum">      94 </span>                :            : 
-<span class="lineNum">      95 </span>                :<span class="lineCov">          9 :     void execute() {</span>
-<span class="lineNum">      96 </span>                :            :       try {
-<span class="lineNum">      97 </span>[<span class="branchCov" title="Branch 2 was taken 9 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>][<span class="branchCov" title="Branch 5 was taken 9 times"> + </span><span class="branchNoCov" title="Branch 6 was not taken"> - </span>]:<span class="lineCov">          9 :         m_timestamp.emplace_back(&quot;Migrate global-scope data&quot;, m_timer[1].hms());</span>
-<span class="lineNum">      98 </span>        [<span class="branchCov" title="Branch 1 was taken 9 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">          9 :         m_driver.execute();</span>
-<span class="lineNum">      99 </span>        [<span class="branchNoExec" title="Branch 2 was not executed"> # </span><span class="branchNoExec" title="Branch 3 was not executed"> # </span>]:<span class="lineNoCov">          0 :       } catch (...) { tk::processExceptionCharm(); }</span>
-<a name="100"><span class="lineNum">     100 </span>                :<span class="lineCov">          9 :     }</span></a>
-<span class="lineNum">     101 </span>                :            : 
-<span class="lineNum">     102 </span>                :<span class="lineCov">          9 :     void finalize() {</span>
-<span class="lineNum">     103 </span>                :            :       try {
-<span class="lineNum">     104 </span>[<span class="branchCov" title="Branch 2 was taken 9 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>][<span class="branchCov" title="Branch 5 was taken 9 times"> + </span><span class="branchNoCov" title="Branch 6 was not taken"> - </span>]:<span class="lineCov">          9 :         m_timestamp.emplace_back( &quot;Total runtime&quot;, m_timer[0].hms() );</span>
-<span class="lineNum">     105 </span>[<span class="branchCov" title="Branch 2 was taken 9 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>][<span class="branchCov" title="Branch 5 was taken 9 times"> + </span><span class="branchNoCov" title="Branch 6 was not taken"> - </span>]:<span class="lineCov">          9 :         m_print.time( &quot;Timers (h:m:s)&quot;, m_timestamp );</span>
-<span class="lineNum">     106 </span>        [<span class="branchCov" title="Branch 1 was taken 9 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">          9 :         m_print.endpart();</span>
-<span class="lineNum">     107 </span>        [<span class="branchNoExec" title="Branch 2 was not executed"> # </span><span class="branchNoExec" title="Branch 3 was not executed"> # </span>]:<span class="lineNoCov">          0 :       } catch (...) { tk::processExceptionCharm(); }</span>
-<span class="lineNum">     108 </span>                :            :       // Tell the Charm++ runtime system to exit
-<span class="lineNum">     109 </span>                :<span class="lineCov">          9 :       CkExit();</span>
-<span class="lineNum">     110 </span>                :<span class="lineNoCov">          0 :     }</span>
-<a name="111"><span class="lineNum">     111 </span>                :            : </a>
-<span class="lineNum">     112 </span>                :            :     //! Add a time stamp contributing to final timers output
-<span class="lineNum">     113 </span>                :<span class="lineCov">         18 :     void timestamp( std::string label, tk::real stamp ) {</span>
-<span class="lineNum">     114 </span>                :            :       try {
-<span class="lineNum">     115 </span>[<span class="branchCov" title="Branch 1 was taken 18 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 4 was taken 18 times"> + </span><span class="branchNoCov" title="Branch 5 was not taken"> - </span>]:<span class="lineCov">         18 :         m_timestamp.emplace_back( label, tk::hms( stamp ) );</span>
-<span class="lineNum">     116 </span>        [<span class="branchNoExec" title="Branch 2 was not executed"> # </span><span class="branchNoExec" title="Branch 3 was not executed"> # </span>]:<span class="lineNoCov">          0 :       } catch (...) { tk::processExceptionCharm(); }</span>
-<a name="117"><span class="lineNum">     117 </span>                :<span class="lineCov">         18 :     }</span></a>
-<span class="lineNum">     118 </span>                :            :     //! Add multiple time stamps contributing to final timers output
-<span class="lineNum">     119 </span>                :<span class="lineCov">          9 :     void timestamp( const std::vector&lt; std::pair&lt; std::string, tk::real &gt; &gt;&amp; s )</span>
-<span class="lineNum">     120 </span>[<span class="branchCov" title="Branch 3 was taken 18 times"> + </span><span class="branchCov" title="Branch 4 was taken 9 times"> + </span>][<span class="branchCov" title="Branch 7 was taken 18 times"> + </span><span class="branchNoCov" title="Branch 8 was not taken"> - </span>]:<span class="lineCov">         27 :     { for (const auto&amp; t : s) timestamp( t.first, t.second ); }</span>
+<span class="lineNum">      81 </span>                :            :     {
+<span class="lineNum">      82 </span>        [<span class="branchCov" title="Branch 1 was taken 9 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">          9 :       delete msg;</span>
+<span class="lineNum">      83 </span>        [<span class="branchCov" title="Branch 1 was taken 9 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">          9 :       mainProxy = thisProxy;</span>
+<span class="lineNum">      84 </span>                :            :       // Fire up an asynchronous execute object, which when created at some
+<span class="lineNum">      85 </span>                :            :       // future point in time will call back to this-&gt;execute(). This is
+<span class="lineNum">      86 </span>                :            :       // necessary so that this-&gt;execute() can access already migrated
+<span class="lineNum">      87 </span>                :            :       // global-scope data.
+<span class="lineNum">      88 </span>        [<span class="branchCov" title="Branch 1 was taken 9 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">          9 :       CProxy_execute::ckNew();</span>
+<span class="lineNum">      89 </span>                :            :       // Start new timer measuring the migration of global-scope data
+<span class="lineNum">      90 </span>        [<span class="branchCov" title="Branch 1 was taken 9 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">          9 :       m_timer.emplace_back();</span>
+<a name="91"><span class="lineNum">      91 </span>        [<span class="branchNoExec" title="Branch 2 was not executed"> # </span><span class="branchNoExec" title="Branch 3 was not executed"> # </span>]:<span class="lineCov">          9 :     } catch (...) { tk::processExceptionCharm(); }</span></a>
+<span class="lineNum">      92 </span>                :            : 
+<span class="lineNum">      93 </span>                :<span class="lineCov">          9 :     void execute() {</span>
+<span class="lineNum">      94 </span>                :            :       try {
+<span class="lineNum">      95 </span>[<span class="branchCov" title="Branch 2 was taken 9 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>][<span class="branchCov" title="Branch 5 was taken 9 times"> + </span><span class="branchNoCov" title="Branch 6 was not taken"> - </span>]:<span class="lineCov">          9 :         m_timestamp.emplace_back(&quot;Migrate global-scope data&quot;, m_timer[1].hms());</span>
+<span class="lineNum">      96 </span>        [<span class="branchCov" title="Branch 1 was taken 9 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">          9 :         m_driver.execute();</span>
+<span class="lineNum">      97 </span>        [<span class="branchNoExec" title="Branch 2 was not executed"> # </span><span class="branchNoExec" title="Branch 3 was not executed"> # </span>]:<span class="lineNoCov">          0 :       } catch (...) { tk::processExceptionCharm(); }</span>
+<a name="98"><span class="lineNum">      98 </span>                :<span class="lineCov">          9 :     }</span></a>
+<span class="lineNum">      99 </span>                :            : 
+<span class="lineNum">     100 </span>                :<span class="lineCov">          9 :     void finalize() {</span>
+<span class="lineNum">     101 </span>                :            :       try {
+<span class="lineNum">     102 </span>[<span class="branchCov" title="Branch 2 was taken 9 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>][<span class="branchCov" title="Branch 5 was taken 9 times"> + </span><span class="branchNoCov" title="Branch 6 was not taken"> - </span>]:<span class="lineCov">          9 :         m_timestamp.emplace_back( &quot;Total runtime&quot;, m_timer[0].hms() );</span>
+<span class="lineNum">     103 </span>[<span class="branchCov" title="Branch 2 was taken 9 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>][<span class="branchCov" title="Branch 5 was taken 9 times"> + </span><span class="branchNoCov" title="Branch 6 was not taken"> - </span>]:<span class="lineCov">          9 :         m_print.time( &quot;Timers (h:m:s)&quot;, m_timestamp );</span>
+<span class="lineNum">     104 </span>        [<span class="branchCov" title="Branch 1 was taken 9 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">          9 :         m_print.endpart();</span>
+<span class="lineNum">     105 </span>        [<span class="branchNoExec" title="Branch 2 was not executed"> # </span><span class="branchNoExec" title="Branch 3 was not executed"> # </span>]:<span class="lineNoCov">          0 :       } catch (...) { tk::processExceptionCharm(); }</span>
+<span class="lineNum">     106 </span>                :            :       // Tell the Charm++ runtime system to exit
+<span class="lineNum">     107 </span>                :<span class="lineCov">          9 :       CkExit();</span>
+<span class="lineNum">     108 </span>                :<span class="lineNoCov">          0 :     }</span>
+<a name="109"><span class="lineNum">     109 </span>                :            : </a>
+<span class="lineNum">     110 </span>                :            :     //! Add a time stamp contributing to final timers output
+<span class="lineNum">     111 </span>                :<span class="lineCov">         18 :     void timestamp( std::string label, tk::real stamp ) {</span>
+<span class="lineNum">     112 </span>                :            :       try {
+<span class="lineNum">     113 </span>[<span class="branchCov" title="Branch 1 was taken 18 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 4 was taken 18 times"> + </span><span class="branchNoCov" title="Branch 5 was not taken"> - </span>]:<span class="lineCov">         18 :         m_timestamp.emplace_back( label, tk::hms( stamp ) );</span>
+<span class="lineNum">     114 </span>        [<span class="branchNoExec" title="Branch 2 was not executed"> # </span><span class="branchNoExec" title="Branch 3 was not executed"> # </span>]:<span class="lineNoCov">          0 :       } catch (...) { tk::processExceptionCharm(); }</span>
+<a name="115"><span class="lineNum">     115 </span>                :<span class="lineCov">         18 :     }</span></a>
+<span class="lineNum">     116 </span>                :            :     //! Add multiple time stamps contributing to final timers output
+<span class="lineNum">     117 </span>                :<span class="lineCov">          9 :     void timestamp( const std::vector&lt; std::pair&lt; std::string, tk::real &gt; &gt;&amp; s )</span>
+<span class="lineNum">     118 </span>[<span class="branchCov" title="Branch 3 was taken 18 times"> + </span><span class="branchCov" title="Branch 4 was taken 9 times"> + </span>][<span class="branchCov" title="Branch 7 was taken 18 times"> + </span><span class="branchNoCov" title="Branch 8 was not taken"> - </span>]:<span class="lineCov">         27 :     { for (const auto&amp; t : s) timestamp( t.first, t.second ); }</span>
 <span class="lineNum">         </span>        [<span class="branchCov" title="Branch 10 was taken 18 times"> + </span><span class="branchNoCov" title="Branch 11 was not taken"> - </span>]
-<span class="lineNum">     121 </span>                :            : 
-<span class="lineNum">     122 </span>                :            :   private:
-<span class="lineNum">     123 </span>                :            :     meshconv::ctr::CmdLine m_cmdline;           //!&lt; Command line
-<span class="lineNum">     124 </span>                :            :     meshconv::CmdLineParser m_cmdParser;        //!&lt; Command line parser
-<span class="lineNum">     125 </span>                :            :     tk::Print m_print;                          //!&lt; Pretty printer
-<span class="lineNum">     126 </span>                :            :     meshconv::MeshConvDriver m_driver;          //!&lt; Driver
-<span class="lineNum">     127 </span>                :            :     std::vector&lt; tk::Timer &gt; m_timer;           //!&lt; Timers
-<span class="lineNum">     128 </span>                :            : 
-<span class="lineNum">     129 </span>                :            :     //! Time stamps in h:m:s with labels
-<span class="lineNum">     130 </span>                :            :     std::vector&lt; std::pair&lt; std::string, tk::Timer::Watch &gt; &gt; m_timestamp;
-<span class="lineNum">     131 </span>                :            : };
-<span class="lineNum">     132 </span>                :            : 
-<span class="lineNum">     133 </span>                :            : //! \brief Charm++ chare execute
-<span class="lineNum">     134 </span>                :            : //! \details By the time this object is constructed, the Charm++ runtime system
-<span class="lineNum">     135 </span>                :            : //!    has finished migrating all global-scoped read-only objects which happens
-<a name="136"><span class="lineNum">     136 </span>                :            : //!    after the main chare constructor has finished.</a>
-<a name="137"><span class="lineNum">     137 </span>                :            : //! \author J. Bakosi</a>
-<span class="lineNum">     138 </span>        [<span class="branchNoExec" title="Branch 3 was not executed"> # </span><span class="branchNoExec" title="Branch 4 was not executed"> # </span>]:<span class="lineNoCov">          0 : class execute : public CBase_execute {</span>
-<span class="lineNum">     139 </span>        [<span class="branchCov" title="Branch 3 was taken 9 times"> + </span><span class="branchNoCov" title="Branch 4 was not taken"> - </span>]:<span class="lineCov">          9 :   public: execute() { mainProxy.execute(); }</span>
-<span class="lineNum">     140 </span>                :            : };
-<span class="lineNum">     141 </span>                :            : 
-<span class="lineNum">     142 </span>                :            : #include &quot;NoWarning/meshconv.def.h&quot;
+<span class="lineNum">     119 </span>                :            : 
+<span class="lineNum">     120 </span>                :            :   private:
+<span class="lineNum">     121 </span>                :            :     meshconv::ctr::CmdLine m_cmdline;           //!&lt; Command line
+<span class="lineNum">     122 </span>                :            :     meshconv::CmdLineParser m_cmdParser;        //!&lt; Command line parser
+<span class="lineNum">     123 </span>                :            :     tk::Print m_print;                          //!&lt; Pretty printer
+<span class="lineNum">     124 </span>                :            :     meshconv::MeshConvDriver m_driver;          //!&lt; Driver
+<span class="lineNum">     125 </span>                :            :     std::vector&lt; tk::Timer &gt; m_timer;           //!&lt; Timers
+<span class="lineNum">     126 </span>                :            : 
+<span class="lineNum">     127 </span>                :            :     //! Time stamps in h:m:s with labels
+<span class="lineNum">     128 </span>                :            :     std::vector&lt; std::pair&lt; std::string, tk::Timer::Watch &gt; &gt; m_timestamp;
+<span class="lineNum">     129 </span>                :            : };
+<span class="lineNum">     130 </span>                :            : 
+<span class="lineNum">     131 </span>                :            : //! \brief Charm++ chare execute
+<span class="lineNum">     132 </span>                :            : //! \details By the time this object is constructed, the Charm++ runtime system
+<span class="lineNum">     133 </span>                :            : //!    has finished migrating all global-scoped read-only objects which happens
+<a name="134"><span class="lineNum">     134 </span>                :            : //!    after the main chare constructor has finished.</a>
+<a name="135"><span class="lineNum">     135 </span>                :            : //! \author J. Bakosi</a>
+<span class="lineNum">     136 </span>        [<span class="branchNoExec" title="Branch 3 was not executed"> # </span><span class="branchNoExec" title="Branch 4 was not executed"> # </span>]:<span class="lineNoCov">          0 : class execute : public CBase_execute {</span>
+<span class="lineNum">     137 </span>        [<span class="branchCov" title="Branch 3 was taken 9 times"> + </span><span class="branchNoCov" title="Branch 4 was not taken"> - </span>]:<span class="lineCov">          9 :   public: execute() { mainProxy.execute(); }</span>
+<span class="lineNum">     138 </span>                :            : };
+<span class="lineNum">     139 </span>                :            : 
+<span class="lineNum">     140 </span>                :            : #include &quot;NoWarning/meshconv.def.h&quot;
 </pre>
       </td>
     </tr>

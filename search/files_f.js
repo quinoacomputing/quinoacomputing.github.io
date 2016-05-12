@@ -5,6 +5,7 @@ var searchData=
   ['readme_2emd',['README.md',['../_r_e_a_d_m_e_8md.html',1,'']]],
   ['reorder_2ec',['Reorder.C',['../_reorder_8_c.html',1,'']]],
   ['reorder_2eh',['Reorder.h',['../_reorder_8h.html',1,'']]],
+  ['replace_2eh',['replace.h',['../replace_8h.html',1,'']]],
   ['rng_2edox',['rng.dox',['../rng_8dox.html',1,'']]],
   ['rng_2eh',['RNG.h',['../_control_2_options_2_r_n_g_8h.html',1,'']]],
   ['rng_2eh',['RNG.h',['../_r_n_g_2_r_n_g_8h.html',1,'']]],

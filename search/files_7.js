@@ -6,6 +6,7 @@ var searchData=
   ['hydro_2eh',['Hydro.h',['../_hydro_8h.html',1,'']]],
   ['hypermeshreader_2ec',['HyperMeshReader.C',['../_hyper_mesh_reader_8_c.html',1,'']]],
   ['hypermeshreader_2eh',['HyperMeshReader.h',['../_hyper_mesh_reader_8h.html',1,'']]],
+  ['hypre_5fkrylov_2eh',['HYPRE_krylov.h',['../_h_y_p_r_e__krylov_8h.html',1,'']]],
   ['hypre_5flicense_2edox',['Hypre_license.dox',['../_hypre__license_8dox.html',1,'']]],
   ['hypre_5fparcsr_5fls_2eh',['HYPRE_parcsr_ls.h',['../_h_y_p_r_e__parcsr__ls_8h.html',1,'']]],
   ['hyprematrix_2eh',['HypreMatrix.h',['../_hypre_matrix_8h.html',1,'']]],
