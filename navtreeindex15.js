@@ -1,7 +1,5 @@
 var NAVTREEINDEX15 =
 {
-"structkw_1_1_alias.html#a2f89e79cbdf08b9598ee9118c1db3a17":[22,0,2,3,1],
-"structkw_1_1_alias.html#abd6f992057ebfa50cf2a33c75fb3d536":[22,0,2,3,0],
 "structkw_1_1accurate__info.html":[22,0,2,0],
 "structkw_1_1accurate__info.html#a9e24df13b413c8daecc42651c110ab76":[22,0,2,0,2],
 "structkw_1_1accurate__info.html#ab145248b3eed3dbfa88a56fa4ff43bd1":[22,0,2,0,0],
@@ -249,5 +247,7 @@ var NAVTREEINDEX15 =
 "structkw_1_1jointbeta__info.html#a93b00af0b8ef3cf0332379be8acb841c":[22,0,2,49,2],
 "structkw_1_1jointbeta__info.html#a971d25d11d547a496d05cbc398eb6ab3":[22,0,2,49,0],
 "structkw_1_1jointdelta__info.html":[22,0,2,50],
-"structkw_1_1jointdelta__info.html#a49c59fc920506a9f0990e82f7779a9ec":[22,0,2,50,1]
+"structkw_1_1jointdelta__info.html#a49c59fc920506a9f0990e82f7779a9ec":[22,0,2,50,1],
+"structkw_1_1jointdelta__info.html#a50c98bd550ca9c0bf9a590a3d2595602":[22,0,2,50,2],
+"structkw_1_1jointdelta__info.html#af329299b91a7cee12dde06b1c0c9f45e":[22,0,2,50,0]
 };

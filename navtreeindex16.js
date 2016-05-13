@@ -1,14 +1,12 @@
 var NAVTREEINDEX16 =
 {
-"structkw_1_1jointdelta__info.html#a50c98bd550ca9c0bf9a590a3d2595602":[22,0,2,50,2],
-"structkw_1_1jointdelta__info.html#af329299b91a7cee12dde06b1c0c9f45e":[22,0,2,50,0],
 "structkw_1_1keyword.html":[22,0,2,51],
 "structkw_1_1keyword.html#a221b3990530599f44f96c45c4f011dae":[22,0,2,51,9],
 "structkw_1_1keyword.html#a23957f177ef793053d57358242161612":[22,0,2,51,0],
 "structkw_1_1keyword.html#a35221e454ac8bd923ca9c96fe3877d0d":[22,0,2,51,6],
 "structkw_1_1keyword.html#a35221e454ac8bd923ca9c96fe3877d0d":[22,0,2,51,7],
-"structkw_1_1keyword.html#a40d32c44b391fad0d995d467f8ce6e5c":[22,0,2,51,4],
 "structkw_1_1keyword.html#a40d32c44b391fad0d995d467f8ce6e5c":[22,0,2,51,5],
+"structkw_1_1keyword.html#a40d32c44b391fad0d995d467f8ce6e5c":[22,0,2,51,4],
 "structkw_1_1keyword.html#a6e1b82164efa04e009433f9f67fc626d":[22,0,2,51,2],
 "structkw_1_1keyword.html#a6e1b82164efa04e009433f9f67fc626d":[22,0,2,51,3],
 "structkw_1_1keyword.html#a90f5174ca14cdd00dafa63606dbc5f85":[22,0,2,51,8],
@@ -249,5 +247,7 @@ var NAVTREEINDEX16 =
 "structkw_1_1rng__info.html#ab971b8a1087be138acddc87ee5d73b4f":[22,0,2,98,1],
 "structkw_1_1rng__info.html#af8a5c6defceb70b57bbe596bf560fc37":[22,0,2,98,3],
 "structkw_1_1rng__info_1_1expect.html":[22,0,2,98,0],
-"structkw_1_1rng__info_1_1expect.html#a80c6d8334e95acca485562fa61fbea0f":[22,0,2,98,0,1]
+"structkw_1_1rng__info_1_1expect.html#a80c6d8334e95acca485562fa61fbea0f":[22,0,2,98,0,1],
+"structkw_1_1rng__info_1_1expect.html#ab9fc6be65a8f881061674143a4fc23f0":[22,0,2,98,0,0],
+"structkw_1_1rngs__info.html":[22,0,2,99]
 };

@@ -1,7 +1,5 @@
 var NAVTREEINDEX19 =
 {
-"structtag_1_1param.html":[22,0,5,97],
-"structtag_1_1partitioner.html":[22,0,5,98],
 "structtag_1_1pde.html":[22,0,5,99],
 "structtag_1_1pdf.html":[22,0,5,100],
 "structtag_1_1pdfctr.html":[22,0,5,101],
@@ -249,5 +247,7 @@ var NAVTREEINDEX19 =
 "structtk_1_1grm_1_1push__binsize.html":[22,0,6,1,27],
 "structtk_1_1grm_1_1push__binsize.html#a39736aa1c9ae77f984733df9cc9e5419":[22,0,6,1,27,0],
 "structtk_1_1grm_1_1push__extents.html":[22,0,6,1,28],
-"structtk_1_1grm_1_1push__extents.html#ad7e8150834046e4b93a6e041f85f0411":[22,0,6,1,28,0]
+"structtk_1_1grm_1_1push__extents.html#ad7e8150834046e4b93a6e041f85f0411":[22,0,6,1,28,0],
+"structtk_1_1grm_1_1push__sample.html":[22,0,6,1,29],
+"structtk_1_1grm_1_1push__sample.html#a9025a58a94b0a514078545b3fcd8afca":[22,0,6,1,29,0]
 };

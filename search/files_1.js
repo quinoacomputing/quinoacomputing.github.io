@@ -11,6 +11,5 @@ var searchData=
   ['bind_2eh',['bind.h',['../bind_8h.html',1,'']]],
   ['bipdf_2eh',['BiPDF.h',['../_bi_p_d_f_8h.html',1,'']]],
   ['blas_5flicense_2edox',['BLAS_license.dox',['../_b_l_a_s__license_8dox.html',1,'']]],
-  ['boost_5flicense_2edox',['Boost_license.dox',['../_boost__license_8dox.html',1,'']]],
-  ['build_5fopenmpi_2esh',['build_openmpi.sh',['../build__openmpi_8sh.html',1,'']]]
+  ['boost_5flicense_2edox',['Boost_license.dox',['../_boost__license_8dox.html',1,'']]]
 ];

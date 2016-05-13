@@ -32,8 +32,8 @@ var searchData=
   ['betacoeffpolicies',['BetaCoeffPolicies',['../namespacewalker.html#af9ae6258ad44a778afd53cdbe4b668fd',1,'walker']]],
   ['betacoeffpolicy_2eh',['BetaCoeffPolicy.h',['../_beta_coeff_policy_8h.html',1,'']]],
   ['betaparameters',['BetaParameters',['../namespacewalker_1_1ctr.html#a50edc3e343b2ae45016d2667c0d2bdd9',1,'walker::ctr']]],
-  ['betapdf',['betapdf',['../structtag_1_1betapdf.html',1,'tag']]],
   ['betapdf',['betapdf',['../namespacekw.html#aab1ee49e3ce28cb69a6e210fcf3152aa',1,'kw']]],
+  ['betapdf',['betapdf',['../structtag_1_1betapdf.html',1,'tag']]],
   ['betapdf_5finfo',['betapdf_info',['../structkw_1_1betapdf__info.html',1,'kw']]],
   ['betapdfs',['betapdfs',['../classwalker_1_1_diff_eq_stack.html#a32c5e784ecf315c4baa0709b0eb69b83',1,'walker::DiffEqStack']]],
   ['bigcrush',['BigCrush',['../classrngtest_1_1_big_crush.html',1,'rngtest']]],
@@ -43,8 +43,8 @@ var searchData=
   ['bigcrush_5finfo',['bigcrush_info',['../structkw_1_1bigcrush__info.html',1,'kw']]],
   ['binary',['BINARY',['../namespacetk.html#af910e1a2aff3119022dea29cf3d898c1a98ad0e8750ae10ad556ed7a62affb452',1,'tk']]],
   ['bind_2eh',['bind.h',['../bind_8h.html',1,'']]],
-  ['binsize',['binsize',['../structtag_1_1binsize.html',1,'tag']]],
   ['binsize',['binsize',['../classtk_1_1_bi_p_d_f.html#aedbc730d8028b91873b4702406ff6b76',1,'tk::BiPDF::binsize()'],['../classtk_1_1_tri_p_d_f.html#a28c5a0af2eb79dc4f91ad87815441a11',1,'tk::TriPDF::binsize()'],['../classtk_1_1_uni_p_d_f.html#a83519a7b7b48c14694c5d683218d3419',1,'tk::UniPDF::binsize()']]],
+  ['binsize',['binsize',['../structtag_1_1binsize.html',1,'tag']]],
   ['binsizes',['BINSIZES',['../namespacetk_1_1grm.html#a86dbe384e8ce31796b7eb5f6ac87e1a3a45f6a717344b57b3f51cd0d7fc054281',1,'tk::grm']]],
   ['bipdf',['BiPDF',['../classtk_1_1_bi_p_d_f.html',1,'tk']]],
   ['bipdf',['BiPDF',['../classtk_1_1_bi_p_d_f.html#a9aa47a8ef85bdc4448e8796825ce9bfb',1,'tk::BiPDF::BiPDF()'],['../classtk_1_1_bi_p_d_f.html#afe44d03194f64f07cc96f01544d23014',1,'tk::BiPDF::BiPDF(const std::vector&lt; tk::real &gt; &amp;bs)']]],
@@ -68,7 +68,6 @@ var searchData=
   ['bprime',['bprime',['../structtag_1_1bprime.html',1,'tag']]],
   ['breeze',['breeze',['../namespacebreeze.html',1,'']]],
   ['brng',['brng',['../classtk_1_1ctr_1_1_r_n_g.html#aecabdc36643f864a92eba7c788e433e7',1,'tk::ctr::RNG']]],
-  ['build_5fopenmpi_2esh',['build_openmpi.sh',['../build__openmpi_8sh.html',1,'']]],
   ['ctr',['ctr',['../namespacebreeze_1_1ctr.html',1,'breeze']]],
   ['deck',['deck',['../namespacebreeze_1_1deck.html',1,'breeze']]]
 ];
