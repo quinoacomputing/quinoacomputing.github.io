@@ -26,6 +26,7 @@ var dir_4dd3a908ded29f0bf32071ac445759e7 =
       [ "TestStack", "structrngtest_1_1_test_stack.html", "structrngtest_1_1_test_stack" ]
     ] ],
     [ "TestU01.C", "_test_u01_8_c.html", null ],
+    [ "testu01.ci", "testu01_8ci.html", null ],
     [ "TestU01.h", "_test_u01_8h.html", "_test_u01_8h" ],
     [ "TestU01Props.h", "_test_u01_props_8h.html", [
       [ "TestU01Props", "classrngtest_1_1_test_u01_props.html", "classrngtest_1_1_test_u01_props" ]
@@ -35,6 +36,7 @@ var dir_4dd3a908ded29f0bf32071ac445759e7 =
       [ "TestU01Stack", "classrngtest_1_1_test_u01_stack.html", "classrngtest_1_1_test_u01_stack" ]
     ] ],
     [ "TestU01Suite.C", "_test_u01_suite_8_c.html", "_test_u01_suite_8_c" ],
+    [ "testu01suite.ci", "testu01suite_8ci.html", null ],
     [ "TestU01Suite.h", "_test_u01_suite_8h.html", [
       [ "TestU01Suite", "classrngtest_1_1_test_u01_suite.html", "classrngtest_1_1_test_u01_suite" ],
       [ "Failed", "structrngtest_1_1_test_u01_suite_1_1_failed.html", "structrngtest_1_1_test_u01_suite_1_1_failed" ]

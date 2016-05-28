@@ -10,6 +10,7 @@ var dir_3ca9c9eb36ab3ecb75ba69910724f6da =
       [ "HypreVector", "classtk_1_1hypre_1_1_hypre_vector.html", "classtk_1_1hypre_1_1_hypre_vector" ]
     ] ],
     [ "LinSysMerger.C", "_lin_sys_merger_8_c.html", null ],
+    [ "linsysmerger.ci", "linsysmerger_8ci.html", null ],
     [ "LinSysMerger.h", "_lin_sys_merger_8h.html", "_lin_sys_merger_8h" ],
     [ "ZoltanInterOp.C", "_zoltan_inter_op_8_c.html", "_zoltan_inter_op_8_c" ],
     [ "ZoltanInterOp.h", "_zoltan_inter_op_8h.html", "_zoltan_inter_op_8h" ]

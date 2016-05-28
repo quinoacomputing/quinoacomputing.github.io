@@ -1,6 +1,7 @@
 var searchData=
 [
   ['walker_2ec',['Walker.C',['../_walker_8_c.html',1,'']]],
+  ['walker_2eci',['walker.ci',['../walker_8ci.html',1,'']]],
   ['walker_2edecl_2eh',['walker.decl.h',['../walker_8decl_8h.html',1,'']]],
   ['walker_2edef_2eh',['walker.def.h',['../walker_8def_8h.html',1,'']]],
   ['walker_2edox',['walker.dox',['../walker_8dox.html',1,'']]],

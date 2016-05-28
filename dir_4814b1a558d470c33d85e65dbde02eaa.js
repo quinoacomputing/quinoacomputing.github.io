@@ -36,6 +36,7 @@ var dir_4814b1a558d470c33d85e65dbde02eaa =
     [ "Make_unique.h", "_make__unique_8h.html", null ],
     [ "MeshNodes.h", "_mesh_nodes_8h.html", null ],
     [ "Msg.C", "_msg_8_c.html", null ],
+    [ "msg.ci", "msg_8ci.html", null ],
     [ "Msg.h", "_msg_8h.html", "_msg_8h" ],
     [ "Particles.h", "_particles_8h.html", null ],
     [ "Print.h", "_print_8h.html", "_print_8h" ],

@@ -15,6 +15,7 @@ var searchData=
   ['dirichlet_2eh',['Dirichlet.h',['../_dirichlet_8h.html',1,'']]],
   ['dirichletcoeffpolicy_2eh',['DirichletCoeffPolicy.h',['../_dirichlet_coeff_policy_8h.html',1,'']]],
   ['distributor_2ec',['Distributor.C',['../_distributor_8_c.html',1,'']]],
+  ['distributor_2eci',['distributor.ci',['../distributor_8ci.html',1,'']]],
   ['distributor_2edecl_2eh',['distributor.decl.h',['../distributor_8decl_8h.html',1,'']]],
   ['distributor_2edef_2eh',['distributor.def.h',['../distributor_8def_8h.html',1,'']]],
   ['distributor_2eh',['Distributor.h',['../_distributor_8h.html',1,'']]],
