@@ -13,7 +13,7 @@ var NAVTREE =
       [ "Well documented", "why.html#documented", null ],
       [ "Fun to work on", "why.html#fun", null ]
     ] ],
-    [ "Inciter: Solve a PDE on unstructured meshes", "inciter_doc.html", null ],
+    [ "Inciter: Partial differential equations solver on 3D unstructured grids", "inciter_doc.html", null ],
     [ "Walker: Random walker for stochastic differential equations", "walker_doc.html", null ],
     [ "RNGTest: Random number generator test suite", "rngtest_doc.html", null ],
     [ "UnitTest: Unit test suite", "unittest_doc.html", null ],

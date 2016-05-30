@@ -27,7 +27,7 @@ var searchData=
   ['inciter_2edecl_2eh',['inciter.decl.h',['../inciter_8decl_8h.html',1,'']]],
   ['inciter_2edef_2eh',['inciter.def.h',['../inciter_8def_8h.html',1,'']]],
   ['inciter_2edox',['inciter.dox',['../inciter_8dox.html',1,'']]],
-  ['inciter_3a_20solve_20a_20pde_20on_20unstructured_20meshes',['Inciter: Solve a PDE on unstructured meshes',['../inciter_doc.html',1,'']]],
+  ['inciter_3a_20partial_20differential_20equations_20solver_20on_203d_20unstructured_20grids',['Inciter: Partial differential equations solver on 3D unstructured grids',['../inciter_doc.html',1,'']]],
   ['inciter_5finfo',['inciter_info',['../structkw_1_1inciter__info.html',1,'kw']]],
   ['inciterdriver',['InciterDriver',['../classinciter_1_1_inciter_driver.html#af01b6010b6eef550dab42759f3050351',1,'inciter::InciterDriver']]],
   ['inciterdriver',['InciterDriver',['../classinciter_1_1_inciter_driver.html',1,'inciter']]],
