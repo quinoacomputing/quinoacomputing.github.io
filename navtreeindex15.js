@@ -1,7 +1,5 @@
 var NAVTREEINDEX15 =
 {
-"structinciter_1_1_p_d_e_stack_1_1register_p_d_e.html#aeedbdbdba849aef3bb1cac32de645575":[22,0,1,14,0,1],
-"structinciter_1_1_p_d_e_stack_1_1register_p_d_e.html#af0536d38a60fa83191d3e96b1a0c2012":[22,0,1,14,0,3],
 "structinciter_1_1cmd_1_1help.html":[22,0,1,0,0],
 "structinciter_1_1cmd_1_1helpctr.html":[22,0,1,0,1],
 "structinciter_1_1cmd_1_1helpkw.html":[22,0,1,0,2],
@@ -249,5 +247,7 @@ var NAVTREEINDEX15 =
 "structkw_1_1inciter__info.html#ab6d2dce55ae32866c9aa2f24ed1080a8":[22,0,2,45,2],
 "structkw_1_1inciter__info.html#ab73c37edfdd51f94f7dbe009fff01663":[22,0,2,45,1],
 "structkw_1_1inciter__info.html#adb1d279c168500d30c6c977f386a4b40":[22,0,2,45,0],
-"structkw_1_1init__info.html":[22,0,2,46]
+"structkw_1_1init__info.html":[22,0,2,46],
+"structkw_1_1init__info.html#a6aecaf44109d58bb64cdf667b6e38532":[22,0,2,46,1],
+"structkw_1_1init__info.html#a7308f8a37a34a800b5567bc46659bcdb":[22,0,2,46,2]
 };

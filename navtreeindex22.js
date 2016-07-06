@@ -1,7 +1,5 @@
 var NAVTREEINDEX22 =
 {
-"walker_example_ou.html#walker_example_ou_moments":[20,6,3],
-"walker_example_ou.html#walker_example_ou_output":[20,6,2],
 "walker_example_ou.html#walker_example_ou_pdf":[20,6,4],
 "walker_example_ou.html#walker_example_ou_run":[20,6,1],
 "walker_example_skewnormal.html":[20,4],

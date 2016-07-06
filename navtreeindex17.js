@@ -1,7 +1,5 @@
 var NAVTREEINDEX17 =
 {
-"structkw_1_1problem__info_1_1expect.html#a2f20cec2df2d33e9500835718392c8aa":[22,0,2,93,0,0],
-"structkw_1_1problem__info_1_1expect.html#ab36bb5d087d1d50b83f271f168cc0257":[22,0,2,93,0,1],
 "structkw_1_1raw__info.html":[22,0,2,94],
 "structkw_1_1raw__info.html#a726a1a1b273e956588bace4802c983b4":[22,0,2,94,0],
 "structkw_1_1raw__info.html#acdfe746e2044e649588522c734e5eced":[22,0,2,94,2],
@@ -249,5 +247,7 @@ var NAVTREEINDEX17 =
 "structkw_1_1stat__info.html#aebf9818e9ebd21d764cb06b1ea731348":[22,0,2,138,1],
 "structkw_1_1stat__info.html#afb0b7eb2193d8a1acada5d73a9b0243e":[22,0,2,138,4],
 "structkw_1_1stat__info_1_1expect.html":[22,0,2,138,0],
-"structkw_1_1stat__info_1_1expect.html#a538a63bb1b3770fa548f2cc7cad19833":[22,0,2,138,0,1]
+"structkw_1_1stat__info_1_1expect.html#a538a63bb1b3770fa548f2cc7cad19833":[22,0,2,138,0,1],
+"structkw_1_1stat__info_1_1expect.html#a980fdbcffda67e122078369f07ddc9b5":[22,0,2,138,0,0],
+"structkw_1_1statistics__info.html":[22,0,2,139]
 };

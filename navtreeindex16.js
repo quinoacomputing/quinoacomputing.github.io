@@ -1,7 +1,5 @@
 var NAVTREEINDEX16 =
 {
-"structkw_1_1init__info.html#a6aecaf44109d58bb64cdf667b6e38532":[22,0,2,46,1],
-"structkw_1_1init__info.html#a7308f8a37a34a800b5567bc46659bcdb":[22,0,2,46,2],
 "structkw_1_1init__info.html#aab609b622d5f3c71dc8e111972156f82":[22,0,2,46,3],
 "structkw_1_1init__info_1_1expect.html":[22,0,2,46,0],
 "structkw_1_1init__info_1_1expect.html#a1b00cf7ea7a9a6248a829364775f9493":[22,0,2,46,0,1],
@@ -33,8 +31,8 @@ var NAVTREEINDEX16 =
 "structkw_1_1keyword.html":[22,0,2,51],
 "structkw_1_1keyword.html#a221b3990530599f44f96c45c4f011dae":[22,0,2,51,9],
 "structkw_1_1keyword.html#a23957f177ef793053d57358242161612":[22,0,2,51,0],
-"structkw_1_1keyword.html#a35221e454ac8bd923ca9c96fe3877d0d":[22,0,2,51,7],
 "structkw_1_1keyword.html#a35221e454ac8bd923ca9c96fe3877d0d":[22,0,2,51,6],
+"structkw_1_1keyword.html#a35221e454ac8bd923ca9c96fe3877d0d":[22,0,2,51,7],
 "structkw_1_1keyword.html#a40d32c44b391fad0d995d467f8ce6e5c":[22,0,2,51,5],
 "structkw_1_1keyword.html#a40d32c44b391fad0d995d467f8ce6e5c":[22,0,2,51,4],
 "structkw_1_1keyword.html#a6e1b82164efa04e009433f9f67fc626d":[22,0,2,51,2],
@@ -249,5 +247,7 @@ var NAVTREEINDEX16 =
 "structkw_1_1problem__info.html#a6e3b1b13fba10a3cff8b7fc9d4ac048f":[22,0,2,93,3],
 "structkw_1_1problem__info.html#a8f42f692626d5d9323931f5945044e10":[22,0,2,93,1],
 "structkw_1_1problem__info.html#a91ed78c6264f672659bafe15d0ff5bb4":[22,0,2,93,2],
-"structkw_1_1problem__info_1_1expect.html":[22,0,2,93,0]
+"structkw_1_1problem__info_1_1expect.html":[22,0,2,93,0],
+"structkw_1_1problem__info_1_1expect.html#a2f20cec2df2d33e9500835718392c8aa":[22,0,2,93,0,0],
+"structkw_1_1problem__info_1_1expect.html#ab36bb5d087d1d50b83f271f168cc0257":[22,0,2,93,0,1]
 };

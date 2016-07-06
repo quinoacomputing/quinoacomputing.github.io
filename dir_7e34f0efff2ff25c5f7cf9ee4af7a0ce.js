@@ -33,7 +33,6 @@ var dir_7e34f0efff2ff25c5f7cf9ee4af7a0ce =
     [ "mkl_vsl.h", "mkl__vsl_8h.html", null ],
     [ "mpi-interoperate.h", "mpi-interoperate_8h.html", null ],
     [ "mpi.h", "mpi_8h.html", null ],
-    [ "ne_nemesisI.h", "ne__nemesis_i_8h.html", null ],
     [ "optional.h", "optional_8h.html", null ],
     [ "partitioner.decl.h", "partitioner_8decl_8h.html", null ],
     [ "partitioner.def.h", "partitioner_8def_8h.html", null ],

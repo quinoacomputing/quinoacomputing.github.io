@@ -1,7 +1,5 @@
 var NAVTREEINDEX19 =
 {
-"structtag_1_1helpctr.html":[22,0,5,64],
-"structtag_1_1helpkw.html":[22,0,5,65],
 "structtag_1_1hydro.html":[22,0,5,66],
 "structtag_1_1init.html":[22,0,5,67],
 "structtag_1_1initpolicy.html":[22,0,5,68],
@@ -249,5 +247,7 @@ var NAVTREEINDEX19 =
 "structtk_1_1grm_1_1check__samples.html":[22,0,6,1,8],
 "structtk_1_1grm_1_1check__samples.html#abbaf8ff3984b9c5dee502650011eba29":[22,0,6,1,8,0],
 "structtk_1_1grm_1_1check__spikes.html":[22,0,6,1,9],
-"structtk_1_1grm_1_1check__spikes.html#aed51c75b4a7e012d3522a0ce5ac8c42b":[22,0,6,1,9,0]
+"structtk_1_1grm_1_1check__spikes.html#aed51c75b4a7e012d3522a0ce5ac8c42b":[22,0,6,1,9,0],
+"structtk_1_1grm_1_1check__store__option.html":[22,0,6,1,10],
+"structtk_1_1grm_1_1check__store__option.html#a26754d63f7a58602a52af1d7c3386fee":[22,0,6,1,10,0]
 };

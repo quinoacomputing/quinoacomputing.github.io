@@ -1,7 +1,5 @@
 var NAVTREEINDEX18 =
 {
-"structkw_1_1stat__info_1_1expect.html#a980fdbcffda67e122078369f07ddc9b5":[22,0,2,138,0,0],
-"structkw_1_1statistics__info.html":[22,0,2,139],
 "structkw_1_1statistics__info.html#ac07db787a5938336d482f06dd5b2087a":[22,0,2,139,1],
 "structkw_1_1statistics__info.html#acc984f69b76e18546d2d0b4aa0622c89":[22,0,2,139,2],
 "structkw_1_1statistics__info.html#af6a9c6520a5fa03c8e9080d3e2e677e8":[22,0,2,139,0],
@@ -249,5 +247,7 @@ var NAVTREEINDEX18 =
 "structtag_1_1glm.html":[22,0,5,57],
 "structtag_1_1glob.html":[22,0,5,58],
 "structtag_1_1group.html":[22,0,5,59],
-"structtag_1_1help.html":[22,0,5,63]
+"structtag_1_1help.html":[22,0,5,63],
+"structtag_1_1helpctr.html":[22,0,5,64],
+"structtag_1_1helpkw.html":[22,0,5,65]
 };
