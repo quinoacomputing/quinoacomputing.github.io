@@ -4,6 +4,10 @@ var dir_e8ebd5d5792131bdfd6b2c2daa81088c =
       [ "AdvDiff", "classinciter_1_1_adv_diff.html", "classinciter_1_1_adv_diff" ]
     ] ],
     [ "AdvDiffProblem.h", "_adv_diff_problem_8h.html", "_adv_diff_problem_8h" ],
+    [ "CompNS.h", "_comp_n_s_8h.html", [
+      [ "CompNS", "classinciter_1_1_comp_n_s.html", "classinciter_1_1_comp_n_s" ]
+    ] ],
+    [ "CompNSProblem.h", "_comp_n_s_problem_8h.html", "_comp_n_s_problem_8h" ],
     [ "Euler.h", "_euler_8h.html", [
       [ "Euler", "classinciter_1_1_euler.html", "classinciter_1_1_euler" ]
     ] ],

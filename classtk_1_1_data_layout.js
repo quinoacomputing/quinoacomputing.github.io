@@ -2,6 +2,7 @@ var classtk_1_1_data_layout =
 [
     [ "int2type", "structtk_1_1_data_layout_1_1int2type.html", "structtk_1_1_data_layout_1_1int2type" ],
     [ "ncomp_t", "classtk_1_1_data_layout.html#a53267551152f96d9cbbad8326854ab10", null ],
+    [ "DataLayout", "classtk_1_1_data_layout.html#afb7b68bc654d55ad7af181266faa4c97", null ],
     [ "DataLayout", "classtk_1_1_data_layout.html#a59080741c89ceed2d70d967cc0ea7767", null ],
     [ "access", "classtk_1_1_data_layout.html#afbe0c8ad4f289f246dbcc81b07dc435a", null ],
     [ "access", "classtk_1_1_data_layout.html#a01a77ef6a6106ffabdcd9845d49a5b31", null ],
@@ -21,10 +22,12 @@ var classtk_1_1_data_layout =
     [ "operator()", "classtk_1_1_data_layout.html#aeeb715319f5341cbd919369649ff2cfe", null ],
     [ "operator()", "classtk_1_1_data_layout.html#ae0e9ed4c52d0b4adda4caaf4dd73de3c", null ],
     [ "operator[]", "classtk_1_1_data_layout.html#a77425f2d4e3b41a07ed5e7b16c04d16e", null ],
+    [ "pup", "classtk_1_1_data_layout.html#ae829e9a48c49df69779b0f057517e51c", null ],
     [ "var", "classtk_1_1_data_layout.html#a6bd93feb7dcb6e638ab6eebb0e4441f5", null ],
     [ "var", "classtk_1_1_data_layout.html#a3806387c27b7a6b5e29743e7bed23949", null ],
     [ "var", "classtk_1_1_data_layout.html#a9b9b3a9ca21059b3aa8e19570d81d300", null ],
     [ "var", "classtk_1_1_data_layout.html#a656fa60511730c6da0e0e8764bf1804f", null ],
+    [ "operator|", "classtk_1_1_data_layout.html#a26ca33c1630649fc30e23e9d55ef9445", null ],
     [ "m_nprop", "classtk_1_1_data_layout.html#a445271e4e7a54e05445bd528f57f8005", null ],
     [ "m_nunk", "classtk_1_1_data_layout.html#a6c225fc5c0a46c40ef71ea7f40f18a90", null ],
     [ "m_vec", "classtk_1_1_data_layout.html#a4516395fe50127ac99be6f55db149681", null ]

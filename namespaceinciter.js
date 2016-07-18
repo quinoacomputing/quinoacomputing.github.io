@@ -6,6 +6,8 @@ var namespaceinciter =
     [ "AdvDiff", "classinciter_1_1_adv_diff.html", "classinciter_1_1_adv_diff" ],
     [ "AdvDiffProblemShearDiff", "classinciter_1_1_adv_diff_problem_shear_diff.html", "classinciter_1_1_adv_diff_problem_shear_diff" ],
     [ "CmdLineParser", "classinciter_1_1_cmd_line_parser.html", "classinciter_1_1_cmd_line_parser" ],
+    [ "CompNS", "classinciter_1_1_comp_n_s.html", "classinciter_1_1_comp_n_s" ],
+    [ "CompNSProblemUserDefined", "classinciter_1_1_comp_n_s_problem_user_defined.html", "classinciter_1_1_comp_n_s_problem_user_defined" ],
     [ "Conductor", "classinciter_1_1_conductor.html", "classinciter_1_1_conductor" ],
     [ "Euler", "classinciter_1_1_euler.html", "classinciter_1_1_euler" ],
     [ "EulerProblemUserDefined", "classinciter_1_1_euler_problem_user_defined.html", "classinciter_1_1_euler_problem_user_defined" ],

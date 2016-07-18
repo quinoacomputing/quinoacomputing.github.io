@@ -1,6 +1,6 @@
 var searchData=
 [
-  ['datalayout',['DataLayout',['../classtk_1_1_data_layout.html#a59080741c89ceed2d70d967cc0ea7767',1,'tk::DataLayout::DataLayout()'],['../namespacetut.html#a2b02f169718910e528dfd5c804eb258b',1,'tut::DataLayout()']]],
+  ['datalayout',['DataLayout',['../classtk_1_1_data_layout.html#afb7b68bc654d55ad7af181266faa4c97',1,'tk::DataLayout::DataLayout()'],['../classtk_1_1_data_layout.html#a59080741c89ceed2d70d967cc0ea7767',1,'tk::DataLayout::DataLayout(ncomp_t nunk, ncomp_t nprop)'],['../namespacetut.html#a2b02f169718910e528dfd5c804eb258b',1,'tut::DataLayout()']]],
   ['deletestreams',['deleteStreams',['../classtk_1_1_m_k_l_r_n_g.html#a950caed144e05ec1457ec356252d71b1',1,'tk::MKLRNG']]],
   ['depvar',['depvar',['../structwalker_1_1ctr_1_1_input_deck_1_1depvar.html#ae460b29f4afb012ad97fdffb8cf7f5b0',1,'walker::ctr::InputDeck::depvar']]],
   ['depvars',['depvars',['../classwalker_1_1ctr_1_1_input_deck.html#a1685acdef68501f75e356b81370f69ba',1,'walker::ctr::InputDeck']]],

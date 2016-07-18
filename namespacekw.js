@@ -14,6 +14,7 @@ var namespacekw =
     [ "cja_accurate_info", "structkw_1_1cja__accurate__info.html", "structkw_1_1cja__accurate__info" ],
     [ "cja_info", "structkw_1_1cja__info.html", "structkw_1_1cja__info" ],
     [ "coeff_info", "structkw_1_1coeff__info.html", "structkw_1_1coeff__info" ],
+    [ "compns_info", "structkw_1_1compns__info.html", "structkw_1_1compns__info" ],
     [ "const_info", "structkw_1_1const__info.html", "structkw_1_1const__info" ],
     [ "control_info", "structkw_1_1control__info.html", "structkw_1_1control__info" ],
     [ "crush_info", "structkw_1_1crush__info.html", "structkw_1_1crush__info" ],

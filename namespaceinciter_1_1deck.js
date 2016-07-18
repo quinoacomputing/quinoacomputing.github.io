@@ -3,6 +3,7 @@ var namespaceinciter_1_1deck =
     [ "advdiff", "structinciter_1_1deck_1_1advdiff.html", null ],
     [ "check_eq", "structinciter_1_1deck_1_1check__eq.html", "structinciter_1_1deck_1_1check__eq" ],
     [ "check_errors", "structinciter_1_1deck_1_1check__errors.html", null ],
+    [ "compns", "structinciter_1_1deck_1_1compns.html", null ],
     [ "discretization_parameters", "structinciter_1_1deck_1_1discretization__parameters.html", null ],
     [ "equations", "structinciter_1_1deck_1_1equations.html", null ],
     [ "inciter", "structinciter_1_1deck_1_1inciter.html", null ],

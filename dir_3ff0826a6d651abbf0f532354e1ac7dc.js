@@ -163,6 +163,7 @@ var dir_3ff0826a6d651abbf0f532354e1ac7dc =
       [ "gid", "structtag_1_1gid.html", null ],
       [ "advdiff", "structtag_1_1advdiff.html", null ],
       [ "euler", "structtag_1_1euler.html", null ],
+      [ "compns", "structtag_1_1compns.html", null ],
       [ "problem", "structtag_1_1problem.html", null ],
       [ "diffusivity", "structtag_1_1diffusivity.html", null ],
       [ "u0", "structtag_1_1u0.html", null ],

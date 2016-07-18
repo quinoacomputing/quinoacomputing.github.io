@@ -29,6 +29,7 @@ var namespacetag =
     [ "Collision", "structtag_1_1_collision.html", null ],
     [ "CollisionOver", "structtag_1_1_collision_over.html", null ],
     [ "CollisionPermut", "structtag_1_1_collision_permut.html", null ],
+    [ "compns", "structtag_1_1compns.html", null ],
     [ "component", "structtag_1_1component.html", null ],
     [ "control", "structtag_1_1control.html", null ],
     [ "CouponCollector", "structtag_1_1_coupon_collector.html", null ],
