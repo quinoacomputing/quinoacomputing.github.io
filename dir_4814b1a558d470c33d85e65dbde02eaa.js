@@ -20,6 +20,7 @@ var dir_4814b1a558d470c33d85e65dbde02eaa =
       [ "HasFunctionExpectChoices", "structtk_1_1_has_function_expect_choices.html", "structtk_1_1_has_function_expect_choices" ],
       [ "no", "structtk_1_1_has_function_expect_choices_1_1no.html", "structtk_1_1_has_function_expect_choices_1_1no" ]
     ] ],
+    [ "HashMapReducer.h", "_hash_map_reducer_8h.html", "_hash_map_reducer_8h" ],
     [ "If.h", "_if_8h.html", [
       [ "if_", "structtk_1_1if__.html", "structtk_1_1if__" ],
       [ "if_< false, Then, Else >", "structtk_1_1if___3_01false_00_01_then_00_01_else_01_4.html", "structtk_1_1if___3_01false_00_01_then_00_01_else_01_4" ]
@@ -58,6 +59,8 @@ var dir_4814b1a558d470c33d85e65dbde02eaa =
     [ "Timer.h", "_timer_8h.html", "_timer_8h" ],
     [ "Types.h", "_base_2_types_8h.html", "_base_2_types_8h" ],
     [ "Vector.h", "_vector_8h.html", "_vector_8h" ],
+    [ "VectorReducer.C", "_vector_reducer_8_c.html", "_vector_reducer_8_c" ],
+    [ "VectorReducer.h", "_vector_reducer_8h.html", "_vector_reducer_8h" ],
     [ "Writer.C", "_writer_8_c.html", null ],
     [ "Writer.h", "_writer_8h.html", [
       [ "Writer", "classtk_1_1_writer.html", "classtk_1_1_writer" ]

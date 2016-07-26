@@ -4,5 +4,6 @@ var searchData=
   ['values',['values',['../classtk_1_1_toggle.html#a31eafb9c7a6e726b9d8a2677afae23ac',1,'tk::Toggle']]],
   ['var',['var',['../structtk_1_1ctr_1_1_term.html#aa2fd0b20afceeb3521c284bd9048bf98',1,'tk::ctr::Term']]],
   ['vars',['vars',['../structtk_1_1ctr_1_1_p_d_f_info.html#a453b86f1504fd0ce967560563a2324a9',1,'tk::ctr::PDFInfo']]],
-  ['verb',['verb',['../structtut_1_1_print__common.html#a0d86140fea451a8740ccf5d0112e0010',1,'tut::Print_common']]]
+  ['verb',['verb',['../structtut_1_1_print__common.html#a0d86140fea451a8740ccf5d0112e0010',1,'tut::Print_common']]],
+  ['verifybcmerger',['VerifyBCMerger',['../namespaceinciter.html#aa8426807df135cf57c069b215aee3f67',1,'inciter']]]
 ];

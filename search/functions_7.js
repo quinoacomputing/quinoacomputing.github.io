@@ -5,7 +5,7 @@ var searchData=
   ['hammingweight2',['HammingWeight2',['../classrngtest_1_1_test_u01_stack.html#a806885071f2c5b0b53dd3c3537f3748b',1,'rngtest::TestU01Stack']]],
   ['handleexception',['handleException',['../classtk_1_1_exception.html#aef3989f5d076c0282329daa2a646b1c6',1,'tk::Exception']]],
   ['has',['Has',['../namespacetut.html#a737e0f3633633fd67304336a46b94fe1',1,'tut']]],
-  ['header',['header',['../classinciter_1_1_conductor.html#a4f6c5a2ceed079fdb171145102009333',1,'inciter::Conductor::header()'],['../classtk_1_1_txt_stat_writer.html#acbf44a39f0d38e6421b43bcb5460096e',1,'tk::TxtStatWriter::header()'],['../classwalker_1_1_distributor.html#a62b59f91457e81ac8eda291ca992de8c',1,'walker::Distributor::header()']]],
+  ['header',['header',['../classinciter_1_1_conductor.html#a4f6c5a2ceed079fdb171145102009333',1,'inciter::Conductor::header()'],['../classtk_1_1_diag_writer.html#a0bc4384d2531587bbf6ad7a020b42c81',1,'tk::DiagWriter::header()'],['../classtk_1_1_txt_stat_writer.html#acbf44a39f0d38e6421b43bcb5460096e',1,'tk::TxtStatWriter::header()'],['../classwalker_1_1_distributor.html#a62b59f91457e81ac8eda291ca992de8c',1,'walker::Distributor::header()']]],
   ['headerinciter',['headerInciter',['../classtk_1_1_print.html#ab8465cdbbdc9bb4a3134810b507ea190',1,'tk::Print']]],
   ['headermeshconv',['headerMeshConv',['../classtk_1_1_print.html#ae7b6794cf6e91c762c5f45262a2ed5df',1,'tk::Print']]],
   ['headerrngtest',['headerRNGTest',['../classtk_1_1_print.html#a6e58f3cfe28f04abec8c61d63090ad8d',1,'tk::Print']]],

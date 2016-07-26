@@ -18,5 +18,9 @@ var dir_e8ebd5d5792131bdfd6b2c2daa81088c =
       [ "Model", "structinciter_1_1_p_d_e_1_1_model.html", "structinciter_1_1_p_d_e_1_1_model" ]
     ] ],
     [ "PDEStack.C", "_p_d_e_stack_8_c.html", null ],
-    [ "PDEStack.h", "_p_d_e_stack_8h.html", "_p_d_e_stack_8h" ]
+    [ "PDEStack.h", "_p_d_e_stack_8h.html", "_p_d_e_stack_8h" ],
+    [ "Poisson.h", "_poisson_8h.html", [
+      [ "Poisson", "classinciter_1_1_poisson.html", "classinciter_1_1_poisson" ]
+    ] ],
+    [ "PoissonProblem.h", "_poisson_problem_8h.html", "_poisson_problem_8h" ]
 ];

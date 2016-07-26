@@ -8,7 +8,6 @@ var classtk_1_1_exodus_i_i_mesh_reader =
     [ "readElemBlockIDs", "classtk_1_1_exodus_i_i_mesh_reader.html#afe8144814a95bbb94d87e04091042918", null ],
     [ "readElement", "classtk_1_1_exodus_i_i_mesh_reader.html#a47b791069c1d701e2646a1fc9e552be9", null ],
     [ "readElements", "classtk_1_1_exodus_i_i_mesh_reader.html#a58514f277e72899f14211e2b2f371e87", null ],
-    [ "readElements", "classtk_1_1_exodus_i_i_mesh_reader.html#a3ca06068fcdb951ff6323369b35c3590", null ],
     [ "readGraph", "classtk_1_1_exodus_i_i_mesh_reader.html#a94e2a65b65c58026b28292e543210152", null ],
     [ "readHeader", "classtk_1_1_exodus_i_i_mesh_reader.html#a420fb01018122df1c9ffd74f042ec7e4", null ],
     [ "readHeader", "classtk_1_1_exodus_i_i_mesh_reader.html#acd5890a63ef76aca0f2da47f9034a3bc", null ],
@@ -17,12 +16,14 @@ var classtk_1_1_exodus_i_i_mesh_reader =
     [ "readNode", "classtk_1_1_exodus_i_i_mesh_reader.html#a791ceebc4f5602e70be3dd140a02d3c7", null ],
     [ "readNode", "classtk_1_1_exodus_i_i_mesh_reader.html#a222a3a0d9523b8e71dc84f63448bbc42", null ],
     [ "readNodes", "classtk_1_1_exodus_i_i_mesh_reader.html#a4a96432645cad9079dc10ee05769fec2", null ],
+    [ "readSidesets", "classtk_1_1_exodus_i_i_mesh_reader.html#a9eb24a77a29a172b461d6c091f7de576", null ],
     [ "m_eid", "classtk_1_1_exodus_i_i_mesh_reader.html#afa985f1ff7efafc404505766657d3854", null ],
     [ "m_eidt", "classtk_1_1_exodus_i_i_mesh_reader.html#a6eccb0e14386243d7bbebae2eaeb7dfb", null ],
     [ "m_filename", "classtk_1_1_exodus_i_i_mesh_reader.html#a87b5eb37c15707a64dd27be70fd2d1f8", null ],
     [ "m_inFile", "classtk_1_1_exodus_i_i_mesh_reader.html#a40ee1a90af83bb9f14a413f8fd2ffbb6", null ],
     [ "m_neblk", "classtk_1_1_exodus_i_i_mesh_reader.html#ae11a4ddaeb2fcf50aafc227d0b68bb3e", null ],
     [ "m_nel", "classtk_1_1_exodus_i_i_mesh_reader.html#aa6b90ef062465e76fa86d9f31e7164c0", null ],
+    [ "m_neset", "classtk_1_1_exodus_i_i_mesh_reader.html#aa18b4e681141bf47376ecbd1d12e70db", null ],
     [ "m_nnode", "classtk_1_1_exodus_i_i_mesh_reader.html#a5443ce5e48062a787dd8dc2300bc6bdd", null ],
     [ "m_nnpe", "classtk_1_1_exodus_i_i_mesh_reader.html#a454c477bc55c002e8bf7340e2e345a73", null ]
 ];

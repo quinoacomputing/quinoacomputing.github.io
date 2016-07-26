@@ -11,7 +11,7 @@ var searchData=
   ['fixpes',['fixPEs',['../classtk_1_1_uns_mesh_map.html#ab1470c9531e460df85ad4c30a21b13e3',1,'tk::UnsMeshMap']]],
   ['flatten',['flatten',['../classinciter_1_1_partitioner.html#ac5d8fc6bfcf39a2a4bf7414df3a8fff8',1,'inciter::Partitioner']]],
   ['flattened',['flattened',['../classinciter_1_1_conductor.html#a0c49a8f43e1a238dc060f5146b92f74e',1,'inciter::Conductor']]],
-  ['flip_5fmap',['flip_map',['../namespacetk.html#a42982d289f8edfffa60fa4da8b7b9fdf',1,'tk::flip_map()'],['../namespacetut.html#a0db288e2be4c8742d3a5c6b6e4688115',1,'tut::Flip_map()']]],
+  ['flip_5fmap',['Flip_map',['../namespacetut.html#a0db288e2be4c8742d3a5c6b6e4688115',1,'tut::Flip_map()'],['../namespacetk.html#a42982d289f8edfffa60fa4da8b7b9fdf',1,'tk::flip_map()']]],
   ['flip_5fpair',['flip_pair',['../namespacetk.html#ac2323b3c43edbcc32d55d91100ffc3a6',1,'tk']]],
   ['found',['found',['../classtk_1_1ctr_1_1_r_n_g.html#a0aca1ead97af4ff59a39754695ffe37e',1,'tk::ctr::RNG']]],
   ['fourier3',['Fourier3',['../classrngtest_1_1_test_u01_stack.html#adbd1ef96e568cb8fa4b42e2d319c2019',1,'rngtest::TestU01Stack']]],

@@ -10,6 +10,7 @@ var namespacetk =
     [ "BiPDF", "classtk_1_1_bi_p_d_f.html", "classtk_1_1_bi_p_d_f" ],
     [ "Control", "classtk_1_1_control.html", "classtk_1_1_control" ],
     [ "DataLayout", "classtk_1_1_data_layout.html", "classtk_1_1_data_layout" ],
+    [ "DiagWriter", "classtk_1_1_diag_writer.html", "classtk_1_1_diag_writer" ],
     [ "Driver", "classtk_1_1_driver.html", "classtk_1_1_driver" ],
     [ "Exception", "classtk_1_1_exception.html", "classtk_1_1_exception" ],
     [ "ExodusIIMeshReader", "classtk_1_1_exodus_i_i_mesh_reader.html", "classtk_1_1_exodus_i_i_mesh_reader" ],

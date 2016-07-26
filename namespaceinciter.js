@@ -17,5 +17,7 @@ var namespaceinciter =
     [ "Partitioner", "classinciter_1_1_partitioner.html", "classinciter_1_1_partitioner" ],
     [ "PDE", "classinciter_1_1_p_d_e.html", "classinciter_1_1_p_d_e" ],
     [ "PDEStack", "classinciter_1_1_p_d_e_stack.html", "classinciter_1_1_p_d_e_stack" ],
-    [ "Performer", "classinciter_1_1_performer.html", "classinciter_1_1_performer" ]
+    [ "Performer", "classinciter_1_1_performer.html", "classinciter_1_1_performer" ],
+    [ "Poisson", "classinciter_1_1_poisson.html", "classinciter_1_1_poisson" ],
+    [ "PoissonProblemDirNeu", "classinciter_1_1_poisson_problem_dir_neu.html", "classinciter_1_1_poisson_problem_dir_neu" ]
 ];

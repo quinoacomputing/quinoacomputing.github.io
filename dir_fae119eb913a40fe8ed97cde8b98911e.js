@@ -1,5 +1,9 @@
 var dir_fae119eb913a40fe8ed97cde8b98911e =
 [
+    [ "DiagWriter.C", "_diag_writer_8_c.html", null ],
+    [ "DiagWriter.h", "_diag_writer_8h.html", [
+      [ "DiagWriter", "classtk_1_1_diag_writer.html", "classtk_1_1_diag_writer" ]
+    ] ],
     [ "ExodusIIMeshReader.C", "_exodus_i_i_mesh_reader_8_c.html", null ],
     [ "ExodusIIMeshReader.h", "_exodus_i_i_mesh_reader_8h.html", "_exodus_i_i_mesh_reader_8h" ],
     [ "ExodusIIMeshWriter.C", "_exodus_i_i_mesh_writer_8_c.html", null ],

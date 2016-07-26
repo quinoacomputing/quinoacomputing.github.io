@@ -44,6 +44,8 @@ var searchData=
   ['performer_2edecl_2eh',['performer.decl.h',['../performer_8decl_8h.html',1,'']]],
   ['performer_2edef_2eh',['performer.def.h',['../performer_8def_8h.html',1,'']]],
   ['performer_2eh',['Performer.h',['../_performer_8h.html',1,'']]],
+  ['poisson_2eh',['Poisson.h',['../_poisson_8h.html',1,'']]],
+  ['poissonproblem_2eh',['PoissonProblem.h',['../_poisson_problem_8h.html',1,'']]],
   ['position_2eh',['Position.h',['../_position_8h.html',1,'']]],
   ['print_2eh',['Print.h',['../_print_8h.html',1,'']]],
   ['problem_2eh',['Problem.h',['../_problem_8h.html',1,'']]],

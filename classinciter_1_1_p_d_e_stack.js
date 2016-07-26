@@ -8,6 +8,7 @@ var classinciter_1_1_p_d_e_stack =
     [ "infoAdvDiff", "classinciter_1_1_p_d_e_stack.html#a0437ab55023bf51c886ba16979298c10", null ],
     [ "infoCompNS", "classinciter_1_1_p_d_e_stack.html#a0eb8a749c509726ee9528a49aaab1c55", null ],
     [ "infoEuler", "classinciter_1_1_p_d_e_stack.html#a68a6203557a610ca832eccc602b06228", null ],
+    [ "infoPoisson", "classinciter_1_1_p_d_e_stack.html#a78c7c837056daf8eae0afa7a6599891e", null ],
     [ "ntypes", "classinciter_1_1_p_d_e_stack.html#ae8a38d434385fcea51e0f68c1aae140d", null ],
     [ "parameters", "classinciter_1_1_p_d_e_stack.html#a97632a246ee4bc6897593ab5ab2c8ff4", null ],
     [ "selected", "classinciter_1_1_p_d_e_stack.html#ab27381a5ff3507840a98a8bf83267464", null ],

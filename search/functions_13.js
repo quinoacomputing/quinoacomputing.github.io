@@ -8,5 +8,6 @@ var searchData=
   ['vecstrsmsg',['VecStrsMsg',['../structtk_1_1_vec_strs_msg.html#a47cbc97fd0d0feb3f0508968dbdc32b4',1,'tk::VecStrsMsg']]],
   ['vector',['Vector',['../namespacetut.html#a2c185dca7b17486de3bd95f94f9f5605',1,'tut']]],
   ['velocity',['velocity',['../classinciter_1_1_adv_diff_problem_shear_diff.html#a14a1bebe59c220c64fe76f9c47c35139',1,'inciter::AdvDiffProblemShearDiff']]],
+  ['verifybc',['verifybc',['../classinciter_1_1_conductor.html#ad50e47c4b8d63147930c927633034851',1,'inciter::Conductor::verifybc()'],['../classtk_1_1_lin_sys_merger.html#a2a546087eb311c1c911291feda380806',1,'tk::LinSysMerger::verifybc()']]],
   ['vol',['vol',['../classwalker_1_1_mass_fraction_beta.html#a326c167f9b5cd263a5cc4a90f2112b58',1,'walker::MassFractionBeta::vol()'],['../classwalker_1_1_mix_mass_fraction_beta.html#a70430a54488c3cb8009446c3fc0968f5',1,'walker::MixMassFractionBeta::vol()'],['../classwalker_1_1_mix_number_fraction_beta.html#a9c351bb0679ad9b2a30a003572f60a0f',1,'walker::MixNumberFractionBeta::vol()'],['../classwalker_1_1_number_fraction_beta.html#a7297a92b2c63db3b9e7e36840b2f6499',1,'walker::NumberFractionBeta::vol()']]]
 ];

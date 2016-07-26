@@ -11,7 +11,7 @@ var searchData=
   ['endsubsection',['endsubsection',['../classtk_1_1_print.html#ae4b58bc31ef42dbee41b47f2209ace96',1,'tk::Print']]],
   ['energy',['Energy',['../classbreeze_1_1ctr_1_1_energy.html#a69fb1bc395152d62ec5c603a6da86d53',1,'breeze::ctr::Energy']]],
   ['eqlist',['eqlist',['../classinciter_1_1_inciter_print.html#a7798cc39820e736109b1f156fe2e97a8',1,'inciter::InciterPrint::eqlist()'],['../classwalker_1_1_walker_print.html#a31030f1113a0eb183d11a3ccee5efa69',1,'walker::WalkerPrint::eqlist()']]],
-  ['errchk',['errchk',['../classinciter_1_1_adv_diff_problem_shear_diff.html#aacfe1d03df3316f22121639a74b5df53',1,'inciter::AdvDiffProblemShearDiff::errchk()'],['../classtk_1_1_m_k_l_r_n_g.html#ab42d35668896a75fe69225406b972369',1,'tk::MKLRNG::errchk()']]],
+  ['errchk',['errchk',['../classinciter_1_1_adv_diff_problem_shear_diff.html#aacfe1d03df3316f22121639a74b5df53',1,'inciter::AdvDiffProblemShearDiff::errchk()'],['../classinciter_1_1_poisson_problem_dir_neu.html#afd9b0451d141d92afbdfd13e2693e33c',1,'inciter::PoissonProblemDirNeu::errchk()'],['../classtk_1_1_m_k_l_r_n_g.html#ab42d35668896a75fe69225406b972369',1,'tk::MKLRNG::errchk()']]],
   ['estimatecen',['estimateCen',['../classwalker_1_1_distributor.html#a1f99de69e8c3fd6b7b9a1d7db12687b2',1,'walker::Distributor']]],
   ['estimatecenpdf',['estimateCenPDF',['../classwalker_1_1_distributor.html#a270abb073123b7c9fcf083b50b962a24',1,'walker::Distributor']]],
   ['estimateord',['estimateOrd',['../classwalker_1_1_distributor.html#a194f199b33b65c906237691f70c32b45',1,'walker::Distributor']]],
