@@ -71,7 +71,7 @@ var classtk_1_1_lin_sys_merger =
     [ "m_nchbcval", "classtk_1_1_lin_sys_merger.html#ae183ec4362b10a591b298e96249c950d", null ],
     [ "m_ncomp", "classtk_1_1_lin_sys_merger.html#ae0fb49ab6bec3136b4418fd856f3a446", null ],
     [ "m_nperow", "classtk_1_1_lin_sys_merger.html#a9b41f198685edf0517cc542616a6866e", null ],
-    [ "m_oldbc", "classtk_1_1_lin_sys_merger.html#ac515548cf721fe6d3c99133eff4996c2", null ],
+    [ "m_oldbc", "classtk_1_1_lin_sys_merger.html#a9aad0d4db725448deeeb4893f956b8c4", null ],
     [ "m_pe", "classtk_1_1_lin_sys_merger.html#ace6745587b13dc076aee08287fba4e10", null ],
     [ "m_rhs", "classtk_1_1_lin_sys_merger.html#a421dc2c682e3098e7f507e0043a6d4c6", null ],
     [ "m_rhsimport", "classtk_1_1_lin_sys_merger.html#aa351412964251e1670fd19d08433b44e", null ],
