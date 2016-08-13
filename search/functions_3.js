@@ -23,10 +23,11 @@ var searchData=
   ['dirbc',['dirbc',['../classinciter_1_1_adv_diff.html#a32eb17f8b0ad619d044f0dfc05e68bcd',1,'inciter::AdvDiff::dirbc()'],['../classinciter_1_1_comp_n_s.html#a54147b556530df0eaa106d5adcb2d1c4',1,'inciter::CompNS::dirbc()'],['../classinciter_1_1_euler.html#a2a5f5c6562147182b66ec51aa1380fca',1,'inciter::Euler::dirbc()'],['../classinciter_1_1_p_d_e.html#ae6e242424119117cb79af7f180493f8c',1,'inciter::PDE::dirbc()'],['../structinciter_1_1_p_d_e_1_1_concept.html#afeeaa0eb7913d7469f8751bf9e78e6b2',1,'inciter::PDE::Concept::dirbc()'],['../structinciter_1_1_p_d_e_1_1_model.html#a4d321fd563ef06dfac0516a01808f2e1',1,'inciter::PDE::Model::dirbc()'],['../classinciter_1_1_poisson.html#a1fcaa97b1c3de194d11ec3e91d1a956a',1,'inciter::Poisson::dirbc()']]],
   ['dirichlet',['Dirichlet',['../classwalker_1_1_dirichlet.html#ad5fe97422126de0afbd69f569d2215e0',1,'walker::Dirichlet']]],
   ['dirichletcoeffconst',['DirichletCoeffConst',['../classwalker_1_1_dirichlet_coeff_const.html#ac26b91c7bcd89b84a092460c44b7eace',1,'walker::DirichletCoeffConst']]],
-  ['distribute',['distribute',['../classinciter_1_1_partitioner.html#a754ec2ed241b9ec78b01b84e270df254',1,'inciter::Partitioner']]],
+  ['distribute',['distribute',['../classinciter_1_1_partitioner.html#a185498585cc11098213d97c4697753a6',1,'inciter::Partitioner']]],
   ['distributor',['Distributor',['../classwalker_1_1_distributor.html#aba72a9b33997ac8efe1c7a3540d9b18e',1,'walker::Distributor']]],
   ['dot',['dot',['../namespacetk.html#aeaca2df70ee950c576f6d74e1eb42caa',1,'tk']]],
   ['doverifybc',['doverifybc',['../classinciter_1_1_conductor.html#a606f2288e3ecabf7a54fd3e9e6199bb8',1,'inciter::Conductor']]],
+  ['dowriteparticles',['doWriteParticles',['../classinciter_1_1_performer.html#a26edb79493c28345e6334397589d6937',1,'inciter::Performer']]],
   ['driver',['Driver',['../classtk_1_1_driver.html#a097098869c97d1ae42134620df2dab1e',1,'tk::Driver::Driver(T x)'],['../classtk_1_1_driver.html#a9533d1c25766b5de73bfe4f21e9a7a56',1,'tk::Driver::Driver(std::function&lt; T()&gt; x)'],['../classtk_1_1_driver.html#aaed4f38b9ece7fad26f058bb10e2e7ae',1,'tk::Driver::Driver(const Driver &amp;x)'],['../classtk_1_1_driver.html#a18756e5c5f812ced35926876150bc932',1,'tk::Driver::Driver(Driver &amp;&amp;) noexcept=default']]],
   ['dsec',['dsec',['../classtk_1_1_timer.html#a08304f78d80271af5adc8115d6d55a93',1,'tk::Timer']]]
 ];

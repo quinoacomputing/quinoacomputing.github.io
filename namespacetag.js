@@ -105,6 +105,7 @@ var namespacetag =
     [ "ou", "structtag_1_1ou.html", null ],
     [ "output", "structtag_1_1output.html", null ],
     [ "param", "structtag_1_1param.html", null ],
+    [ "part", "structtag_1_1part.html", null ],
     [ "partitioner", "structtag_1_1partitioner.html", null ],
     [ "pde", "structtag_1_1pde.html", null ],
     [ "pdf", "structtag_1_1pdf.html", null ],

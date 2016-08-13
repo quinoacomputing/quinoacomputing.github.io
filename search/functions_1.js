@@ -9,5 +9,5 @@ var searchData=
   ['binsize',['binsize',['../classtk_1_1_bi_p_d_f.html#aedbc730d8028b91873b4702406ff6b76',1,'tk::BiPDF::binsize()'],['../classtk_1_1_tri_p_d_f.html#a28c5a0af2eb79dc4f91ad87815441a11',1,'tk::TriPDF::binsize()'],['../classtk_1_1_uni_p_d_f.html#a83519a7b7b48c14694c5d683218d3419',1,'tk::UniPDF::binsize()']]],
   ['bipdf',['BiPDF',['../classtk_1_1_bi_p_d_f.html#a9aa47a8ef85bdc4448e8796825ce9bfb',1,'tk::BiPDF::BiPDF()'],['../classtk_1_1_bi_p_d_f.html#afe44d03194f64f07cc96f01544d23014',1,'tk::BiPDF::BiPDF(const std::vector&lt; tk::real &gt; &amp;bs)']]],
   ['birthdayspacings',['BirthdaySpacings',['../classrngtest_1_1_test_u01_stack.html#a523c89eee2fa9a5f248bc01c2d41448e',1,'rngtest::TestU01Stack']]],
-  ['bounds',['bounds',['../classinciter_1_1_partitioner.html#a126f83464b8629f87e300b79aba14844',1,'inciter::Partitioner::bounds()'],['../classtk_1_1_lin_sys_merger.html#a3e9bdb435c5f972a85fb6170e59779b2',1,'tk::LinSysMerger::bounds()']]]
+  ['bounds',['bounds',['../classinciter_1_1_partitioner.html#a7336d1b669341fd6a19bd6f793a61826',1,'inciter::Partitioner::bounds()'],['../classtk_1_1_lin_sys_merger.html#a3e9bdb435c5f972a85fb6170e59779b2',1,'tk::LinSysMerger::bounds()']]]
 ];

@@ -22,7 +22,8 @@ var licenses =
       [ "19. Libc++ for standard C++ containers and algorithms", "licenses.html#libcpp_license", null ],
       [ "20. Musl-libc for standard C library", "licenses.html#musllibc_license", null ],
       [ "21. OpenMPI for the message passing interface", "licenses.html#openmpi_license", null ],
-      [ "22. Intel Math Kernel Library for BLAS/LAPACK and random number generation", "licenses.html#mkl_license", null ]
+      [ "22. Intel Math Kernel Library for BLAS/LAPACK and random number generation", "licenses.html#mkl_license", null ],
+      [ "23. H5Part for saving particle data to files", "licenses.html#h5part_license", null ]
     ] ],
     [ "Compilers", "licenses.html#compiler_web", [
       [ "1. Clang C++ compiler", "licenses.html#clang_web", null ],
@@ -60,5 +61,6 @@ var licenses =
     [ "LibC++ license", "LibCPP_license.html", null ],
     [ "Musllibc license", "Musllibc_license.html", null ],
     [ "OpenMPI license", "OpenMPI_license.html", null ],
-    [ "MKL license", "MKL_license.html", null ]
+    [ "MKL license", "MKL_license.html", null ],
+    [ "H5Part license", "H5Part_license.html", null ]
 ];
