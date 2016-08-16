@@ -1,11 +1,5 @@
 var NAVTREEINDEX19 =
 {
-"structkw_1_1seqlen__info_1_1expect.html#aabd74d8b6698fc956765e062f836615c":[22,0,2,142,0,0],
-"structkw_1_1shear__diff__info.html":[22,0,2,143],
-"structkw_1_1shear__diff__info.html#a5bd5c308503efa84be711aee3cfa28b9":[22,0,2,143,1],
-"structkw_1_1shear__diff__info.html#a8cbf1109fd0266ac6903ffb644c225fd":[22,0,2,143,2],
-"structkw_1_1shear__diff__info.html#af62d221debd4c2d8c8fb97840a254888":[22,0,2,143,3],
-"structkw_1_1shear__diff__info_1_1expect.html":[22,0,2,143,0],
 "structkw_1_1shear__diff__info_1_1expect.html#a77d15a0661e3df6f8c663938dce88feb":[22,0,2,143,0,0],
 "structkw_1_1sideset__info.html":[22,0,2,144],
 "structkw_1_1sideset__info.html#a6b28076761d4773f9c011877cdf65c29":[22,0,2,144,2],
@@ -249,5 +243,11 @@ var NAVTREEINDEX19 =
 "structtag_1_1_random_walk1.html":[22,0,5,122],
 "structtag_1_1_run.html":[22,0,5,129],
 "structtag_1_1_s.html":[22,0,5,130],
-"structtag_1_1_sample_corr.html":[22,0,5,131]
+"structtag_1_1_sample_corr.html":[22,0,5,131],
+"structtag_1_1_sample_mean.html":[22,0,5,132],
+"structtag_1_1_sample_prod.html":[22,0,5,133],
+"structtag_1_1_savir2.html":[22,0,5,134],
+"structtag_1_1_serial_over.html":[22,0,5,138],
+"structtag_1_1_simple_poker.html":[22,0,5,140],
+"structtag_1_1_string_run.html":[22,0,5,145]
 };

@@ -41,5 +41,5 @@ var searchData=
   ['montecarlo',['MonteCarlo',['../classbreeze_1_1ctr_1_1_monte_carlo.html#ad3c1e493bbf5086c89593ecd9af12809',1,'breeze::ctr::MonteCarlo']]],
   ['msg',['Msg',['../structtk_1_1_msg.html#ae986bed7b9615269bbb4afa1e2273183',1,'tk::Msg']]],
   ['msum',['msum',['../classinciter_1_1_performer.html#a15d63420759741e1e1e9343336376394',1,'inciter::Performer']]],
-  ['msumcomplete',['msumcomplete',['../classinciter_1_1_conductor.html#a9eb8601144e6dafaf226f2e894d892b3',1,'inciter::Conductor']]]
+  ['msumcomplete',['msumcomplete',['../classinciter_1_1_transporter.html#acd92ca9be4aaea45270aeb712fb6e32a',1,'inciter::Transporter']]]
 ];

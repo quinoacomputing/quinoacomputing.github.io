@@ -109,7 +109,7 @@ var searchData=
   ['grammar_2eh',['Grammar.h',['../_breeze_2_input_deck_2_grammar_8h.html',1,'']]],
   ['graphsize',['graphsize',['../classtk_1_1_uns_mesh.html#adcc0649d6d564348dd575ed977b668dc',1,'tk::UnsMesh']]],
   ['group',['group',['../structtag_1_1group.html',1,'tag']]],
-  ['group',['group',['../classtk_1_1_toggle.html#ac94dd097af189c12cbe902183da73617',1,'tk::Toggle::group()'],['../classinciter_1_1_partitioner.html#ae2da626a5df9fefd511aa0d350206786',1,'inciter::Partitioner::Group()'],['../classtk_1_1_lin_sys_merger.html#a227e7127f4075b65f312b405e2584737',1,'tk::LinSysMerger::Group()'],['../namespacekw.html#a637d4a30692a8d1329d9042a7931c366',1,'kw::group()']]],
+  ['group',['Group',['../classinciter_1_1_partitioner.html#ae2da626a5df9fefd511aa0d350206786',1,'inciter::Partitioner::Group()'],['../classtk_1_1_lin_sys_merger.html#a227e7127f4075b65f312b405e2584737',1,'tk::LinSysMerger::Group()'],['../classtk_1_1_toggle.html#ac94dd097af189c12cbe902183da73617',1,'tk::Toggle::group()'],['../namespacekw.html#a637d4a30692a8d1329d9042a7931c366',1,'kw::group()']]],
   ['group',['group',['../structunittest_1_1cmd_1_1group.html',1,'unittest::cmd']]],
   ['group_5finfo',['group_info',['../structkw_1_1group__info.html',1,'kw']]],
   ['groupname',['groupname',['../classtk_1_1_toggle.html#ae48fc450a0207f20e2090e03e17570ea',1,'tk::Toggle']]],

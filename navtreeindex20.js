@@ -1,11 +1,5 @@
 var NAVTREEINDEX20 =
 {
-"structtag_1_1_sample_mean.html":[22,0,5,132],
-"structtag_1_1_sample_prod.html":[22,0,5,133],
-"structtag_1_1_savir2.html":[22,0,5,134],
-"structtag_1_1_serial_over.html":[22,0,5,138],
-"structtag_1_1_simple_poker.html":[22,0,5,140],
-"structtag_1_1_string_run.html":[22,0,5,145],
 "structtag_1_1_sum_collector.html":[22,0,5,146],
 "structtag_1_1_weight_distrib.html":[22,0,5,157],
 "structtag_1_1advdiff.html":[22,0,5,0],
@@ -249,5 +243,11 @@ var NAVTREEINDEX20 =
 "structtk_1_1ctr_1_1_keyword_info.html":[22,0,6,0,3],
 "structtk_1_1ctr_1_1_keyword_info.html#a0de00adde941d443fe00fe4f8e91ee9c":[22,0,6,0,3,1],
 "structtk_1_1ctr_1_1_keyword_info.html#a2d19dd621c74c26666fd4ba77072f11e":[22,0,6,0,3,0],
-"structtk_1_1ctr_1_1_keyword_info.html#a60152949a4065b82a8a78e5c2831f08f":[22,0,6,0,3,3]
+"structtk_1_1ctr_1_1_keyword_info.html#a60152949a4065b82a8a78e5c2831f08f":[22,0,6,0,3,3],
+"structtk_1_1ctr_1_1_keyword_info.html#a83df586042d2c6d86848a807718454c9":[22,0,6,0,3,6],
+"structtk_1_1ctr_1_1_keyword_info.html#aeba3d0d0904b4870bd804c3fa3a2dfa4":[22,0,6,0,3,2],
+"structtk_1_1ctr_1_1_keyword_info.html#aeea2e44535c9bc51527793312834d512":[22,0,6,0,3,5],
+"structtk_1_1ctr_1_1_keyword_info.html#af63334254fc323b002036bcf1fcc2bb7":[22,0,6,0,3,4],
+"structtk_1_1ctr_1_1_p_d_f_info.html":[22,0,6,0,11],
+"structtk_1_1ctr_1_1_p_d_f_info.html#a01a3aaace501ce9affbf87938870da53":[22,0,6,0,11,1]
 };

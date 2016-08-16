@@ -9,7 +9,6 @@ var searchData=
   ['compns',['compns',['../namespacekw.html#a64aaa3bd9a2ce6d0f0a75b2dddda6146',1,'kw']]],
   ['compnspdeparameters',['CompNSPDEParameters',['../namespaceinciter_1_1ctr.html#aaef23b5508e29068a66f68688b956183',1,'inciter::ctr']]],
   ['compnsproblems',['CompNSProblems',['../namespaceinciter.html#a7ecc97ebd45d1b7c75af6cfd4d89cf68',1,'inciter']]],
-  ['conductorproxy',['ConductorProxy',['../classinciter_1_1_performer.html#a7e0774dca3b99e21982ed13ff0263209',1,'inciter::Performer']]],
   ['constant',['constant',['../namespacekw.html#a66f3535a1ca46f7f86f58c932ec4b595',1,'kw']]],
   ['containerutil_5fgroup',['ContainerUtil_group',['../namespacetut.html#a08071c20b2c608c7d400e6a874d3e29d',1,'tut']]],
   ['containerutil_5fobject',['ContainerUtil_object',['../namespacetut.html#ab0c2560cdd5cadd71279b2b0db84e650',1,'tut']]],

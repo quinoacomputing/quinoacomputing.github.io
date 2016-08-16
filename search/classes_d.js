@@ -29,7 +29,7 @@ var searchData=
   ['number',['number',['../structtk_1_1grm_1_1number.html',1,'tk::grm']]],
   ['numberfractionbeta',['NumberFractionBeta',['../classwalker_1_1_number_fraction_beta.html',1,'walker']]],
   ['numberfractionbetacoeffconst',['NumberFractionBetaCoeffConst',['../classwalker_1_1_number_fraction_beta_coeff_const.html',1,'walker']]],
-  ['numfracbeta',['numfracbeta',['../structwalker_1_1deck_1_1numfracbeta.html',1,'walker::deck']]],
   ['numfracbeta',['numfracbeta',['../structtag_1_1numfracbeta.html',1,'tag']]],
+  ['numfracbeta',['numfracbeta',['../structwalker_1_1deck_1_1numfracbeta.html',1,'walker::deck']]],
   ['numfracbeta_5finfo',['numfracbeta_info',['../structkw_1_1numfracbeta__info.html',1,'kw']]]
 ];
