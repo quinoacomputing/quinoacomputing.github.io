@@ -99,7 +99,7 @@ var searchData=
   ['dmpi',['dmpi',['../namespacekw.html#ae707e9e74a4bf799c889277fd767bfbf',1,'kw']]],
   ['dot',['dot',['../namespacetk.html#aeaca2df70ee950c576f6d74e1eb42caa',1,'tk']]],
   ['doverifybc',['doverifybc',['../classinciter_1_1_transporter.html#a6a4bfadd3c3053ce3b462e7c7b638746',1,'inciter::Transporter']]],
-  ['dowriteparticles',['doWriteParticles',['../classinciter_1_1_performer.html#a26edb79493c28345e6334397589d6937',1,'inciter::Performer']]],
+  ['dowriteparticles',['doWriteParticles',['../classinciter_1_1_carrier.html#ae99aff431b9f88961899e3d51abcfe98',1,'inciter::Carrier']]],
   ['driver',['Driver',['../classtk_1_1_driver.html#a097098869c97d1ae42134620df2dab1e',1,'tk::Driver::Driver(T x)'],['../classtk_1_1_driver.html#a9533d1c25766b5de73bfe4f21e9a7a56',1,'tk::Driver::Driver(std::function&lt; T()&gt; x)'],['../classtk_1_1_driver.html#aaed4f38b9ece7fad26f058bb10e2e7ae',1,'tk::Driver::Driver(const Driver &amp;x)'],['../classtk_1_1_driver.html#a18756e5c5f812ced35926876150bc932',1,'tk::Driver::Driver(Driver &amp;&amp;) noexcept=default']]],
   ['driver',['Driver',['../classtk_1_1_driver.html',1,'tk']]],
   ['driver_2eh',['Driver.h',['../_driver_8h.html',1,'']]],

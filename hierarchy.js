@@ -99,6 +99,9 @@ var hierarchy =
     [ "tag::c3", "structtag_1_1c3.html", null ],
     [ "tag::c4", "structtag_1_1c4.html", null ],
     [ "tk::ctr::CaseInsensitiveCharLess", "structtk_1_1ctr_1_1_case_insensitive_char_less.html", null ],
+    [ "CBase_Carrier", null, [
+      [ "inciter::Carrier", "classinciter_1_1_carrier.html", null ]
+    ] ],
     [ "CBase_CharmChild", null, [
       [ "tut::CharmChild", "classtut_1_1_charm_child.html", null ]
     ] ],
@@ -139,9 +142,6 @@ var hierarchy =
     ] ],
     [ "CBase_Partitioner", null, [
       [ "inciter::Partitioner< HostProxy, WorkerProxy, LinSysMergerProxy, ParticleWriterProxy >", "classinciter_1_1_partitioner.html", null ]
-    ] ],
-    [ "CBase_Performer", null, [
-      [ "inciter::Performer", "classinciter_1_1_performer.html", null ]
     ] ],
     [ "CBase_TestArray", null, [
       [ "tut::TestArray", "classtut_1_1_test_array.html", null ]
@@ -649,11 +649,11 @@ var hierarchy =
     [ "tut::TaggedTuple_common::name", "structtut_1_1_tagged_tuple__common_1_1name.html", null ],
     [ "tag::ncomp", "structtag_1_1ncomp.html", null ],
     [ "kw::ncomp_info", "structkw_1_1ncomp__info.html", null ],
-    [ "tk::HasTypedefAlias< T >::no", "structtk_1_1_has_typedef_alias_1_1no.html", null ],
     [ "tk::HasTypedefExpectType< T >::no", "structtk_1_1_has_typedef_expect_type_1_1no.html", null ],
     [ "tk::HasFunctionExpectDescription< T >::no", "structtk_1_1_has_function_expect_description_1_1no.html", null ],
     [ "tk::HasFunctionExpectChoices< T >::no", "structtk_1_1_has_function_expect_choices_1_1no.html", null ],
     [ "tk::HasTypedefProxy< T >::no", "structtk_1_1_has_typedef_proxy_1_1no.html", null ],
+    [ "tk::HasTypedefAlias< T >::no", "structtk_1_1_has_typedef_alias_1_1no.html", null ],
     [ "tut::Has_common::noAlias", "structtut_1_1_has__common_1_1no_alias.html", null ],
     [ "kw::node_info", "structkw_1_1node__info.html", null ],
     [ "tut::Has_common::noExpectChoices", "structtut_1_1_has__common_1_1no_expect_choices.html", null ],
@@ -759,8 +759,8 @@ var hierarchy =
     [ "kw::phg_info", "structkw_1_1phg__info.html", null ],
     [ "tag::plot", "structtag_1_1plot.html", null ],
     [ "kw::plotvar_info", "structkw_1_1plotvar__info.html", null ],
-    [ "tag::poisson", "structtag_1_1poisson.html", null ],
     [ "inciter::Poisson< Problem >", "classinciter_1_1_poisson.html", null ],
+    [ "tag::poisson", "structtag_1_1poisson.html", null ],
     [ "kw::poisson_info", "structkw_1_1poisson__info.html", null ],
     [ "inciter::PoissonProblemDirNeu", "classinciter_1_1_poisson_problem_dir_neu.html", null ],
     [ "inciter::InciterPrint::Policies", "classinciter_1_1_inciter_print_1_1_policies.html", null ],
@@ -801,8 +801,8 @@ var hierarchy =
     [ "kw::reorder_info", "structkw_1_1reorder__info.html", null ],
     [ "tag::rho2", "structtag_1_1rho2.html", null ],
     [ "kw::rib_info", "structkw_1_1rib__info.html", null ],
-    [ "tk::RNG", "classtk_1_1_r_n_g.html", null ],
     [ "tag::rng", "structtag_1_1rng.html", null ],
+    [ "tk::RNG", "classtk_1_1_r_n_g.html", null ],
     [ "tut::RNG_common", "structtut_1_1_r_n_g__common.html", null ],
     [ "kw::rng_info", "structkw_1_1rng__info.html", null ],
     [ "tag::rngmkl", "structtag_1_1rngmkl.html", null ],
@@ -945,8 +945,8 @@ var hierarchy =
     [ "tut::tag9", "structtut_1_1tag9.html", null ],
     [ "tk::tuple::tagged_tuple_size< _Tp >", "structtk_1_1tuple_1_1tagged__tuple__size.html", null ],
     [ "tut::TaggedTuple_common", "structtut_1_1_tagged_tuple__common.html", null ],
-    [ "tk::ctr::Term", "structtk_1_1ctr_1_1_term.html", null ],
     [ "tag::term", "structtag_1_1term.html", null ],
+    [ "tk::ctr::Term", "structtk_1_1ctr_1_1_term.html", null ],
     [ "kw::term_info", "structkw_1_1term__info.html", null ],
     [ "tut::Make_list_common::Test< Ts >", "structtut_1_1_make__list__common_1_1_test.html", null ],
     [ "tut::SystemComponents_common::testncomp", "structtut_1_1_system_components__common_1_1testncomp.html", null ],
@@ -1128,8 +1128,8 @@ var hierarchy =
     [ "walker::WalkerDriver", "classwalker_1_1_walker_driver.html", null ],
     [ "tk::Timer::Watch", "structtk_1_1_timer_1_1_watch.html", null ],
     [ "tag::WeightDistrib", "structtag_1_1_weight_distrib.html", null ],
-    [ "walker::WrightFisher< Init, Coefficients >", "classwalker_1_1_wright_fisher.html", null ],
     [ "tag::wrightfisher", "structtag_1_1wrightfisher.html", null ],
+    [ "walker::WrightFisher< Init, Coefficients >", "classwalker_1_1_wright_fisher.html", null ],
     [ "kw::wrightfisher_info", "structkw_1_1wrightfisher__info.html", null ],
     [ "walker::WrightFisherCoeffConst", "classwalker_1_1_wright_fisher_coeff_const.html", null ],
     [ "tk::Writer", "classtk_1_1_writer.html", [

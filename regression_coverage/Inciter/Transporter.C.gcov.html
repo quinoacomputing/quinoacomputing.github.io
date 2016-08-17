@@ -24,7 +24,7 @@
           </tr>
           <tr>
             <td class="headerItem">Commit:</td>
-            <td class="headerValue">Quinoa_v0.1-255-gd488296</td>
+            <td class="headerValue">Quinoa_v0.1-257-g85caa9b</td>
             <td></td>
             <td class="headerItem">Lines:</td>
             <td class="headerCovTableEntry">0</td>
@@ -33,7 +33,7 @@
           </tr>
           <tr>
             <td class="headerItem">Date:</td>
-            <td class="headerValue">2016-08-16 00:39:27</td>
+            <td class="headerValue">2016-08-17 00:38:51</td>
             <td></td>
             <td class="headerItem">Functions:</td>
             <td class="headerCovTableEntry">0</td>
@@ -76,7 +76,7 @@
 <span class="lineNum">       2 </span>                :            : /*!
 <span class="lineNum">       3 </span>                :            :   \file      src/Inciter/Transporter.C
 <span class="lineNum">       4 </span>                :            :   \author    J. Bakosi
-<span class="lineNum">       5 </span>                :            :   \date      Mon 15 Aug 2016 10:35:15 AM MDT
+<span class="lineNum">       5 </span>                :            :   \date      Tue 16 Aug 2016 09:16:55 AM MDT
 <span class="lineNum">       6 </span>                :            :   \copyright 2012-2015, Jozsef Bakosi, 2016, Los Alamos National Security, LLC.
 <span class="lineNum">       7 </span>                :            :   \brief     Transporter drives the time integration of transport equations
 <span class="lineNum">       8 </span>                :            :   \details   Transporter drives the time integration of transport equations.
@@ -108,7 +108,7 @@
 <span class="lineNum">      34 </span>                :            : // Force the compiler to not instantiate the template below as it is
 <span class="lineNum">      35 </span>                :            : // instantiated in LinSys/LinSysMerger.C (only required on mac)
 <span class="lineNum">      36 </span>                :            : extern template class tk::LinSysMerger&lt; inciter::CProxy_Transporter,
-<span class="lineNum">      37 </span>                :            :                                         inciter::CProxy_Performer &gt;;
+<span class="lineNum">      37 </span>                :            :                                         inciter::CProxy_Carrier &gt;;
 <span class="lineNum">      38 </span>                :            : 
 <span class="lineNum">      39 </span>                :            : extern CProxy_Main mainProxy;
 <span class="lineNum">      40 </span>                :            : 
@@ -123,7 +123,7 @@
 <span class="lineNum">      49 </span>                :<span class="lineNoCov">          0 :   m_dt( computedt() ),</span>
 <span class="lineNum">      50 </span>                :            :   m_stage( 0 ),
 <span class="lineNum">      51 </span>                :            :   m_linsysmerger(),
-<span class="lineNum">      52 </span>                :            :   m_performer(),
+<span class="lineNum">      52 </span>                :            :   m_carrier(),
 <span class="lineNum">      53 </span>                :            :   m_particlewriter(),
 <span class="lineNum">      54 </span>                :            :   m_partitioner(),
 <span class="lineNum">      55 </span>                :            :   m_avcost( 0.0 ),
@@ -204,17 +204,17 @@
 <span class="lineNum">     130 </span>                :<span class="lineNoCov">          0 :     dw.header( { &quot;r&quot;, &quot;ru&quot;, &quot;rv&quot;, &quot;rw&quot;, &quot;re&quot; } );</span>
 <span class="lineNum">     131 </span>                :            : 
 <span class="lineNum">     132 </span>                :            :     // Create (empty) worker array
-<span class="lineNum">     133 </span>                :<span class="lineNoCov">          0 :     m_performer = PerformerProxy::ckNew();</span>
+<span class="lineNum">     133 </span>                :<span class="lineNoCov">          0 :     m_carrier = CarrierProxy::ckNew();</span>
 <span class="lineNum">     134 </span>                :            : 
 <span class="lineNum">     135 </span>                :            :     // Create ExodusII reader for reading side sets from file. When creating
 <span class="lineNum">     136 </span>                :            :     // LinSysMerger, er.readSideSets() reads all side sets from file, which is
-<span class="lineNum">     137 </span>                :            :     // a serial read, then send the same copy to all PEs. Performers then will
+<span class="lineNum">     137 </span>                :            :     // a serial read, then send the same copy to all PEs. Carriers then will
 <span class="lineNum">     138 </span>                :            :     // query the side sets from their local LinSysMerger branch.
 <span class="lineNum">     139 </span>                :            :     tk::ExodusIIMeshReader
 <span class="lineNum">     140 </span>                :<span class="lineNoCov">          0 :       er( g_inputdeck.get&lt; tag::cmd, tag::io, tag::input &gt;() );</span>
 <span class="lineNum">     141 </span>                :            : 
 <span class="lineNum">     142 </span>                :            :     // Create linear system merger chare group
-<span class="lineNum">     143 </span>                :<span class="lineNoCov">          0 :     m_linsysmerger = LinSysMergerProxy::ckNew( thisProxy, m_performer,</span>
+<span class="lineNum">     143 </span>                :<span class="lineNoCov">          0 :     m_linsysmerger = LinSysMergerProxy::ckNew( thisProxy, m_carrier,</span>
 <span class="lineNum">     144 </span>                :<span class="lineNoCov">          0 :                        er.readSidesets(),</span>
 <span class="lineNum">     145 </span>                :<span class="lineNoCov">          0 :                        g_inputdeck.get&lt; tag::component &gt;().nprop() );</span>
 <span class="lineNum">     146 </span>                :            : 
@@ -225,7 +225,7 @@
 <span class="lineNum">     151 </span>                :            : 
 <span class="lineNum">     152 </span>                :            :     // Create mesh partitioner Charm++ chare group and start partitioning mesh
 <span class="lineNum">     153 </span>                :<span class="lineNoCov">          0 :     m_print.diagstart( &quot;Reading mesh graph ...&quot; );</span>
-<span class="lineNum">     154 </span>                :<span class="lineNoCov">          0 :     m_partitioner = PartitionerProxy::ckNew( thisProxy, m_performer,</span>
+<span class="lineNum">     154 </span>                :<span class="lineNoCov">          0 :     m_partitioner = PartitionerProxy::ckNew( thisProxy, m_carrier,</span>
 <span class="lineNum">     155 </span>                :            :                                              m_linsysmerger,
 <span class="lineNum">     156 </span>                :<span class="lineNoCov">          0 :                                              m_particlewriter );</span>
 <span class="lineNum">     157 </span>                :            : 
@@ -341,7 +341,7 @@
 <span class="lineNum">     267 </span>                :            : //! \details This function is a Charm++ reduction target that is called when
 <span class="lineNum">     268 </span>                :            : //!   all linear system merger branches have done their part of storing and
 <span class="lineNum">     269 </span>                :            : //!   exporting global row ids. This is a necessary precondition to be done
-<span class="lineNum">     270 </span>                :            : //!   before we can issue a broadcast to all Performer chares to continue with
+<span class="lineNum">     270 </span>                :            : //!   before we can issue a broadcast to all Carrier chares to continue with
 <span class="lineNum">     271 </span>                :            : //!   the initialization step. The other, also necessary but by itself not
 <span class="lineNum">     272 </span>                :            : //!   sufficient, one is parcomplete(). Together rowcomplete() and
 <span class="lineNum">     273 </span>                :            : //!   parcomplete() are sufficient for continuing with the initialization. See
@@ -365,7 +365,7 @@
 <span class="lineNum">     291 </span>                :            : //!   system merger branches have received from worker chares offering setting
 <span class="lineNum">     292 </span>                :            : //!   boundary conditions. This is the first step of the verification. First
 <span class="lineNum">     293 </span>                :            : //!   receives the aggregated node list at which LinSysMerger will set boundary
-<span class="lineNum">     294 </span>                :            : //!   conditions. Then we do a broadcast to all workers (Performers) to query
+<span class="lineNum">     294 </span>                :            : //!   conditions. Then we do a broadcast to all workers (Carriers) to query
 <span class="lineNum">     295 </span>                :            : //!   the worker-owned node IDs on which a Dirichlet BC is set by the user (on
 <span class="lineNum">     296 </span>                :            : //!   any component of any PDEs integrated by the worker).
 <span class="lineNum">     297 </span>                :            : //! \author J. Bakosi
@@ -377,7 +377,7 @@
 <span class="lineNum">     303 </span>                :<span class="lineNoCov">          0 :   delete msg;</span>
 <span class="lineNum">     304 </span>                :            : 
 <span class="lineNum">     305 </span>                :            :   // Issue broadcast querying the BCs set
-<span class="lineNum">     306 </span>                :<span class="lineNoCov">          0 :   m_performer.requestBCs();</span>
+<span class="lineNum">     306 </span>                :<span class="lineNoCov">          0 :   m_carrier.requestBCs();</span>
 <span class="lineNum">     307 </span>                :<span class="lineNoCov">          0 : }</span>
 <a name="308"><span class="lineNum">     308 </span>                :            : </a>
 <span class="lineNum">     309 </span>                :            : void
@@ -388,9 +388,9 @@
 <span class="lineNum">     314 </span>                :            : //! \details This function finishes off the verification that the aggregate
 <span class="lineNum">     315 </span>                :            : //!   boundary conditions to be set by LinSysMerger objects match the user's
 <span class="lineNum">     316 </span>                :            : //!   BCs. This function is a Charm++ reduction target that is called by
-<span class="lineNum">     317 </span>                :            : //!   Performer::requestBCs() This is the last step of the verification, doing
+<span class="lineNum">     317 </span>                :            : //!   Carrier::requestBCs() This is the last step of the verification, doing
 <span class="lineNum">     318 </span>                :            : //!   the actual verification of the BCs after receiving the aggregate BC node
-<span class="lineNum">     319 </span>                :            : //!   list from Performers querying user BCs from the input file.
+<span class="lineNum">     319 </span>                :            : //!   list from Carriers querying user BCs from the input file.
 <span class="lineNum">     320 </span>                :            : //! \see Transporter::verifybc()
 <span class="lineNum">     321 </span>                :            : //! \author J. Bakosi
 <span class="lineNum">     322 </span>                :            : // *****************************************************************************
@@ -413,7 +413,7 @@
 <span class="lineNum">     339 </span>                :            : void
 <span class="lineNum">     340 </span>                :<span class="lineNoCov">          0 : Transporter::initcomplete()</span>
 <span class="lineNum">     341 </span>                :            : // *****************************************************************************
-<span class="lineNum">     342 </span>                :            : //  Reduction target indicating that all Performer chares have finished their
+<span class="lineNum">     342 </span>                :            : //  Reduction target indicating that all Carrier chares have finished their
 <span class="lineNum">     343 </span>                :            : //  initialization step and have already continued with start time stepping
 <span class="lineNum">     344 </span>                :            : //! \author J. Bakosi
 <span class="lineNum">     345 </span>                :            : // *****************************************************************************
@@ -426,7 +426,7 @@
 <span class="lineNum">     352 </span>                :<span class="lineNoCov">          0 : Transporter::diagnostics( tk::real* d, std::size_t n )</span>
 <span class="lineNum">     353 </span>                :            : // *****************************************************************************
 <span class="lineNum">     354 </span>                :            : // Reduction target optionally collecting diagnostics, e.g., residuals, from all
-<span class="lineNum">     355 </span>                :            : // Performer chares
+<span class="lineNum">     355 </span>                :            : // Carrier chares
 <span class="lineNum">     356 </span>                :            : //! \param[in] d Diagnostics (sums) collected over all chares
 <span class="lineNum">     357 </span>                :            : //! \param[in] n Number of diagnostics in array d
 <span class="lineNum">     358 </span>                :            : //! \author J. Bakosi
@@ -448,7 +448,7 @@
 <span class="lineNum">     374 </span>                :            : void
 <span class="lineNum">     375 </span>                :<span class="lineNoCov">          0 : Transporter::advance()</span>
 <span class="lineNum">     376 </span>                :            : // *****************************************************************************
-<span class="lineNum">     377 </span>                :            : //  Reduction target indicating that all Performer chares have finished their
+<span class="lineNum">     377 </span>                :            : //  Reduction target indicating that all Carrier chares have finished their
 <span class="lineNum">     378 </span>                :            : //  initialization step
 <span class="lineNum">     379 </span>                :            : //! \author J. Bakosi
 <span class="lineNum">     380 </span>                :            : // *****************************************************************************
@@ -457,9 +457,9 @@
 <span class="lineNum">     383 </span>                :            :   // final stage, continue with next time step zeroing stage and using new time
 <span class="lineNum">     384 </span>                :            :   // step size.
 <span class="lineNum">     385 </span>                :<span class="lineNoCov">          0 :   if (m_stage &lt; 1)</span>
-<span class="lineNum">     386 </span>                :<span class="lineNoCov">          0 :     m_performer.advance( ++m_stage, m_dt, m_it, m_t );</span>
+<span class="lineNum">     386 </span>                :<span class="lineNoCov">          0 :     m_carrier.advance( ++m_stage, m_dt, m_it, m_t );</span>
 <span class="lineNum">     387 </span>                :            :   else
-<span class="lineNum">     388 </span>                :<span class="lineNoCov">          0 :     m_performer.advance( m_stage=0, m_dt=computedt(), m_it, m_t );</span>
+<span class="lineNum">     388 </span>                :<span class="lineNoCov">          0 :     m_carrier.advance( m_stage=0, m_dt=computedt(), m_it, m_t );</span>
 <span class="lineNum">     389 </span>                :<span class="lineNoCov">          0 : }</span>
 <a name="390"><span class="lineNum">     390 </span>                :            : </a>
 <span class="lineNum">     391 </span>                :            : tk::real

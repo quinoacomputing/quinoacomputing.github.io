@@ -1,5 +1,11 @@
 var NAVTREEINDEX13 =
 {
+"classwalker_1_1_mass_fraction_beta.html#ab0719d732bbb310417ae8b5cd83bddc0":[22,0,9,24,1],
+"classwalker_1_1_mass_fraction_beta.html#ad9fbf9abafac2953588d4362e097f518":[22,0,9,24,12],
+"classwalker_1_1_mass_fraction_beta.html#af2528904e594437aeacd90b835ba3462":[22,0,9,24,14],
+"classwalker_1_1_mass_fraction_beta_coeff_const.html":[22,0,9,25],
+"classwalker_1_1_mass_fraction_beta_coeff_const.html#a93a1b4536f67b09e1ec3c0ce8dd81d46":[22,0,9,25,0],
+"classwalker_1_1_mass_fraction_beta_coeff_const.html#ad4604bf77bb1a37bb908f6427356e244":[22,0,9,25,1],
 "classwalker_1_1_mix_mass_frac_beta_coeff_decay.html":[22,0,9,26],
 "classwalker_1_1_mix_mass_frac_beta_coeff_decay.html#a324bd7ded8c7dc2980497c4847b0e546":[22,0,9,26,2],
 "classwalker_1_1_mix_mass_frac_beta_coeff_decay.html#a826bceb612f4497b6de696270059f797":[22,0,9,26,3],
@@ -193,8 +199,8 @@ var NAVTREEINDEX13 =
 "classwalker_1_1ctr_1_1_input_deck.html#aca572d980be75e1c2495f8c71d28f6eb":[22,0,9,1,4,4],
 "collector_8ci.html":[23,0,1,15,1],
 "collector_8ci_source.html":[23,0,1,15,1],
-"collector_8def_8h.html":[23,0,1,9,7],
-"collector_8def_8h_source.html":[23,0,1,9,7],
+"collector_8def_8h.html":[23,0,1,9,9],
+"collector_8def_8h_source.html":[23,0,1,9,9],
 "concurrency.html":[8],
 "coverage.html":[15],
 "diffeq.html":[9],
@@ -243,11 +249,5 @@ var NAVTREEINDEX13 =
 "dir_f2c0e1646bd8f4e9edf6fe12b66ea652.html":[23,0,1,1,1,1],
 "dir_f3d53cfd78aa16b6a5194a46fac1c1b1.html":[23,0,1,1,6,1],
 "dir_f6d038768dd110378d1df3319d32696e.html":[23,0,1,1,4,2],
-"dir_fae119eb913a40fe8ed97cde8b98911e.html":[23,0,1,4],
-"distributor_8ci.html":[23,0,1,15,4],
-"distributor_8ci_source.html":[23,0,1,15,4],
-"distributor_8decl_8h.html":[23,0,1,9,8],
-"distributor_8decl_8h_source.html":[23,0,1,9,8],
-"distributor_8def_8h.html":[23,0,1,9,9],
-"distributor_8def_8h_source.html":[23,0,1,9,9]
+"dir_fae119eb913a40fe8ed97cde8b98911e.html":[23,0,1,4]
 };

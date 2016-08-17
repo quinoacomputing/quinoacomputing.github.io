@@ -1,6 +1,7 @@
 var searchData=
 [
   ['c_5fstr',['c_str',['../classtk_1_1str__const.html#a5a4bead8d30506bd94a309ec5ff0df2b',1,'tk::str_const']]],
+  ['carrier',['Carrier',['../classinciter_1_1_carrier.html#a71fc34ba2c1743c2bb3dffa15ebc8d94',1,'inciter::Carrier::Carrier(const CProxy_Transporter &amp;transporter, const LinSysMergerProxy &amp;lsm, const ParticleWriterProxy &amp;pw, const std::vector&lt; std::size_t &gt; &amp;conn, const std::unordered_map&lt; std::size_t, std::size_t &gt; &amp;cid, int ncarr)'],['../classinciter_1_1_carrier.html#a223ee330e2825b75d4fdc3bbf98831b6',1,'inciter::Carrier::Carrier(CkMigrateMessage *)']]],
   ['catch',['catch',['../_exception_8_c.html#a1204fa6444ae7174767e202a6d39b815',1,'Exception.C']]],
   ['cbpdf',['cbpdf',['../classtk_1_1_statistics.html#a02ee5c66ab499a5b90bfdd09a8b61fd8',1,'tk::Statistics']]],
   ['cen3',['cen3',['../namespacetk_1_1ctr.html#a2da6482ae9931d7e071561dc2c0401d5',1,'tk::ctr']]],
@@ -28,9 +29,9 @@ var searchData=
   ['cmdline',['CmdLine',['../classinciter_1_1ctr_1_1_cmd_line.html#a3a02acffcc25402e0b8812ffcfb3ce14',1,'inciter::ctr::CmdLine::CmdLine()'],['../classmeshconv_1_1ctr_1_1_cmd_line.html#a57dcb4c36423ad667b05e6c41cf9b369',1,'meshconv::ctr::CmdLine::CmdLine()'],['../classrngtest_1_1ctr_1_1_cmd_line.html#a140be0a4fc4bd059903d63b050bf5a6f',1,'rngtest::ctr::CmdLine::CmdLine()'],['../classunittest_1_1ctr_1_1_cmd_line.html#ad287169faa69e5db6f138fc5e4150441',1,'unittest::ctr::CmdLine::CmdLine()'],['../classwalker_1_1ctr_1_1_cmd_line.html#aaad3eb27e3dae8ecb79eee0c53d304df',1,'walker::ctr::CmdLine::CmdLine()']]],
   ['cmdlineparser',['CmdLineParser',['../classinciter_1_1_cmd_line_parser.html#a44d41572bc0a1f36fdb28938da29ed2f',1,'inciter::CmdLineParser::CmdLineParser()'],['../classmeshconv_1_1_cmd_line_parser.html#a44d41572bc0a1f36fdb28938da29ed2f',1,'meshconv::CmdLineParser::CmdLineParser()'],['../classrngtest_1_1_cmd_line_parser.html#a44d41572bc0a1f36fdb28938da29ed2f',1,'rngtest::CmdLineParser::CmdLineParser()'],['../classunittest_1_1_cmd_line_parser.html#a17480692398b2f1299600bfb24867bd8',1,'unittest::CmdLineParser::CmdLineParser()'],['../classwalker_1_1_cmd_line_parser.html#a44d41572bc0a1f36fdb28938da29ed2f',1,'walker::CmdLineParser::CmdLineParser()']]],
   ['coeffpolicy',['CoeffPolicy',['../classwalker_1_1ctr_1_1_coeff_policy.html#ae8d6a480bcda55c93705eeeefc97b6f8',1,'walker::ctr::CoeffPolicy']]],
-  ['collectedpar',['collectedpar',['../classinciter_1_1_performer.html#a7665bd686da86fbf46d010d8cc12b2be',1,'inciter::Performer']]],
+  ['collectedpar',['collectedpar',['../classinciter_1_1_carrier.html#ac9fe7eef4dd9bea78574fea222678e94',1,'inciter::Carrier']]],
   ['collector',['Collector',['../classwalker_1_1_collector.html#abe8888f082db7a3e27ed0775ea92364c',1,'walker::Collector']]],
-  ['collectpar',['collectpar',['../classinciter_1_1_performer.html#afdc665bced57efd87aa7a3051f4ddabe',1,'inciter::Performer']]],
+  ['collectpar',['collectpar',['../classinciter_1_1_carrier.html#a62ebbff45f200546f79898c18f51d8c7',1,'inciter::Carrier']]],
   ['collision',['Collision',['../classrngtest_1_1_test_u01_stack.html#abd970c4652e1c1eeac71e1deeb80802a',1,'rngtest::TestU01Stack']]],
   ['collisionover',['CollisionOver',['../classrngtest_1_1_test_u01_stack.html#a253ae841d13460396ae540a166b61960',1,'rngtest::TestU01Stack']]],
   ['collisionpermut',['CollisionPermut',['../classrngtest_1_1_test_u01_stack.html#a1d514a54f88be93469c3679a37f4438c',1,'rngtest::TestU01Stack']]],

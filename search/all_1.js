@@ -19,7 +19,7 @@ var searchData=
   ['bc_5fdirichlet',['bc_dirichlet',['../namespacekw.html#ae65eb13d8577e36a8d551190b1924df4',1,'kw']]],
   ['bc_5fdirichlet_5finfo',['bc_dirichlet_info',['../structkw_1_1bc__dirichlet__info.html',1,'kw']]],
   ['bcmapmerger',['BCMapMerger',['../namespacetk.html#a1320fa5c795146f9a4ac4fc2eb4e2606',1,'tk']]],
-  ['bcval',['bcval',['../classinciter_1_1_performer.html#a881834e1272e32b15763957ee9b3cf9b',1,'inciter::Performer::bcval()'],['../classtk_1_1_lin_sys_merger.html#accb9239ec29dd9dc0f195ac18746996b',1,'tk::LinSysMerger::bcval()']]],
+  ['bcval',['bcval',['../classinciter_1_1_carrier.html#ade842cead3dffb9061276c6fe3bdf4cc',1,'inciter::Carrier::bcval()'],['../classtk_1_1_lin_sys_merger.html#accb9239ec29dd9dc0f195ac18746996b',1,'tk::LinSysMerger::bcval()']]],
   ['bcvalmerger',['BCValMerger',['../namespacetk.html#a0428a4f13b9aa50299fbb1e07a1c4889',1,'tk']]],
   ['bcvectormerger',['BCVectorMerger',['../namespacetk.html#a84de4d2862d3290bd756689ad204c028',1,'tk']]],
   ['beta',['beta',['../structtag_1_1beta.html',1,'tag']]],

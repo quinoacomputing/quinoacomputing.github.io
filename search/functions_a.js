@@ -40,6 +40,6 @@ var searchData=
   ['momentnames',['momentNames',['../classwalker_1_1ctr_1_1_input_deck.html#a9775c73cb1c676bf2ecf36bd8d5ebd24',1,'walker::ctr::InputDeck']]],
   ['montecarlo',['MonteCarlo',['../classbreeze_1_1ctr_1_1_monte_carlo.html#ad3c1e493bbf5086c89593ecd9af12809',1,'breeze::ctr::MonteCarlo']]],
   ['msg',['Msg',['../structtk_1_1_msg.html#ae986bed7b9615269bbb4afa1e2273183',1,'tk::Msg']]],
-  ['msum',['msum',['../classinciter_1_1_performer.html#a15d63420759741e1e1e9343336376394',1,'inciter::Performer']]],
+  ['msum',['msum',['../classinciter_1_1_carrier.html#a57b8eec1082a927fcada4f0cfef29545',1,'inciter::Carrier']]],
   ['msumcomplete',['msumcomplete',['../classinciter_1_1_transporter.html#acd92ca9be4aaea45270aeb712fb6e32a',1,'inciter::Transporter']]]
 ];

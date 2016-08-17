@@ -3,7 +3,7 @@ var searchData=
   ['libtype',['LibType',['../classtk_1_1ctr_1_1_r_n_g.html#af773ab5c4704d00eaa709a8c86842190',1,'tk::ctr::RNG']]],
   ['linearmap_5fgroup',['LinearMap_group',['../namespacetut.html#a6626a94a3230b4f2f53cddac120fdd86',1,'tut']]],
   ['linearmap_5fobject',['LinearMap_object',['../namespacetut.html#af93ae7e304c3677f06155b2f36ff88b4',1,'tut']]],
-  ['linsysmergerproxy',['LinSysMergerProxy',['../classinciter_1_1_performer.html#ab8c1ed2c89cdcbfa44caed36bfa704c0',1,'inciter::Performer::LinSysMergerProxy()'],['../classinciter_1_1_transporter.html#a1d703e61139824b5bc0c5100855d97f6',1,'inciter::Transporter::LinSysMergerProxy()']]],
+  ['linsysmergerproxy',['LinSysMergerProxy',['../classinciter_1_1_carrier.html#ab9017f07bbabce2cde8da7005a6dbac0',1,'inciter::Carrier::LinSysMergerProxy()'],['../classinciter_1_1_transporter.html#aaa05b222b69aed0b97a43088a47b34fc',1,'inciter::Transporter::LinSysMergerProxy()']]],
   ['list',['list',['../structtut_1_1_make__list__common_1_1_test.html#a94c2ed115f13e7ac80c1dedec527e97c',1,'tut::Make_list_common::Test']]],
   ['loaddistributor_5fgroup',['LoadDistributor_group',['../namespacetut.html#a1ec68d5c1c896738b1a59f43f04b9765',1,'tut']]],
   ['loaddistributor_5fobject',['LoadDistributor_object',['../namespacetut.html#a287c7a439900ab9ef66bed4600aa25fb',1,'tut']]],
