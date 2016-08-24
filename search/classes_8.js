@@ -1,6 +1,6 @@
 var searchData=
 [
-  ['ic_5fcompns',['ic_compns',['../structinciter_1_1deck_1_1ic__compns.html',1,'inciter::deck']]],
+  ['ic_5fcompflow',['ic_compflow',['../structinciter_1_1deck_1_1ic__compflow.html',1,'inciter::deck']]],
   ['ic_5finfo',['ic_info',['../structkw_1_1ic__info.html',1,'kw']]],
   ['icbeta',['icbeta',['../structwalker_1_1deck_1_1icbeta.html',1,'walker::deck']]],
   ['icbeta_5finfo',['icbeta_info',['../structkw_1_1icbeta__info.html',1,'kw']]],

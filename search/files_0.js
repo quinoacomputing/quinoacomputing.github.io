@@ -1,6 +1,7 @@
 var searchData=
 [
   ['advdiff_2eh',['AdvDiff.h',['../_adv_diff_8h.html',1,'']]],
+  ['advdiffphysics_2eh',['AdvDiffPhysics.h',['../_adv_diff_physics_8h.html',1,'']]],
   ['advdiffproblem_2eh',['AdvDiffProblem.h',['../_adv_diff_problem_8h.html',1,'']]],
   ['aec_5flicense_2edox',['AEC_license.dox',['../_a_e_c__license_8dox.html',1,'']]],
   ['algorithm_2edox',['algorithm.dox',['../algorithm_8dox.html',1,'']]],

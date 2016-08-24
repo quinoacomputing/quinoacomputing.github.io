@@ -1,6 +1,7 @@
 var _coeff_policy_8h =
 [
     [ "CoeffPolicy", "classwalker_1_1ctr_1_1_coeff_policy.html", "classwalker_1_1ctr_1_1_coeff_policy" ],
+    [ "assertPolicyCodes", "structwalker_1_1ctr_1_1_coeff_policy_1_1assert_policy_codes.html", "structwalker_1_1ctr_1_1_coeff_policy_1_1assert_policy_codes" ],
     [ "CoeffPolicyType", "_coeff_policy_8h.html#a173f5bb53d7e621fa2569076fa704842", [
       [ "CONSTANT", "_coeff_policy_8h.html#a173f5bb53d7e621fa2569076fa704842a8d6b5cada83510220f59e00ce86d4d92", null ],
       [ "DECAY", "_coeff_policy_8h.html#a173f5bb53d7e621fa2569076fa704842af34d9b416802d4cda3a4ee548619f206", null ],

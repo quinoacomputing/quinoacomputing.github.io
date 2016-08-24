@@ -1,5 +1,6 @@
 var searchData=
 [
+  ['base',['base',['../namespacekw.html#aaf4aec8c4fa12f28aa5c917e285a87db',1,'kw']]],
   ['base_5fadapter_5ft',['base_adapter_t',['../classtk_1_1zoltan_1_1_geometric_mesh_elem_adapter.html#ad0f9a5717e64db6d8f4e3b14b9214658',1,'tk::zoltan::GeometricMeshElemAdapter']]],
   ['batteryfactory',['BatteryFactory',['../namespacerngtest.html#a27f5b52643c9bffce647cde2438d33c1',1,'rngtest']]],
   ['bc_5fdirichlet',['bc_dirichlet',['../namespacekw.html#ae65eb13d8577e36a8d551190b1924df4',1,'kw']]],

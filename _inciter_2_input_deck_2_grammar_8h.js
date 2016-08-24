@@ -2,19 +2,19 @@ var _inciter_2_input_deck_2_grammar_8h =
 [
     [ "register_eq", "structinciter_1_1deck_1_1register__eq.html", "structinciter_1_1deck_1_1register__eq" ],
     [ "check_eq", "structinciter_1_1deck_1_1check__eq.html", "structinciter_1_1deck_1_1check__eq" ],
-    [ "check_compns", "structinciter_1_1deck_1_1check__compns.html", "structinciter_1_1deck_1_1check__compns" ],
+    [ "check_compflow", "structinciter_1_1deck_1_1check__compflow.html", "structinciter_1_1deck_1_1check__compflow" ],
     [ "store_option", "structinciter_1_1deck_1_1store__option.html", "structinciter_1_1deck_1_1store__option" ],
     [ "scan_eq", "structinciter_1_1deck_1_1scan__eq.html", null ],
     [ "check_errors", "structinciter_1_1deck_1_1check__errors.html", null ],
     [ "discretization_parameters", "structinciter_1_1deck_1_1discretization__parameters.html", null ],
     [ "pde_parameter_vector", "structinciter_1_1deck_1_1pde__parameter__vector.html", null ],
     [ "bc_dirichlet", "structinciter_1_1deck_1_1bc__dirichlet.html", null ],
-    [ "ic_compns", "structinciter_1_1deck_1_1ic__compns.html", null ],
+    [ "ic_compflow", "structinciter_1_1deck_1_1ic__compflow.html", null ],
     [ "material_property", "structinciter_1_1deck_1_1material__property.html", null ],
     [ "material_properties", "structinciter_1_1deck_1_1material__properties.html", null ],
     [ "advdiff", "structinciter_1_1deck_1_1advdiff.html", null ],
     [ "poisson", "structinciter_1_1deck_1_1poisson.html", null ],
-    [ "compns", "structinciter_1_1deck_1_1compns.html", null ],
+    [ "compflow", "structinciter_1_1deck_1_1compflow.html", null ],
     [ "partitioning", "structinciter_1_1deck_1_1partitioning.html", null ],
     [ "equations", "structinciter_1_1deck_1_1equations.html", null ],
     [ "plotvar", "structinciter_1_1deck_1_1plotvar.html", null ],
@@ -25,5 +25,5 @@ var _inciter_2_input_deck_2_grammar_8h =
     [ "Stack", "_inciter_2_input_deck_2_grammar_8h.html#aeb7432ea0d947cbe9b5561ec8e8a646f", null ],
     [ "use", "_inciter_2_input_deck_2_grammar_8h.html#a9cfda52e37f1d851c1ff11064c6cd081", null ],
     [ "g_inputdeck_defaults", "_inciter_2_input_deck_2_grammar_8h.html#a4468a28c71362b7d11262598c8df54a7", null ],
-    [ "neq", "_inciter_2_input_deck_2_grammar_8h.html#a8292419d5b757602e8a2a84d71e84b3e", null ]
+    [ "neq", "_inciter_2_input_deck_2_grammar_8h.html#a69e0517c0675ad9cf51f5fb50ee7b332", null ]
 ];

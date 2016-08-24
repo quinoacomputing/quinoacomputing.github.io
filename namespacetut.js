@@ -22,11 +22,13 @@ var namespacetut =
     [ "Flip_map_common", "structtut_1_1_flip__map__common.html", null ],
     [ "Has_common", "structtut_1_1_has__common.html", [
       [ "noAlias", "structtut_1_1_has__common_1_1no_alias.html", null ],
+      [ "noCode", "structtut_1_1_has__common_1_1no_code.html", null ],
       [ "noExpectChoices", "structtut_1_1_has__common_1_1no_expect_choices.html", null ],
       [ "noExpectDescription", "structtut_1_1_has__common_1_1no_expect_description.html", null ],
       [ "noExpectType", "structtut_1_1_has__common_1_1no_expect_type.html", null ],
       [ "noProxy", "structtut_1_1_has__common_1_1no_proxy.html", null ],
       [ "yesAlias", "structtut_1_1_has__common_1_1yes_alias.html", "structtut_1_1_has__common_1_1yes_alias" ],
+      [ "yesCode", "structtut_1_1_has__common_1_1yes_code.html", "structtut_1_1_has__common_1_1yes_code" ],
       [ "yesExpectChoices", "structtut_1_1_has__common_1_1yes_expect_choices.html", [
         [ "expect", "structtut_1_1_has__common_1_1yes_expect_choices_1_1expect.html", "structtut_1_1_has__common_1_1yes_expect_choices_1_1expect" ]
       ] ],

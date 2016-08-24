@@ -19,7 +19,6 @@ var dir_7e34f0efff2ff25c5f7cf9ee4af7a0ce =
     [ "H5Part.h", "_h5_part_8h.html", "_h5_part_8h" ],
     [ "HYPRE_krylov.h", "_h_y_p_r_e__krylov_8h.html", null ],
     [ "HYPRE_parcsr_ls.h", "_h_y_p_r_e__parcsr__ls_8h.html", null ],
-    [ "ice_and.h", "ice__and_8h.html", null ],
     [ "inciter.decl.h", "inciter_8decl_8h.html", null ],
     [ "inciter.def.h", "inciter_8def_8h.html", null ],
     [ "integrator.decl.h", "integrator_8decl_8h.html", null ],

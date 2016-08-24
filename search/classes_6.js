@@ -1,8 +1,8 @@
 var searchData=
 [
+  ['gamma',['gamma',['../structtag_1_1gamma.html',1,'tag']]],
   ['gamma',['gamma',['../structwalker_1_1deck_1_1gamma.html',1,'walker::deck']]],
   ['gamma',['Gamma',['../classwalker_1_1_gamma.html',1,'walker']]],
-  ['gamma',['gamma',['../structtag_1_1gamma.html',1,'tag']]],
   ['gamma_5finfo',['gamma_info',['../structkw_1_1gamma__info.html',1,'kw']]],
   ['gammacoeffconst',['GammaCoeffConst',['../classwalker_1_1_gamma_coeff_const.html',1,'walker']]],
   ['gap',['Gap',['../structtag_1_1_gap.html',1,'tag']]],

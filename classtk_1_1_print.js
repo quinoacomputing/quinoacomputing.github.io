@@ -1,5 +1,6 @@
 var classtk_1_1_print =
 [
+    [ "echoPolicies", "structtk_1_1_print_1_1echo_policies.html", "structtk_1_1_print_1_1echo_policies" ],
     [ "format", "classtk_1_1_print.html#aca3c88784dc945a5a5a889413d7f5bdb", null ],
     [ "Print", "classtk_1_1_print.html#a5c16860befbe6bff31cbfec7f6f62e49", null ],
     [ "diag", "classtk_1_1_print.html#a108d4fd40ceabdfb3d0b549810ad7f08", null ],

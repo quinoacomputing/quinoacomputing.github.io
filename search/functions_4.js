@@ -2,6 +2,7 @@ var searchData=
 [
   ['echobuildenv',['echoBuildEnv',['../namespacetk.html#ab72923dba604ccbf4233af3ccafc70b3',1,'tk']]],
   ['echoheader',['echoHeader',['../namespacetk.html#afbbf10b984ba3f66b55cc8363c6a2341',1,'tk']]],
+  ['echopolicies',['echoPolicies',['../structtk_1_1_print_1_1echo_policies.html#afce490fc5c93c7230a71ce265971a2c7',1,'tk::Print::echoPolicies']]],
   ['echorngsseparams',['echoRNGSSEParams',['../classtk_1_1_r_n_g_print.html#a6c4448380763e19ce2896e1d86dbdfe0',1,'tk::RNGPrint']]],
   ['echorunenv',['echoRunEnv',['../namespacetk.html#a991ea7a4015fef3262bdb056f840bf82',1,'tk']]],
   ['echotrace',['echoTrace',['../classtk_1_1_exception.html#a98bc4bc0d8ef380a2b90c5815a80f53a',1,'tk::Exception']]],
@@ -17,7 +18,6 @@ var searchData=
   ['estimateord',['estimateOrd',['../classwalker_1_1_distributor.html#a194f199b33b65c906237691f70c32b45',1,'walker::Distributor']]],
   ['estimateordpdf',['estimateOrdPDF',['../classwalker_1_1_distributor.html#aa3cfc7a4d4e8bddcc0b144501a3bba50',1,'walker::Distributor']]],
   ['eta',['eta',['../classtk_1_1_timer.html#a7b91e64c21f4db8db7b7119ce2b2ae22',1,'tk::Timer']]],
-  ['euler',['Euler',['../classinciter_1_1_euler.html#a96d5c4c372e915bb404a952035d0a549',1,'inciter::Euler']]],
   ['evaluate',['evaluate',['../classrngtest_1_1_battery.html#a7eb872d792929dee684acbe6fe341e9d',1,'rngtest::Battery::evaluate()'],['../structrngtest_1_1_battery_1_1_concept.html#a9a9c68cacdacc8db89d56bd8399611a7',1,'rngtest::Battery::Concept::evaluate()'],['../structrngtest_1_1_battery_1_1_model.html#a9fb9d227cbc79abed556958cf2734328',1,'rngtest::Battery::Model::evaluate()'],['../classrngtest_1_1_test_u01_suite.html#a888745910b36b9829a4e88e603250dee',1,'rngtest::TestU01Suite::evaluate()'],['../classunittest_1_1_t_u_t_suite.html#a9f5794589d91ce79b7cc89479221f05f',1,'unittest::TUTSuite::evaluate()'],['../namespaceunittest.html#a9856f65d0a689c7cb008155df943508e',1,'unittest::evaluate()']]],
   ['evaluatetime',['evaluateTime',['../classinciter_1_1_transporter.html#a481ea636c98de46a3ae007da079d4717',1,'inciter::Transporter::evaluateTime()'],['../classwalker_1_1_distributor.html#a3bfa8fd95c0d8d41119791cbcf4ffb82',1,'walker::Distributor::evaluateTime()']]],
   ['exception',['Exception',['../classtk_1_1_exception.html#aae5f4548de209a9b4ed3cdae7c6572e4',1,'tk::Exception::Exception(std::string &amp;&amp;message, std::string &amp;&amp;file=&quot;&quot;, std::string &amp;&amp;function=&quot;&quot;, unsigned int line=0) noexcept'],['../classtk_1_1_exception.html#a9b9da5b570ae67cfd7cf8e4a875cef93',1,'tk::Exception::Exception(Exception &amp;&amp;)=default'],['../classtk_1_1_exception.html#ae1198174272435dede9adef793fc9f39',1,'tk::Exception::Exception(const Exception &amp;)=delete'],['../namespacetut.html#ae0d1896e351ef5e325425d71cfca833d',1,'tut::Exception()']]],

@@ -22,6 +22,7 @@ var namespacetk =
     [ "HasFunctionExpectChoices", "structtk_1_1_has_function_expect_choices.html", "structtk_1_1_has_function_expect_choices" ],
     [ "HasFunctionExpectDescription", "structtk_1_1_has_function_expect_description.html", "structtk_1_1_has_function_expect_description" ],
     [ "HasTypedefAlias", "structtk_1_1_has_typedef_alias.html", "structtk_1_1_has_typedef_alias" ],
+    [ "HasTypedefCode", "structtk_1_1_has_typedef_code.html", "structtk_1_1_has_typedef_code" ],
     [ "HasTypedefExpectType", "structtk_1_1_has_typedef_expect_type.html", "structtk_1_1_has_typedef_expect_type" ],
     [ "HasTypedefProxy", "structtk_1_1_has_typedef_proxy.html", "structtk_1_1_has_typedef_proxy" ],
     [ "HyperMeshReader", "classtk_1_1_hyper_mesh_reader.html", "classtk_1_1_hyper_mesh_reader" ],

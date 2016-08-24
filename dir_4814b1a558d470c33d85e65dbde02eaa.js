@@ -13,6 +13,8 @@ var dir_4814b1a558d470c33d85e65dbde02eaa =
       [ "no", "structtk_1_1_has_typedef_proxy_1_1no.html", "structtk_1_1_has_typedef_proxy_1_1no" ],
       [ "HasTypedefAlias", "structtk_1_1_has_typedef_alias.html", "structtk_1_1_has_typedef_alias" ],
       [ "no", "structtk_1_1_has_typedef_alias_1_1no.html", "structtk_1_1_has_typedef_alias_1_1no" ],
+      [ "HasTypedefCode", "structtk_1_1_has_typedef_code.html", "structtk_1_1_has_typedef_code" ],
+      [ "no", "structtk_1_1_has_typedef_code_1_1no.html", "structtk_1_1_has_typedef_code_1_1no" ],
       [ "HasTypedefExpectType", "structtk_1_1_has_typedef_expect_type.html", "structtk_1_1_has_typedef_expect_type" ],
       [ "no", "structtk_1_1_has_typedef_expect_type_1_1no.html", "structtk_1_1_has_typedef_expect_type_1_1no" ],
       [ "HasFunctionExpectDescription", "structtk_1_1_has_function_expect_description.html", "structtk_1_1_has_function_expect_description" ],

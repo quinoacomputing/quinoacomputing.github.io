@@ -6,6 +6,8 @@ var structkw_1_1keyword =
     [ "alias", "structkw_1_1keyword.html#a6e1b82164efa04e009433f9f67fc626d", null ],
     [ "choices", "structkw_1_1keyword.html#a40d32c44b391fad0d995d467f8ce6e5c", null ],
     [ "choices", "structkw_1_1keyword.html#a40d32c44b391fad0d995d467f8ce6e5c", null ],
+    [ "code", "structkw_1_1keyword.html#a7f7e2a2ee08843ce3927f30264483b14", null ],
+    [ "code", "structkw_1_1keyword.html#a7f7e2a2ee08843ce3927f30264483b14", null ],
     [ "expt", "structkw_1_1keyword.html#a35221e454ac8bd923ca9c96fe3877d0d", null ],
     [ "expt", "structkw_1_1keyword.html#a35221e454ac8bd923ca9c96fe3877d0d", null ],
     [ "longDescription", "structkw_1_1keyword.html#a90f5174ca14cdd00dafa63606dbc5f85", null ],

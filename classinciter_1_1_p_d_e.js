@@ -16,5 +16,6 @@ var classinciter_1_1_p_d_e =
     [ "operator=", "classinciter_1_1_p_d_e.html#aebb93803a04cd23ee132f102286b95ce", null ],
     [ "output", "classinciter_1_1_p_d_e.html#a4b8eaff46683c9f768b1d457cc32375d", null ],
     [ "rhs", "classinciter_1_1_p_d_e.html#ace3be9372bb230532629ef523c90abf7", null ],
+    [ "velocity", "classinciter_1_1_p_d_e.html#a636d7c174fc3152bf7623ec9d94a7b11", null ],
     [ "self", "classinciter_1_1_p_d_e.html#a93c0ac6b07555cfa4ce4cf11c25d27ae", null ]
 ];
