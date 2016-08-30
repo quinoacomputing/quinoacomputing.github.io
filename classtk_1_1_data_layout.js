@@ -13,6 +13,7 @@ var classtk_1_1_data_layout =
     [ "extract", "classtk_1_1_data_layout.html#a34af0f3a6cf26cb5674cedcff1ffe235", null ],
     [ "extract", "classtk_1_1_data_layout.html#a9f52139df4ad22bde71c95683d3005ec", null ],
     [ "extract", "classtk_1_1_data_layout.html#a7db18761afb3f156f8fe9f565b7cf634", null ],
+    [ "extract", "classtk_1_1_data_layout.html#ab26499d22251926a5bf3ba1732f072d8", null ],
     [ "fill", "classtk_1_1_data_layout.html#a90ebf0d2f90489931faf9d89f8ba765a", null ],
     [ "fill", "classtk_1_1_data_layout.html#a9a36e24a6c046e3a3940a1e67e6b27be", null ],
     [ "layout", "classtk_1_1_data_layout.html#a7efb27dc77cdc995f7bef3f5bcc89b1e", null ],

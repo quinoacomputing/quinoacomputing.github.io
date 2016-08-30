@@ -12,7 +12,6 @@ var searchData=
   ['no_5fmix',['NO_MIX',['../namespacebreeze_1_1ctr.html#a31a8397db3a2501db9a0cda27686debaaacfbc52462e1e6982ee6f906ae1a6793',1,'breeze::ctr']]],
   ['no_5fmixrate',['NO_MIXRATE',['../namespacebreeze_1_1ctr.html#a60dc899ec64c13c74fe35b6bafc986f1a32f38407d23b5eb3d61237c5528cffbd',1,'breeze::ctr']]],
   ['no_5fmontecarlo',['NO_MONTECARLO',['../namespacebreeze_1_1ctr.html#a93d7eabfeb900a7fd026b3229b6f5094ae92152a96cb7801a3653f5f08f6dbbaa',1,'breeze::ctr']]],
-  ['no_5fpde',['NO_PDE',['../namespaceinciter_1_1ctr.html#a4d32924310d75184ecf855cd0600f219ac3de4378b532dcad1626077909c48a0e',1,'inciter::ctr']]],
   ['no_5fposition',['NO_POSITION',['../namespacebreeze_1_1ctr.html#a69bcef65fff9ede6d57e81762d685613afc7dbc82a9918b59581658b86a318f19',1,'breeze::ctr']]],
   ['no_5frng',['NO_RNG',['../namespacetk_1_1ctr.html#aa1b0831f9e998d8133473f63480b3ecba8e8c8b5f07aa0fd1ade83d253bb4eebc',1,'tk::ctr']]],
   ['nobeta',['NOBETA',['../namespacetk_1_1grm.html#a86dbe384e8ce31796b7eb5f6ac87e1a3a3454fc9df3dd05c535a99a45dd267495',1,'tk::grm']]],

@@ -9,7 +9,7 @@ var classinciter_1_1_poisson =
     [ "names", "classinciter_1_1_poisson.html#a361d2843593e17a4d05800cfafe5fa32", null ],
     [ "output", "classinciter_1_1_poisson.html#a679c73f436130d5ee392ec7468f15db8", null ],
     [ "rhs", "classinciter_1_1_poisson.html#ad8f576d2eacc444a34cb877a3be41401", null ],
-    [ "velocity", "classinciter_1_1_poisson.html#a7f82efc5270873cb681c23f20f0b6b21", null ],
+    [ "velocity", "classinciter_1_1_poisson.html#a2ac7b3f666a88d99cd16a79a9789b65e", null ],
     [ "m_c", "classinciter_1_1_poisson.html#a729eb7535743c0a4ca6aae42ea2ac55e", null ],
     [ "m_ncomp", "classinciter_1_1_poisson.html#a8aeab91b62e8e80a917140d3424c263b", null ],
     [ "m_offset", "classinciter_1_1_poisson.html#a92f50a0ce804c835696ff2a69f19bcca", null ]

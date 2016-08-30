@@ -1,10 +1,5 @@
 var dir_e8ebd5d5792131bdfd6b2c2daa81088c =
 [
-    [ "AdvDiff.h", "_adv_diff_8h.html", [
-      [ "AdvDiff", "classinciter_1_1_adv_diff.html", "classinciter_1_1_adv_diff" ]
-    ] ],
-    [ "AdvDiffPhysics.h", "_adv_diff_physics_8h.html", "_adv_diff_physics_8h" ],
-    [ "AdvDiffProblem.h", "_adv_diff_problem_8h.html", "_adv_diff_problem_8h" ],
     [ "CompFlow.h", "_comp_flow_8h.html", [
       [ "CompFlow", "classinciter_1_1_comp_flow.html", "classinciter_1_1_comp_flow" ]
     ] ],
@@ -21,5 +16,10 @@ var dir_e8ebd5d5792131bdfd6b2c2daa81088c =
       [ "Poisson", "classinciter_1_1_poisson.html", "classinciter_1_1_poisson" ]
     ] ],
     [ "PoissonPhysics.h", "_poisson_physics_8h.html", "_poisson_physics_8h" ],
-    [ "PoissonProblem.h", "_poisson_problem_8h.html", "_poisson_problem_8h" ]
+    [ "PoissonProblem.h", "_poisson_problem_8h.html", "_poisson_problem_8h" ],
+    [ "Transport.h", "_transport_8h.html", [
+      [ "Transport", "classinciter_1_1_transport.html", "classinciter_1_1_transport" ]
+    ] ],
+    [ "TransportPhysics.h", "_transport_physics_8h.html", "_transport_physics_8h" ],
+    [ "TransportProblem.h", "_transport_problem_8h.html", "_transport_problem_8h" ]
 ];

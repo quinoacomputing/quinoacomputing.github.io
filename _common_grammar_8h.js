@@ -105,13 +105,14 @@ var _common_grammar_8h =
       [ "BADPRECISION", "_common_grammar_8h.html#a86dbe384e8ce31796b7eb5f6ac87e1a3a9fbe53a80ac534622e981c88d28399af", null ],
       [ "PRECISIONBOUNDS", "_common_grammar_8h.html#a86dbe384e8ce31796b7eb5f6ac87e1a3ac97cbf643aebbfbbd708c0a42d8701f1", null ],
       [ "UNFINISHED", "_common_grammar_8h.html#a86dbe384e8ce31796b7eb5f6ac87e1a3a6f8eb84e55e2f1c21cb428ae5b644a6e", null ],
+      [ "VORTICAL_UNFINISHED", "_common_grammar_8h.html#a86dbe384e8ce31796b7eb5f6ac87e1a3a5b5dca347f4ec834e04d00baf8f8a4de", null ],
       [ "CHARMARG", "_common_grammar_8h.html#a86dbe384e8ce31796b7eb5f6ac87e1a3a8c970ecda90f7da2938effc047671913", null ]
     ] ],
     [ "MsgType", "_common_grammar_8h.html#aaea8b8be7c61e0bfb422394a315b2b64", [
       [ "ERROR", "_common_grammar_8h.html#aaea8b8be7c61e0bfb422394a315b2b64a2524effb18ba47fd4b68e016bc4618a5", null ],
       [ "WARNING", "_common_grammar_8h.html#aaea8b8be7c61e0bfb422394a315b2b64a91b152b474fe56d25c1f3e0c60fcfdcd", null ]
     ] ],
-    [ "message", "_common_grammar_8h.html#a1708d508a10590fee9a3f8fb621f64ec", null ],
+    [ "message", "_common_grammar_8h.html#a3d2b693f565aab6abe706611ffd7129a", null ],
     [ "Message", "_common_grammar_8h.html#a854479484c0cf43370a9fbc4c3821dcc", null ],
     [ "store_option", "_common_grammar_8h.html#a9131f0a09dab5d6bd4c8d84d8339e5e4", null ],
     [ "depvars", "_common_grammar_8h.html#ab631f9f35bdba1b71a2cff1112364971", null ],
