@@ -35,6 +35,7 @@ var namespacetag =
     [ "component", "structtag_1_1component.html", null ],
     [ "control", "structtag_1_1control.html", null ],
     [ "CouponCollector", "structtag_1_1_coupon_collector.html", null ],
+    [ "ctau", "structtag_1_1ctau.html", null ],
     [ "ctrinfo", "structtag_1_1ctrinfo.html", null ],
     [ "cv", "structtag_1_1cv.html", null ],
     [ "depvar", "structtag_1_1depvar.html", null ],

@@ -1,7 +1,7 @@
 var _control_2_inciter_2_types_8h =
 [
     [ "CompFlowPDEParameters", "_control_2_inciter_2_types_8h.html#abb990a67b597d624cda27ddbae16bd8c", null ],
-    [ "discretization", "_control_2_inciter_2_types_8h.html#a034a4453261d1fbdb4bf69ae3b9c6033", null ],
+    [ "discretization", "_control_2_inciter_2_types_8h.html#a7b7221f1719368d8a83cf7d7deb5d5ad", null ],
     [ "floatformat", "_control_2_inciter_2_types_8h.html#a0e5df03a596602a16898435242c6b502", null ],
     [ "intervals", "_control_2_inciter_2_types_8h.html#af3ab03bdb53005b91fad23670fe1c796", null ],
     [ "ios", "_control_2_inciter_2_types_8h.html#ace9469c64885636f112e7de8097e747c", null ],

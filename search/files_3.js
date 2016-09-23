@@ -1,6 +1,6 @@
 var searchData=
 [
-  ['datalayout_2eh',['DataLayout.h',['../_data_layout_8h.html',1,'']]],
+  ['data_2eh',['Data.h',['../_data_8h.html',1,'']]],
   ['deriveddata_2ec',['DerivedData.C',['../_derived_data_8_c.html',1,'']]],
   ['deriveddata_2eh',['DerivedData.h',['../_derived_data_8h.html',1,'']]],
   ['diagornsteinuhlenbeck_2eh',['DiagOrnsteinUhlenbeck.h',['../_diag_ornstein_uhlenbeck_8h.html',1,'']]],

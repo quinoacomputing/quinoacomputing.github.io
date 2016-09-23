@@ -7,6 +7,7 @@ var searchData=
   ['phys',['phys',['../classinciter_1_1_inciter_print_1_1_policies.html#a14d84462fe93479a9293dc2a6dd77a4f',1,'inciter::InciterPrint::Policies']]],
   ['policy',['policy',['../classinciter_1_1ctr_1_1_physics.html#a25fc7b0cc6d84a310843d342562d3ee9',1,'inciter::ctr::Physics::policy()'],['../classinciter_1_1ctr_1_1_problem.html#a61d92f86fb70a3316da5b7f4f27cb358',1,'inciter::ctr::Problem::policy()'],['../classwalker_1_1ctr_1_1_coeff_policy.html#a13a2a7907f7519615fcf8f35f0eb7e94',1,'walker::ctr::CoeffPolicy::policy()'],['../classwalker_1_1ctr_1_1_init_policy.html#a7be5154de08c035e708b3efd7395a83a',1,'walker::ctr::InitPolicy::policy()']]],
   ['prd',['prd',['../structtut_1_1_print__common.html#afbf745e17942c0375def47ff576793f6',1,'tut::Print_common']]],
+  ['prec',['prec',['../structtut_1_1_data__common.html#a6b9c0bd38d43f49007aa2d46b8943409',1,'tut::Data_common']]],
   ['precision',['precision',['../structtut_1_1_container_util__common.html#a3f2e3e99a2f15600230527dab25bf2d2',1,'tut::ContainerUtil_common::precision()'],['../structtut_1_1_timer__common.html#ac6a229516bd35b1666569982d7de7929',1,'tut::Timer_common::precision()'],['../structtut_1_1_vector__common.html#a62956d96a5b5e4fdaa799962bb0185a6',1,'tut::Vector_common::precision()']]],
   ['prob',['prob',['../classinciter_1_1_inciter_print_1_1_policies.html#a0cf51f9e3763166713b1d27c2f381e59',1,'inciter::InciterPrint::Policies']]],
   ['prq',['prq',['../structtut_1_1_print__common.html#ad4f4637e8f3ac60518cdbdb19f639e55',1,'tut::Print_common']]],

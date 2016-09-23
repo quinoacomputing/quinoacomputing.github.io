@@ -101,6 +101,7 @@ var dir_3ff0826a6d651abbf0f532354e1ac7dc =
       [ "term", "structtag_1_1term.html", null ],
       [ "t0", "structtag_1_1t0.html", null ],
       [ "dt", "structtag_1_1dt.html", null ],
+      [ "ctau", "structtag_1_1ctau.html", null ],
       [ "npar", "structtag_1_1npar.html", null ],
       [ "part", "structtag_1_1part.html", null ],
       [ "ncomp", "structtag_1_1ncomp.html", null ],

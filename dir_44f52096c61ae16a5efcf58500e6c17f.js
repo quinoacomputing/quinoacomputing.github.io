@@ -3,7 +3,7 @@ var dir_44f52096c61ae16a5efcf58500e6c17f =
     [ "MigratedTypes.h", "_migrated_types_8h.html", "_migrated_types_8h" ],
     [ "TestCharmUtil.h", "_test_charm_util_8h.html", "_test_charm_util_8h" ],
     [ "TestContainerUtil.h", "_test_container_util_8h.html", "_test_container_util_8h" ],
-    [ "TestDataLayout.h", "_test_data_layout_8h.html", "_test_data_layout_8h" ],
+    [ "TestData.h", "_test_data_8h.html", "_test_data_8h" ],
     [ "TestException.h", "_test_exception_8h.html", "_test_exception_8h" ],
     [ "TestExceptionMPI.h", "_test_exception_m_p_i_8h.html", "_test_exception_m_p_i_8h" ],
     [ "TestFactory.h", "_test_factory_8h.html", "_test_factory_8h" ],

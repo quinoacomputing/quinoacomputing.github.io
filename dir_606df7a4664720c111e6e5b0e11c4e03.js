@@ -5,7 +5,11 @@ var dir_606df7a4664720c111e6e5b0e11c4e03 =
     [ "Carrier.h", "_carrier_8h.html", [
       [ "Carrier", "classinciter_1_1_carrier.html", "classinciter_1_1_carrier" ]
     ] ],
-    [ "MeshNodeMerger.h", "_mesh_node_merger_8h.html", "_mesh_node_merger_8h" ],
+    [ "FieldsMerger.h", "_fields_merger_8h.html", "_fields_merger_8h" ],
+    [ "FluxCorrector.C", "_flux_corrector_8_c.html", null ],
+    [ "FluxCorrector.h", "_flux_corrector_8h.html", [
+      [ "FluxCorrector", "classinciter_1_1_flux_corrector.html", "classinciter_1_1_flux_corrector" ]
+    ] ],
     [ "Partitioner.C", "_partitioner_8_c.html", null ],
     [ "partitioner.ci", "partitioner_8ci.html", null ],
     [ "Partitioner.h", "_partitioner_8h.html", "_partitioner_8h" ],

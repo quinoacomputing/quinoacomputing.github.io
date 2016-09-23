@@ -32,7 +32,7 @@ var searchData=
   ['insert_5ffield',['Insert_field',['../structtk_1_1grm_1_1_insert__field.html',1,'tk::grm']]],
   ['insert_5foption',['insert_option',['../structtk_1_1grm_1_1insert__option.html',1,'tk::grm']]],
   ['insert_5fseq',['insert_seq',['../structtk_1_1rngsse_1_1insert__seq.html',1,'tk::rngsse']]],
-  ['int2type',['int2type',['../structtk_1_1_data_layout_1_1int2type.html',1,'tk::DataLayout']]],
+  ['int2type',['int2type',['../structtk_1_1_data_1_1int2type.html',1,'tk::Data']]],
   ['integrator',['Integrator',['../classwalker_1_1_integrator.html',1,'walker']]],
   ['interval',['interval',['../structtag_1_1interval.html',1,'tag']]],
   ['io',['io',['../structwalker_1_1cmd_1_1io.html',1,'walker::cmd']]],

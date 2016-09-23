@@ -9,7 +9,7 @@ var namespacetk =
     [ "zoltan", "namespacetk_1_1zoltan.html", "namespacetk_1_1zoltan" ],
     [ "BiPDF", "classtk_1_1_bi_p_d_f.html", "classtk_1_1_bi_p_d_f" ],
     [ "Control", "classtk_1_1_control.html", "classtk_1_1_control" ],
-    [ "DataLayout", "classtk_1_1_data_layout.html", "classtk_1_1_data_layout" ],
+    [ "Data", "classtk_1_1_data.html", "classtk_1_1_data" ],
     [ "DiagWriter", "classtk_1_1_diag_writer.html", "classtk_1_1_diag_writer" ],
     [ "Driver", "classtk_1_1_driver.html", "classtk_1_1_driver" ],
     [ "Exception", "classtk_1_1_exception.html", "classtk_1_1_exception" ],

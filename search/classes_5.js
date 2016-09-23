@@ -8,7 +8,8 @@ var searchData=
   ['fileparser_5fcommon',['FileParser_common',['../structtut_1_1_file_parser__common.html',1,'tut']]],
   ['flformat',['flformat',['../structtag_1_1flformat.html',1,'tag']]],
   ['flip_5fmap_5fcommon',['Flip_map_common',['../structtut_1_1_flip__map__common.html',1,'tut']]],
+  ['fluxcorrector',['FluxCorrector',['../classinciter_1_1_flux_corrector.html',1,'inciter']]],
   ['fourier3',['Fourier3',['../structtag_1_1_fourier3.html',1,'tag']]],
-  ['frequency',['Frequency',['../classbreeze_1_1ctr_1_1_frequency.html',1,'breeze::ctr']]],
-  ['frequency',['frequency',['../structtag_1_1frequency.html',1,'tag']]]
+  ['frequency',['frequency',['../structtag_1_1frequency.html',1,'tag']]],
+  ['frequency',['Frequency',['../classbreeze_1_1ctr_1_1_frequency.html',1,'breeze::ctr']]]
 ];

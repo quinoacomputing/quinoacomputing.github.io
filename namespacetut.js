@@ -9,7 +9,7 @@ var namespacetut =
     ] ],
     [ "ContainerUtil_common", "structtut_1_1_container_util__common.html", "structtut_1_1_container_util__common" ],
     [ "Control_common", "structtut_1_1_control__common.html", "structtut_1_1_control__common" ],
-    [ "DataLayout_common", "structtut_1_1_data_layout__common.html", null ],
+    [ "Data_common", "structtut_1_1_data__common.html", "structtut_1_1_data__common" ],
     [ "DerivedData_common", "structtut_1_1_derived_data__common.html", null ],
     [ "eq1", "structtut_1_1eq1.html", null ],
     [ "eq2", "structtut_1_1eq2.html", null ],

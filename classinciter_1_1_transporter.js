@@ -19,6 +19,7 @@ var classinciter_1_1_transporter =
     [ "flattened", "classinciter_1_1_transporter.html#a4e5cf9b3679f1896d6dc4605142c6b77", null ],
     [ "header", "classinciter_1_1_transporter.html#aaea8e5e5d18aa1da0dff3585d73bb2fd", null ],
     [ "initcomplete", "classinciter_1_1_transporter.html#ab4d8c64906cb185566abfbce94494645", null ],
+    [ "limit", "classinciter_1_1_transporter.html#afcc0ee74802ef2ddd2d2e446c101e945", null ],
     [ "load", "classinciter_1_1_transporter.html#a1d25b827432769f686162f7651789fea", null ],
     [ "msumcomplete", "classinciter_1_1_transporter.html#acd92ca9be4aaea45270aeb712fb6e32a", null ],
     [ "nparcomplete", "classinciter_1_1_transporter.html#a31814a25e56203ab766b1ca3acdb83e7", null ],

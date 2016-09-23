@@ -74,7 +74,7 @@ var searchData=
   ['glm',['glm',['../structtag_1_1glm.html',1,'tag']]],
   ['glm',['GLM',['../namespacebreeze_1_1ctr.html#ad5187be17594fa9b2288ab72a6468475ac28f02184fc6a61a80c9f40ab26b1d2a',1,'breeze::ctr']]],
   ['glob',['glob',['../structtag_1_1glob.html',1,'tag']]],
-  ['global2local',['global2local',['../namespacetk.html#aa69ce0acb2e891815d28f14e5f0794c4',1,'tk']]],
+  ['global2local',['global2local',['../namespacetk.html#a0ee7abd71123782d48e2ec04906fe982',1,'tk']]],
   ['gmsh',['GMSH',['../namespacetk.html#a748833535365d6e320da5fcb7d213c30ad8e85cdb6ef83caac7fa35c22dda2153',1,'tk::GMSH()'],['../namespacetk.html#a43d2f365ad601e02c8d64479adfd4a7fad8e85cdb6ef83caac7fa35c22dda2153',1,'tk::GMSH()']]],
   ['gmshbin',['GMSHBIN',['../namespacetk_1_1ctr.html#a39b4992a011792b2f9621efd03c5df7ba49210953617994b36f4409e0119890c3',1,'tk::ctr']]],
   ['gmshelemtype',['GmshElemType',['../namespacetk.html#a85016961456a798f65e4e5a451e44242',1,'tk']]],
@@ -102,7 +102,7 @@ var searchData=
   ['graphsize',['graphsize',['../classtk_1_1_uns_mesh.html#adcc0649d6d564348dd575ed977b668dc',1,'tk::UnsMesh']]],
   ['group',['group',['../structunittest_1_1cmd_1_1group.html',1,'unittest::cmd']]],
   ['group',['group',['../structtag_1_1group.html',1,'tag']]],
-  ['group',['Group',['../classinciter_1_1_partitioner.html#ae2da626a5df9fefd511aa0d350206786',1,'inciter::Partitioner::Group()'],['../classtk_1_1_lin_sys_merger.html#a227e7127f4075b65f312b405e2584737',1,'tk::LinSysMerger::Group()'],['../classtk_1_1_toggle.html#ac94dd097af189c12cbe902183da73617',1,'tk::Toggle::group()']]],
+  ['group',['group',['../classtk_1_1_toggle.html#ac94dd097af189c12cbe902183da73617',1,'tk::Toggle::group()'],['../classinciter_1_1_partitioner.html#ae2da626a5df9fefd511aa0d350206786',1,'inciter::Partitioner::Group()'],['../classtk_1_1_lin_sys_merger.html#a227e7127f4075b65f312b405e2584737',1,'tk::LinSysMerger::Group()']]],
   ['groupname',['groupname',['../classtk_1_1_toggle.html#ae48fc450a0207f20e2090e03e17570ea',1,'tk::Toggle']]],
   ['git_20subtree_20with_20tpls_20and_20tools',['Git subtree with TPLs and tools',['../subtree.html',1,'']]],
   ['goals',['Goals',['../why.html',1,'']]]

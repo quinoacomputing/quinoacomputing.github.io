@@ -5,6 +5,7 @@ var searchData=
   ['charmutil_5fobject',['CharmUtil_object',['../namespacetut.html#a7e3702639262b1ed0bab40300cd54261',1,'tut']]],
   ['clock',['clock',['../classtk_1_1_timer.html#ae2820e459eee7cd63045a42f6bb9ec76',1,'tk::Timer']]],
   ['code',['code',['../structtut_1_1_has__common_1_1yes_code.html#a42faa414927fbd6c8f34b2cb1326c329',1,'tut::Has_common::yesCode']]],
+  ['comm_5ft',['comm_t',['../classinciter_1_1_carrier.html#ac165fb6f2a9004c81dbd0301b1423ffe',1,'inciter::Carrier']]],
   ['compflowpdeparameters',['CompFlowPDEParameters',['../namespaceinciter_1_1ctr.html#abb990a67b597d624cda27ddbae16bd8c',1,'inciter::ctr']]],
   ['compflowphysics',['CompFlowPhysics',['../namespaceinciter.html#a68fa28bb0658ea5f65c8d7d0754b380e',1,'inciter']]],
   ['compflowproblems',['CompFlowProblems',['../namespaceinciter.html#ae49793bfd35f52ff36dae8a3b1037104',1,'inciter']]],

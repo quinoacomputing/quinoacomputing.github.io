@@ -8,7 +8,7 @@ var searchData=
   ['testcharmutil_2eh',['TestCharmUtil.h',['../_test_charm_util_8h.html',1,'']]],
   ['testcontainerutil_2eh',['TestContainerUtil.h',['../_test_container_util_8h.html',1,'']]],
   ['testcontrol_2eh',['TestControl.h',['../_test_control_8h.html',1,'']]],
-  ['testdatalayout_2eh',['TestDataLayout.h',['../_test_data_layout_8h.html',1,'']]],
+  ['testdata_2eh',['TestData.h',['../_test_data_8h.html',1,'']]],
   ['testderiveddata_2eh',['TestDerivedData.h',['../_test_derived_data_8h.html',1,'']]],
   ['testexception_2eh',['TestException.h',['../_test_exception_8h.html',1,'']]],
   ['testexceptionmpi_2eh',['TestExceptionMPI.h',['../_test_exception_m_p_i_8h.html',1,'']]],

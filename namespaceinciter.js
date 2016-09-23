@@ -10,6 +10,7 @@ var namespaceinciter =
     [ "CompFlowPhysicsNavierStokes", "classinciter_1_1_comp_flow_physics_navier_stokes.html", "classinciter_1_1_comp_flow_physics_navier_stokes" ],
     [ "CompFlowProblemUserDefined", "classinciter_1_1_comp_flow_problem_user_defined.html", "classinciter_1_1_comp_flow_problem_user_defined" ],
     [ "CompFlowProblemVorticalFlow", "classinciter_1_1_comp_flow_problem_vortical_flow.html", "classinciter_1_1_comp_flow_problem_vortical_flow" ],
+    [ "FluxCorrector", "classinciter_1_1_flux_corrector.html", "classinciter_1_1_flux_corrector" ],
     [ "InciterDriver", "classinciter_1_1_inciter_driver.html", "classinciter_1_1_inciter_driver" ],
     [ "InciterPrint", "classinciter_1_1_inciter_print.html", "classinciter_1_1_inciter_print" ],
     [ "InputDeckParser", "classinciter_1_1_input_deck_parser.html", "classinciter_1_1_input_deck_parser" ],
