@@ -38,7 +38,7 @@ var licenses =
       [ "5. Gcov for unit test coverage analysis", "licenses.html#gcov_web", null ],
       [ "6. Lcov for unit test coverage analysis report", "licenses.html#lcov_web", null ],
       [ "7. Git for source code version control", "licenses.html#git_web", null ],
-      [ "8. Numdiff for comparison text files with numerical content", "licenses.html#numdiff_web", null ]
+      [ "8. Numdiff for comparison of text files with numerical content", "licenses.html#numdiff_web", null ]
     ] ],
     [ "Charm++/Converse license", "Charm_license.html", null ],
     [ "PEGTL license", "PEGTL_license.html", null ],
