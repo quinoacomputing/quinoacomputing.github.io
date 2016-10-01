@@ -1,5 +1,8 @@
 var NAVTREEINDEX19 =
 {
+"tuttest_8decl_8h.html":[23,0,1,9,60],
+"tuttest_8decl_8h_source.html":[23,0,1,9,60],
+"tuttest_8def_8h.html":[23,0,1,9,61],
 "tuttest_8def_8h_source.html":[23,0,1,9,61],
 "unittest_8ci.html":[23,0,1,7,20],
 "unittest_8ci_source.html":[23,0,1,7,20],

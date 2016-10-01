@@ -1,5 +1,8 @@
 var NAVTREEINDEX17 =
 {
+"structtk_1_1ctr_1_1_p_d_f_info.html#abeecfd59b3001515a7fbccaf47fab00c":[22,0,6,0,11,0],
+"structtk_1_1ctr_1_1_term.html":[22,0,6,0,16],
+"structtk_1_1ctr_1_1_term.html#a3f649a81876b1713271d7e1e85131d1a":[22,0,6,0,16,4],
 "structtk_1_1ctr_1_1_term.html#a4fa6804a44ebcbfaabc1fb38d1e71249":[22,0,6,0,16,6],
 "structtk_1_1ctr_1_1_term.html#a8c789b19806c4716d7564bf494e2cdf7":[22,0,6,0,16,7],
 "structtk_1_1ctr_1_1_term.html#a8ff2d61e449f43483303ed41e5dad4c6":[22,0,6,0,16,1],
@@ -246,8 +249,5 @@ var NAVTREEINDEX17 =
 "structtut_1_1_has__common_1_1yes_alias.html":[22,0,7,15,6],
 "structtut_1_1_has__common_1_1yes_alias.html#a63cb83c81c80f42b61e19f0cc19f8429":[22,0,7,15,6,0],
 "structtut_1_1_has__common_1_1yes_code.html":[22,0,7,15,7],
-"structtut_1_1_has__common_1_1yes_code.html#a42faa414927fbd6c8f34b2cb1326c329":[22,0,7,15,7,0],
-"structtut_1_1_has__common_1_1yes_expect_choices.html":[22,0,7,15,8],
-"structtut_1_1_has__common_1_1yes_expect_choices_1_1expect.html":[22,0,7,15,8,0],
-"structtut_1_1_has__common_1_1yes_expect_choices_1_1expect.html#a96c88e88cff9e4e4459bdbae7b87bc15":[22,0,7,15,8,0,0]
+"structtut_1_1_has__common_1_1yes_code.html#a42faa414927fbd6c8f34b2cb1326c329":[22,0,7,15,7,0]
 };

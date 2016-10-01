@@ -1,6 +1,6 @@
 var searchData=
 [
-  ['data',['data',['../classtk_1_1_data.html#a6b7df529299186eee55e1affac99405f',1,'tk::Data::data() const '],['../classtk_1_1_data.html#aa8df0e9a7354823c1d99f3e3c3e7064c',1,'tk::Data::data()'],['../classtk_1_1_data.html#a6d4adc6bf6a614f86c932bfbf4c6a63e',1,'tk::Data::Data()'],['../classtk_1_1_data.html#a7c3cb365b5d1b8a763379e208fbc9e7a',1,'tk::Data::Data(ncomp_t nunk, ncomp_t nprop)'],['../namespacetut.html#a9e431d4b374e5080860732a6b38a233a',1,'tut::Data()']]],
+  ['data',['data',['../classtk_1_1_data.html#a6b7df529299186eee55e1affac99405f',1,'tk::Data::data() const '],['../classtk_1_1_data.html#aa8df0e9a7354823c1d99f3e3c3e7064c',1,'tk::Data::data()'],['../classtk_1_1_data.html#a6d4adc6bf6a614f86c932bfbf4c6a63e',1,'tk::Data::Data()'],['../classtk_1_1_data.html#a22e9f2e120c198a0f061520e4f177548',1,'tk::Data::Data(ncomp_t nu, ncomp_t np)'],['../namespacetut.html#a9e431d4b374e5080860732a6b38a233a',1,'tut::Data()']]],
   ['deletestreams',['deleteStreams',['../classtk_1_1_m_k_l_r_n_g.html#a950caed144e05ec1457ec356252d71b1',1,'tk::MKLRNG']]],
   ['depvar',['depvar',['../structwalker_1_1ctr_1_1_input_deck_1_1depvar.html#ae460b29f4afb012ad97fdffb8cf7f5b0',1,'walker::ctr::InputDeck::depvar']]],
   ['depvars',['depvars',['../classwalker_1_1ctr_1_1_input_deck.html#a1685acdef68501f75e356b81370f69ba',1,'walker::ctr::InputDeck']]],

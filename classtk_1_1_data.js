@@ -3,7 +3,7 @@ var classtk_1_1_data =
     [ "int2type", "structtk_1_1_data_1_1int2type.html", "structtk_1_1_data_1_1int2type" ],
     [ "ncomp_t", "classtk_1_1_data.html#ab4d5353fca1448358571f382cdf586f9", null ],
     [ "Data", "classtk_1_1_data.html#a6d4adc6bf6a614f86c932bfbf4c6a63e", null ],
-    [ "Data", "classtk_1_1_data.html#a7c3cb365b5d1b8a763379e208fbc9e7a", null ],
+    [ "Data", "classtk_1_1_data.html#a22e9f2e120c198a0f061520e4f177548", null ],
     [ "access", "classtk_1_1_data.html#add5802ab0c4ecb20f71302e36d89a320", null ],
     [ "access", "classtk_1_1_data.html#a6954b7d66f91ef45f1146cec235723c4", null ],
     [ "add", "classtk_1_1_data.html#a046b6f23fd364a130f6b83cc982cc353", null ],

@@ -4,7 +4,7 @@ var classrngtest_1_1_test_u01_props =
     [ "RunFn", "classrngtest_1_1_test_u01_props.html#a7bd62909119ba8b1c1824217fffd7fd2", null ],
     [ "Xargs", "classrngtest_1_1_test_u01_props.html#ad3e25785867c414e2c2db13ad6e56b26", null ],
     [ "TestU01Props", "classrngtest_1_1_test_u01_props.html#ab1372d33a41bb04e1b1c8e5b72872a7d", null ],
-    [ "TestU01Props", "classrngtest_1_1_test_u01_props.html#af53441c46b82dad67767e5fac9106d6a", null ],
+    [ "TestU01Props", "classrngtest_1_1_test_u01_props.html#a786ffd337eddcbefadbbeb2cffc8e667", null ],
     [ "TestU01Props", "classrngtest_1_1_test_u01_props.html#addf4000e2a8776a690715bd2ffe62d6b", null ],
     [ "TestU01Props", "classrngtest_1_1_test_u01_props.html#aaadfc707700124d9a0d3f2d2c1eaca2d", null ],
     [ "fail", "classrngtest_1_1_test_u01_props.html#a6c8eba7c2068a2e2da9815e89a2268eb", null ],

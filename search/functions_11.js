@@ -43,7 +43,7 @@ var searchData=
   ['solve',['solve',['../classtk_1_1hypre_1_1_hypre_solver.html#a850743816fec66e972d0995ae592895c',1,'tk::hypre::HypreSolver::solve()'],['../classtk_1_1_lin_sys_merger.html#aa727fddd2f853aa3cb979d839bb1b059',1,'tk::LinSysMerger::solve()']]],
   ['sourcerhs',['sourceRhs',['../classinciter_1_1_comp_flow_problem_user_defined.html#ae122ace3bcb66cf94c10de51909f6f9c',1,'inciter::CompFlowProblemUserDefined::sourceRhs()'],['../classinciter_1_1_comp_flow_problem_vortical_flow.html#a0834eee9bb753d4bc4ca41e92e1a2085',1,'inciter::CompFlowProblemVorticalFlow::sourceRhs()']]],
   ['spawngrp',['spawngrp',['../classunittest_1_1_t_u_t_suite.html#a9fc68c283efa04a577615269d7ead4a3',1,'unittest::TUTSuite']]],
-  ['spikes',['spikes',['../classwalker_1_1_diff_eq_stack.html#ab24098da325e9e4a4f3e47659b63259f',1,'walker::DiffEqStack']]],
+  ['spikes',['spikes',['../classwalker_1_1_diff_eq_stack.html#ad9d45d28f08798cbcb4334347bac4507',1,'walker::DiffEqStack']]],
   ['splitlines',['splitLines',['../classtk_1_1_print.html#aa678d6f4f3e8b135769e834e2c3c0cec',1,'tk::Print']]],
   ['stat',['stat',['../classwalker_1_1ctr_1_1_input_deck.html#aa84c485b1b3bc5d7a4350710f40a56f3',1,'walker::ctr::InputDeck::stat()'],['../classtk_1_1_txt_stat_writer.html#abf6cec3ad917625ec1f7f859a96508d9',1,'tk::TxtStatWriter::stat()']]],
   ['statistics',['statistics',['../classwalker_1_1_walker_print.html#a3fb7ccb32393153da430fc4dd7240083',1,'walker::WalkerPrint::statistics()'],['../classtk_1_1_statistics.html#a2c0df8f566384ef98bc1392953571d4b',1,'tk::Statistics::Statistics()']]],

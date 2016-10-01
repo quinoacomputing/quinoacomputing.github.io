@@ -1,5 +1,8 @@
 var NAVTREEINDEX18 =
 {
+"structtut_1_1_has__common_1_1yes_expect_choices.html":[22,0,7,15,8],
+"structtut_1_1_has__common_1_1yes_expect_choices_1_1expect.html":[22,0,7,15,8,0],
+"structtut_1_1_has__common_1_1yes_expect_choices_1_1expect.html#a96c88e88cff9e4e4459bdbae7b87bc15":[22,0,7,15,8,0,0],
 "structtut_1_1_has__common_1_1yes_expect_description.html":[22,0,7,15,9],
 "structtut_1_1_has__common_1_1yes_expect_description_1_1expect.html":[22,0,7,15,9,0],
 "structtut_1_1_has__common_1_1yes_expect_description_1_1expect.html#abfff66afc66ae27e9e20121aa1181be3":[22,0,7,15,9,0,0],
@@ -246,8 +249,5 @@ var NAVTREEINDEX18 =
 "tutsuite_8def_8h.html":[23,0,1,9,59],
 "tutsuite_8def_8h_source.html":[23,0,1,9,59],
 "tuttest_8ci.html":[23,0,1,14,12],
-"tuttest_8ci_source.html":[23,0,1,14,12],
-"tuttest_8decl_8h.html":[23,0,1,9,60],
-"tuttest_8decl_8h_source.html":[23,0,1,9,60],
-"tuttest_8def_8h.html":[23,0,1,9,61]
+"tuttest_8ci_source.html":[23,0,1,14,12]
 };

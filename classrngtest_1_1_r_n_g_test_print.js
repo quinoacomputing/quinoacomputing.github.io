@@ -2,7 +2,7 @@ var classrngtest_1_1_r_n_g_test_print =
 [
     [ "RNGTestPrint", "classrngtest_1_1_r_n_g_test_print.html#aa396672fdb4b06e4d38cc218c57c965a", null ],
     [ "battery", "classrngtest_1_1_r_n_g_test_print.html#a42a6ac967127c2fa1e9532fe92923ee4", null ],
-    [ "cost", "classrngtest_1_1_r_n_g_test_print.html#affd8fb0a946c73d7d634bd430041dad6", null ],
+    [ "cost", "classrngtest_1_1_r_n_g_test_print.html#a57e5a6140e092fc5af259b17b7a3bca3", null ],
     [ "failed", "classrngtest_1_1_r_n_g_test_print.html#ac520b49eb06e021bc3f8003cc0a84d6a", null ],
     [ "Item", "classrngtest_1_1_r_n_g_test_print.html#ab0bab2b2a1633356a240a181eccddb2a", null ],
     [ "names", "classrngtest_1_1_r_n_g_test_print.html#ad932f3393db9064abb87baf5f6e2b23a", null ],
