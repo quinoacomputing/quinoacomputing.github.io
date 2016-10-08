@@ -55,6 +55,7 @@ var namespacetk =
     [ "StringsMsg", "structtk_1_1_strings_msg.html", "structtk_1_1_strings_msg" ],
     [ "Timer", "classtk_1_1_timer.html", "classtk_1_1_timer" ],
     [ "Toggle", "classtk_1_1_toggle.html", "classtk_1_1_toggle" ],
+    [ "Tracker", "classtk_1_1_tracker.html", "classtk_1_1_tracker" ],
     [ "TriPDF", "classtk_1_1_tri_p_d_f.html", "classtk_1_1_tri_p_d_f" ],
     [ "TxtStatWriter", "classtk_1_1_txt_stat_writer.html", "classtk_1_1_txt_stat_writer" ],
     [ "UniPDF", "classtk_1_1_uni_p_d_f.html", "classtk_1_1_uni_p_d_f" ],
