@@ -69,6 +69,8 @@ var hierarchy =
     [ "inciter::ctr::Problem::assertPolicyCodes", "structinciter_1_1ctr_1_1_problem_1_1assert_policy_codes.html", null ],
     [ "tag::atwood", "structtag_1_1atwood.html", null ],
     [ "tag::AutoCorr", "structtag_1_1_auto_corr.html", null ],
+    [ "inciter::AuxSolverLumpMassDiff", "classinciter_1_1_aux_solver_lump_mass_diff.html", null ],
+    [ "inciter::AuxSolverNull", "classinciter_1_1_aux_solver_null.html", null ],
     [ "tag::b", "structtag_1_1b.html", null ],
     [ "tut::Factory_common::Base", "structtut_1_1_factory__common_1_1_base.html", [
       [ "tut::Factory_common::Child", "structtut_1_1_factory__common_1_1_child.html", null ]
@@ -119,7 +121,7 @@ var hierarchy =
       [ "walker::Integrator", "classwalker_1_1_integrator.html", null ]
     ] ],
     [ "CBase_LinSysMerger", null, [
-      [ "tk::LinSysMerger< HostProxy, WorkerProxy >", "classtk_1_1_lin_sys_merger.html", null ]
+      [ "tk::LinSysMerger< HostProxy, WorkerProxy, AuxSolver >", "classtk_1_1_lin_sys_merger.html", null ]
     ] ],
     [ "CBase_Main", null, [
       [ "Main", "class_main.html", null ],
@@ -679,8 +681,8 @@ var hierarchy =
     [ "tag::sigmasq", "structtag_1_1sigmasq.html", null ],
     [ "tk::SiloWriter", "classtk_1_1_silo_writer.html", null ],
     [ "tag::SimplePoker", "structtag_1_1_simple_poker.html", null ],
-    [ "tag::skewnormal", "structtag_1_1skewnormal.html", null ],
     [ "walker::SkewNormal< Init, Coefficients >", "classwalker_1_1_skew_normal.html", null ],
+    [ "tag::skewnormal", "structtag_1_1skewnormal.html", null ],
     [ "walker::SkewNormalCoeffConst", "classwalker_1_1_skew_normal_coeff_const.html", null ],
     [ "tag::slm", "structtag_1_1slm.html", null ],
     [ "rngtest::SmallCrush", "classrngtest_1_1_small_crush.html", null ],
@@ -745,8 +747,8 @@ var hierarchy =
     [ "tut::tag9", "structtut_1_1tag9.html", null ],
     [ "tk::tuple::tagged_tuple_size< _Tp >", "structtk_1_1tuple_1_1tagged__tuple__size.html", null ],
     [ "tut::TaggedTuple_common", "structtut_1_1_tagged_tuple__common.html", null ],
-    [ "tk::ctr::Term", "structtk_1_1ctr_1_1_term.html", null ],
     [ "tag::term", "structtag_1_1term.html", null ],
+    [ "tk::ctr::Term", "structtk_1_1ctr_1_1_term.html", null ],
     [ "tut::Make_list_common::Test< Ts >", "structtut_1_1_make__list__common_1_1_test.html", null ],
     [ "tut::SystemComponents_common::testncomp", "structtut_1_1_system_components__common_1_1testncomp.html", null ],
     [ "tut::SystemComponents_common::testoffset", "structtut_1_1_system_components__common_1_1testoffset.html", null ],
@@ -923,8 +925,8 @@ var hierarchy =
     [ "walker::WalkerDriver", "classwalker_1_1_walker_driver.html", null ],
     [ "tk::Timer::Watch", "structtk_1_1_timer_1_1_watch.html", null ],
     [ "tag::WeightDistrib", "structtag_1_1_weight_distrib.html", null ],
-    [ "tag::wrightfisher", "structtag_1_1wrightfisher.html", null ],
     [ "walker::WrightFisher< Init, Coefficients >", "classwalker_1_1_wright_fisher.html", null ],
+    [ "tag::wrightfisher", "structtag_1_1wrightfisher.html", null ],
     [ "walker::WrightFisherCoeffConst", "classwalker_1_1_wright_fisher_coeff_const.html", null ],
     [ "tk::Writer", "classtk_1_1_writer.html", [
       [ "tk::DiagWriter", "classtk_1_1_diag_writer.html", null ],

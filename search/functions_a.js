@@ -2,9 +2,9 @@ var searchData=
 [
   ['layout',['layout',['../classtk_1_1_data.html#a81743d43dfcb14ead9a73ef0e31daa6b',1,'tk::Data::layout()'],['../classtk_1_1_data.html#a210953988f982e446415920d0e15d2d0',1,'tk::Data::layout(int2type&lt; UnkEqComp &gt;)'],['../classtk_1_1_data.html#a46c685dd151f3518c0db73eb36559f26',1,'tk::Data::layout(int2type&lt; EqCompUnk &gt;)']]],
   ['lempelziv',['LempelZiv',['../classrngtest_1_1_test_u01_stack.html#a2822753b7b8fd5714ab8f4f1af91def1',1,'rngtest::TestU01Stack']]],
-  ['lhs',['lhs',['../classinciter_1_1_carrier.html#a49af43aba4d1dae8d1157616385dd951',1,'inciter::Carrier::lhs()'],['../classtk_1_1_lin_sys_merger.html#a5d8fe3ee878ace7f630fb2d9ac270a3c',1,'tk::LinSysMerger::lhs()'],['../classinciter_1_1_comp_flow.html#a2a6eab48de4fc3309f667577169f9fcd',1,'inciter::CompFlow::lhs()'],['../classinciter_1_1_p_d_e.html#ac5abb2e7b1f9d712efb140fb40f459e4',1,'inciter::PDE::lhs()'],['../structinciter_1_1_p_d_e_1_1_concept.html#a0ec0237aeb82afac65855c9df152401e',1,'inciter::PDE::Concept::lhs()'],['../structinciter_1_1_p_d_e_1_1_model.html#af8fd66dfbcf95578d7de37b7153e3c91',1,'inciter::PDE::Model::lhs()'],['../classinciter_1_1_poisson.html#aa397d364a69668cc7db2addd4dbe9d02',1,'inciter::Poisson::lhs()'],['../classinciter_1_1_transport.html#ac468f8f288b86ae14bdbf3079f4bf465',1,'inciter::Transport::lhs()']]],
-  ['lhsbc',['lhsbc',['../classtk_1_1_lin_sys_merger.html#a87da4ad1aec3bb05af967893895f9fc2',1,'tk::LinSysMerger']]],
-  ['lhscomplete',['lhscomplete',['../classtk_1_1_lin_sys_merger.html#ad4042cd264f54934d02d3aef355e2376',1,'tk::LinSysMerger']]],
+  ['lhs',['lhs',['../classinciter_1_1_carrier.html#a49af43aba4d1dae8d1157616385dd951',1,'inciter::Carrier::lhs()'],['../classtk_1_1_lin_sys_merger.html#a7c17892ffc06ba946abc5f17f8c08d30',1,'tk::LinSysMerger::lhs()'],['../classinciter_1_1_comp_flow.html#a2a6eab48de4fc3309f667577169f9fcd',1,'inciter::CompFlow::lhs()'],['../classinciter_1_1_p_d_e.html#ac5abb2e7b1f9d712efb140fb40f459e4',1,'inciter::PDE::lhs()'],['../structinciter_1_1_p_d_e_1_1_concept.html#a0ec0237aeb82afac65855c9df152401e',1,'inciter::PDE::Concept::lhs()'],['../structinciter_1_1_p_d_e_1_1_model.html#af8fd66dfbcf95578d7de37b7153e3c91',1,'inciter::PDE::Model::lhs()'],['../classinciter_1_1_poisson.html#aa397d364a69668cc7db2addd4dbe9d02',1,'inciter::Poisson::lhs()'],['../classinciter_1_1_transport.html#ac468f8f288b86ae14bdbf3079f4bf465',1,'inciter::Transport::lhs()']]],
+  ['lhsbc',['lhsbc',['../classtk_1_1_lin_sys_merger.html#addab527d695e966022c15546aa86bb22',1,'tk::LinSysMerger']]],
+  ['lhscomplete',['lhscomplete',['../classtk_1_1_lin_sys_merger.html#a6cf5a3ea50d582e295f5c86dfe183177',1,'tk::LinSysMerger']]],
   ['lib',['lib',['../classtk_1_1ctr_1_1_r_n_g.html#ae6301c2d864392fbb7508429577c04ab',1,'tk::ctr::RNG']]],
   ['lim',['lim',['../classinciter_1_1_carrier.html#a6937d8fab0d5ffb9ec9a9a471cfe0397',1,'inciter::Carrier::lim()'],['../classinciter_1_1_flux_corrector.html#ad43e70b5ccda36f0d541e674404236ed',1,'inciter::FluxCorrector::lim()']]],
   ['line',['line',['../classtk_1_1_reader.html#ad6ab06f4a78a5ad3466f1d2d91a52a79',1,'tk::Reader']]],
@@ -13,7 +13,7 @@ var searchData=
   ['linearmap',['LinearMap',['../classtk_1_1_linear_map.html#ae9007c27ebb9e42dc8765796d3e8030c',1,'tk::LinearMap::LinearMap()'],['../namespacetut.html#a0963f532499a0d0a5b5215d1286f42d2',1,'tut::LinearMap()']]],
   ['lines',['lines',['../classtk_1_1_reader.html#a3b54f304ee947c8a403ab8838946f534',1,'tk::Reader']]],
   ['lininpoel',['lininpoel',['../classtk_1_1_uns_mesh.html#aa55077559200f391078dbfb921414c92',1,'tk::UnsMesh::lininpoel() const noexcept'],['../classtk_1_1_uns_mesh.html#ad0e60f816c6efd9681b4971b3cac7b31',1,'tk::UnsMesh::lininpoel() noexcept']]],
-  ['linsysmerger',['LinSysMerger',['../classtk_1_1_lin_sys_merger.html#a3050d6fda95564637863d27e75eebbc8',1,'tk::LinSysMerger']]],
+  ['linsysmerger',['LinSysMerger',['../classtk_1_1_lin_sys_merger.html#aad50eb08c7557b5077a9264bdfd465aa',1,'tk::LinSysMerger']]],
   ['lintag',['lintag',['../classtk_1_1_uns_mesh.html#a12694bccd6d41a3d9b65eaa16a9e735a',1,'tk::UnsMesh::lintag() const noexcept'],['../classtk_1_1_uns_mesh.html#a359d21e315f09048b9cfdbe4bc159ac8',1,'tk::UnsMesh::lintag() noexcept']]],
   ['list',['list',['../classtk_1_1_print.html#a43a25626603b913fc34a18c4027f018c',1,'tk::Print::list(const std::string &amp;name, const Container &amp;entries) const '],['../classtk_1_1_print.html#a8ba0ba717feef27ec6dc6cae6859369f',1,'tk::Print::list(const std::string &amp;t, const Factory &amp;factory) const ']]],
   ['load',['load',['../classinciter_1_1_transporter.html#a1d25b827432769f686162f7651789fea',1,'inciter::Transporter']]],
@@ -23,8 +23,5 @@ var searchData=
   ['longestheadrun',['LongestHeadRun',['../classrngtest_1_1_test_u01_stack.html#a1557996804afe09dc7f5dd02df6d49f9',1,'rngtest::TestU01Stack']]],
   ['lookup',['lookup',['../namespacetk_1_1ctr.html#a4749bdbcd17cf3bc95cd10509895ce65',1,'tk::ctr']]],
   ['lower',['lower',['../classinciter_1_1_partitioner.html#a8917c2adfa0e4be3f4c7fd3391242eb3',1,'inciter::Partitioner']]],
-  ['lowsolve',['lowsolve',['../classtk_1_1_lin_sys_merger.html#a3723af31a009fdafb8ede06979d250a1',1,'tk::LinSysMerger']]],
-  ['lump',['lump',['../classinciter_1_1_flux_corrector.html#a7a12b63e7d9a0ecd8baaf4d102746919',1,'inciter::FluxCorrector']]],
-  ['lumpbc',['lumpbc',['../classtk_1_1_lin_sys_merger.html#a857547fdcf231da6706e6bd9a8ff0d19',1,'tk::LinSysMerger']]],
-  ['lumpcomplete',['lumpcomplete',['../classtk_1_1_lin_sys_merger.html#acd2c0fcd64103a6a678daa9f1e3c4b43',1,'tk::LinSysMerger']]]
+  ['lump',['lump',['../classinciter_1_1_flux_corrector.html#a7a12b63e7d9a0ecd8baaf4d102746919',1,'inciter::FluxCorrector']]]
 ];

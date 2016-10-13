@@ -1,5 +1,17 @@
 var NAVTREEINDEX16 =
 {
+"structtag_1_1_fourier3.html":[22,0,5,53],
+"structtag_1_1_g_c_d.html":[22,0,5,58],
+"structtag_1_1_gap.html":[22,0,5,56],
+"structtag_1_1_hamming_corr.html":[22,0,5,65],
+"structtag_1_1_hamming_indep.html":[22,0,5,66],
+"structtag_1_1_hamming_weight2.html":[22,0,5,67],
+"structtag_1_1_lempel_ziv.html":[22,0,5,82],
+"structtag_1_1_linear_comp.html":[22,0,5,83],
+"structtag_1_1_longest_head_run.html":[22,0,5,84],
+"structtag_1_1_matrix_rank.html":[22,0,5,88],
+"structtag_1_1_max_oft.html":[22,0,5,89],
+"structtag_1_1_periods_in_strings.html":[22,0,5,115],
 "structtag_1_1_permutation.html":[22,0,5,116],
 "structtag_1_1_random_walk1.html":[22,0,5,125],
 "structtag_1_1_run.html":[22,0,5,132],
@@ -237,17 +249,5 @@ var NAVTREEINDEX16 =
 "structtk_1_1_s_t_l_txt_mesh_reader_1_1_s_t_l_keyword.html#a83ffa98ccecd401b4000eca733a9fd34":[22,0,6,49,0,3],
 "structtk_1_1_s_t_l_txt_mesh_reader_1_1_s_t_l_keyword.html#ac7a06ee9ae5ccb5b2b654e9441536746":[22,0,6,49,0,1],
 "structtk_1_1_strings_msg.html":[22,0,6,52],
-"structtk_1_1_strings_msg.html#a33d409d99bf9c411317622a85b68ba05":[22,0,6,52,3],
-"structtk_1_1_strings_msg.html#a608f27bf5780e6403551dfe6e98e0fd5":[22,0,6,52,2],
-"structtk_1_1_strings_msg.html#ae08914e8b7a492e6cf7938b042f10d7d":[22,0,6,52,1],
-"structtk_1_1_strings_msg.html#aeaad16eba769dbddc128a5e2c6184a3b":[22,0,6,52,0],
-"structtk_1_1_timer_1_1_watch.html":[22,0,6,53,0],
-"structtk_1_1_timer_1_1_watch.html#a4bb7c5c18925fda30298793cc753738d":[22,0,6,53,0,4],
-"structtk_1_1_timer_1_1_watch.html#a54b12eaf0eb4676d4a76cb6ecb99a85a":[22,0,6,53,0,2],
-"structtk_1_1_timer_1_1_watch.html#a767987b7cb4b20685dadbf20105bf574":[22,0,6,53,0,1],
-"structtk_1_1_timer_1_1_watch.html#a9c0277e4fcd898ed4781272fc7e9e3d2":[22,0,6,53,0,0],
-"structtk_1_1_timer_1_1_watch.html#aa70bb8504bf391ed07fd00557ce8caf6":[22,0,6,53,0,3],
-"structtk_1_1_tri_p_d_f_1_1key__hash.html":[22,0,6,56,0],
-"structtk_1_1_tri_p_d_f_1_1key__hash.html#aee0eef8e2d6247793bb4c12166260e03":[22,0,6,56,0,0],
-"structtk_1_1_vec_strs_msg.html":[22,0,6,61]
+"structtk_1_1_strings_msg.html#a33d409d99bf9c411317622a85b68ba05":[22,0,6,52,3]
 };

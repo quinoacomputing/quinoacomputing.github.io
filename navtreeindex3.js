@@ -1,5 +1,8 @@
 var NAVTREEINDEX3 =
 {
+"_p_d_e_stack_8h_source.html":[23,0,1,11,5],
+"_p_d_f_centering_8h.html":[23,0,1,1,3,4],
+"_p_d_f_centering_8h.html#a62dbe24719817137376179bca05d0112":[23,0,1,1,3,4,1],
 "_p_d_f_centering_8h.html#a62dbe24719817137376179bca05d0112a0cc25b606fe928a0c9a58f7f209c4495":[23,0,1,1,3,4,1,1],
 "_p_d_f_centering_8h.html#a62dbe24719817137376179bca05d0112ad3e3387a4f355276d41eefead65395c5":[23,0,1,1,3,4,1,0],
 "_p_d_f_centering_8h.html#a96031740eab53df1ccc9b89e0f1a99c9":[23,0,1,1,3,4,2],
@@ -44,12 +47,12 @@ var NAVTREEINDEX3 =
 "_particle_writer_8h_source.html":[23,0,1,4,23],
 "_particles_8h.html":[23,0,1,0,20],
 "_particles_8h_source.html":[23,0,1,0,20],
-"_partitioner_8_c.html":[23,0,1,3,6],
-"_partitioner_8_c_source.html":[23,0,1,3,6],
-"_partitioner_8h.html":[23,0,1,3,8],
-"_partitioner_8h.html#a6ec0c67374eb34a66c0f5ca4ecd7d163":[23,0,1,3,8,1],
-"_partitioner_8h.html#a831588920575901dd740e226351ddd03":[23,0,1,3,8,2],
-"_partitioner_8h_source.html":[23,0,1,3,8],
+"_partitioner_8_c.html":[23,0,1,3,7],
+"_partitioner_8_c_source.html":[23,0,1,3,7],
+"_partitioner_8h.html":[23,0,1,3,9],
+"_partitioner_8h.html#a6ec0c67374eb34a66c0f5ca4ecd7d163":[23,0,1,3,9,1],
+"_partitioner_8h.html#a831588920575901dd740e226351ddd03":[23,0,1,3,9,2],
+"_partitioner_8h_source.html":[23,0,1,3,9],
 "_partitioning_algorithm_8h.html":[23,0,1,1,3,3],
 "_partitioning_algorithm_8h.html#a180736a871ec765b3614343e6b853f1d":[23,0,1,1,3,3,1],
 "_partitioning_algorithm_8h.html#a180736a871ec765b3614343e6b853f1da0882f8d264fa9e29c7475df10800aedc":[23,0,1,1,3,3,1,2],
@@ -246,8 +249,5 @@ var NAVTREEINDEX3 =
 "_stat_ctr_8h_source.html":[23,0,1,1,18],
 "_stat_test_8h.html":[23,0,1,13,7],
 "_stat_test_8h_source.html":[23,0,1,13,7],
-"_statistics_8_c.html":[23,0,1,14,3],
-"_statistics_8_c_source.html":[23,0,1,14,3],
-"_statistics_8h.html":[23,0,1,14,4],
-"_statistics_8h_source.html":[23,0,1,14,4]
+"_statistics_8_c.html":[23,0,1,14,3]
 };

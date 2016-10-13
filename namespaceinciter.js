@@ -3,6 +3,8 @@ var namespaceinciter =
     [ "cmd", "namespaceinciter_1_1cmd.html", "namespaceinciter_1_1cmd" ],
     [ "ctr", "namespaceinciter_1_1ctr.html", "namespaceinciter_1_1ctr" ],
     [ "deck", "namespaceinciter_1_1deck.html", "namespaceinciter_1_1deck" ],
+    [ "AuxSolverLumpMassDiff", "classinciter_1_1_aux_solver_lump_mass_diff.html", "classinciter_1_1_aux_solver_lump_mass_diff" ],
+    [ "AuxSolverNull", "classinciter_1_1_aux_solver_null.html", null ],
     [ "Carrier", "classinciter_1_1_carrier.html", "classinciter_1_1_carrier" ],
     [ "CmdLineParser", "classinciter_1_1_cmd_line_parser.html", "classinciter_1_1_cmd_line_parser" ],
     [ "CompFlow", "classinciter_1_1_comp_flow.html", "classinciter_1_1_comp_flow" ],

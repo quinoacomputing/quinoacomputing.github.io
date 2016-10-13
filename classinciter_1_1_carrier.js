@@ -2,7 +2,7 @@ var classinciter_1_1_carrier =
 [
     [ "Array", "classinciter_1_1_carrier.html#a36fa3fbedf79bea21d0058b2066fa7d1", null ],
     [ "comm_t", "classinciter_1_1_carrier.html#ac165fb6f2a9004c81dbd0301b1423ffe", null ],
-    [ "LinSysMergerProxy", "classinciter_1_1_carrier.html#ab9017f07bbabce2cde8da7005a6dbac0", null ],
+    [ "LinSysMergerProxy", "classinciter_1_1_carrier.html#ad0c4debc62811f85d0885be2ff3eec33", null ],
     [ "ncomp_t", "classinciter_1_1_carrier.html#a715e1eb91308ede72f1ef41e2298cae9", null ],
     [ "ParticleWriterProxy", "classinciter_1_1_carrier.html#a5f1ce81a070c1a645caf1a14e72448b1", null ],
     [ "TransporterProxy", "classinciter_1_1_carrier.html#a1e02657575004c7799e468d4795fef8b", null ],
@@ -44,8 +44,8 @@ var classinciter_1_1_carrier =
     [ "setup", "classinciter_1_1_carrier.html#a27be91613839783982b1f8c49e879f8e", null ],
     [ "setupIds", "classinciter_1_1_carrier.html#a37d17a039b5e37e264b1a24abcef1f18", null ],
     [ "track", "classinciter_1_1_carrier.html#ab22a61149371e4c73e09f9741d3b5ec6", null ],
-    [ "updateHighSol", "classinciter_1_1_carrier.html#a7fba0eece347eec40a4334ff93e2a75f", null ],
     [ "updateLowSol", "classinciter_1_1_carrier.html#a9e5ac03274fef6c971ae68f590059b3d", null ],
+    [ "updateSol", "classinciter_1_1_carrier.html#a5f74e4e992ba1898193cdaa81190f661", null ],
     [ "verify", "classinciter_1_1_carrier.html#a751ddcb0178069d26659b9cc64ee4adf", null ],
     [ "writeFields", "classinciter_1_1_carrier.html#ac2509f9ace0261431458cc02ed822f60", null ],
     [ "writeMesh", "classinciter_1_1_carrier.html#a06bc25d3c6c891d380400f841b467d7f", null ],

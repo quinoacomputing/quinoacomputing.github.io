@@ -16,5 +16,7 @@ var searchData=
   ['assertpolicycodes',['assertPolicyCodes',['../structinciter_1_1ctr_1_1_problem_1_1assert_policy_codes.html',1,'inciter::ctr::Problem']]],
   ['assertpolicycodes',['assertPolicyCodes',['../structinciter_1_1ctr_1_1_physics_1_1assert_policy_codes.html',1,'inciter::ctr::Physics']]],
   ['atwood',['atwood',['../structtag_1_1atwood.html',1,'tag']]],
-  ['autocorr',['AutoCorr',['../structtag_1_1_auto_corr.html',1,'tag']]]
+  ['autocorr',['AutoCorr',['../structtag_1_1_auto_corr.html',1,'tag']]],
+  ['auxsolverlumpmassdiff',['AuxSolverLumpMassDiff',['../classinciter_1_1_aux_solver_lump_mass_diff.html',1,'inciter']]],
+  ['auxsolvernull',['AuxSolverNull',['../classinciter_1_1_aux_solver_null.html',1,'inciter']]]
 ];

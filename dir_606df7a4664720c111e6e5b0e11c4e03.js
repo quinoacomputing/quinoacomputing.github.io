@@ -1,5 +1,9 @@
 var dir_606df7a4664720c111e6e5b0e11c4e03 =
 [
+    [ "AuxSolver.h", "_aux_solver_8h.html", [
+      [ "AuxSolverLumpMassDiff", "classinciter_1_1_aux_solver_lump_mass_diff.html", "classinciter_1_1_aux_solver_lump_mass_diff" ],
+      [ "AuxSolverNull", "classinciter_1_1_aux_solver_null.html", null ]
+    ] ],
     [ "Carrier.C", "_carrier_8_c.html", "_carrier_8_c" ],
     [ "carrier.ci", "carrier_8ci.html", null ],
     [ "Carrier.h", "_carrier_8h.html", [
