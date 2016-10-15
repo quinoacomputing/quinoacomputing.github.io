@@ -1,5 +1,9 @@
 var NAVTREEINDEX13 =
 {
+"classwalker_1_1_mix_num_frac_beta_coeff_decay.html":[22,0,9,32],
+"classwalker_1_1_mix_num_frac_beta_coeff_decay.html#a7aa7aa9004e20b7a6d392a06dbaca878":[22,0,9,32,2],
+"classwalker_1_1_mix_num_frac_beta_coeff_decay.html#abe3c4b6068da5d23c3cdd682703a1c8c":[22,0,9,32,3],
+"classwalker_1_1_mix_num_frac_beta_coeff_decay.html#aee3aea1bb08c9ca95aa07ace76d781a5":[22,0,9,32,0],
 "classwalker_1_1_mix_num_frac_beta_coeff_decay.html#afa06428381441f04ef38359fa0dcb326":[22,0,9,32,1],
 "classwalker_1_1_mix_number_fraction_beta.html":[22,0,9,31],
 "classwalker_1_1_mix_number_fraction_beta.html#a0f2ecf92b18c53dcacf1470c32c013d4":[22,0,9,31,16],
@@ -221,8 +225,8 @@ var NAVTREEINDEX13 =
 "for__each_8h_source.html":[23,0,1,9,14],
 "format_8h.html":[23,0,1,9,15],
 "format_8h_source.html":[23,0,1,9,15],
-"functions.html":[22,3,0],
 "functions.html":[22,3,0,0],
+"functions.html":[22,3,0],
 "functions_0x7e.html":[22,3,0,25],
 "functions_b.html":[22,3,0,1],
 "functions_c.html":[22,3,0,2],
@@ -245,9 +249,5 @@ var NAVTREEINDEX13 =
 "functions_func_l.html":[22,3,1,9],
 "functions_func_m.html":[22,3,1,10],
 "functions_func_n.html":[22,3,1,11],
-"functions_func_o.html":[22,3,1,12],
-"functions_func_p.html":[22,3,1,13],
-"functions_func_q.html":[22,3,1,14],
-"functions_func_r.html":[22,3,1,15],
-"functions_func_s.html":[22,3,1,16]
+"functions_func_o.html":[22,3,1,12]
 };

@@ -1,7 +1,7 @@
 var searchData=
 [
   ['m',['m',['../structtut_1_1_m_k_l_beta_method__common.html#a173f9a6d91af66422a4a5f3a657d87fa',1,'tut::MKLBetaMethod_common::m()'],['../structtut_1_1_m_k_l_gaussian_method__common.html#ab80df794e58a7d091b181ca0ffa15b57',1,'tut::MKLGaussianMethod_common::m()'],['../structtut_1_1_m_k_l_uniform_method__common.html#afbeb4cf2189132ae23e355100e8c8d3a',1,'tut::MKLUniformMethod_common::m()'],['../structtut_1_1_r_n_g_options__common.html#a4f096b79ca874571983b17add4d92e4f',1,'tut::RNGOptions_common::m()']]],
-  ['m_5fa',['m_a',['../classinciter_1_1_carrier.html#ad271377d477dff0e26cce4ddf86a273c',1,'inciter::Carrier::m_a()'],['../classtk_1_1hypre_1_1_hypre_matrix.html#ac414b815bc7c84c32f56b0b4c2ca6dfb',1,'tk::hypre::HypreMatrix::m_A()'],['../classtk_1_1_lin_sys_merger.html#a89081b8f2f894c2a934993a02e92cbdc',1,'tk::LinSysMerger::m_A()']]],
+  ['m_5fa',['m_A',['../classtk_1_1hypre_1_1_hypre_matrix.html#ac414b815bc7c84c32f56b0b4c2ca6dfb',1,'tk::hypre::HypreMatrix::m_A()'],['../classtk_1_1_lin_sys_merger.html#a89081b8f2f894c2a934993a02e92cbdc',1,'tk::LinSysMerger::m_A()'],['../classinciter_1_1_carrier.html#ad271377d477dff0e26cce4ddf86a273c',1,'inciter::Carrier::m_a()']]],
   ['m_5fac',['m_ac',['../classinciter_1_1_carrier.html#aff258d4105e158d35520da3e8bf4afbd',1,'inciter::Carrier']]],
   ['m_5faddrlength',['m_addrLength',['../classtk_1_1_exception.html#a9e17eb10ab18d7f643c2d821d4df83e9',1,'tk::Exception']]],
   ['m_5faddrlist',['m_addrList',['../classtk_1_1_exception.html#ae54a08387b5af7f0eda2dc5532b5b447',1,'tk::Exception']]],

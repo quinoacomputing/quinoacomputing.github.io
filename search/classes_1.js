@@ -2,8 +2,8 @@ var searchData=
 [
   ['b',['b',['../structtag_1_1b.html',1,'tag']]],
   ['base',['Base',['../structtut_1_1_factory__common_1_1_base.html',1,'tut::Factory_common']]],
-  ['battery',['Battery',['../classrngtest_1_1ctr_1_1_battery.html',1,'rngtest::ctr']]],
   ['battery',['battery',['../structrngtest_1_1deck_1_1battery.html',1,'rngtest::deck']]],
+  ['battery',['Battery',['../classrngtest_1_1ctr_1_1_battery.html',1,'rngtest::ctr']]],
   ['battery',['Battery',['../classrngtest_1_1_battery.html',1,'rngtest']]],
   ['battery',['battery',['../structtag_1_1battery.html',1,'tag']]],
   ['bc_5fdirichlet',['bc_dirichlet',['../structtag_1_1bc__dirichlet.html',1,'tag']]],

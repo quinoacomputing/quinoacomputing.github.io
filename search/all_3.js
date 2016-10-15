@@ -67,8 +67,8 @@ var searchData=
   ['dir_5fneu',['DIR_NEU',['../namespaceinciter_1_1ctr.html#a6233f49244094f9b305675039fe62482a7688f48942493375e60ccd983fa5c3b3',1,'inciter::ctr']]],
   ['dirbc',['dirbc',['../classinciter_1_1_comp_flow.html#aabb7c2c4d59ab4d162d71dd0c5c9b933',1,'inciter::CompFlow::dirbc()'],['../classinciter_1_1_p_d_e.html#ae6e242424119117cb79af7f180493f8c',1,'inciter::PDE::dirbc()'],['../structinciter_1_1_p_d_e_1_1_concept.html#afeeaa0eb7913d7469f8751bf9e78e6b2',1,'inciter::PDE::Concept::dirbc()'],['../structinciter_1_1_p_d_e_1_1_model.html#a4d321fd563ef06dfac0516a01808f2e1',1,'inciter::PDE::Model::dirbc()'],['../classinciter_1_1_poisson.html#a462e47f56b21dfea2b8448859d7bc2bf',1,'inciter::Poisson::dirbc()'],['../classinciter_1_1_transport.html#a7a719aacc1d13d88049a85b2ed1aa733',1,'inciter::Transport::dirbc()']]],
   ['dirichlet',['Dirichlet',['../classwalker_1_1_dirichlet.html',1,'walker']]],
-  ['dirichlet',['dirichlet',['../structtag_1_1dirichlet.html',1,'tag']]],
   ['dirichlet',['Dirichlet',['../classwalker_1_1_dirichlet.html#ad5fe97422126de0afbd69f569d2215e0',1,'walker::Dirichlet::Dirichlet()'],['../namespacebreeze_1_1ctr.html#a31a8397db3a2501db9a0cda27686debaae151350b63efc6c3bbe2e3f0d27863ba',1,'breeze::ctr::DIRICHLET()'],['../namespacewalker_1_1ctr.html#a4592cfa71c6e4c64a71c5691df56c79fae151350b63efc6c3bbe2e3f0d27863ba',1,'walker::ctr::DIRICHLET()']]],
+  ['dirichlet',['dirichlet',['../structtag_1_1dirichlet.html',1,'tag']]],
   ['dirichlet',['dirichlet',['../structwalker_1_1deck_1_1dirichlet.html',1,'walker::deck']]],
   ['dirichlet_2edox',['Dirichlet.dox',['../_dirichlet_8dox.html',1,'']]],
   ['dirichlet_2eh',['Dirichlet.h',['../_dirichlet_8h.html',1,'']]],
@@ -78,7 +78,7 @@ var searchData=
   ['dirichletcoeffpolicy_2eh',['DirichletCoeffPolicy.h',['../_dirichlet_coeff_policy_8h.html',1,'']]],
   ['dirichletparameters',['DirichletParameters',['../namespacewalker_1_1ctr.html#a3318d5f74a1f5879014390868d3692fa',1,'walker::ctr']]],
   ['discr',['discr',['../structtag_1_1discr.html',1,'tag']]],
-  ['discretization',['discretization',['../namespaceinciter_1_1ctr.html#a7b7221f1719368d8a83cf7d7deb5d5ad',1,'inciter::ctr::discretization()'],['../namespacewalker_1_1ctr.html#a2dec00532bc48e95d36a806b3eae1495',1,'walker::ctr::discretization()']]],
+  ['discretization',['discretization',['../namespaceinciter_1_1ctr.html#ab821c9b614e541e20d53a80f5ea8eaba',1,'inciter::ctr::discretization()'],['../namespacewalker_1_1ctr.html#a2dec00532bc48e95d36a806b3eae1495',1,'walker::ctr::discretization()']]],
   ['discretization_5fparameters',['discretization_parameters',['../structwalker_1_1deck_1_1discretization__parameters.html',1,'walker::deck']]],
   ['discretization_5fparameters',['discretization_parameters',['../structinciter_1_1deck_1_1discretization__parameters.html',1,'inciter::deck']]],
   ['distribute',['distribute',['../classinciter_1_1_partitioner.html#a185498585cc11098213d97c4697753a6',1,'inciter::Partitioner']]],
@@ -97,6 +97,7 @@ var searchData=
   ['driver_2eh',['Driver.h',['../_driver_8h.html',1,'']]],
   ['dsec',['dsec',['../classtk_1_1_timer.html#a08304f78d80271af5adc8115d6d55a93',1,'tk::Timer::dsec() const '],['../classtk_1_1_timer.html#ac1e4b53f806eeb46879f9d0acec4c68b',1,'tk::Timer::Dsec()']]],
   ['dt',['dt',['../structtag_1_1dt.html',1,'tag']]],
+  ['dt',['dt',['../classinciter_1_1_carrier.html#a76077f405382ea5eb11450ab2ba00318',1,'inciter::Carrier::dt()'],['../classinciter_1_1_transporter.html#aef277971a7cf33aff3d5de55b87857c2',1,'inciter::Transporter::dt()']]],
   ['dump',['dump',['../structtag_1_1dump.html',1,'tag']]],
   ['data_20layout_20design',['Data layout design',['../layout.html',1,'']]]
 ];

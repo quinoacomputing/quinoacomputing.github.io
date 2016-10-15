@@ -1,5 +1,12 @@
 var NAVTREEINDEX19 =
 {
+"structwalker_1_1deck_1_1rngs.html":[22,0,9,2,19],
+"structwalker_1_1deck_1_1scan__sde.html":[22,0,9,2,20],
+"structwalker_1_1deck_1_1sde.html":[22,0,9,2,21],
+"structwalker_1_1deck_1_1sde__parameter__vector.html":[22,0,9,2,22],
+"structwalker_1_1deck_1_1skewnormal.html":[22,0,9,2,23],
+"structwalker_1_1deck_1_1store__option.html":[22,0,9,2,24],
+"structwalker_1_1deck_1_1store__option.html#af12dbb05cc8301c44558ba11a6516b66":[22,0,9,2,24,0],
 "structwalker_1_1deck_1_1walker.html":[22,0,9,2,25],
 "structwalker_1_1deck_1_1wright__fisher.html":[22,0,9,2,26],
 "subtree.html":[10],

@@ -32,7 +32,7 @@ var searchData=
   ['ord',['ord',['../classtk_1_1_statistics.html#a849a1b25a8e21070d4dda2d9ab74c686',1,'tk::Statistics']]],
   ['ord2',['ord2',['../namespacetk_1_1ctr.html#a6a20f32fee3c0f688c2e18f60c3755c4',1,'tk::ctr']]],
   ['ordinary',['ordinary',['../structtag_1_1ordinary.html',1,'tag']]],
-  ['ordinary',['ordinary',['../namespacetk_1_1ctr.html#aae2d07ed29fba66bd94e602368f54286',1,'tk::ctr::ordinary(const std::vector&lt; ctr::Term &gt; &amp;vec)'],['../namespacetk_1_1ctr.html#ad8f59bc1d2814d96060f4ba652bc08bfab4b19adea7f060a86547d9b276d8be1c',1,'tk::ctr::ORDINARY()']]],
+  ['ordinary',['ORDINARY',['../namespacetk_1_1ctr.html#ad8f59bc1d2814d96060f4ba652bc08bfab4b19adea7f060a86547d9b276d8be1c',1,'tk::ctr::ORDINARY()'],['../namespacetk_1_1ctr.html#aae2d07ed29fba66bd94e602368f54286',1,'tk::ctr::ordinary(const std::vector&lt; ctr::Term &gt; &amp;vec)']]],
   ['ordpdf',['ordpdf',['../structtag_1_1ordpdf.html',1,'tag']]],
   ['ornstein_5fuhlenbeck',['ornstein_uhlenbeck',['../structwalker_1_1deck_1_1ornstein__uhlenbeck.html',1,'walker::deck']]],
   ['ornsteinuhlenbeck',['OrnsteinUhlenbeck',['../classwalker_1_1_ornstein_uhlenbeck.html#a36a7d9a220b87f71c829ca0fb3d826dc',1,'walker::OrnsteinUhlenbeck']]],

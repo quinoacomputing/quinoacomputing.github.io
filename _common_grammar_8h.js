@@ -88,6 +88,8 @@ var _common_grammar_8h =
       [ "WRONGBETAPDF", "_common_grammar_8h.html#a86dbe384e8ce31796b7eb5f6ac87e1a3a4b9466042bf22f34f65e5bc33559ada3", null ],
       [ "NONCOMP", "_common_grammar_8h.html#a86dbe384e8ce31796b7eb5f6ac87e1a3ac727e3ca4f9464113e8bc6aa5ca6fc2e", null ],
       [ "NORNG", "_common_grammar_8h.html#a86dbe384e8ce31796b7eb5f6ac87e1a3a61cb7af456776a7f26a0cb9330b2ce55", null ],
+      [ "NODT", "_common_grammar_8h.html#a86dbe384e8ce31796b7eb5f6ac87e1a3a725e7394d50e3101784998ece8051240", null ],
+      [ "MULDT", "_common_grammar_8h.html#a86dbe384e8ce31796b7eb5f6ac87e1a3a3a625493e5ef6e75dd78e11c77012bbe", null ],
       [ "NOSAMPLES", "_common_grammar_8h.html#a86dbe384e8ce31796b7eb5f6ac87e1a3a2ebfecee2e107ad86ffe68012c3c3042", null ],
       [ "INVALIDSAMPLESPACE", "_common_grammar_8h.html#a86dbe384e8ce31796b7eb5f6ac87e1a3a88950748e8f010f6ae950f4eb4106fa7", null ],
       [ "MALFORMEDSAMPLE", "_common_grammar_8h.html#a86dbe384e8ce31796b7eb5f6ac87e1a3a239ba5e1bef64feb105c9ee30345840c", null ],
@@ -112,7 +114,7 @@ var _common_grammar_8h =
       [ "ERROR", "_common_grammar_8h.html#aaea8b8be7c61e0bfb422394a315b2b64a2524effb18ba47fd4b68e016bc4618a5", null ],
       [ "WARNING", "_common_grammar_8h.html#aaea8b8be7c61e0bfb422394a315b2b64a91b152b474fe56d25c1f3e0c60fcfdcd", null ]
     ] ],
-    [ "message", "_common_grammar_8h.html#a316e95d07d4f071c8d6b9a3ce075e408", null ],
+    [ "message", "_common_grammar_8h.html#a0c3557093b5e763e045de9f5fd9f7231", null ],
     [ "Message", "_common_grammar_8h.html#a854479484c0cf43370a9fbc4c3821dcc", null ],
     [ "store_option", "_common_grammar_8h.html#a9131f0a09dab5d6bd4c8d84d8339e5e4", null ],
     [ "depvars", "_common_grammar_8h.html#ab631f9f35bdba1b71a2cff1112364971", null ],

@@ -22,6 +22,7 @@ var namespacetag =
     [ "c4", "structtag_1_1c4.html", null ],
     [ "cenpdf", "structtag_1_1cenpdf.html", null ],
     [ "central", "structtag_1_1central.html", null ],
+    [ "cfl", "structtag_1_1cfl.html", null ],
     [ "chare", "structtag_1_1chare.html", null ],
     [ "ClosePairs", "structtag_1_1_close_pairs.html", null ],
     [ "ClosePairsBitMatch", "structtag_1_1_close_pairs_bit_match.html", null ],
