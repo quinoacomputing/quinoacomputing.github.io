@@ -151,7 +151,7 @@ var searchData=
   ['tk',['tk',['../namespacetk.html',1,'']]],
   ['toggle',['Toggle',['../classtk_1_1_toggle.html',1,'tk']]],
   ['toggle',['toggle',['../structtut_1_1_toggle__common_1_1toggle.html',1,'tut::Toggle_common']]],
-  ['toggle',['Toggle',['../classtk_1_1_toggle.html#a2b4dd3b83dfc3fb4658386c0f3d7e030',1,'tk::Toggle::Toggle()'],['../structtut_1_1_toggle__common_1_1toggle.html#af662345770623657121a9ae15757c1ea',1,'tut::Toggle_common::toggle::toggle()'],['../namespacetut.html#ac1b3349cb27d7077a1f7be4a3fd4eb8d',1,'tut::Toggle()']]],
+  ['toggle',['toggle',['../structtut_1_1_toggle__common_1_1toggle.html#af662345770623657121a9ae15757c1ea',1,'tut::Toggle_common::toggle::toggle()'],['../classtk_1_1_toggle.html#a2b4dd3b83dfc3fb4658386c0f3d7e030',1,'tk::Toggle::Toggle()'],['../namespacetut.html#ac1b3349cb27d7077a1f7be4a3fd4eb8d',1,'tut::Toggle()']]],
   ['toggle_2eh',['Toggle.h',['../_toggle_8h.html',1,'']]],
   ['toggle_3c_20batterytype_20_3e',['Toggle&lt; BatteryType &gt;',['../classtk_1_1_toggle.html',1,'tk']]],
   ['toggle_3c_20coeffpolicytype_20_3e',['Toggle&lt; CoeffPolicyType &gt;',['../classtk_1_1_toggle.html',1,'tk']]],

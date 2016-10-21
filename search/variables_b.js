@@ -1,7 +1,7 @@
 var searchData=
 [
   ['m',['m',['../structtut_1_1_m_k_l_beta_method__common.html#a173f9a6d91af66422a4a5f3a657d87fa',1,'tut::MKLBetaMethod_common::m()'],['../structtut_1_1_m_k_l_gaussian_method__common.html#ab80df794e58a7d091b181ca0ffa15b57',1,'tut::MKLGaussianMethod_common::m()'],['../structtut_1_1_m_k_l_uniform_method__common.html#afbeb4cf2189132ae23e355100e8c8d3a',1,'tut::MKLUniformMethod_common::m()'],['../structtut_1_1_r_n_g_options__common.html#a4f096b79ca874571983b17add4d92e4f',1,'tut::RNGOptions_common::m()']]],
-  ['m_5fa',['m_a',['../classinciter_1_1_carrier.html#ad271377d477dff0e26cce4ddf86a273c',1,'inciter::Carrier::m_a()'],['../classtk_1_1hypre_1_1_hypre_matrix.html#ac414b815bc7c84c32f56b0b4c2ca6dfb',1,'tk::hypre::HypreMatrix::m_A()'],['../classtk_1_1_lin_sys_merger.html#a89081b8f2f894c2a934993a02e92cbdc',1,'tk::LinSysMerger::m_A()']]],
+  ['m_5fa',['m_A',['../classtk_1_1hypre_1_1_hypre_matrix.html#ac414b815bc7c84c32f56b0b4c2ca6dfb',1,'tk::hypre::HypreMatrix::m_A()'],['../classtk_1_1_lin_sys_merger.html#a89081b8f2f894c2a934993a02e92cbdc',1,'tk::LinSysMerger::m_A()'],['../classinciter_1_1_carrier.html#ad271377d477dff0e26cce4ddf86a273c',1,'inciter::Carrier::m_a()']]],
   ['m_5fac',['m_ac',['../classinciter_1_1_carrier.html#aff258d4105e158d35520da3e8bf4afbd',1,'inciter::Carrier']]],
   ['m_5faddrlength',['m_addrLength',['../classtk_1_1_exception.html#a9e17eb10ab18d7f643c2d821d4df83e9',1,'tk::Exception']]],
   ['m_5faddrlist',['m_addrList',['../classtk_1_1_exception.html#ae54a08387b5af7f0eda2dc5532b5b447',1,'tk::Exception']]],
@@ -231,7 +231,6 @@ var searchData=
   ['m_5fr',['m_r',['../classwalker_1_1_mass_fraction_beta.html#a4158ef2ea5181662311fd6f4b7323874',1,'walker::MassFractionBeta::m_r()'],['../classwalker_1_1_mix_mass_fraction_beta.html#a7c90ce51f8c85c9a64312a732f1c46ee',1,'walker::MixMassFractionBeta::m_r()']]],
   ['m_5frcomma',['m_rcomma',['../classwalker_1_1_mix_number_fraction_beta.html#ad074be9fbf9c76328385f2f5a7becbd5',1,'walker::MixNumberFractionBeta::m_rcomma()'],['../classwalker_1_1_number_fraction_beta.html#a69a80d29f047af49cde28f4d3830c594',1,'walker::NumberFractionBeta::m_rcomma()']]],
   ['m_5freorder',['m_reorder',['../classmeshconv_1_1_mesh_conv_driver.html#afd86193f5df7d3fb2fa9198986882050',1,'meshconv::MeshConvDriver']]],
-  ['m_5freordered',['m_reordered',['../classinciter_1_1_partitioner.html#a71d5a203ada5512fadaf3e0dd4695e91',1,'inciter::Partitioner']]],
   ['m_5freq',['m_req',['../classinciter_1_1_partitioner.html#a93429dd51defc7fe93a2d10d868b0d89',1,'inciter::Partitioner']]],
   ['m_5fres',['m_res',['../classrngtest_1_1_test_u01_props.html#a898df72689a5d6532b393bdf3e5990ab',1,'rngtest::TestU01Props']]],
   ['m_5frho2',['m_rho2',['../classwalker_1_1_mass_fraction_beta.html#af2528904e594437aeacd90b835ba3462',1,'walker::MassFractionBeta::m_rho2()'],['../classwalker_1_1_mix_mass_fraction_beta.html#aa1e86708c4202b7bb408adb6a2f4a19e',1,'walker::MixMassFractionBeta::m_rho2()'],['../classwalker_1_1_mix_number_fraction_beta.html#a0f2ecf92b18c53dcacf1470c32c013d4',1,'walker::MixNumberFractionBeta::m_rho2()'],['../classwalker_1_1_number_fraction_beta.html#aa2778cccc98fc3b90f70041076b46d75',1,'walker::NumberFractionBeta::m_rho2()']]],

@@ -27,7 +27,6 @@ var searchData=
   ['recordmodellate',['recordModelLate',['../namespacetk.html#ae98b4e55f14339c707622a8da43d8ce9',1,'tk']]],
   ['recrow',['recrow',['../classtk_1_1_lin_sys_merger.html#a4a200417c1dd1362b2bb5a4e968a894b',1,'tk::LinSysMerger']]],
   ['recv',['recv',['../classinciter_1_1_partitioner.html#ab1aeff138578c3921fb67ddbbad3ef3a',1,'inciter::Partitioner']]],
-  ['recvnodes',['recvnodes',['../classinciter_1_1_partitioner.html#a5043537fdfca74f3272cb9a1c92065d2',1,'inciter::Partitioner']]],
   ['ref_5ffind',['ref_find',['../namespacetk.html#ab2aac5f0fd93d5119cfe50a39f3515c9',1,'tk']]],
   ['registerbcmerger',['registerBCMerger',['../classtk_1_1_lin_sys_merger.html#aa178f6e5b3cc7f2c2c29d698480c4fca',1,'tk::LinSysMerger']]],
   ['registerdiffeq',['registerDiffEq',['../structwalker_1_1_diff_eq_stack_1_1register_diff_eq.html#a65bda05d7ac6da781e990f1fa8938c33',1,'walker::DiffEqStack::registerDiffEq']]],

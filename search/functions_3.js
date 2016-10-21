@@ -26,6 +26,7 @@ var searchData=
   ['dirichlet',['Dirichlet',['../classwalker_1_1_dirichlet.html#ad5fe97422126de0afbd69f569d2215e0',1,'walker::Dirichlet']]],
   ['dirichletcoeffconst',['DirichletCoeffConst',['../classwalker_1_1_dirichlet_coeff_const.html#ac26b91c7bcd89b84a092460c44b7eace',1,'walker::DirichletCoeffConst']]],
   ['distribute',['distribute',['../classinciter_1_1_partitioner.html#a185498585cc11098213d97c4697753a6',1,'inciter::Partitioner']]],
+  ['distributed',['distributed',['../classinciter_1_1_transporter.html#a8e3d3b86fb8cc9b88bcac24dc3749ec1',1,'inciter::Transporter']]],
   ['distributor',['Distributor',['../classwalker_1_1_distributor.html#aba72a9b33997ac8efe1c7a3540d9b18e',1,'walker::Distributor']]],
   ['dot',['dot',['../namespacetk.html#aeaca2df70ee950c576f6d74e1eb42caa',1,'tk']]],
   ['doverifybc',['doverifybc',['../classinciter_1_1_transporter.html#a6a4bfadd3c3053ce3b462e7c7b638746',1,'inciter::Transporter']]],
