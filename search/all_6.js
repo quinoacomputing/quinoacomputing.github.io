@@ -100,7 +100,7 @@ var searchData=
   ['grammar_2eh',['Grammar.h',['../_breeze_2_input_deck_2_grammar_8h.html',1,'']]],
   ['grammar_2eh',['Grammar.h',['../_r_n_g_test_2_input_deck_2_grammar_8h.html',1,'']]],
   ['graphsize',['graphsize',['../classtk_1_1_uns_mesh.html#adcc0649d6d564348dd575ed977b668dc',1,'tk::UnsMesh']]],
-  ['group',['group',['../classtk_1_1_toggle.html#ac94dd097af189c12cbe902183da73617',1,'tk::Toggle::group()'],['../classinciter_1_1_partitioner.html#ae2da626a5df9fefd511aa0d350206786',1,'inciter::Partitioner::Group()'],['../classtk_1_1_lin_sys_merger.html#a842de27e8d0126f92faa799c988d4d6b',1,'tk::LinSysMerger::Group()']]],
+  ['group',['Group',['../classinciter_1_1_partitioner.html#ae2da626a5df9fefd511aa0d350206786',1,'inciter::Partitioner::Group()'],['../classtk_1_1_lin_sys_merger.html#a842de27e8d0126f92faa799c988d4d6b',1,'tk::LinSysMerger::Group()'],['../classtk_1_1_toggle.html#ac94dd097af189c12cbe902183da73617',1,'tk::Toggle::group()']]],
   ['group',['group',['../structunittest_1_1cmd_1_1group.html',1,'unittest::cmd']]],
   ['group',['group',['../structtag_1_1group.html',1,'tag']]],
   ['groupidx',['GroupIdx',['../classtk_1_1_lin_sys_merger.html#af9cd0129d2fd805f649a8062874f709c',1,'tk::LinSysMerger']]],

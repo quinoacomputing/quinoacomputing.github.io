@@ -15,6 +15,7 @@ var namespacetut =
     [ "eq2", "structtut_1_1eq2.html", null ],
     [ "Exception_common", "structtut_1_1_exception__common.html", null ],
     [ "ExceptionMPI_common", "structtut_1_1_exception_m_p_i__common.html", null ],
+    [ "ExodusIIMeshReader_common", "structtut_1_1_exodus_i_i_mesh_reader__common.html", "structtut_1_1_exodus_i_i_mesh_reader__common" ],
     [ "Factory_common", "structtut_1_1_factory__common.html", "structtut_1_1_factory__common" ],
     [ "FileParser_common", "structtut_1_1_file_parser__common.html", [
       [ "parser", "structtut_1_1_file_parser__common_1_1parser.html", "structtut_1_1_file_parser__common_1_1parser" ]

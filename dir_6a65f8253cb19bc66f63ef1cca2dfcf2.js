@@ -17,5 +17,6 @@ var dir_6a65f8253cb19bc66f63ef1cca2dfcf2 =
     ] ],
     [ "TUTTest.C", "_t_u_t_test_8_c.html", null ],
     [ "tuttest.ci", "tuttest_8ci.html", null ],
-    [ "TUTTest.h", "_t_u_t_test_8h.html", "_t_u_t_test_8h" ]
+    [ "TUTTest.h", "_t_u_t_test_8h.html", "_t_u_t_test_8h" ],
+    [ "TUTUtil.h", "_t_u_t_util_8h.html", "_t_u_t_util_8h" ]
 ];

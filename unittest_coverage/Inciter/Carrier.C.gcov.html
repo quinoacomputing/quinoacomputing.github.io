@@ -24,20 +24,20 @@
           </tr>
           <tr>
             <td class="headerItem">Commit:</td>
-            <td class="headerValue">Quinoa_v0.1-341-gebe3cef</td>
+            <td class="headerValue">Quinoa_v0.1-345-gc5e3030</td>
             <td></td>
             <td class="headerItem">Lines:</td>
             <td class="headerCovTableEntry">0</td>
-            <td class="headerCovTableEntry">393</td>
+            <td class="headerCovTableEntry">396</td>
             <td class="headerCovTableEntryLo">0.0 %</td>
           </tr>
           <tr>
             <td class="headerItem">Date:</td>
-            <td class="headerValue">2016-10-20 21:05:59</td>
+            <td class="headerValue">2016-10-24 21:05:49</td>
             <td></td>
             <td class="headerItem">Functions:</td>
             <td class="headerCovTableEntry">0</td>
-            <td class="headerCovTableEntry">38</td>
+            <td class="headerCovTableEntry">39</td>
             <td class="headerCovTableEntryLo">0.0 %</td>
           </tr>
           <tr>
@@ -76,7 +76,7 @@
 <span class="lineNum">       2 </span>                :            : /*!
 <span class="lineNum">       3 </span>                :            :   \file      src/Inciter/Carrier.C
 <span class="lineNum">       4 </span>                :            :   \author    J. Bakosi
-<span class="lineNum">       5 </span>                :            :   \date      Tue 18 Oct 2016 12:51:04 PM MDT
+<span class="lineNum">       5 </span>                :            :   \date      Mon 24 Oct 2016 02:33:46 PM MDT
 <span class="lineNum">       6 </span>                :            :   \copyright 2012-2015, Jozsef Bakosi, 2016, Los Alamos National Security, LLC.
 <span class="lineNum">       7 </span>                :            :   \brief     Carrier advances a system of transport equations
 <span class="lineNum">       8 </span>                :            :   \details   Carrier advances a system of transport equations. There are a
@@ -1095,54 +1095,65 @@
 <span class="lineNum">    1021 </span>                :            : }
 <a name="1022"><span class="lineNum">    1022 </span>                :            : </a>
 <span class="lineNum">    1023 </span>                :            : void
-<span class="lineNum">    1024 </span>                :<span class="lineNoCov">          0 : Carrier::apply()</span>
+<span class="lineNum">    1024 </span>                :<span class="lineNoCov">          0 : Carrier::diagnostics()</span>
 <span class="lineNum">    1025 </span>                :            : // *****************************************************************************
-<span class="lineNum">    1026 </span>                :            : // Apply limited antidiffusive element contributions
+<span class="lineNum">    1026 </span>                :            : // Compute diagnostics, e.g., residuals
 <span class="lineNum">    1027 </span>                :            : //! \author J. Bakosi
 <span class="lineNum">    1028 </span>                :            : // *****************************************************************************
 <span class="lineNum">    1029 </span>                :            : {
-<span class="lineNum">    1030 </span>                :            :   // Combine own and communicated contributions to A
-<span class="lineNum">    1031 </span>                :<span class="lineNoCov">          0 :   for (const auto&amp; b : m_bid) {</span>
-<span class="lineNum">    1032 </span>                :<span class="lineNoCov">          0 :     auto lid = tk::cref_find( m_lid, b.first );</span>
-<span class="lineNum">    1033 </span>                :<span class="lineNoCov">          0 :     const auto&amp; bac = m_ac[ b.second ];</span>
-<span class="lineNum">    1034 </span>                :<span class="lineNoCov">          0 :     for (ncomp_t c=0; c&lt;m_a.nprop(); ++c) m_a(lid,c,0) += bac[c];</span>
-<span class="lineNum">    1035 </span>                :            :   }
-<span class="lineNum">    1036 </span>                :            : 
-<span class="lineNum">    1037 </span>                :            :   // Apply limited antidiffusive element contributions to low order solution
-<span class="lineNum">    1038 </span>                :<span class="lineNoCov">          0 :   if (m_stage &lt; 1)</span>
-<span class="lineNum">    1039 </span>                :<span class="lineNoCov">          0 :     m_uf = m_ulf + m_a;   // update half-time solution with limited solution</span>
-<span class="lineNum">    1040 </span>                :            :   else
-<span class="lineNum">    1041 </span>                :<span class="lineNoCov">          0 :     m_u = m_ul + m_a;     // update solution with new (limited) solution</span>
-<span class="lineNum">    1042 </span>                :            : 
-<span class="lineNum">    1043 </span>                :            :   // Advance particles
-<span class="lineNum">    1044 </span>                :<span class="lineNoCov">          0 :   m_tracker.track( m_transporter, thisProxy, m_coord, m_inpoel, m_msum,</span>
-<span class="lineNum">    1045 </span>                :<span class="lineNoCov">          0 :                    thisIndex, this, m_stage, m_dt );</span>
-<span class="lineNum">    1046 </span>                :            : 
-<span class="lineNum">    1047 </span>                :            :   // Optionally contribute diagnostics, e.g., residuals, back to host
-<span class="lineNum">    1048 </span>                :<span class="lineNoCov">          0 :   if (m_stage == 1 &amp;&amp; !(m_it % g_inputdeck.get&lt; tag::interval, tag::diag &gt;()))</span>
-<span class="lineNum">    1049 </span>                :<span class="lineNoCov">          0 :     m_linsysmerger.ckLocalBranch()-&gt;diagnostics();</span>
-<span class="lineNum">    1050 </span>                :            :   else
-<span class="lineNum">    1051 </span>                :<span class="lineNoCov">          0 :     contribute(</span>
-<span class="lineNum">    1052 </span>                :<span class="lineNoCov">          0 :       CkCallback(CkReductionTarget(Transporter,diagcomplete), m_transporter));</span>
-<span class="lineNum">    1053 </span>                :            : 
-<span class="lineNum">    1054 </span>                :            : //     // TEST FEATURE: Manually migrate this chare by using migrateMe to see if
-<span class="lineNum">    1055 </span>                :            : //     // all relevant state variables are being PUPed correctly.
-<span class="lineNum">    1056 </span>                :            : //     //CkPrintf(&quot;I'm carrier chare %d on PE %d\n&quot;,thisIndex,CkMyPe());
-<span class="lineNum">    1057 </span>                :            : //     if (thisIndex == 2 &amp;&amp; CkMyPe() == 2) {
-<span class="lineNum">    1058 </span>                :            : //       /*int j;
-<span class="lineNum">    1059 </span>                :            : //       for (int i; i &lt; 50*std::pow(thisIndex,4); i++) {
-<span class="lineNum">    1060 </span>                :            : //         j = i*thisIndex;
-<span class="lineNum">    1061 </span>                :            : //       }*/
-<span class="lineNum">    1062 </span>                :            : //       CkPrintf(&quot;I'm carrier chare %d on PE %d\n&quot;,thisIndex,CkMyPe());
-<span class="lineNum">    1063 </span>                :            : //       migrateMe(1);
-<span class="lineNum">    1064 </span>                :            : //    }
-<span class="lineNum">    1065 </span>                :            : //    if (thisIndex == 2 &amp;&amp; CkMyPe() == 1) {
-<span class="lineNum">    1066 </span>                :            : //      CkPrintf(&quot;I'm carrier chare %d on PE %d\n&quot;,thisIndex,CkMyPe());
-<span class="lineNum">    1067 </span>                :            : //      migrateMe(2);
-<span class="lineNum">    1068 </span>                :            : //    }
-<span class="lineNum">    1069 </span>                :<span class="lineNoCov">          0 : }</span>
-<span class="lineNum">    1070 </span>                :            : 
-<span class="lineNum">    1071 </span>                :            : #include &quot;NoWarning/carrier.def.h&quot;
+<span class="lineNum">    1030 </span>                :            :   // Optionally send latest solution to LinSysMerger for computing diagnostics
+<span class="lineNum">    1031 </span>                :<span class="lineNoCov">          0 :   if (m_stage == 1 &amp;&amp; !(m_it % g_inputdeck.get&lt; tag::interval, tag::diag &gt;()))</span>
+<span class="lineNum">    1032 </span>                :<span class="lineNoCov">          0 :     m_linsysmerger.ckLocalBranch()-&gt;charediag( thisIndex, m_gid, m_u );</span>
+<span class="lineNum">    1033 </span>                :            :   else
+<span class="lineNum">    1034 </span>                :<span class="lineNoCov">          0 :     contribute(</span>
+<span class="lineNum">    1035 </span>                :<span class="lineNoCov">          0 :       CkCallback(CkReductionTarget(Transporter,diagcomplete), m_transporter));</span>
+<span class="lineNum">    1036 </span>                :<span class="lineNoCov">          0 : }</span>
+<a name="1037"><span class="lineNum">    1037 </span>                :            : </a>
+<span class="lineNum">    1038 </span>                :            : void
+<span class="lineNum">    1039 </span>                :<span class="lineNoCov">          0 : Carrier::apply()</span>
+<span class="lineNum">    1040 </span>                :            : // *****************************************************************************
+<span class="lineNum">    1041 </span>                :            : // Apply limited antidiffusive element contributions
+<span class="lineNum">    1042 </span>                :            : //! \author J. Bakosi
+<span class="lineNum">    1043 </span>                :            : // *****************************************************************************
+<span class="lineNum">    1044 </span>                :            : {
+<span class="lineNum">    1045 </span>                :            :   // Combine own and communicated contributions to A
+<span class="lineNum">    1046 </span>                :<span class="lineNoCov">          0 :   for (const auto&amp; b : m_bid) {</span>
+<span class="lineNum">    1047 </span>                :<span class="lineNoCov">          0 :     auto lid = tk::cref_find( m_lid, b.first );</span>
+<span class="lineNum">    1048 </span>                :<span class="lineNoCov">          0 :     const auto&amp; bac = m_ac[ b.second ];</span>
+<span class="lineNum">    1049 </span>                :<span class="lineNoCov">          0 :     for (ncomp_t c=0; c&lt;m_a.nprop(); ++c) m_a(lid,c,0) += bac[c];</span>
+<span class="lineNum">    1050 </span>                :            :   }
+<span class="lineNum">    1051 </span>                :            : 
+<span class="lineNum">    1052 </span>                :            :   // Apply limited antidiffusive element contributions to low order solution
+<span class="lineNum">    1053 </span>                :<span class="lineNoCov">          0 :   if (m_stage &lt; 1)</span>
+<span class="lineNum">    1054 </span>                :<span class="lineNoCov">          0 :     m_uf = m_ulf + m_a;   // update half-time solution with limited solution</span>
+<span class="lineNum">    1055 </span>                :            :   else
+<span class="lineNum">    1056 </span>                :<span class="lineNoCov">          0 :     m_u = m_ul + m_a;     // update solution with new (limited) solution</span>
+<span class="lineNum">    1057 </span>                :            : 
+<span class="lineNum">    1058 </span>                :            :   // Advance particles
+<span class="lineNum">    1059 </span>                :<span class="lineNoCov">          0 :   m_tracker.track( m_transporter, thisProxy, m_coord, m_inpoel, m_msum,</span>
+<span class="lineNum">    1060 </span>                :<span class="lineNoCov">          0 :                    thisIndex, this, m_stage, m_dt );</span>
+<span class="lineNum">    1061 </span>                :            : 
+<span class="lineNum">    1062 </span>                :            :   // Compute diagnostics, e.g., residuals
+<span class="lineNum">    1063 </span>                :<span class="lineNoCov">          0 :   diagnostics();</span>
+<span class="lineNum">    1064 </span>                :            : 
+<span class="lineNum">    1065 </span>                :            : //     // TEST FEATURE: Manually migrate this chare by using migrateMe to see if
+<span class="lineNum">    1066 </span>                :            : //     // all relevant state variables are being PUPed correctly.
+<span class="lineNum">    1067 </span>                :            : //     //CkPrintf(&quot;I'm carrier chare %d on PE %d\n&quot;,thisIndex,CkMyPe());
+<span class="lineNum">    1068 </span>                :            : //     if (thisIndex == 2 &amp;&amp; CkMyPe() == 2) {
+<span class="lineNum">    1069 </span>                :            : //       /*int j;
+<span class="lineNum">    1070 </span>                :            : //       for (int i; i &lt; 50*std::pow(thisIndex,4); i++) {
+<span class="lineNum">    1071 </span>                :            : //         j = i*thisIndex;
+<span class="lineNum">    1072 </span>                :            : //       }*/
+<span class="lineNum">    1073 </span>                :            : //       CkPrintf(&quot;I'm carrier chare %d on PE %d\n&quot;,thisIndex,CkMyPe());
+<span class="lineNum">    1074 </span>                :            : //       migrateMe(1);
+<span class="lineNum">    1075 </span>                :            : //    }
+<span class="lineNum">    1076 </span>                :            : //    if (thisIndex == 2 &amp;&amp; CkMyPe() == 1) {
+<span class="lineNum">    1077 </span>                :            : //      CkPrintf(&quot;I'm carrier chare %d on PE %d\n&quot;,thisIndex,CkMyPe());
+<span class="lineNum">    1078 </span>                :            : //      migrateMe(2);
+<span class="lineNum">    1079 </span>                :            : //    }
+<span class="lineNum">    1080 </span>                :<span class="lineNoCov">          0 : }</span>
+<span class="lineNum">    1081 </span>                :            : 
+<span class="lineNum">    1082 </span>                :            : #include &quot;NoWarning/carrier.def.h&quot;
 </pre>
       </td>
     </tr>

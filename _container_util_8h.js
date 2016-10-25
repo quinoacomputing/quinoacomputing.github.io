@@ -6,5 +6,6 @@ var _container_util_8h =
     [ "keyEqual", "_container_util_8h.html#a6b203c3a87657090a5c477896ce94bf9", null ],
     [ "operator+=", "_container_util_8h.html#ad47c993218d9384828fcce2794850ac7", null ],
     [ "ref_find", "_container_util_8h.html#ab2aac5f0fd93d5119cfe50a39f3515c9", null ],
+    [ "sumsize", "_container_util_8h.html#a0f319a47a6a5b983e161aa5f4d8f7b6c", null ],
     [ "unique", "_container_util_8h.html#a87af1b002bc711716bd170a714bda211", null ]
 ];

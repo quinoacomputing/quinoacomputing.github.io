@@ -21,6 +21,7 @@ var classinciter_1_1_carrier =
     [ "comalw", "classinciter_1_1_carrier.html#ae132cc301a42d5d51cadb981e2fc3812", null ],
     [ "comlim", "classinciter_1_1_carrier.html#af25ac8b730ec3f4058380075541a9878", null ],
     [ "comvol", "classinciter_1_1_carrier.html#a3854a14c50324260c7f1c0ffa374d58a", null ],
+    [ "diagnostics", "classinciter_1_1_carrier.html#a2c0802662514b0ba8a92af07d4dc985f", null ],
     [ "doWriteParticles", "classinciter_1_1_carrier.html#ae99aff431b9f88961899e3d51abcfe98", null ],
     [ "dt", "classinciter_1_1_carrier.html#a76077f405382ea5eb11450ab2ba00318", null ],
     [ "evel", "classinciter_1_1_carrier.html#a111eb881deddfa9310d6585db6614193", null ],

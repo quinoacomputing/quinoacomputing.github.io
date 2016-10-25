@@ -8,7 +8,6 @@ var searchData=
   ['readallnodes',['readAllNodes',['../classtk_1_1_exodus_i_i_mesh_reader.html#a389585fcfb4c26684cde59beaa450049',1,'tk::ExodusIIMeshReader']]],
   ['readcoords',['readCoords',['../classinciter_1_1_carrier.html#abebe0658fbdddfd5e082eaeed93ef0f4',1,'inciter::Carrier']]],
   ['readelemblockids',['readElemBlockIDs',['../classtk_1_1_exodus_i_i_mesh_reader.html#afe8144814a95bbb94d87e04091042918',1,'tk::ExodusIIMeshReader']]],
-  ['readelement',['readElement',['../classtk_1_1_exodus_i_i_mesh_reader.html#a47b791069c1d701e2646a1fc9e552be9',1,'tk::ExodusIIMeshReader']]],
   ['readelements',['readElements',['../classtk_1_1_exodus_i_i_mesh_reader.html#a58514f277e72899f14211e2b2f371e87',1,'tk::ExodusIIMeshReader::readElements()'],['../classtk_1_1_gmsh_mesh_reader.html#a24fd1ee0283a5710734d38e83f228fb6',1,'tk::GmshMeshReader::readElements()'],['../classtk_1_1_hyper_mesh_reader.html#a720da94f0c37bd351d2bfd0124e9801d',1,'tk::HyperMeshReader::readElements()'],['../classtk_1_1_netgen_mesh_reader.html#a2c4c2d1e40ae008051f34000e2da6fe0',1,'tk::NetgenMeshReader::readElements()']]],
   ['reader',['Reader',['../classtk_1_1_reader.html#af2a6355ef670fce49215b899121de084',1,'tk::Reader::Reader()'],['../namespacetut.html#aa3d137634e947af278a47517d75b6167',1,'tut::Reader()']]],
   ['readfacets',['readFacets',['../classtk_1_1_s_t_l_txt_mesh_reader.html#a3060fd73ce3cea32efbf88b400f70881',1,'tk::STLTxtMeshReader']]],
