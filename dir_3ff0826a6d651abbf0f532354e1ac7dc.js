@@ -176,7 +176,7 @@ var dir_3ff0826a6d651abbf0f532354e1ac7dc =
       [ "physics", "structtag_1_1physics.html", null ],
       [ "diffusivity", "structtag_1_1diffusivity.html", null ],
       [ "u0", "structtag_1_1u0.html", null ],
-      [ "bc_dirichlet", "structtag_1_1bc__dirichlet.html", null ],
+      [ "bcdir", "structtag_1_1bcdir.html", null ],
       [ "material", "structtag_1_1material.html", null ],
       [ "id", "structtag_1_1id.html", null ],
       [ "cv", "structtag_1_1cv.html", null ],

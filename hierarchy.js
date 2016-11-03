@@ -78,7 +78,7 @@ var hierarchy =
     ] ],
     [ "rngtest::Battery", "classrngtest_1_1_battery.html", null ],
     [ "tag::battery", "structtag_1_1battery.html", null ],
-    [ "tag::bc_dirichlet", "structtag_1_1bc__dirichlet.html", null ],
+    [ "tag::bcdir", "structtag_1_1bcdir.html", null ],
     [ "walker::Beta< Init, Coefficients >", "classwalker_1_1_beta.html", null ],
     [ "tag::beta", "structtag_1_1beta.html", null ],
     [ "tag::beta_method", "structtag_1_1beta__method.html", null ],
@@ -615,10 +615,7 @@ var hierarchy =
     [ "tag::Permutation", "structtag_1_1_permutation.html", null ],
     [ "tag::physics", "structtag_1_1physics.html", null ],
     [ "tag::plot", "structtag_1_1plot.html", null ],
-    [ "inciter::Poisson< Physics, Problem >", "classinciter_1_1_poisson.html", null ],
     [ "tag::poisson", "structtag_1_1poisson.html", null ],
-    [ "inciter::PoissonPhysicsLaplace", "classinciter_1_1_poisson_physics_laplace.html", null ],
-    [ "inciter::PoissonProblemDirNeu", "classinciter_1_1_poisson_problem_dir_neu.html", null ],
     [ "inciter::InciterPrint::Policies", "classinciter_1_1_inciter_print_1_1_policies.html", null ],
     [ "walker::WalkerPrint::Policies", "classwalker_1_1_walker_print_1_1_policies.html", null ],
     [ "tag::position", "structtag_1_1position.html", null ],
@@ -945,7 +942,7 @@ var hierarchy =
     [ "tut::Has_common::yesExpectChoices", "structtut_1_1_has__common_1_1yes_expect_choices.html", null ],
     [ "tut::Has_common::yesExpectDescription", "structtut_1_1_has__common_1_1yes_expect_description.html", null ],
     [ "tut::Has_common::yesExpectType", "structtut_1_1_has__common_1_1yes_expect_type.html", null ],
-    [ "tut::CharmUtil_common::yesProxy", "structtut_1_1_charm_util__common_1_1yes_proxy.html", null ],
     [ "tut::Has_common::yesProxy", "structtut_1_1_has__common_1_1yes_proxy.html", null ],
+    [ "tut::CharmUtil_common::yesProxy", "structtut_1_1_charm_util__common_1_1yes_proxy.html", null ],
     [ "tk::ctr::ncomponents< Tags >::zero", "structtk_1_1ctr_1_1ncomponents_1_1zero.html", null ]
 ];

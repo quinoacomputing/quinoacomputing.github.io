@@ -6,7 +6,6 @@ var classinciter_1_1_p_d_e_stack =
     [ "factory", "classinciter_1_1_p_d_e_stack.html#aec4e36837376313503d4649af2230382", null ],
     [ "info", "classinciter_1_1_p_d_e_stack.html#a30244a3664fe45f36a20da6abec53719", null ],
     [ "infoCompFlow", "classinciter_1_1_p_d_e_stack.html#a65c5366c99b918827baa55f335f6fe04", null ],
-    [ "infoPoisson", "classinciter_1_1_p_d_e_stack.html#a78c7c837056daf8eae0afa7a6599891e", null ],
     [ "infoTransport", "classinciter_1_1_p_d_e_stack.html#a7d05b22060794a59081e2b30e52c7335", null ],
     [ "ntypes", "classinciter_1_1_p_d_e_stack.html#ae8a38d434385fcea51e0f68c1aae140d", null ],
     [ "parameters", "classinciter_1_1_p_d_e_stack.html#a97632a246ee4bc6897593ab5ab2c8ff4", null ],

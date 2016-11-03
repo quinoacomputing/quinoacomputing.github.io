@@ -1,5 +1,6 @@
 var NAVTREEINDEX3 =
 {
+"_p_d_e_stack_8h.html":[23,0,1,11,5],
 "_p_d_e_stack_8h.html#a339c830baaaaedfdb14638f2a1dc2df8":[23,0,1,11,5,3],
 "_p_d_e_stack_8h.html#aea3a7db282f81ccfbd44372f184e8dd3":[23,0,1,11,5,2],
 "_p_d_e_stack_8h_source.html":[23,0,1,11,5],
@@ -71,14 +72,6 @@ var NAVTREEINDEX3 =
 "_physics_8h.html#a05792aa346ef778c24407416c5560d14ac74d97ca4e839b2b3d2f80e8054a3c3e":[23,0,1,1,1,2,1,2,3],
 "_physics_8h.html#acd6ffd776312ad42443cc0f356d30418":[23,0,1,1,1,2,1,3],
 "_physics_8h_source.html":[23,0,1,1,1,2,1],
-"_poisson_8h.html":[23,0,1,11,6],
-"_poisson_8h_source.html":[23,0,1,11,6],
-"_poisson_physics_8h.html":[23,0,1,11,7],
-"_poisson_physics_8h.html#a22ba69c4f3db46077803ca1b0f481af4":[23,0,1,11,7,1],
-"_poisson_physics_8h_source.html":[23,0,1,11,7],
-"_poisson_problem_8h.html":[23,0,1,11,8],
-"_poisson_problem_8h.html#a445d977d0fe59a84b79308b87431eb37":[23,0,1,11,8,1],
-"_poisson_problem_8h_source.html":[23,0,1,11,8],
 "_position_8h.html":[23,0,1,1,0,1,7],
 "_position_8h.html#a22f34c33ae840bfa307906e1d8a01c7a":[23,0,1,1,0,1,7,2],
 "_position_8h.html#a69bcef65fff9ede6d57e81762d685613":[23,0,1,1,0,1,7,1],
@@ -249,5 +242,12 @@ var NAVTREEINDEX3 =
 "_stat_ctr_8h.html#ad8f59bc1d2814d96060f4ba652bc08bfab4b19adea7f060a86547d9b276d8be1c":[23,0,1,1,18,5,0],
 "_stat_ctr_8h.html#add1137a52c9f2f15c0394cf74f3089e9":[23,0,1,1,18,3],
 "_stat_ctr_8h_source.html":[23,0,1,1,18],
-"_stat_test_8h.html":[23,0,1,13,7]
+"_stat_test_8h.html":[23,0,1,13,7],
+"_stat_test_8h_source.html":[23,0,1,13,7],
+"_statistics_8_c.html":[23,0,1,14,3],
+"_statistics_8_c_source.html":[23,0,1,14,3],
+"_statistics_8h.html":[23,0,1,14,4],
+"_statistics_8h_source.html":[23,0,1,14,4],
+"_str_conv_util_8h.html":[23,0,1,0,30],
+"_str_conv_util_8h.html#a7adfa2dfb8b3a38f60ac0edf5666b6c4":[23,0,1,0,30,1]
 };

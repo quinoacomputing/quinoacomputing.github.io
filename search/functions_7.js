@@ -12,6 +12,7 @@ var searchData=
   ['headerrngtest',['headerRNGTest',['../classtk_1_1_print.html#a6e58f3cfe28f04abec8c61d63090ad8d',1,'tk::Print']]],
   ['headerunittest',['headerUnitTest',['../classtk_1_1_print.html#afbcefbde86063d8b83cd38a0c8848a93',1,'tk::Print']]],
   ['headerwalker',['headerWalker',['../classtk_1_1_print.html#afa1d441908864a3ae05153cc7764fa8d',1,'tk::Print']]],
+  ['heat_5fdiffusion_5fdt',['heat_diffusion_dt',['../classinciter_1_1_comp_flow_physics_navier_stokes.html#aa51e7991f7d8af166558131ea1204a56',1,'inciter::CompFlowPhysicsNavierStokes::heat_diffusion_dt()'],['../classinciter_1_1_comp_flow_physics_euler.html#a4efa5c2b93fe65748210ed817814372f',1,'inciter::CompFlowPhysicsEuler::heat_diffusion_dt()']]],
   ['help',['help',['../classtk_1_1_print.html#a2066a0ea3ff7fbaaf7a842e9ebb20460',1,'tk::Print']]],
   ['helpkw',['helpkw',['../classtk_1_1_print.html#ac7a3719971eb96d6674269492f5c1baa',1,'tk::Print']]],
   ['hms',['hms',['../classtk_1_1_timer.html#af7cc14f6a5a745b27b9653847c6dc5b3',1,'tk::Timer::hms()'],['../namespacetk.html#ad6260a3dcdcb9a995a4886e566b665c4',1,'tk::hms()']]],

@@ -12,11 +12,6 @@ var dir_e8ebd5d5792131bdfd6b2c2daa81088c =
     ] ],
     [ "PDEStack.C", "_p_d_e_stack_8_c.html", null ],
     [ "PDEStack.h", "_p_d_e_stack_8h.html", "_p_d_e_stack_8h" ],
-    [ "Poisson.h", "_poisson_8h.html", [
-      [ "Poisson", "classinciter_1_1_poisson.html", "classinciter_1_1_poisson" ]
-    ] ],
-    [ "PoissonPhysics.h", "_poisson_physics_8h.html", "_poisson_physics_8h" ],
-    [ "PoissonProblem.h", "_poisson_problem_8h.html", "_poisson_problem_8h" ],
     [ "Transport.h", "_transport_8h.html", [
       [ "Transport", "classinciter_1_1_transport.html", "classinciter_1_1_transport" ]
     ] ],
