@@ -8,6 +8,7 @@ var namespacetag =
     [ "b", "structtag_1_1b.html", null ],
     [ "battery", "structtag_1_1battery.html", null ],
     [ "bcdir", "structtag_1_1bcdir.html", null ],
+    [ "benchmark", "structtag_1_1benchmark.html", null ],
     [ "beta", "structtag_1_1beta.html", null ],
     [ "beta_method", "structtag_1_1beta__method.html", null ],
     [ "betapdf", "structtag_1_1betapdf.html", null ],

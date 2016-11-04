@@ -99,8 +99,8 @@ var searchData=
   ['numberfractionbetacoeffpolicy_2eh',['NumberFractionBetaCoeffPolicy.h',['../_number_fraction_beta_coeff_policy_8h.html',1,'']]],
   ['numberfractionbetaparameters',['NumberFractionBetaParameters',['../namespacewalker_1_1ctr.html#a541006cd46370010ea0e475f2a74c5e2',1,'walker::ctr']]],
   ['numfracbeta',['NUMFRACBETA',['../namespacewalker_1_1ctr.html#a4592cfa71c6e4c64a71c5691df56c79fac8cdd753d2245d0c53d9a08d99521c23',1,'walker::ctr']]],
-  ['numfracbeta',['numfracbeta',['../structtag_1_1numfracbeta.html',1,'tag']]],
   ['numfracbeta',['numfracbeta',['../structwalker_1_1deck_1_1numfracbeta.html',1,'walker::deck']]],
+  ['numfracbeta',['numfracbeta',['../structtag_1_1numfracbeta.html',1,'tag']]],
   ['numfracbeta_2edox',['NumFracBeta.dox',['../_num_frac_beta_8dox.html',1,'']]],
   ['numpdf',['numPDF',['../namespacetk_1_1ctr.html#abbf4a0edb859f31c0643dd812042558a',1,'tk::ctr']]],
   ['nunk',['nunk',['../classtk_1_1_data.html#a0e41c2b27307c6338b5a3dab688f8e80',1,'tk::Data']]]

@@ -1,7 +1,5 @@
 var NAVTREEINDEX13 =
 {
-"classwalker_1_1_mix_number_fraction_beta.html#a9c351bb0679ad9b2a30a003572f60a0f":[22,0,9,31,5],
-"classwalker_1_1_mix_number_fraction_beta.html#aa582792e8be202e18bdda7de3c0e5987":[22,0,9,31,7],
 "classwalker_1_1_mix_number_fraction_beta.html#ab9e5b89a20b7fb10d40aa90b31b81c38":[22,0,9,31,2],
 "classwalker_1_1_mix_number_fraction_beta.html#ac5f5387f6a53bd3ff0035cee4d8f254f":[22,0,9,31,18],
 "classwalker_1_1_mix_number_fraction_beta.html#ad074be9fbf9c76328385f2f5a7becbd5":[22,0,9,31,15],
@@ -207,8 +205,8 @@ var NAVTREEINDEX13 =
 "for__each_8h_source.html":[23,0,1,9,14],
 "format_8h.html":[23,0,1,9,15],
 "format_8h_source.html":[23,0,1,9,15],
-"functions.html":[22,3,0,0],
 "functions.html":[22,3,0],
+"functions.html":[22,3,0,0],
 "functions_0x7e.html":[22,3,0,25],
 "functions_b.html":[22,3,0,1],
 "functions_c.html":[22,3,0,2],
@@ -249,5 +247,7 @@ var NAVTREEINDEX13 =
 "functions_k.html":[22,3,0,9],
 "functions_l.html":[22,3,0,10],
 "functions_m.html":[22,3,0,11],
-"functions_n.html":[22,3,0,12]
+"functions_n.html":[22,3,0,12],
+"functions_o.html":[22,3,0,13],
+"functions_p.html":[22,3,0,14]
 };

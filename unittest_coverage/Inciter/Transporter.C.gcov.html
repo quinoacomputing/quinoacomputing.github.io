@@ -24,16 +24,16 @@
           </tr>
           <tr>
             <td class="headerItem">Commit:</td>
-            <td class="headerValue">Quinoa_v0.1-349-g4b5a96f</td>
+            <td class="headerValue">Quinoa_v0.1-351-g3a7330e</td>
             <td></td>
             <td class="headerItem">Lines:</td>
             <td class="headerCovTableEntry">0</td>
-            <td class="headerCovTableEntry">189</td>
+            <td class="headerCovTableEntry">191</td>
             <td class="headerCovTableEntryLo">0.0 %</td>
           </tr>
           <tr>
             <td class="headerItem">Date:</td>
-            <td class="headerValue">2016-11-02 21:05:56</td>
+            <td class="headerValue">2016-11-03 21:05:51</td>
             <td></td>
             <td class="headerItem">Functions:</td>
             <td class="headerCovTableEntry">0</td>
@@ -76,7 +76,7 @@
 <span class="lineNum">       2 </span>                :            : /*!
 <span class="lineNum">       3 </span>                :            :   \file      src/Inciter/Transporter.C
 <span class="lineNum">       4 </span>                :            :   \author    J. Bakosi
-<span class="lineNum">       5 </span>                :            :   \date      Tue 01 Nov 2016 03:29:04 PM MDT
+<span class="lineNum">       5 </span>                :            :   \date      Thu 03 Nov 2016 12:29:26 PM MDT
 <span class="lineNum">       6 </span>                :            :   \copyright 2012-2015, Jozsef Bakosi, 2016, Los Alamos National Security, LLC.
 <span class="lineNum">       7 </span>                :            :   \brief     Transporter drives the time integration of transport equations
 <span class="lineNum">       8 </span>                :            :   \details   Transporter drives the time integration of transport equations.
@@ -239,360 +239,362 @@
 <span class="lineNum">     165 </span>                :<span class="lineNoCov">          0 :       er( g_inputdeck.get&lt; tag::cmd, tag::io, tag::input &gt;() );</span>
 <span class="lineNum">     166 </span>                :            : 
 <span class="lineNum">     167 </span>                :            :     // Create linear system merger chare group
-<span class="lineNum">     168 </span>                :            :     m_linsysmerger = LinSysMergerProxy::ckNew( thisProxy, m_carrier,
-<span class="lineNum">     169 </span>                :<span class="lineNoCov">          0 :                        er.readSidesets(),</span>
-<span class="lineNum">     170 </span>                :<span class="lineNoCov">          0 :                        g_inputdeck.get&lt; tag::component &gt;().nprop() );</span>
-<span class="lineNum">     171 </span>                :            : 
-<span class="lineNum">     172 </span>                :            :     // Create particle writer Charm++ chare group. Note that by passing an empty
-<span class="lineNum">     173 </span>                :            :     // filename argument to the constructor, we tell the writer not to open a
-<span class="lineNum">     174 </span>                :            :     // file and not to perform I/O. To enable particle I/O, put in the filename
-<span class="lineNum">     175 </span>                :            :     // argument, commented out, instead of the empty string, and change the
-<span class="lineNum">     176 </span>                :            :     // number of particles (the constructor argument to m_particles) in the
-<span class="lineNum">     177 </span>                :            :     // initializer list of Carrier::Carrier(). This is basically a punt to
-<span class="lineNum">     178 </span>                :            :     // enable skipping H5Part I/O. Particles are a highly experimental feature
-<span class="lineNum">     179 </span>                :            :     // at this point.
-<span class="lineNum">     180 </span>                :<span class="lineNoCov">          0 :     m_particlewriter = ParticleWriterProxy::ckNew( thisProxy, &quot;&quot; );</span>
-<span class="lineNum">     181 </span>                :            :                          //g_inputdeck.get&lt; tag::cmd, tag::io, tag::part &gt;() );
-<span class="lineNum">     182 </span>                :            : 
-<span class="lineNum">     183 </span>                :            :     // Create mesh partitioner Charm++ chare group and start partitioning mesh
-<span class="lineNum">     184 </span>                :<span class="lineNoCov">          0 :     m_print.diagstart( &quot;Reading mesh graph ...&quot; );</span>
-<span class="lineNum">     185 </span>                :            :     m_partitioner = PartitionerProxy::ckNew( thisProxy, m_carrier,
-<span class="lineNum">     186 </span>                :            :                                              m_linsysmerger,
-<span class="lineNum">     187 </span>                :<span class="lineNoCov">          0 :                                              m_particlewriter );</span>
-<span class="lineNum">     188 </span>                :            : 
-<span class="lineNum">     189 </span>                :<span class="lineNoCov">          0 :   } else finish();      // stop if no time stepping requested</span>
-<span class="lineNum">     190 </span>                :<span class="lineNoCov">          0 : }</span>
-<a name="191"><span class="lineNum">     191 </span>                :            : </a>
-<span class="lineNum">     192 </span>                :            : void
-<span class="lineNum">     193 </span>                :<span class="lineNoCov">          0 : Transporter::load( uint64_t nelem )</span>
-<span class="lineNum">     194 </span>                :            : // *****************************************************************************
-<span class="lineNum">     195 </span>                :            : // Reduction target indicating that all Partitioner chare groups have finished
-<span class="lineNum">     196 </span>                :            : // reading their part of the contiguously-numbered computational mesh graph and
-<span class="lineNum">     197 </span>                :            : // we are ready to compute the computational load
-<span class="lineNum">     198 </span>                :            : //! \param[in] nelem Total number of mesh elements (summed across all PEs)
-<span class="lineNum">     199 </span>                :            : //! \author J. Bakosi
-<span class="lineNum">     200 </span>                :            : // *****************************************************************************
-<span class="lineNum">     201 </span>                :            : {
-<span class="lineNum">     202 </span>                :<span class="lineNoCov">          0 :   m_print.diagend( &quot;done&quot; );    // &quot;Reading mesh graph ...&quot;</span>
-<span class="lineNum">     203 </span>                :            : 
-<span class="lineNum">     204 </span>                :            :   // Compute load distribution given total work (nelem) and user-specified
-<span class="lineNum">     205 </span>                :            :   // virtualization
-<span class="lineNum">     206 </span>                :            :   uint64_t chunksize, remainder;
-<span class="lineNum">     207 </span>                :<span class="lineNoCov">          0 :   m_nchare = static_cast&lt;int&gt;(</span>
-<span class="lineNum">     208 </span>                :<span class="lineNoCov">          0 :                tk::linearLoadDistributor(</span>
-<span class="lineNum">     209 </span>                :<span class="lineNoCov">          0 :                  g_inputdeck.get&lt; tag::cmd, tag::virtualization &gt;(),</span>
-<span class="lineNum">     210 </span>                :<span class="lineNoCov">          0 :                  nelem, CkNumPes(), chunksize, remainder ) );</span>
-<span class="lineNum">     211 </span>                :            : 
-<span class="lineNum">     212 </span>                :            :   // Print out mesh graph stats
-<span class="lineNum">     213 </span>                :<span class="lineNoCov">          0 :   m_print.section( &quot;Input mesh graph statistics&quot; );</span>
-<span class="lineNum">     214 </span>                :<span class="lineNoCov">          0 :   m_print.item( &quot;Number of tetrahedra&quot;, nelem );</span>
-<span class="lineNum">     215 </span>                :<span class="lineNoCov">          0 :   tk::ExodusIIMeshReader er(g_inputdeck.get&lt; tag::cmd, tag::io, tag::input &gt;());</span>
-<span class="lineNum">     216 </span>                :<span class="lineNoCov">          0 :   m_npoin = er.readHeader();</span>
-<span class="lineNum">     217 </span>                :<span class="lineNoCov">          0 :   m_print.item( &quot;Number of nodes&quot;, m_npoin );</span>
-<span class="lineNum">     218 </span>                :            : 
-<span class="lineNum">     219 </span>                :            :   // Print out info on load distribution
-<span class="lineNum">     220 </span>                :<span class="lineNoCov">          0 :   m_print.section( &quot;Load distribution&quot; );</span>
-<span class="lineNum">     221 </span>                :<span class="lineNoCov">          0 :   m_print.item( &quot;Virtualization [0.0...1.0]&quot;,</span>
-<span class="lineNum">     222 </span>                :<span class="lineNoCov">          0 :                 g_inputdeck.get&lt; tag::cmd, tag::virtualization &gt;() );</span>
-<span class="lineNum">     223 </span>                :<span class="lineNoCov">          0 :   m_print.item( &quot;Load (number of tetrahedra)&quot;, nelem );</span>
-<span class="lineNum">     224 </span>                :<span class="lineNoCov">          0 :   m_print.item( &quot;Number of processing elements&quot;, CkNumPes() );</span>
-<span class="lineNum">     225 </span>                :<span class="lineNoCov">          0 :   m_print.item( &quot;Number of work units&quot;,</span>
-<span class="lineNum">     226 </span>                :<span class="lineNoCov">          0 :                 std::to_string( m_nchare ) + &quot; (&quot; +</span>
-<span class="lineNum">     227 </span>                :<span class="lineNoCov">          0 :                 std::to_string( m_nchare-1 ) + &quot;*&quot; +</span>
-<span class="lineNum">     228 </span>                :<span class="lineNoCov">          0 :                 std::to_string( chunksize ) + &quot;+&quot; +</span>
-<span class="lineNum">     229 </span>                :<span class="lineNoCov">          0 :                 std::to_string( chunksize+remainder ) + &quot;)&quot; );</span>
-<span class="lineNum">     230 </span>                :            : 
-<span class="lineNum">     231 </span>                :            :   // Print out mesh partitioning configuration
-<span class="lineNum">     232 </span>                :<span class="lineNoCov">          0 :   m_print.section( &quot;Initial mesh partitioning&quot; );</span>
-<span class="lineNum">     233 </span>                :            :   m_print.Item&lt; tk::ctr::PartitioningAlgorithm,
-<span class="lineNum">     234 </span>                :<span class="lineNoCov">          0 :                 tag::selected, tag::partitioner &gt;();</span>
-<span class="lineNum">     235 </span>                :<span class="lineNoCov">          0 :   m_print.endsubsection();</span>
-<span class="lineNum">     236 </span>                :<span class="lineNoCov">          0 : }</span>
-<a name="237"><span class="lineNum">     237 </span>                :            : </a>
-<span class="lineNum">     238 </span>                :            : void
-<span class="lineNum">     239 </span>                :<span class="lineNoCov">          0 : Transporter::partition()</span>
-<span class="lineNum">     240 </span>                :            : // *****************************************************************************
-<span class="lineNum">     241 </span>                :            : // Reduction target indicating that all Partitioner chare groups have finished
-<span class="lineNum">     242 </span>                :            : // setting up the necessary data structures for partitioning the computational
-<span class="lineNum">     243 </span>                :            : // mesh and we are ready for partitioning
-<span class="lineNum">     244 </span>                :            : //! \author J. Bakosi
-<span class="lineNum">     245 </span>                :            : // *****************************************************************************
-<span class="lineNum">     246 </span>                :            : {
-<span class="lineNum">     247 </span>                :<span class="lineNoCov">          0 :   m_print.diagstart( &quot;Partitioning and distributing mesh ...&quot; );</span>
-<span class="lineNum">     248 </span>                :<span class="lineNoCov">          0 :   m_partitioner.partition( m_nchare );</span>
-<span class="lineNum">     249 </span>                :<span class="lineNoCov">          0 : }</span>
-<a name="250"><span class="lineNum">     250 </span>                :            : </a>
-<span class="lineNum">     251 </span>                :            : void
-<span class="lineNum">     252 </span>                :<span class="lineNoCov">          0 : Transporter::aveCost( tk::real c )</span>
-<span class="lineNum">     253 </span>                :            : // *****************************************************************************
-<span class="lineNum">     254 </span>                :            : // Reduction target estimating the average communication cost of merging the
-<span class="lineNum">     255 </span>                :            : // linear system
-<span class="lineNum">     256 </span>                :            : //! \param[in] c Communication cost summed across all PEs. The cost associated
-<span class="lineNum">     257 </span>                :            : //!   to a PE is a real number between 0 and 1, defined as the number of mesh
-<span class="lineNum">     258 </span>                :            : //!   points the PE does not own, i.e., needs to send to some other PE, divided
-<span class="lineNum">     259 </span>                :            : //!   by the total number of points the PE contributes to. The lower the better.
-<span class="lineNum">     260 </span>                :            : //! \details The average, computed here, gives an idea of the average
-<span class="lineNum">     261 </span>                :            : //!   communication cost across all PEs, while the standard deviation, computed
-<span class="lineNum">     262 </span>                :            : //!   by stdCost(), gives an idea on the expected load imbalance.
-<span class="lineNum">     263 </span>                :            : //! \author J. Bakosi
-<span class="lineNum">     264 </span>                :            : // *****************************************************************************
-<span class="lineNum">     265 </span>                :            : {
-<span class="lineNum">     266 </span>                :<span class="lineNoCov">          0 :   m_print.diagend( &quot;done&quot; );    // &quot;Partitioning and distributing mesh ...&quot;</span>
-<span class="lineNum">     267 </span>                :<span class="lineNoCov">          0 :   m_print.diag( &quot;Creating workers&quot; );</span>
-<span class="lineNum">     268 </span>                :            :   // Compute average and broadcast it back to all partitioners (PEs)
-<span class="lineNum">     269 </span>                :<span class="lineNoCov">          0 :   m_avcost = c / CkNumPes();</span>
-<span class="lineNum">     270 </span>                :<span class="lineNoCov">          0 :   m_partitioner.stdCost( m_avcost );</span>
-<span class="lineNum">     271 </span>                :<span class="lineNoCov">          0 : }</span>
-<a name="272"><span class="lineNum">     272 </span>                :            : </a>
-<span class="lineNum">     273 </span>                :            : void
-<span class="lineNum">     274 </span>                :<span class="lineNoCov">          0 : Transporter::stdCost( tk::real c )</span>
-<span class="lineNum">     275 </span>                :            : // *****************************************************************************
-<span class="lineNum">     276 </span>                :            : // Reduction target estimating the standard deviation of the communication cost
-<span class="lineNum">     277 </span>                :            : // of merging the linear system
-<span class="lineNum">     278 </span>                :            : //! \param[in] c Sum of the squares of the communication cost minus the average,
-<span class="lineNum">     279 </span>                :            : //!   summed across all PEs. The cost associated to a PE is a real number
-<span class="lineNum">     280 </span>                :            : //!   between 0 and 1, defined as the number of mesh points the PE does not own,
-<span class="lineNum">     281 </span>                :            : //!   i.e., needs to send to some other PE, divided by the total number of
-<span class="lineNum">     282 </span>                :            : //!   points the PE contributes to. The lower the better.
-<span class="lineNum">     283 </span>                :            : //! \details The average, computed by avCost(), gives an idea of the average
-<span class="lineNum">     284 </span>                :            : //!   communication cost across all PEs, while the standard deviation, computed
-<span class="lineNum">     285 </span>                :            : //!   here, gives an idea on the expected load imbalance.
-<span class="lineNum">     286 </span>                :            : //! \author J. Bakosi
-<span class="lineNum">     287 </span>                :            : // *****************************************************************************
-<span class="lineNum">     288 </span>                :            : {
-<span class="lineNum">     289 </span>                :<span class="lineNoCov">          0 :   m_print.diag( &quot;Linear system communication cost: avg = &quot; +</span>
-<span class="lineNum">     290 </span>                :<span class="lineNoCov">          0 :                 std::to_string( m_avcost ) + &quot;, std = &quot; +</span>
-<span class="lineNum">     291 </span>                :<span class="lineNoCov">          0 :                 std::to_string( std::sqrt( c/CkNumPes() ) ) );</span>
-<span class="lineNum">     292 </span>                :<span class="lineNoCov">          0 : }</span>
-<a name="293"><span class="lineNum">     293 </span>                :            : </a>
-<span class="lineNum">     294 </span>                :            : void
-<span class="lineNum">     295 </span>                :<span class="lineNoCov">          0 : Transporter::setup()</span>
-<span class="lineNum">     296 </span>                :            : // *****************************************************************************
-<span class="lineNum">     297 </span>                :            : // Reduction target indicating that all chare groups are ready for workers
-<span class="lineNum">     298 </span>                :            : //! \author J. Bakosi
-<span class="lineNum">     299 </span>                :            : // *****************************************************************************
-<span class="lineNum">     300 </span>                :            : {
-<span class="lineNum">     301 </span>                :<span class="lineNoCov">          0 :   m_print.diag( &quot;Reading mesh node coordinates, computing nodal volumes&quot; );</span>
-<span class="lineNum">     302 </span>                :<span class="lineNoCov">          0 :   m_carrier.vol();</span>
-<span class="lineNum">     303 </span>                :<span class="lineNoCov">          0 : }</span>
-<a name="304"><span class="lineNum">     304 </span>                :            : </a>
-<span class="lineNum">     305 </span>                :            : void
-<span class="lineNum">     306 </span>                :<span class="lineNoCov">          0 : Transporter::volcomplete()</span>
-<span class="lineNum">     307 </span>                :            : // *****************************************************************************
-<span class="lineNum">     308 </span>                :            : 
-<span class="lineNum">     309 </span>                :            : //! \author J. Bakosi
-<span class="lineNum">     310 </span>                :            : // *****************************************************************************
-<span class="lineNum">     311 </span>                :            : {
-<span class="lineNum">     312 </span>                :<span class="lineNoCov">          0 :   m_print.diagstart( &quot;Computing row IDs, querying BCs, outputing mesh ...&quot; );</span>
-<span class="lineNum">     313 </span>                :<span class="lineNoCov">          0 :   m_carrier.setup();</span>
-<span class="lineNum">     314 </span>                :<span class="lineNoCov">          0 : }</span>
-<a name="315"><span class="lineNum">     315 </span>                :            : </a>
-<span class="lineNum">     316 </span>                :            : void
-<span class="lineNum">     317 </span>                :<span class="lineNoCov">          0 : Transporter::rowcomplete()</span>
-<span class="lineNum">     318 </span>                :            : // *****************************************************************************
-<span class="lineNum">     319 </span>                :            : // Reduction target indicating that all linear system merger branches have done
-<span class="lineNum">     320 </span>                :            : // their part of storing and exporting global row ids
-<span class="lineNum">     321 </span>                :            : //! \details This function is a Charm++ reduction target that is called when
-<span class="lineNum">     322 </span>                :            : //!   all linear system merger branches have done their part of storing and
-<span class="lineNum">     323 </span>                :            : //!   exporting global row ids. This is a necessary precondition to be done
-<span class="lineNum">     324 </span>                :            : //!   before we can issue a broadcast to all Carrier chares to continue with
-<span class="lineNum">     325 </span>                :            : //!   the initialization step. The other, also necessary but by itself not
-<span class="lineNum">     326 </span>                :            : //!   sufficient, one is parcomplete(). Together rowcomplete() and
-<span class="lineNum">     327 </span>                :            : //!   parcomplete() are sufficient for continuing with the initialization. See
-<span class="lineNum">     328 </span>                :            : //!   also transporter.ci.
-<span class="lineNum">     329 </span>                :            : //! \author J. Bakosi
-<span class="lineNum">     330 </span>                :            : // *****************************************************************************
-<span class="lineNum">     331 </span>                :            : {
-<span class="lineNum">     332 </span>                :<span class="lineNoCov">          0 :   m_print.diagend( &quot;done&quot; );   // &quot;Setting up workers ...&quot;</span>
-<span class="lineNum">     333 </span>                :<span class="lineNoCov">          0 :   m_print.diagstart( &quot;Setting and outputing ICs, computing initial dt, &quot;</span>
-<span class="lineNum">     334 </span>                :<span class="lineNoCov">          0 :                      &quot;computing LHS ...&quot; );</span>
-<span class="lineNum">     335 </span>                :<span class="lineNoCov">          0 :   m_linsysmerger.rowsreceived();</span>
-<span class="lineNum">     336 </span>                :<span class="lineNoCov">          0 :   m_carrier.init();</span>
-<span class="lineNum">     337 </span>                :<span class="lineNoCov">          0 : }</span>
-<a name="338"><span class="lineNum">     338 </span>                :            : </a>
-<span class="lineNum">     339 </span>                :            : void
-<span class="lineNum">     340 </span>                :<span class="lineNoCov">          0 : Transporter::initcomplete()</span>
-<span class="lineNum">     341 </span>                :            : // *****************************************************************************
-<span class="lineNum">     342 </span>                :            : //  Reduction target indicating that all Carrier chares have finished their
-<span class="lineNum">     343 </span>                :            : //  initialization step and have already continued with start time stepping
-<span class="lineNum">     344 </span>                :            : //! \author J. Bakosi
-<span class="lineNum">     345 </span>                :            : // *****************************************************************************
-<span class="lineNum">     346 </span>                :            : {
-<span class="lineNum">     347 </span>                :<span class="lineNoCov">          0 :   m_print.diagend( &quot;done&quot; );   // &quot;Initializing workers ...&quot;</span>
-<span class="lineNum">     348 </span>                :<span class="lineNoCov">          0 :   m_print.diag( &quot;Starting time stepping ...&quot; );</span>
-<span class="lineNum">     349 </span>                :<span class="lineNoCov">          0 :   header();   // print out time integration header</span>
-<span class="lineNum">     350 </span>                :<span class="lineNoCov">          0 : }</span>
-<a name="351"><span class="lineNum">     351 </span>                :            : </a>
-<span class="lineNum">     352 </span>                :            : void
-<span class="lineNum">     353 </span>                :<span class="lineNoCov">          0 : Transporter::diagnostics( tk::real* d, std::size_t n )</span>
-<span class="lineNum">     354 </span>                :            : // *****************************************************************************
-<span class="lineNum">     355 </span>                :            : // Reduction target optionally collecting diagnostics, e.g., residuals, from all
-<span class="lineNum">     356 </span>                :            : // Carrier chares
-<span class="lineNum">     357 </span>                :            : //! \param[in] d Diagnostics (sums) collected over all chares
-<span class="lineNum">     358 </span>                :            : //! \param[in] n Number of diagnostics in array d
-<span class="lineNum">     359 </span>                :            : //! \author J. Bakosi
-<span class="lineNum">     360 </span>                :            : // *****************************************************************************
-<span class="lineNum">     361 </span>                :            : {
-<span class="lineNum">     362 </span>                :            :   #ifdef NDEBUG
-<span class="lineNum">     363 </span>                :            :   IGNORE(n);
-<span class="lineNum">     364 </span>                :            :   #endif
-<span class="lineNum">     365 </span>                :            : 
-<span class="lineNum">     366 </span>                :<span class="lineNoCov">          0 :   Assert( n == m_diag.size(),</span>
-<span class="lineNum">     367 </span>                :<span class="lineNoCov">          0 :           &quot;Number of diagnostics contributed not equal to expected&quot; );</span>
-<span class="lineNum">     368 </span>                :            : 
-<span class="lineNum">     369 </span>                :            :   // Finish computing diagnostics, i.e., divide sums by the number of samples
-<span class="lineNum">     370 </span>                :<span class="lineNoCov">          0 :   for (std::size_t i=0; i&lt;m_diag.size(); ++i) m_diag[i] = d[i] / m_npoin;</span>
-<span class="lineNum">     371 </span>                :            : 
-<span class="lineNum">     372 </span>                :<span class="lineNoCov">          0 :   diag_complete();</span>
-<span class="lineNum">     373 </span>                :<span class="lineNoCov">          0 : }</span>
-<a name="374"><span class="lineNum">     374 </span>                :            : </a>
-<span class="lineNum">     375 </span>                :            : void
-<span class="lineNum">     376 </span>                :<span class="lineNoCov">          0 : Transporter::dt( tk::real* d, std::size_t n )</span>
-<span class="lineNum">     377 </span>                :            : // *****************************************************************************
-<span class="lineNum">     378 </span>                :            : // Reduction target yielding a single minimum time step size across all workers
-<span class="lineNum">     379 </span>                :            : //! \param[in] d Minimum time step size collected over all chares
-<span class="lineNum">     380 </span>                :            : //! \param[in] n Size of data behind d
-<span class="lineNum">     381 </span>                :            : //! \author  J. Bakosi
-<span class="lineNum">     382 </span>                :            : // *****************************************************************************
-<span class="lineNum">     383 </span>                :            : {
-<span class="lineNum">     384 </span>                :            :   #ifdef NDEBUG
-<span class="lineNum">     385 </span>                :            :   IGNORE(n);
-<span class="lineNum">     386 </span>                :            :   #endif
-<span class="lineNum">     387 </span>                :            : 
-<span class="lineNum">     388 </span>                :<span class="lineNoCov">          0 :   Assert( n == 1, &quot;Size of min(dt) must be 1&quot; );</span>
+<span class="lineNum">     168 </span>                :<span class="lineNoCov">          0 :     m_print.diag( &quot;Creating linear system mergers&quot; );</span>
+<span class="lineNum">     169 </span>                :            :     m_linsysmerger = LinSysMergerProxy::ckNew( thisProxy, m_carrier,
+<span class="lineNum">     170 </span>                :<span class="lineNoCov">          0 :                        er.readSidesets(),</span>
+<span class="lineNum">     171 </span>                :<span class="lineNoCov">          0 :                        g_inputdeck.get&lt; tag::component &gt;().nprop() );</span>
+<span class="lineNum">     172 </span>                :            : 
+<span class="lineNum">     173 </span>                :            :     // Create particle writer Charm++ chare group. Note that by passing an empty
+<span class="lineNum">     174 </span>                :            :     // filename argument to the constructor, we tell the writer not to open a
+<span class="lineNum">     175 </span>                :            :     // file and not to perform I/O. To enable particle I/O, put in the filename
+<span class="lineNum">     176 </span>                :            :     // argument, commented out, instead of the empty string, and change the
+<span class="lineNum">     177 </span>                :            :     // number of particles (the constructor argument to m_particles) in the
+<span class="lineNum">     178 </span>                :            :     // initializer list of Carrier::Carrier(). This is basically a punt to
+<span class="lineNum">     179 </span>                :            :     // enable skipping H5Part I/O. Particles are a highly experimental feature
+<span class="lineNum">     180 </span>                :            :     // at this point.
+<span class="lineNum">     181 </span>                :<span class="lineNoCov">          0 :     m_print.diag( &quot;Creating particle writers&quot; );</span>
+<span class="lineNum">     182 </span>                :<span class="lineNoCov">          0 :     m_particlewriter = ParticleWriterProxy::ckNew( thisProxy, &quot;&quot; );</span>
+<span class="lineNum">     183 </span>                :            :                          //g_inputdeck.get&lt; tag::cmd, tag::io, tag::part &gt;() );
+<span class="lineNum">     184 </span>                :            : 
+<span class="lineNum">     185 </span>                :            :     // Create mesh partitioner Charm++ chare group and start partitioning mesh
+<span class="lineNum">     186 </span>                :<span class="lineNoCov">          0 :     m_print.diagstart( &quot;Creating partitioners and reading mesh graph ...&quot; );</span>
+<span class="lineNum">     187 </span>                :            :     m_partitioner = PartitionerProxy::ckNew( thisProxy, m_carrier,
+<span class="lineNum">     188 </span>                :            :                                              m_linsysmerger,
+<span class="lineNum">     189 </span>                :<span class="lineNoCov">          0 :                                              m_particlewriter );</span>
+<span class="lineNum">     190 </span>                :            : 
+<span class="lineNum">     191 </span>                :<span class="lineNoCov">          0 :   } else finish();      // stop if no time stepping requested</span>
+<span class="lineNum">     192 </span>                :<span class="lineNoCov">          0 : }</span>
+<a name="193"><span class="lineNum">     193 </span>                :            : </a>
+<span class="lineNum">     194 </span>                :            : void
+<span class="lineNum">     195 </span>                :<span class="lineNoCov">          0 : Transporter::load( uint64_t nelem )</span>
+<span class="lineNum">     196 </span>                :            : // *****************************************************************************
+<span class="lineNum">     197 </span>                :            : // Reduction target indicating that all Partitioner chare groups have finished
+<span class="lineNum">     198 </span>                :            : // reading their part of the contiguously-numbered computational mesh graph and
+<span class="lineNum">     199 </span>                :            : // we are ready to compute the computational load
+<span class="lineNum">     200 </span>                :            : //! \param[in] nelem Total number of mesh elements (summed across all PEs)
+<span class="lineNum">     201 </span>                :            : //! \author J. Bakosi
+<span class="lineNum">     202 </span>                :            : // *****************************************************************************
+<span class="lineNum">     203 </span>                :            : {
+<span class="lineNum">     204 </span>                :<span class="lineNoCov">          0 :   m_print.diagend( &quot;done&quot; );    // &quot;Reading mesh graph ...&quot;</span>
+<span class="lineNum">     205 </span>                :            : 
+<span class="lineNum">     206 </span>                :            :   // Compute load distribution given total work (nelem) and user-specified
+<span class="lineNum">     207 </span>                :            :   // virtualization
+<span class="lineNum">     208 </span>                :            :   uint64_t chunksize, remainder;
+<span class="lineNum">     209 </span>                :<span class="lineNoCov">          0 :   m_nchare = static_cast&lt;int&gt;(</span>
+<span class="lineNum">     210 </span>                :<span class="lineNoCov">          0 :                tk::linearLoadDistributor(</span>
+<span class="lineNum">     211 </span>                :<span class="lineNoCov">          0 :                  g_inputdeck.get&lt; tag::cmd, tag::virtualization &gt;(),</span>
+<span class="lineNum">     212 </span>                :<span class="lineNoCov">          0 :                  nelem, CkNumPes(), chunksize, remainder ) );</span>
+<span class="lineNum">     213 </span>                :            : 
+<span class="lineNum">     214 </span>                :            :   // Print out mesh graph stats
+<span class="lineNum">     215 </span>                :<span class="lineNoCov">          0 :   m_print.section( &quot;Input mesh graph statistics&quot; );</span>
+<span class="lineNum">     216 </span>                :<span class="lineNoCov">          0 :   m_print.item( &quot;Number of tetrahedra&quot;, nelem );</span>
+<span class="lineNum">     217 </span>                :<span class="lineNoCov">          0 :   tk::ExodusIIMeshReader er(g_inputdeck.get&lt; tag::cmd, tag::io, tag::input &gt;());</span>
+<span class="lineNum">     218 </span>                :<span class="lineNoCov">          0 :   m_npoin = er.readHeader();</span>
+<span class="lineNum">     219 </span>                :<span class="lineNoCov">          0 :   m_print.item( &quot;Number of nodes&quot;, m_npoin );</span>
+<span class="lineNum">     220 </span>                :            : 
+<span class="lineNum">     221 </span>                :            :   // Print out info on load distribution
+<span class="lineNum">     222 </span>                :<span class="lineNoCov">          0 :   m_print.section( &quot;Load distribution&quot; );</span>
+<span class="lineNum">     223 </span>                :<span class="lineNoCov">          0 :   m_print.item( &quot;Virtualization [0.0...1.0]&quot;,</span>
+<span class="lineNum">     224 </span>                :<span class="lineNoCov">          0 :                 g_inputdeck.get&lt; tag::cmd, tag::virtualization &gt;() );</span>
+<span class="lineNum">     225 </span>                :<span class="lineNoCov">          0 :   m_print.item( &quot;Load (number of tetrahedra)&quot;, nelem );</span>
+<span class="lineNum">     226 </span>                :<span class="lineNoCov">          0 :   m_print.item( &quot;Number of processing elements&quot;, CkNumPes() );</span>
+<span class="lineNum">     227 </span>                :<span class="lineNoCov">          0 :   m_print.item( &quot;Number of work units&quot;,</span>
+<span class="lineNum">     228 </span>                :<span class="lineNoCov">          0 :                 std::to_string( m_nchare ) + &quot; (&quot; +</span>
+<span class="lineNum">     229 </span>                :<span class="lineNoCov">          0 :                 std::to_string( m_nchare-1 ) + &quot;*&quot; +</span>
+<span class="lineNum">     230 </span>                :<span class="lineNoCov">          0 :                 std::to_string( chunksize ) + &quot;+&quot; +</span>
+<span class="lineNum">     231 </span>                :<span class="lineNoCov">          0 :                 std::to_string( chunksize+remainder ) + &quot;)&quot; );</span>
+<span class="lineNum">     232 </span>                :            : 
+<span class="lineNum">     233 </span>                :            :   // Print out mesh partitioning configuration
+<span class="lineNum">     234 </span>                :<span class="lineNoCov">          0 :   m_print.section( &quot;Initial mesh partitioning&quot; );</span>
+<span class="lineNum">     235 </span>                :            :   m_print.Item&lt; tk::ctr::PartitioningAlgorithm,
+<span class="lineNum">     236 </span>                :<span class="lineNoCov">          0 :                 tag::selected, tag::partitioner &gt;();</span>
+<span class="lineNum">     237 </span>                :<span class="lineNoCov">          0 :   m_print.endsubsection();</span>
+<span class="lineNum">     238 </span>                :<span class="lineNoCov">          0 : }</span>
+<a name="239"><span class="lineNum">     239 </span>                :            : </a>
+<span class="lineNum">     240 </span>                :            : void
+<span class="lineNum">     241 </span>                :<span class="lineNoCov">          0 : Transporter::partition()</span>
+<span class="lineNum">     242 </span>                :            : // *****************************************************************************
+<span class="lineNum">     243 </span>                :            : // Reduction target indicating that all Partitioner chare groups have finished
+<span class="lineNum">     244 </span>                :            : // setting up the necessary data structures for partitioning the computational
+<span class="lineNum">     245 </span>                :            : // mesh and we are ready for partitioning
+<span class="lineNum">     246 </span>                :            : //! \author J. Bakosi
+<span class="lineNum">     247 </span>                :            : // *****************************************************************************
+<span class="lineNum">     248 </span>                :            : {
+<span class="lineNum">     249 </span>                :<span class="lineNoCov">          0 :   m_print.diagstart( &quot;Partitioning and distributing mesh ...&quot; );</span>
+<span class="lineNum">     250 </span>                :<span class="lineNoCov">          0 :   m_partitioner.partition( m_nchare );</span>
+<span class="lineNum">     251 </span>                :<span class="lineNoCov">          0 : }</span>
+<a name="252"><span class="lineNum">     252 </span>                :            : </a>
+<span class="lineNum">     253 </span>                :            : void
+<span class="lineNum">     254 </span>                :<span class="lineNoCov">          0 : Transporter::aveCost( tk::real c )</span>
+<span class="lineNum">     255 </span>                :            : // *****************************************************************************
+<span class="lineNum">     256 </span>                :            : // Reduction target estimating the average communication cost of merging the
+<span class="lineNum">     257 </span>                :            : // linear system
+<span class="lineNum">     258 </span>                :            : //! \param[in] c Communication cost summed across all PEs. The cost associated
+<span class="lineNum">     259 </span>                :            : //!   to a PE is a real number between 0 and 1, defined as the number of mesh
+<span class="lineNum">     260 </span>                :            : //!   points the PE does not own, i.e., needs to send to some other PE, divided
+<span class="lineNum">     261 </span>                :            : //!   by the total number of points the PE contributes to. The lower the better.
+<span class="lineNum">     262 </span>                :            : //! \details The average, computed here, gives an idea of the average
+<span class="lineNum">     263 </span>                :            : //!   communication cost across all PEs, while the standard deviation, computed
+<span class="lineNum">     264 </span>                :            : //!   by stdCost(), gives an idea on the expected load imbalance.
+<span class="lineNum">     265 </span>                :            : //! \author J. Bakosi
+<span class="lineNum">     266 </span>                :            : // *****************************************************************************
+<span class="lineNum">     267 </span>                :            : {
+<span class="lineNum">     268 </span>                :<span class="lineNoCov">          0 :   m_print.diagend( &quot;done&quot; );    // &quot;Partitioning and distributing mesh ...&quot;</span>
+<span class="lineNum">     269 </span>                :<span class="lineNoCov">          0 :   m_print.diag( &quot;Creating workers&quot; );</span>
+<span class="lineNum">     270 </span>                :            :   // Compute average and broadcast it back to all partitioners (PEs)
+<span class="lineNum">     271 </span>                :<span class="lineNoCov">          0 :   m_avcost = c / CkNumPes();</span>
+<span class="lineNum">     272 </span>                :<span class="lineNoCov">          0 :   m_partitioner.stdCost( m_avcost );</span>
+<span class="lineNum">     273 </span>                :<span class="lineNoCov">          0 : }</span>
+<a name="274"><span class="lineNum">     274 </span>                :            : </a>
+<span class="lineNum">     275 </span>                :            : void
+<span class="lineNum">     276 </span>                :<span class="lineNoCov">          0 : Transporter::stdCost( tk::real c )</span>
+<span class="lineNum">     277 </span>                :            : // *****************************************************************************
+<span class="lineNum">     278 </span>                :            : // Reduction target estimating the standard deviation of the communication cost
+<span class="lineNum">     279 </span>                :            : // of merging the linear system
+<span class="lineNum">     280 </span>                :            : //! \param[in] c Sum of the squares of the communication cost minus the average,
+<span class="lineNum">     281 </span>                :            : //!   summed across all PEs. The cost associated to a PE is a real number
+<span class="lineNum">     282 </span>                :            : //!   between 0 and 1, defined as the number of mesh points the PE does not own,
+<span class="lineNum">     283 </span>                :            : //!   i.e., needs to send to some other PE, divided by the total number of
+<span class="lineNum">     284 </span>                :            : //!   points the PE contributes to. The lower the better.
+<span class="lineNum">     285 </span>                :            : //! \details The average, computed by avCost(), gives an idea of the average
+<span class="lineNum">     286 </span>                :            : //!   communication cost across all PEs, while the standard deviation, computed
+<span class="lineNum">     287 </span>                :            : //!   here, gives an idea on the expected load imbalance.
+<span class="lineNum">     288 </span>                :            : //! \author J. Bakosi
+<span class="lineNum">     289 </span>                :            : // *****************************************************************************
+<span class="lineNum">     290 </span>                :            : {
+<span class="lineNum">     291 </span>                :<span class="lineNoCov">          0 :   m_print.diag( &quot;Linear system communication cost: avg = &quot; +</span>
+<span class="lineNum">     292 </span>                :<span class="lineNoCov">          0 :                 std::to_string( m_avcost ) + &quot;, std = &quot; +</span>
+<span class="lineNum">     293 </span>                :<span class="lineNoCov">          0 :                 std::to_string( std::sqrt( c/CkNumPes() ) ) );</span>
+<span class="lineNum">     294 </span>                :<span class="lineNoCov">          0 : }</span>
+<a name="295"><span class="lineNum">     295 </span>                :            : </a>
+<span class="lineNum">     296 </span>                :            : void
+<span class="lineNum">     297 </span>                :<span class="lineNoCov">          0 : Transporter::setup()</span>
+<span class="lineNum">     298 </span>                :            : // *****************************************************************************
+<span class="lineNum">     299 </span>                :            : // Reduction target indicating that all chare groups are ready for workers
+<span class="lineNum">     300 </span>                :            : //! \author J. Bakosi
+<span class="lineNum">     301 </span>                :            : // *****************************************************************************
+<span class="lineNum">     302 </span>                :            : {
+<span class="lineNum">     303 </span>                :<span class="lineNoCov">          0 :   m_print.diag( &quot;Reading mesh node coordinates, computing nodal volumes&quot; );</span>
+<span class="lineNum">     304 </span>                :<span class="lineNoCov">          0 :   m_carrier.vol();</span>
+<span class="lineNum">     305 </span>                :<span class="lineNoCov">          0 : }</span>
+<a name="306"><span class="lineNum">     306 </span>                :            : </a>
+<span class="lineNum">     307 </span>                :            : void
+<span class="lineNum">     308 </span>                :<span class="lineNoCov">          0 : Transporter::volcomplete()</span>
+<span class="lineNum">     309 </span>                :            : // *****************************************************************************
+<span class="lineNum">     310 </span>                :            : 
+<span class="lineNum">     311 </span>                :            : //! \author J. Bakosi
+<span class="lineNum">     312 </span>                :            : // *****************************************************************************
+<span class="lineNum">     313 </span>                :            : {
+<span class="lineNum">     314 </span>                :<span class="lineNoCov">          0 :   m_print.diagstart( &quot;Computing row IDs, querying BCs, outputing mesh ...&quot; );</span>
+<span class="lineNum">     315 </span>                :<span class="lineNoCov">          0 :   m_carrier.setup();</span>
+<span class="lineNum">     316 </span>                :<span class="lineNoCov">          0 : }</span>
+<a name="317"><span class="lineNum">     317 </span>                :            : </a>
+<span class="lineNum">     318 </span>                :            : void
+<span class="lineNum">     319 </span>                :<span class="lineNoCov">          0 : Transporter::rowcomplete()</span>
+<span class="lineNum">     320 </span>                :            : // *****************************************************************************
+<span class="lineNum">     321 </span>                :            : // Reduction target indicating that all linear system merger branches have done
+<span class="lineNum">     322 </span>                :            : // their part of storing and exporting global row ids
+<span class="lineNum">     323 </span>                :            : //! \details This function is a Charm++ reduction target that is called when
+<span class="lineNum">     324 </span>                :            : //!   all linear system merger branches have done their part of storing and
+<span class="lineNum">     325 </span>                :            : //!   exporting global row ids. This is a necessary precondition to be done
+<span class="lineNum">     326 </span>                :            : //!   before we can issue a broadcast to all Carrier chares to continue with
+<span class="lineNum">     327 </span>                :            : //!   the initialization step. The other, also necessary but by itself not
+<span class="lineNum">     328 </span>                :            : //!   sufficient, one is parcomplete(). Together rowcomplete() and
+<span class="lineNum">     329 </span>                :            : //!   parcomplete() are sufficient for continuing with the initialization. See
+<span class="lineNum">     330 </span>                :            : //!   also transporter.ci.
+<span class="lineNum">     331 </span>                :            : //! \author J. Bakosi
+<span class="lineNum">     332 </span>                :            : // *****************************************************************************
+<span class="lineNum">     333 </span>                :            : {
+<span class="lineNum">     334 </span>                :<span class="lineNoCov">          0 :   m_print.diagend( &quot;done&quot; );   // &quot;Setting up workers ...&quot;</span>
+<span class="lineNum">     335 </span>                :<span class="lineNoCov">          0 :   m_print.diagstart( &quot;Setting and outputing ICs, computing initial dt, &quot;</span>
+<span class="lineNum">     336 </span>                :<span class="lineNoCov">          0 :                      &quot;computing LHS ...&quot; );</span>
+<span class="lineNum">     337 </span>                :<span class="lineNoCov">          0 :   m_linsysmerger.rowsreceived();</span>
+<span class="lineNum">     338 </span>                :<span class="lineNoCov">          0 :   m_carrier.init();</span>
+<span class="lineNum">     339 </span>                :<span class="lineNoCov">          0 : }</span>
+<a name="340"><span class="lineNum">     340 </span>                :            : </a>
+<span class="lineNum">     341 </span>                :            : void
+<span class="lineNum">     342 </span>                :<span class="lineNoCov">          0 : Transporter::initcomplete()</span>
+<span class="lineNum">     343 </span>                :            : // *****************************************************************************
+<span class="lineNum">     344 </span>                :            : //  Reduction target indicating that all Carrier chares have finished their
+<span class="lineNum">     345 </span>                :            : //  initialization step and have already continued with start time stepping
+<span class="lineNum">     346 </span>                :            : //! \author J. Bakosi
+<span class="lineNum">     347 </span>                :            : // *****************************************************************************
+<span class="lineNum">     348 </span>                :            : {
+<span class="lineNum">     349 </span>                :<span class="lineNoCov">          0 :   m_print.diagend( &quot;done&quot; );   // &quot;Initializing workers ...&quot;</span>
+<span class="lineNum">     350 </span>                :<span class="lineNoCov">          0 :   m_print.diag( &quot;Starting time stepping ...&quot; );</span>
+<span class="lineNum">     351 </span>                :<span class="lineNoCov">          0 :   header();   // print out time integration header</span>
+<span class="lineNum">     352 </span>                :<span class="lineNoCov">          0 : }</span>
+<a name="353"><span class="lineNum">     353 </span>                :            : </a>
+<span class="lineNum">     354 </span>                :            : void
+<span class="lineNum">     355 </span>                :<span class="lineNoCov">          0 : Transporter::diagnostics( tk::real* d, std::size_t n )</span>
+<span class="lineNum">     356 </span>                :            : // *****************************************************************************
+<span class="lineNum">     357 </span>                :            : // Reduction target optionally collecting diagnostics, e.g., residuals, from all
+<span class="lineNum">     358 </span>                :            : // Carrier chares
+<span class="lineNum">     359 </span>                :            : //! \param[in] d Diagnostics (sums) collected over all chares
+<span class="lineNum">     360 </span>                :            : //! \param[in] n Number of diagnostics in array d
+<span class="lineNum">     361 </span>                :            : //! \author J. Bakosi
+<span class="lineNum">     362 </span>                :            : // *****************************************************************************
+<span class="lineNum">     363 </span>                :            : {
+<span class="lineNum">     364 </span>                :            :   #ifdef NDEBUG
+<span class="lineNum">     365 </span>                :            :   IGNORE(n);
+<span class="lineNum">     366 </span>                :            :   #endif
+<span class="lineNum">     367 </span>                :            : 
+<span class="lineNum">     368 </span>                :<span class="lineNoCov">          0 :   Assert( n == m_diag.size(),</span>
+<span class="lineNum">     369 </span>                :<span class="lineNoCov">          0 :           &quot;Number of diagnostics contributed not equal to expected&quot; );</span>
+<span class="lineNum">     370 </span>                :            : 
+<span class="lineNum">     371 </span>                :            :   // Finish computing diagnostics, i.e., divide sums by the number of samples
+<span class="lineNum">     372 </span>                :<span class="lineNoCov">          0 :   for (std::size_t i=0; i&lt;m_diag.size(); ++i) m_diag[i] = d[i] / m_npoin;</span>
+<span class="lineNum">     373 </span>                :            : 
+<span class="lineNum">     374 </span>                :<span class="lineNoCov">          0 :   diag_complete();</span>
+<span class="lineNum">     375 </span>                :<span class="lineNoCov">          0 : }</span>
+<a name="376"><span class="lineNum">     376 </span>                :            : </a>
+<span class="lineNum">     377 </span>                :            : void
+<span class="lineNum">     378 </span>                :<span class="lineNoCov">          0 : Transporter::dt( tk::real* d, std::size_t n )</span>
+<span class="lineNum">     379 </span>                :            : // *****************************************************************************
+<span class="lineNum">     380 </span>                :            : // Reduction target yielding a single minimum time step size across all workers
+<span class="lineNum">     381 </span>                :            : //! \param[in] d Minimum time step size collected over all chares
+<span class="lineNum">     382 </span>                :            : //! \param[in] n Size of data behind d
+<span class="lineNum">     383 </span>                :            : //! \author  J. Bakosi
+<span class="lineNum">     384 </span>                :            : // *****************************************************************************
+<span class="lineNum">     385 </span>                :            : {
+<span class="lineNum">     386 </span>                :            :   #ifdef NDEBUG
+<span class="lineNum">     387 </span>                :            :   IGNORE(n);
+<span class="lineNum">     388 </span>                :            :   #endif
 <span class="lineNum">     389 </span>                :            : 
-<span class="lineNum">     390 </span>                :<span class="lineNoCov">          0 :   if (m_stage == 1 || m_it == 0) {</span>
-<span class="lineNum">     391 </span>                :            :     // Use newly computed time step size
-<span class="lineNum">     392 </span>                :<span class="lineNoCov">          0 :     m_dt = *d;</span>
-<span class="lineNum">     393 </span>                :            :     // Truncate the size of last time step
-<span class="lineNum">     394 </span>                :<span class="lineNoCov">          0 :     const auto term = g_inputdeck.get&lt; tag::discr, tag::term &gt;();</span>
-<span class="lineNum">     395 </span>                :<span class="lineNoCov">          0 :     if (m_t+m_dt &gt; term) m_dt = term - m_t;;</span>
-<span class="lineNum">     396 </span>                :            :   }
-<span class="lineNum">     397 </span>                :            : 
-<span class="lineNum">     398 </span>                :            :   // Advance to next time step stage
-<span class="lineNum">     399 </span>                :<span class="lineNoCov">          0 :   m_carrier.advance( m_stage, m_dt, m_it, m_t );</span>
-<span class="lineNum">     400 </span>                :<span class="lineNoCov">          0 : }</span>
-<a name="401"><span class="lineNum">     401 </span>                :            : </a>
-<span class="lineNum">     402 </span>                :            : void
-<span class="lineNum">     403 </span>                :<span class="lineNoCov">          0 : Transporter::finish()</span>
-<span class="lineNum">     404 </span>                :            : // *****************************************************************************
-<span class="lineNum">     405 </span>                :            : // Normal finish of time stepping
-<span class="lineNum">     406 </span>                :            : //! \author J. Bakosi
-<span class="lineNum">     407 </span>                :            : // *****************************************************************************
-<span class="lineNum">     408 </span>                :            : {
-<span class="lineNum">     409 </span>                :            :   // Print out reason for stopping
-<span class="lineNum">     410 </span>                :<span class="lineNoCov">          0 :   const auto nstep = g_inputdeck.get&lt; tag::discr, tag::nstep &gt;();</span>
-<span class="lineNum">     411 </span>                :<span class="lineNoCov">          0 :   m_print.endsubsection();</span>
-<span class="lineNum">     412 </span>                :<span class="lineNoCov">          0 :   if (m_it &gt;= nstep)</span>
-<span class="lineNum">     413 </span>                :<span class="lineNoCov">          0 :      m_print.note( &quot;Normal finish, maximum number of iterations reached: &quot; +</span>
-<span class="lineNum">     414 </span>                :<span class="lineNoCov">          0 :                    std::to_string( nstep ) );</span>
-<span class="lineNum">     415 </span>                :            :    else
-<span class="lineNum">     416 </span>                :<span class="lineNoCov">          0 :      m_print.note( &quot;Normal finish, maximum time reached: &quot; +</span>
-<span class="lineNum">     417 </span>                :<span class="lineNoCov">          0 :                    std::to_string( g_inputdeck.get&lt;tag::discr,tag::term&gt;() ) );</span>
-<span class="lineNum">     418 </span>                :            : 
-<span class="lineNum">     419 </span>                :            :   // Quit
-<span class="lineNum">     420 </span>                :<span class="lineNoCov">          0 :   mainProxy.finalize();</span>
-<span class="lineNum">     421 </span>                :<span class="lineNoCov">          0 : }</span>
-<a name="422"><span class="lineNum">     422 </span>                :            : </a>
-<span class="lineNum">     423 </span>                :            : void
-<span class="lineNum">     424 </span>                :<span class="lineNoCov">          0 : Transporter::header()</span>
-<span class="lineNum">     425 </span>                :            : // *****************************************************************************
-<span class="lineNum">     426 </span>                :            : // Print out time integration header
-<span class="lineNum">     427 </span>                :            : //! \author J. Bakosi
-<span class="lineNum">     428 </span>                :            : // *****************************************************************************
-<span class="lineNum">     429 </span>                :            : {
-<span class="lineNum">     430 </span>                :<span class="lineNoCov">          0 :   m_print.inthead( &quot;Time integration&quot;, &quot;Unstructured-mesh PDE solver testbed&quot;,</span>
-<span class="lineNum">     431 </span>                :            :     &quot;Legend: it - iteration count\n&quot;
-<span class="lineNum">     432 </span>                :            :     &quot;         t - time\n&quot;
-<span class="lineNum">     433 </span>                :            :     &quot;        dt - time step size\n&quot;
-<span class="lineNum">     434 </span>                :            :     &quot;       ETE - estimated time elapsed (h:m:s)\n&quot;
-<span class="lineNum">     435 </span>                :            :     &quot;       ETA - estimated time for accomplishment (h:m:s)\n&quot;
-<span class="lineNum">     436 </span>                :            :     &quot;       out - output-saved flags (F: field, D: diagnostics)\n&quot;,
-<span class="lineNum">     437 </span>                :            :     &quot;\n      it             t            dt        ETE        ETA   out\n&quot;
-<span class="lineNum">     438 </span>                :<span class="lineNoCov">          0 :       &quot; ---------------------------------------------------------------\n&quot; );</span>
-<span class="lineNum">     439 </span>                :<span class="lineNoCov">          0 :   m_timer[ TimerTag::TIMESTEP ];</span>
-<span class="lineNum">     440 </span>                :<span class="lineNoCov">          0 : }</span>
-<a name="441"><span class="lineNum">     441 </span>                :            : </a>
-<span class="lineNum">     442 </span>                :            : void
-<span class="lineNum">     443 </span>                :<span class="lineNoCov">          0 : Transporter::evaluateTime()</span>
-<span class="lineNum">     444 </span>                :            : // *****************************************************************************
-<span class="lineNum">     445 </span>                :            : // Evaluate time step and output one-liner report
-<span class="lineNum">     446 </span>                :            : //! \author J. Bakosi
-<span class="lineNum">     447 </span>                :            : // *****************************************************************************
-<span class="lineNum">     448 </span>                :            : {
-<span class="lineNum">     449 </span>                :<span class="lineNoCov">          0 :   const auto term = g_inputdeck.get&lt; tag::discr, tag::term &gt;();</span>
-<span class="lineNum">     450 </span>                :<span class="lineNoCov">          0 :   const auto eps = std::numeric_limits&lt; tk::real &gt;::epsilon();</span>
-<span class="lineNum">     451 </span>                :<span class="lineNoCov">          0 :   const auto nstep = g_inputdeck.get&lt; tag::discr, tag::nstep &gt;();</span>
-<span class="lineNum">     452 </span>                :            : 
-<span class="lineNum">     453 </span>                :<span class="lineNoCov">          0 :   if (m_stage &lt; 1) {    // if at half-stage, simply go to next one</span>
+<span class="lineNum">     390 </span>                :<span class="lineNoCov">          0 :   Assert( n == 1, &quot;Size of min(dt) must be 1&quot; );</span>
+<span class="lineNum">     391 </span>                :            : 
+<span class="lineNum">     392 </span>                :<span class="lineNoCov">          0 :   if (m_stage == 1 || m_it == 0) {</span>
+<span class="lineNum">     393 </span>                :            :     // Use newly computed time step size
+<span class="lineNum">     394 </span>                :<span class="lineNoCov">          0 :     m_dt = *d;</span>
+<span class="lineNum">     395 </span>                :            :     // Truncate the size of last time step
+<span class="lineNum">     396 </span>                :<span class="lineNoCov">          0 :     const auto term = g_inputdeck.get&lt; tag::discr, tag::term &gt;();</span>
+<span class="lineNum">     397 </span>                :<span class="lineNoCov">          0 :     if (m_t+m_dt &gt; term) m_dt = term - m_t;;</span>
+<span class="lineNum">     398 </span>                :            :   }
+<span class="lineNum">     399 </span>                :            : 
+<span class="lineNum">     400 </span>                :            :   // Advance to next time step stage
+<span class="lineNum">     401 </span>                :<span class="lineNoCov">          0 :   m_carrier.advance( m_stage, m_dt, m_it, m_t );</span>
+<span class="lineNum">     402 </span>                :<span class="lineNoCov">          0 : }</span>
+<a name="403"><span class="lineNum">     403 </span>                :            : </a>
+<span class="lineNum">     404 </span>                :            : void
+<span class="lineNum">     405 </span>                :<span class="lineNoCov">          0 : Transporter::finish()</span>
+<span class="lineNum">     406 </span>                :            : // *****************************************************************************
+<span class="lineNum">     407 </span>                :            : // Normal finish of time stepping
+<span class="lineNum">     408 </span>                :            : //! \author J. Bakosi
+<span class="lineNum">     409 </span>                :            : // *****************************************************************************
+<span class="lineNum">     410 </span>                :            : {
+<span class="lineNum">     411 </span>                :            :   // Print out reason for stopping
+<span class="lineNum">     412 </span>                :<span class="lineNoCov">          0 :   const auto nstep = g_inputdeck.get&lt; tag::discr, tag::nstep &gt;();</span>
+<span class="lineNum">     413 </span>                :<span class="lineNoCov">          0 :   m_print.endsubsection();</span>
+<span class="lineNum">     414 </span>                :<span class="lineNoCov">          0 :   if (m_it &gt;= nstep)</span>
+<span class="lineNum">     415 </span>                :<span class="lineNoCov">          0 :      m_print.note( &quot;Normal finish, maximum number of iterations reached: &quot; +</span>
+<span class="lineNum">     416 </span>                :<span class="lineNoCov">          0 :                    std::to_string( nstep ) );</span>
+<span class="lineNum">     417 </span>                :            :    else
+<span class="lineNum">     418 </span>                :<span class="lineNoCov">          0 :      m_print.note( &quot;Normal finish, maximum time reached: &quot; +</span>
+<span class="lineNum">     419 </span>                :<span class="lineNoCov">          0 :                    std::to_string( g_inputdeck.get&lt;tag::discr,tag::term&gt;() ) );</span>
+<span class="lineNum">     420 </span>                :            : 
+<span class="lineNum">     421 </span>                :            :   // Quit
+<span class="lineNum">     422 </span>                :<span class="lineNoCov">          0 :   mainProxy.finalize();</span>
+<span class="lineNum">     423 </span>                :<span class="lineNoCov">          0 : }</span>
+<a name="424"><span class="lineNum">     424 </span>                :            : </a>
+<span class="lineNum">     425 </span>                :            : void
+<span class="lineNum">     426 </span>                :<span class="lineNoCov">          0 : Transporter::header()</span>
+<span class="lineNum">     427 </span>                :            : // *****************************************************************************
+<span class="lineNum">     428 </span>                :            : // Print out time integration header
+<span class="lineNum">     429 </span>                :            : //! \author J. Bakosi
+<span class="lineNum">     430 </span>                :            : // *****************************************************************************
+<span class="lineNum">     431 </span>                :            : {
+<span class="lineNum">     432 </span>                :<span class="lineNoCov">          0 :   m_print.inthead( &quot;Time integration&quot;, &quot;Unstructured-mesh PDE solver testbed&quot;,</span>
+<span class="lineNum">     433 </span>                :            :     &quot;Legend: it - iteration count\n&quot;
+<span class="lineNum">     434 </span>                :            :     &quot;         t - time\n&quot;
+<span class="lineNum">     435 </span>                :            :     &quot;        dt - time step size\n&quot;
+<span class="lineNum">     436 </span>                :            :     &quot;       ETE - estimated time elapsed (h:m:s)\n&quot;
+<span class="lineNum">     437 </span>                :            :     &quot;       ETA - estimated time for accomplishment (h:m:s)\n&quot;
+<span class="lineNum">     438 </span>                :            :     &quot;       out - output-saved flags (F: field, D: diagnostics)\n&quot;,
+<span class="lineNum">     439 </span>                :            :     &quot;\n      it             t            dt        ETE        ETA   out\n&quot;
+<span class="lineNum">     440 </span>                :<span class="lineNoCov">          0 :       &quot; ---------------------------------------------------------------\n&quot; );</span>
+<span class="lineNum">     441 </span>                :<span class="lineNoCov">          0 :   m_timer[ TimerTag::TIMESTEP ];</span>
+<span class="lineNum">     442 </span>                :<span class="lineNoCov">          0 : }</span>
+<a name="443"><span class="lineNum">     443 </span>                :            : </a>
+<span class="lineNum">     444 </span>                :            : void
+<span class="lineNum">     445 </span>                :<span class="lineNoCov">          0 : Transporter::evaluateTime()</span>
+<span class="lineNum">     446 </span>                :            : // *****************************************************************************
+<span class="lineNum">     447 </span>                :            : // Evaluate time step and output one-liner report
+<span class="lineNum">     448 </span>                :            : //! \author J. Bakosi
+<span class="lineNum">     449 </span>                :            : // *****************************************************************************
+<span class="lineNum">     450 </span>                :            : {
+<span class="lineNum">     451 </span>                :<span class="lineNoCov">          0 :   const auto term = g_inputdeck.get&lt; tag::discr, tag::term &gt;();</span>
+<span class="lineNum">     452 </span>                :<span class="lineNoCov">          0 :   const auto eps = std::numeric_limits&lt; tk::real &gt;::epsilon();</span>
+<span class="lineNum">     453 </span>                :<span class="lineNoCov">          0 :   const auto nstep = g_inputdeck.get&lt; tag::discr, tag::nstep &gt;();</span>
 <span class="lineNum">     454 </span>                :            : 
-<span class="lineNum">     455 </span>                :<span class="lineNoCov">          0 :     ++m_stage;</span>
+<span class="lineNum">     455 </span>                :<span class="lineNoCov">          0 :   if (m_stage &lt; 1) {    // if at half-stage, simply go to next one</span>
 <span class="lineNum">     456 </span>                :            : 
-<span class="lineNum">     457 </span>                :            :   } else {      // if final stage of time step, finish time step just taken
+<span class="lineNum">     457 </span>                :<span class="lineNoCov">          0 :     ++m_stage;</span>
 <span class="lineNum">     458 </span>                :            : 
-<span class="lineNum">     459 </span>                :<span class="lineNoCov">          0 :     m_stage = 0;</span>
-<span class="lineNum">     460 </span>                :            :     // Increase number of iterations taken
-<span class="lineNum">     461 </span>                :<span class="lineNoCov">          0 :     ++m_it;</span>
-<span class="lineNum">     462 </span>                :            :     // Advance physical time to include time step just finished
-<span class="lineNum">     463 </span>                :<span class="lineNoCov">          0 :     m_t += m_dt;</span>
-<span class="lineNum">     464 </span>                :            : 
-<span class="lineNum">     465 </span>                :<span class="lineNoCov">          0 :     bool diag = false;</span>
+<span class="lineNum">     459 </span>                :            :   } else {      // if final stage of time step, finish time step just taken
+<span class="lineNum">     460 </span>                :            : 
+<span class="lineNum">     461 </span>                :<span class="lineNoCov">          0 :     m_stage = 0;</span>
+<span class="lineNum">     462 </span>                :            :     // Increase number of iterations taken
+<span class="lineNum">     463 </span>                :<span class="lineNoCov">          0 :     ++m_it;</span>
+<span class="lineNum">     464 </span>                :            :     // Advance physical time to include time step just finished
+<span class="lineNum">     465 </span>                :<span class="lineNoCov">          0 :     m_t += m_dt;</span>
 <span class="lineNum">     466 </span>                :            : 
-<span class="lineNum">     467 </span>                :            :     // Append diagnostics file at selected times
-<span class="lineNum">     468 </span>                :<span class="lineNoCov">          0 :     if (!(m_it % g_inputdeck.get&lt; tag::interval, tag::diag &gt;())) {</span>
-<span class="lineNum">     469 </span>                :<span class="lineNoCov">          0 :       tk::DiagWriter dw( g_inputdeck.get&lt; tag::cmd, tag::io, tag::diag &gt;(),</span>
-<span class="lineNum">     470 </span>                :<span class="lineNoCov">          0 :                          g_inputdeck.get&lt; tag::flformat, tag::diag &gt;(),</span>
-<span class="lineNum">     471 </span>                :<span class="lineNoCov">          0 :                          g_inputdeck.get&lt; tag::prec, tag::diag &gt;(),</span>
-<span class="lineNum">     472 </span>                :<span class="lineNoCov">          0 :                          std::ios_base::app );</span>
-<span class="lineNum">     473 </span>                :<span class="lineNoCov">          0 :       if (dw.diag( m_it, m_t, m_diag )) diag = true;</span>
-<span class="lineNum">     474 </span>                :            :     }
-<span class="lineNum">     475 </span>                :            : 
-<span class="lineNum">     476 </span>                :<span class="lineNoCov">          0 :     if (!(m_it % g_inputdeck.get&lt; tag::interval, tag::tty &gt;())) {</span>
+<span class="lineNum">     467 </span>                :<span class="lineNoCov">          0 :     bool diag = false;</span>
+<span class="lineNum">     468 </span>                :            : 
+<span class="lineNum">     469 </span>                :            :     // Append diagnostics file at selected times
+<span class="lineNum">     470 </span>                :<span class="lineNoCov">          0 :     if (!(m_it % g_inputdeck.get&lt; tag::interval, tag::diag &gt;())) {</span>
+<span class="lineNum">     471 </span>                :<span class="lineNoCov">          0 :       tk::DiagWriter dw( g_inputdeck.get&lt; tag::cmd, tag::io, tag::diag &gt;(),</span>
+<span class="lineNum">     472 </span>                :<span class="lineNoCov">          0 :                          g_inputdeck.get&lt; tag::flformat, tag::diag &gt;(),</span>
+<span class="lineNum">     473 </span>                :<span class="lineNoCov">          0 :                          g_inputdeck.get&lt; tag::prec, tag::diag &gt;(),</span>
+<span class="lineNum">     474 </span>                :<span class="lineNoCov">          0 :                          std::ios_base::app );</span>
+<span class="lineNum">     475 </span>                :<span class="lineNoCov">          0 :       if (dw.diag( m_it, m_t, m_diag )) diag = true;</span>
+<span class="lineNum">     476 </span>                :            :     }
 <span class="lineNum">     477 </span>                :            : 
-<span class="lineNum">     478 </span>                :            :       // estimate time elapsed and time for accomplishment
-<span class="lineNum">     479 </span>                :<span class="lineNoCov">          0 :       tk::Timer::Watch ete, eta;</span>
-<span class="lineNum">     480 </span>                :<span class="lineNoCov">          0 :       const auto&amp; timer = tk::cref_find( m_timer, TimerTag::TIMESTEP );</span>
-<span class="lineNum">     481 </span>                :<span class="lineNoCov">          0 :       timer.eta( g_inputdeck.get&lt; tag::discr, tag::term &gt;() -</span>
-<span class="lineNum">     482 </span>                :<span class="lineNoCov">          0 :                    g_inputdeck.get&lt; tag::discr, tag::t0 &gt;(),</span>
-<span class="lineNum">     483 </span>                :<span class="lineNoCov">          0 :                  m_t - g_inputdeck.get&lt; tag::discr, tag::t0 &gt;(),</span>
-<span class="lineNum">     484 </span>                :<span class="lineNoCov">          0 :                  g_inputdeck.get&lt; tag::discr, tag::nstep &gt;(),</span>
-<span class="lineNum">     485 </span>                :            :                  m_it,
-<span class="lineNum">     486 </span>                :            :                  ete,
-<span class="lineNum">     487 </span>                :<span class="lineNoCov">          0 :                  eta );</span>
-<span class="lineNum">     488 </span>                :            : 
-<span class="lineNum">     489 </span>                :            :       // Output one-liner
-<span class="lineNum">     490 </span>                :<span class="lineNoCov">          0 :       m_print &lt;&lt; std::setfill(' ') &lt;&lt; std::setw(8) &lt;&lt; m_it &lt;&lt; &quot;  &quot;</span>
-<span class="lineNum">     491 </span>                :<span class="lineNoCov">          0 :               &lt;&lt; std::scientific &lt;&lt; std::setprecision(6)</span>
-<span class="lineNum">     492 </span>                :<span class="lineNoCov">          0 :               &lt;&lt; std::setw(12) &lt;&lt; m_t &lt;&lt; &quot;  &quot;</span>
-<span class="lineNum">     493 </span>                :            :               &lt;&lt; m_dt &lt;&lt; &quot;  &quot;
-<span class="lineNum">     494 </span>                :<span class="lineNoCov">          0 :               &lt;&lt; std::setfill('0')</span>
-<span class="lineNum">     495 </span>                :<span class="lineNoCov">          0 :               &lt;&lt; std::setw(3) &lt;&lt; ete.hrs.count() &lt;&lt; &quot;:&quot;</span>
-<span class="lineNum">     496 </span>                :<span class="lineNoCov">          0 :               &lt;&lt; std::setw(2) &lt;&lt; ete.min.count() &lt;&lt; &quot;:&quot;</span>
-<span class="lineNum">     497 </span>                :<span class="lineNoCov">          0 :               &lt;&lt; std::setw(2) &lt;&lt; ete.sec.count() &lt;&lt; &quot;  &quot;</span>
-<span class="lineNum">     498 </span>                :<span class="lineNoCov">          0 :               &lt;&lt; std::setw(3) &lt;&lt; eta.hrs.count() &lt;&lt; &quot;:&quot;</span>
-<span class="lineNum">     499 </span>                :<span class="lineNoCov">          0 :               &lt;&lt; std::setw(2) &lt;&lt; eta.min.count() &lt;&lt; &quot;:&quot;</span>
-<span class="lineNum">     500 </span>                :<span class="lineNoCov">          0 :               &lt;&lt; std::setw(2) &lt;&lt; eta.sec.count() &lt;&lt; &quot;  &quot;;</span>
-<span class="lineNum">     501 </span>                :            : 
-<span class="lineNum">     502 </span>                :            :       // Augment one-liner with output indicators
-<span class="lineNum">     503 </span>                :<span class="lineNoCov">          0 :       if (!(m_it % g_inputdeck.get&lt;tag::interval,tag::field&gt;())) m_print &lt;&lt; 'F';</span>
-<span class="lineNum">     504 </span>                :<span class="lineNoCov">          0 :       if (diag) m_print &lt;&lt; 'D';</span>
-<span class="lineNum">     505 </span>                :            : 
-<span class="lineNum">     506 </span>                :<span class="lineNoCov">          0 :       m_print &lt;&lt; '\n';</span>
-<span class="lineNum">     507 </span>                :            :     }
-<span class="lineNum">     508 </span>                :            :   }
-<span class="lineNum">     509 </span>                :            : 
-<span class="lineNum">     510 </span>                :<span class="lineNoCov">          0 :   wait4eval();</span>
+<span class="lineNum">     478 </span>                :<span class="lineNoCov">          0 :     if (!(m_it % g_inputdeck.get&lt; tag::interval, tag::tty &gt;())) {</span>
+<span class="lineNum">     479 </span>                :            : 
+<span class="lineNum">     480 </span>                :            :       // estimate time elapsed and time for accomplishment
+<span class="lineNum">     481 </span>                :<span class="lineNoCov">          0 :       tk::Timer::Watch ete, eta;</span>
+<span class="lineNum">     482 </span>                :<span class="lineNoCov">          0 :       const auto&amp; timer = tk::cref_find( m_timer, TimerTag::TIMESTEP );</span>
+<span class="lineNum">     483 </span>                :<span class="lineNoCov">          0 :       timer.eta( g_inputdeck.get&lt; tag::discr, tag::term &gt;() -</span>
+<span class="lineNum">     484 </span>                :<span class="lineNoCov">          0 :                    g_inputdeck.get&lt; tag::discr, tag::t0 &gt;(),</span>
+<span class="lineNum">     485 </span>                :<span class="lineNoCov">          0 :                  m_t - g_inputdeck.get&lt; tag::discr, tag::t0 &gt;(),</span>
+<span class="lineNum">     486 </span>                :<span class="lineNoCov">          0 :                  g_inputdeck.get&lt; tag::discr, tag::nstep &gt;(),</span>
+<span class="lineNum">     487 </span>                :            :                  m_it,
+<span class="lineNum">     488 </span>                :            :                  ete,
+<span class="lineNum">     489 </span>                :<span class="lineNoCov">          0 :                  eta );</span>
+<span class="lineNum">     490 </span>                :            : 
+<span class="lineNum">     491 </span>                :            :       // Output one-liner
+<span class="lineNum">     492 </span>                :<span class="lineNoCov">          0 :       m_print &lt;&lt; std::setfill(' ') &lt;&lt; std::setw(8) &lt;&lt; m_it &lt;&lt; &quot;  &quot;</span>
+<span class="lineNum">     493 </span>                :<span class="lineNoCov">          0 :               &lt;&lt; std::scientific &lt;&lt; std::setprecision(6)</span>
+<span class="lineNum">     494 </span>                :<span class="lineNoCov">          0 :               &lt;&lt; std::setw(12) &lt;&lt; m_t &lt;&lt; &quot;  &quot;</span>
+<span class="lineNum">     495 </span>                :            :               &lt;&lt; m_dt &lt;&lt; &quot;  &quot;
+<span class="lineNum">     496 </span>                :<span class="lineNoCov">          0 :               &lt;&lt; std::setfill('0')</span>
+<span class="lineNum">     497 </span>                :<span class="lineNoCov">          0 :               &lt;&lt; std::setw(3) &lt;&lt; ete.hrs.count() &lt;&lt; &quot;:&quot;</span>
+<span class="lineNum">     498 </span>                :<span class="lineNoCov">          0 :               &lt;&lt; std::setw(2) &lt;&lt; ete.min.count() &lt;&lt; &quot;:&quot;</span>
+<span class="lineNum">     499 </span>                :<span class="lineNoCov">          0 :               &lt;&lt; std::setw(2) &lt;&lt; ete.sec.count() &lt;&lt; &quot;  &quot;</span>
+<span class="lineNum">     500 </span>                :<span class="lineNoCov">          0 :               &lt;&lt; std::setw(3) &lt;&lt; eta.hrs.count() &lt;&lt; &quot;:&quot;</span>
+<span class="lineNum">     501 </span>                :<span class="lineNoCov">          0 :               &lt;&lt; std::setw(2) &lt;&lt; eta.min.count() &lt;&lt; &quot;:&quot;</span>
+<span class="lineNum">     502 </span>                :<span class="lineNoCov">          0 :               &lt;&lt; std::setw(2) &lt;&lt; eta.sec.count() &lt;&lt; &quot;  &quot;;</span>
+<span class="lineNum">     503 </span>                :            : 
+<span class="lineNum">     504 </span>                :            :       // Augment one-liner with output indicators
+<span class="lineNum">     505 </span>                :<span class="lineNoCov">          0 :       if (!(m_it % g_inputdeck.get&lt;tag::interval,tag::field&gt;())) m_print &lt;&lt; 'F';</span>
+<span class="lineNum">     506 </span>                :<span class="lineNoCov">          0 :       if (diag) m_print &lt;&lt; 'D';</span>
+<span class="lineNum">     507 </span>                :            : 
+<span class="lineNum">     508 </span>                :<span class="lineNoCov">          0 :       m_print &lt;&lt; '\n';</span>
+<span class="lineNum">     509 </span>                :            :     }
+<span class="lineNum">     510 </span>                :            :   }
 <span class="lineNum">     511 </span>                :            : 
-<span class="lineNum">     512 </span>                :            :   // if not final stage of time step or if neither max iterations nor max time
-<span class="lineNum">     513 </span>                :            :   // reached, will continue (by telling all linear system merger group
-<span class="lineNum">     514 </span>                :            :   // elements to prepare for a new rhs), otherwise finish
-<span class="lineNum">     515 </span>                :<span class="lineNoCov">          0 :   if (m_stage &lt; 1 || (std::fabs(m_t-term) &gt; eps &amp;&amp; m_it &lt; nstep))</span>
-<span class="lineNum">     516 </span>                :<span class="lineNoCov">          0 :     m_linsysmerger.enable_wait4rhs();</span>
-<span class="lineNum">     517 </span>                :            :   else
-<span class="lineNum">     518 </span>                :<span class="lineNoCov">          0 :     finish();</span>
-<span class="lineNum">     519 </span>                :<span class="lineNoCov">          0 : }</span>
-<span class="lineNum">     520 </span>                :            : 
-<span class="lineNum">     521 </span>                :            : #include &quot;NoWarning/transporter.def.h&quot;
+<span class="lineNum">     512 </span>                :<span class="lineNoCov">          0 :   wait4eval();</span>
+<span class="lineNum">     513 </span>                :            : 
+<span class="lineNum">     514 </span>                :            :   // if not final stage of time step or if neither max iterations nor max time
+<span class="lineNum">     515 </span>                :            :   // reached, will continue (by telling all linear system merger group
+<span class="lineNum">     516 </span>                :            :   // elements to prepare for a new rhs), otherwise finish
+<span class="lineNum">     517 </span>                :<span class="lineNoCov">          0 :   if (m_stage &lt; 1 || (std::fabs(m_t-term) &gt; eps &amp;&amp; m_it &lt; nstep))</span>
+<span class="lineNum">     518 </span>                :<span class="lineNoCov">          0 :     m_linsysmerger.enable_wait4rhs();</span>
+<span class="lineNum">     519 </span>                :            :   else
+<span class="lineNum">     520 </span>                :<span class="lineNoCov">          0 :     finish();</span>
+<span class="lineNum">     521 </span>                :<span class="lineNoCov">          0 : }</span>
+<span class="lineNum">     522 </span>                :            : 
+<span class="lineNum">     523 </span>                :            : #include &quot;NoWarning/transporter.def.h&quot;
 </pre>
       </td>
     </tr>

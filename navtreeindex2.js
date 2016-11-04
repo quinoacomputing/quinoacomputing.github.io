@@ -1,6 +1,5 @@
 var NAVTREEINDEX2 =
 {
-"_inciter_2_cmd_line_2_parser_8_c_source.html":[23,0,1,1,1,0,2],
 "_inciter_2_cmd_line_2_parser_8h.html":[23,0,1,1,1,0,3],
 "_inciter_2_cmd_line_2_parser_8h_source.html":[23,0,1,1,1,0,3],
 "_inciter_2_components_8h.html":[23,0,1,1,1,3],
@@ -249,5 +248,6 @@ var NAVTREEINDEX2 =
 "_p_d_e_2_p_d_e_8h.html":[23,0,1,11,3],
 "_p_d_e_2_p_d_e_8h_source.html":[23,0,1,11,3],
 "_p_d_e_stack_8_c.html":[23,0,1,11,4],
-"_p_d_e_stack_8_c_source.html":[23,0,1,11,4]
+"_p_d_e_stack_8_c_source.html":[23,0,1,11,4],
+"_p_d_e_stack_8h.html":[23,0,1,11,5]
 };

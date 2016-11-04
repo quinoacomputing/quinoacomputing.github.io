@@ -4,7 +4,6 @@ var searchData=
   ['lapack_20license',['LAPACK license',['../LAPACK_license.html',1,'licenses']]],
   ['lapack_5flicense_2edox',['LAPACK_license.dox',['../_l_a_p_a_c_k__license_8dox.html',1,'']]],
   ['lapacke_2eh',['lapacke.h',['../lapacke_8h.html',1,'']]],
-  ['laplace',['LAPLACE',['../namespaceinciter_1_1ctr.html#a05792aa346ef778c24407416c5560d14a54cb130ad70116246b3e1a2584e80d09',1,'inciter::ctr']]],
   ['layout',['layout',['../classtk_1_1_data.html#a81743d43dfcb14ead9a73ef0e31daa6b',1,'tk::Data::layout()'],['../classtk_1_1_data.html#a210953988f982e446415920d0e15d2d0',1,'tk::Data::layout(int2type&lt; UnkEqComp &gt;)'],['../classtk_1_1_data.html#a46c685dd151f3518c0db73eb36559f26',1,'tk::Data::layout(int2type&lt; EqCompUnk &gt;)']]],
   ['layout_2edox',['layout.dox',['../layout_8dox.html',1,'']]],
   ['lempelziv',['LempelZiv',['../structtag_1_1_lempel_ziv.html',1,'tag']]],
@@ -57,8 +56,8 @@ var searchData=
   ['logo_2edox',['logo.dox',['../logo_8dox.html',1,'']]],
   ['long',['LONG',['../namespacetk_1_1ctr.html#a1eb1d485ec88b469d4b86274cf8f1753ac1fabfea54ec6011e694f211f3ffebf3',1,'tk::ctr']]],
   ['longdescription',['longDescription',['../structtk_1_1ctr_1_1_keyword_info.html#aeea2e44535c9bc51527793312834d512',1,'tk::ctr::KeywordInfo::longDescription()'],['../structkw_1_1keyword.html#a90f5174ca14cdd00dafa63606dbc5f85',1,'kw::keyword::longDescription()']]],
-  ['longestheadrun',['LongestHeadRun',['../classrngtest_1_1_test_u01_stack.html#a1557996804afe09dc7f5dd02df6d49f9',1,'rngtest::TestU01Stack']]],
   ['longestheadrun',['LongestHeadRun',['../structtag_1_1_longest_head_run.html',1,'tag']]],
+  ['longestheadrun',['LongestHeadRun',['../classrngtest_1_1_test_u01_stack.html#a1557996804afe09dc7f5dd02df6d49f9',1,'rngtest::TestU01Stack']]],
   ['lookup',['lookup',['../namespacetk_1_1ctr.html#a4749bdbcd17cf3bc95cd10509895ce65',1,'tk::ctr']]],
   ['lower',['lower',['../classinciter_1_1_partitioner.html#a8917c2adfa0e4be3f4c7fd3391242eb3',1,'inciter::Partitioner']]],
   ['lump',['lump',['../classinciter_1_1_flux_corrector.html#a7a12b63e7d9a0ecd8baaf4d102746919',1,'inciter::FluxCorrector']]]

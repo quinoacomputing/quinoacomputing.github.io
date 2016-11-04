@@ -79,6 +79,7 @@ var hierarchy =
     [ "rngtest::Battery", "classrngtest_1_1_battery.html", null ],
     [ "tag::battery", "structtag_1_1battery.html", null ],
     [ "tag::bcdir", "structtag_1_1bcdir.html", null ],
+    [ "tag::benchmark", "structtag_1_1benchmark.html", null ],
     [ "walker::Beta< Init, Coefficients >", "classwalker_1_1_beta.html", null ],
     [ "tag::beta", "structtag_1_1beta.html", null ],
     [ "tag::beta_method", "structtag_1_1beta__method.html", null ],
@@ -395,6 +396,9 @@ var hierarchy =
       [ "tk::grm::process_cmd< Stack, use< kw::virtualization >, tk::grm::Store< Stack, tag::virtualization >, tk::grm::number >", "structtk_1_1grm_1_1process__cmd.html", [
         [ "inciter::cmd::virtualization", "structinciter_1_1cmd_1_1virtualization.html", null ],
         [ "walker::cmd::virtualization", "structwalker_1_1cmd_1_1virtualization.html", null ]
+      ] ],
+      [ "tk::grm::process_cmd_switch< Stack, use< kw::benchmark >, tag::benchmark >", "structtk_1_1grm_1_1process__cmd__switch.html", [
+        [ "inciter::cmd::benchmark", "structinciter_1_1cmd_1_1benchmark.html", null ]
       ] ],
       [ "tk::grm::process_cmd_switch< Stack, use< kw::help >, tag::help >", "structtk_1_1grm_1_1process__cmd__switch.html", [
         [ "inciter::cmd::help", "structinciter_1_1cmd_1_1help.html", null ],
@@ -747,8 +751,8 @@ var hierarchy =
     [ "tut::tag9", "structtut_1_1tag9.html", null ],
     [ "tk::tuple::tagged_tuple_size< _Tp >", "structtk_1_1tuple_1_1tagged__tuple__size.html", null ],
     [ "tut::TaggedTuple_common", "structtut_1_1_tagged_tuple__common.html", null ],
-    [ "tk::ctr::Term", "structtk_1_1ctr_1_1_term.html", null ],
     [ "tag::term", "structtag_1_1term.html", null ],
+    [ "tk::ctr::Term", "structtk_1_1ctr_1_1_term.html", null ],
     [ "tut::Make_list_common::Test< Ts >", "structtut_1_1_make__list__common_1_1_test.html", null ],
     [ "tut::SystemComponents_common::testncomp", "structtut_1_1_system_components__common_1_1testncomp.html", null ],
     [ "tut::SystemComponents_common::testoffset", "structtut_1_1_system_components__common_1_1testoffset.html", null ],
@@ -840,8 +844,8 @@ var hierarchy =
     ] ],
     [ "tut::Toggle_common", "structtut_1_1_toggle__common.html", null ],
     [ "tk::Tracker", "classtk_1_1_tracker.html", null ],
-    [ "tag::transport", "structtag_1_1transport.html", null ],
     [ "inciter::Transport< Physics, Problem >", "classinciter_1_1_transport.html", null ],
+    [ "tag::transport", "structtag_1_1transport.html", null ],
     [ "inciter::TransportPhysicsAdvDiff", "classinciter_1_1_transport_physics_adv_diff.html", null ],
     [ "inciter::TransportPhysicsAdvection", "classinciter_1_1_transport_physics_advection.html", null ],
     [ "inciter::TransportProblemShearDiff", "classinciter_1_1_transport_problem_shear_diff.html", null ],
@@ -862,8 +866,10 @@ var hierarchy =
         [ "tk::Control< tag::io, ios, tag::verbose, bool, tag::reorder, bool, tag::help, bool, tag::helpctr, bool, tag::cmdinfo, tk::ctr::HelpFactory, tag::ctrinfo, tk::ctr::HelpFactory, tag::helpkw, tk::ctr::HelpKw, tag::error, std::vector< std::string > >", "classtk_1_1_control.html", [
           [ "meshconv::ctr::CmdLine", "classmeshconv_1_1ctr_1_1_cmd_line.html", null ]
         ] ],
+        [ "tk::Control< tag::io, ios, tag::virtualization, kw::virtualization::info::expect::type, tag::verbose, bool, tag::benchmark, bool, tag::help, bool, tag::helpctr, bool, tag::cmdinfo, tk::ctr::HelpFactory, tag::ctrinfo, tk::ctr::HelpFactory, tag::helpkw, tk::ctr::HelpKw, tag::error, std::vector< std::string > >", "classtk_1_1_control.html", [
+          [ "inciter::ctr::CmdLine", "classinciter_1_1ctr_1_1_cmd_line.html", null ]
+        ] ],
         [ "tk::Control< tag::io, ios, tag::virtualization, kw::virtualization::info::expect::type, tag::verbose, bool, tag::help, bool, tag::helpctr, bool, tag::cmdinfo, tk::ctr::HelpFactory, tag::ctrinfo, tk::ctr::HelpFactory, tag::helpkw, tk::ctr::HelpKw, tag::error, std::vector< std::string > >", "classtk_1_1_control.html", [
-          [ "inciter::ctr::CmdLine", "classinciter_1_1ctr_1_1_cmd_line.html", null ],
           [ "walker::ctr::CmdLine", "classwalker_1_1ctr_1_1_cmd_line.html", null ]
         ] ],
         [ "tk::Control< tag::title, kw::title::info::expect::type, tag::selected, selects, tag::discr, discretization, tag::component, ncomps, tag::interval, intervals, tag::cmd, CmdLine, tag::param, parameters, tag::stat, std::vector< tk::ctr::Product >, tag::pdf, std::vector< tk::ctr::Probability >, tag::error, std::vector< std::string > >", "classtk_1_1_control.html", [
@@ -916,8 +922,8 @@ var hierarchy =
       ] ]
     ] ],
     [ "tk::ctr::unused", "structtk_1_1ctr_1_1unused.html", null ],
-    [ "tut::Factory_common::VBase", "structtut_1_1_factory__common_1_1_v_base.html", null ],
     [ "tut::VBase", "structtut_1_1_v_base.html", null ],
+    [ "tut::Factory_common::VBase", "structtut_1_1_factory__common_1_1_v_base.html", null ],
     [ "tut::Factory_common::VChild", "structtut_1_1_factory__common_1_1_v_child.html", null ],
     [ "tut::Vector_common", "structtut_1_1_vector__common.html", null ],
     [ "tag::verbose", "structtag_1_1verbose.html", null ],
@@ -925,8 +931,8 @@ var hierarchy =
     [ "walker::WalkerDriver", "classwalker_1_1_walker_driver.html", null ],
     [ "tk::Timer::Watch", "structtk_1_1_timer_1_1_watch.html", null ],
     [ "tag::WeightDistrib", "structtag_1_1_weight_distrib.html", null ],
-    [ "walker::WrightFisher< Init, Coefficients >", "classwalker_1_1_wright_fisher.html", null ],
     [ "tag::wrightfisher", "structtag_1_1wrightfisher.html", null ],
+    [ "walker::WrightFisher< Init, Coefficients >", "classwalker_1_1_wright_fisher.html", null ],
     [ "walker::WrightFisherCoeffConst", "classwalker_1_1_wright_fisher_coeff_const.html", null ],
     [ "tk::Writer", "classtk_1_1_writer.html", [
       [ "tk::DiagWriter", "classtk_1_1_diag_writer.html", null ],
@@ -942,7 +948,7 @@ var hierarchy =
     [ "tut::Has_common::yesExpectChoices", "structtut_1_1_has__common_1_1yes_expect_choices.html", null ],
     [ "tut::Has_common::yesExpectDescription", "structtut_1_1_has__common_1_1yes_expect_description.html", null ],
     [ "tut::Has_common::yesExpectType", "structtut_1_1_has__common_1_1yes_expect_type.html", null ],
-    [ "tut::Has_common::yesProxy", "structtut_1_1_has__common_1_1yes_proxy.html", null ],
     [ "tut::CharmUtil_common::yesProxy", "structtut_1_1_charm_util__common_1_1yes_proxy.html", null ],
+    [ "tut::Has_common::yesProxy", "structtut_1_1_has__common_1_1yes_proxy.html", null ],
     [ "tk::ctr::ncomponents< Tags >::zero", "structtk_1_1ctr_1_1ncomponents_1_1zero.html", null ]
 ];
