@@ -2,6 +2,7 @@ var _inciter_2_cmd_line_2_grammar_8h =
 [
     [ "verbose", "structinciter_1_1cmd_1_1verbose.html", null ],
     [ "benchmark", "structinciter_1_1cmd_1_1benchmark.html", null ],
+    [ "feedback", "structinciter_1_1cmd_1_1feedback.html", null ],
     [ "virtualization", "structinciter_1_1cmd_1_1virtualization.html", null ],
     [ "io", "structinciter_1_1cmd_1_1io.html", null ],
     [ "help", "structinciter_1_1cmd_1_1help.html", null ],

@@ -9,7 +9,7 @@ var classrngtest_1_1_test_u01_suite =
     [ "names", "classrngtest_1_1_test_u01_suite.html#abc7c88c27ef47813d686a1291cb91973", null ],
     [ "nodeInit", "classrngtest_1_1_test_u01_suite.html#ad818b3882bc52b986f751b7cb9f80650", null ],
     [ "npval", "classrngtest_1_1_test_u01_suite.html#a4db19c68337208e8eb649195a076c60e", null ],
-    [ "ntest", "classrngtest_1_1_test_u01_suite.html#afca09482ef0856547135c376484bf6e0", null ],
+    [ "ntest", "classrngtest_1_1_test_u01_suite.html#a6738b31feae9156afc9b94281df80757", null ],
     [ "time", "classrngtest_1_1_test_u01_suite.html#ad7bf64b82206358030edc7332cfde89d", null ],
     [ "m_ctrs", "classrngtest_1_1_test_u01_suite.html#a63f2a9f24fe5174b7bd937eaa4b91b89", null ],
     [ "m_failed", "classrngtest_1_1_test_u01_suite.html#aa31dcd4363c100f76844016cee8fa672", null ],

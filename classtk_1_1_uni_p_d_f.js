@@ -8,7 +8,7 @@ var classtk_1_1_uni_p_d_f =
     [ "add", "classtk_1_1_uni_p_d_f.html#aca79db4acf6627a3da2da116e7082de3", null ],
     [ "addPDF", "classtk_1_1_uni_p_d_f.html#abaeb22d5c2f263bb6a6341d15e12c6e4", null ],
     [ "binsize", "classtk_1_1_uni_p_d_f.html#a83519a7b7b48c14694c5d683218d3419", null ],
-    [ "extents", "classtk_1_1_uni_p_d_f.html#a1403367bdeeaf05971188506da2447b7", null ],
+    [ "extents", "classtk_1_1_uni_p_d_f.html#a797808cc92fc37d95f95dac049b08b72", null ],
     [ "map", "classtk_1_1_uni_p_d_f.html#ae3cc1ee45721ada30dcc808c227e179a", null ],
     [ "nsample", "classtk_1_1_uni_p_d_f.html#af0075606b7c787a66c9fade95f22ecb6", null ],
     [ "pup", "classtk_1_1_uni_p_d_f.html#a780784a6340932fa467ba91b5ae4561d", null ],

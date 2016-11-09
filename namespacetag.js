@@ -53,6 +53,7 @@ var namespacetag =
     [ "error", "structtag_1_1error.html", null ],
     [ "esup", "structtag_1_1esup.html", null ],
     [ "extent", "structtag_1_1extent.html", null ],
+    [ "feedback", "structtag_1_1feedback.html", null ],
     [ "field", "structtag_1_1field.html", null ],
     [ "flformat", "structtag_1_1flformat.html", null ],
     [ "Fourier3", "structtag_1_1_fourier3.html", null ],

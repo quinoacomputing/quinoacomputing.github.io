@@ -1,6 +1,7 @@
 var namespaceinciter_1_1cmd =
 [
     [ "benchmark", "structinciter_1_1cmd_1_1benchmark.html", null ],
+    [ "feedback", "structinciter_1_1cmd_1_1feedback.html", null ],
     [ "help", "structinciter_1_1cmd_1_1help.html", null ],
     [ "helpctr", "structinciter_1_1cmd_1_1helpctr.html", null ],
     [ "helpkw", "structinciter_1_1cmd_1_1helpkw.html", null ],

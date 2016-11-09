@@ -1,7 +1,7 @@
 var classrngtest_1_1_test_u01_stack =
 [
     [ "TestU01Stack", "classrngtest_1_1_test_u01_stack.html#a37a222a6567c906c2c59f8797116d7a3", null ],
-    [ "add", "classrngtest_1_1_test_u01_stack.html#a1c988f071071a90890f961845cb1ac5a", null ],
+    [ "add", "classrngtest_1_1_test_u01_stack.html#ae550d82d01992de68bd2ea3d46038605", null ],
     [ "addRNG", "classrngtest_1_1_test_u01_stack.html#ae1750e2f386084675540099089fd7ebd", null ],
     [ "AppearanceSpacings", "classrngtest_1_1_test_u01_stack.html#a53700499a600a42e97d5b84af6489b3f", null ],
     [ "AutoCorr", "classrngtest_1_1_test_u01_stack.html#a2d02e621911789f90b51a78b1caac6ea", null ],
@@ -15,7 +15,7 @@ var classrngtest_1_1_test_u01_stack =
     [ "Fourier3", "classrngtest_1_1_test_u01_stack.html#adbd1ef96e568cb8fa4b42e2d319c2019", null ],
     [ "Gap", "classrngtest_1_1_test_u01_stack.html#a4a11cec60eac843206f8df755981f54e", null ],
     [ "GCD", "classrngtest_1_1_test_u01_stack.html#a02756953342aa32bb6805576dde8b7dc", null ],
-    [ "generator", "classrngtest_1_1_test_u01_stack.html#a41ca68cd52407ab2e2689d18b5bb07cd", null ],
+    [ "generator", "classrngtest_1_1_test_u01_stack.html#ab8705b883970156753172587d6c89ce9", null ],
     [ "HammingCorr", "classrngtest_1_1_test_u01_stack.html#acb6e5c970a27e3a4f32b3c516bb5e4b3", null ],
     [ "HammingIndep", "classrngtest_1_1_test_u01_stack.html#aecaffd60ed66af41caa5e7dc3b912530", null ],
     [ "HammingWeight2", "classrngtest_1_1_test_u01_stack.html#a806885071f2c5b0b53dd3c3537f3748b", null ],

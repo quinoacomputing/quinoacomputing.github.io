@@ -64,6 +64,7 @@ var dir_3ff0826a6d651abbf0f532354e1ac7dc =
       [ "seqlen", "structtag_1_1seqlen.html", null ],
       [ "verbose", "structtag_1_1verbose.html", null ],
       [ "benchmark", "structtag_1_1benchmark.html", null ],
+      [ "feedback", "structtag_1_1feedback.html", null ],
       [ "reorder", "structtag_1_1reorder.html", null ],
       [ "error", "structtag_1_1error.html", null ],
       [ "pdf", "structtag_1_1pdf.html", null ],

@@ -9,7 +9,7 @@ var classtk_1_1_statistics =
     [ "ctpdf", "classtk_1_1_statistics.html#a7c494ffdd2984c2126be72bd7824cc7c", null ],
     [ "ctr", "classtk_1_1_statistics.html#a9a178a3e4ad039de40e69c5b3f4d7210", null ],
     [ "cupdf", "classtk_1_1_statistics.html#ad2fb3e76620febb38e7859c8a5868d13", null ],
-    [ "mean", "classtk_1_1_statistics.html#a89efc768e05c525902cade0c2e2540e0", null ],
+    [ "mean", "classtk_1_1_statistics.html#abb91a1fef4d81858d9ef3d4529a00a5f", null ],
     [ "obpdf", "classtk_1_1_statistics.html#a347f4c256f9238aea16a770025e9f3b0", null ],
     [ "ord", "classtk_1_1_statistics.html#a849a1b25a8e21070d4dda2d9ab74c686", null ],
     [ "otpdf", "classtk_1_1_statistics.html#a13ebfaadd0891501fb6beab4f66e92b3", null ],

@@ -41,6 +41,7 @@ var namespacetk =
     [ "ParticleWriter", "classtk_1_1_particle_writer.html", "classtk_1_1_particle_writer" ],
     [ "PDFWriter", "classtk_1_1_p_d_f_writer.html", "classtk_1_1_p_d_f_writer" ],
     [ "Print", "classtk_1_1_print.html", "classtk_1_1_print" ],
+    [ "Progress", "classtk_1_1_progress.html", "classtk_1_1_progress" ],
     [ "Reader", "classtk_1_1_reader.html", "classtk_1_1_reader" ],
     [ "RNG", "classtk_1_1_r_n_g.html", "classtk_1_1_r_n_g" ],
     [ "RNGPrint", "classtk_1_1_r_n_g_print.html", "classtk_1_1_r_n_g_print" ],

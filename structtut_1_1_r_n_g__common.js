@@ -1,7 +1,7 @@
 var structtut_1_1_r_n_g__common =
 [
     [ "RNG_common", "structtut_1_1_r_n_g__common.html#af1b1992c6db79e418c6e3b409d9d49e8", null ],
-    [ "add", "structtut_1_1_r_n_g__common.html#a54aaeeead07de20c67962101c472a1e0", null ],
+    [ "add", "structtut_1_1_r_n_g__common.html#a8c00774fb6584d74a545cda759c3879f", null ],
     [ "test_beta", "structtut_1_1_r_n_g__common.html#a2ee768ede744594175dea18ea81440b1", null ],
     [ "test_copy_assignment", "structtut_1_1_r_n_g__common.html#abf0249ab0c6036f5fa623d32e6fddc45", null ],
     [ "test_copy_ctor", "structtut_1_1_r_n_g__common.html#a36ba18a68cb592f8063559fb1eecd0db", null ],

@@ -1,13 +1,13 @@
 var classrngtest_1_1_r_n_g_test_print =
 [
     [ "RNGTestPrint", "classrngtest_1_1_r_n_g_test_print.html#aa396672fdb4b06e4d38cc218c57c965a", null ],
-    [ "battery", "classrngtest_1_1_r_n_g_test_print.html#a42a6ac967127c2fa1e9532fe92923ee4", null ],
-    [ "cost", "classrngtest_1_1_r_n_g_test_print.html#a57e5a6140e092fc5af259b17b7a3bca3", null ],
-    [ "failed", "classrngtest_1_1_r_n_g_test_print.html#ac520b49eb06e021bc3f8003cc0a84d6a", null ],
-    [ "Item", "classrngtest_1_1_r_n_g_test_print.html#ab0bab2b2a1633356a240a181eccddb2a", null ],
-    [ "names", "classrngtest_1_1_r_n_g_test_print.html#ad932f3393db9064abb87baf5f6e2b23a", null ],
-    [ "rank", "classrngtest_1_1_r_n_g_test_print.html#a7ae220f2f8f6bc1d44ddb7ed15b6ff72", null ],
-    [ "Section", "classrngtest_1_1_r_n_g_test_print.html#a406cd02c08314e21ee29c4001a20b7c5", null ],
-    [ "statshead", "classrngtest_1_1_r_n_g_test_print.html#abd2583d395394756c07ee2c0d3da0761", null ],
-    [ "test", "classrngtest_1_1_r_n_g_test_print.html#a1a8dae7b0131e893d4143a659b692b6e", null ]
+    [ "battery", "classrngtest_1_1_r_n_g_test_print.html#a6cc55ab3d0df08fab59a055f3f055683", null ],
+    [ "cost", "classrngtest_1_1_r_n_g_test_print.html#a3ce9c144c429d6d5fa701a5ff2500348", null ],
+    [ "failed", "classrngtest_1_1_r_n_g_test_print.html#ae7d88ed671cda0fe0556488bfef8f418", null ],
+    [ "Item", "classrngtest_1_1_r_n_g_test_print.html#abc21783e86bb95277618fe17f9536d7c", null ],
+    [ "names", "classrngtest_1_1_r_n_g_test_print.html#a5917a690125c6401aa681abade28ea90", null ],
+    [ "rank", "classrngtest_1_1_r_n_g_test_print.html#a6b70bdf3a6e6a3043a46ab798b9e1934", null ],
+    [ "Section", "classrngtest_1_1_r_n_g_test_print.html#af733b6f71c4a46d4c4d4266cd3faf240", null ],
+    [ "statshead", "classrngtest_1_1_r_n_g_test_print.html#a07f2bb27a7a970434af6b1e8ff1025d3", null ],
+    [ "test", "classrngtest_1_1_r_n_g_test_print.html#ab2dfa3860e32782f8077d1cded7f9585", null ]
 ];

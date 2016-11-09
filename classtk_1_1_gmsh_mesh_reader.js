@@ -1,8 +1,8 @@
 var classtk_1_1_gmsh_mesh_reader =
 [
     [ "GmshMeshReader", "classtk_1_1_gmsh_mesh_reader.html#a456604e8eb840f033cee46dc46552f3c", null ],
-    [ "isASCII", "classtk_1_1_gmsh_mesh_reader.html#a33e914467088e5d063ab7a6a36f97c16", null ],
-    [ "isBinary", "classtk_1_1_gmsh_mesh_reader.html#aab978c00354cad7bcd35fed1c2123304", null ],
+    [ "isASCII", "classtk_1_1_gmsh_mesh_reader.html#ad4111214fd110ef372dcb66be689fba1", null ],
+    [ "isBinary", "classtk_1_1_gmsh_mesh_reader.html#a904960bf0c46bcc6b8eba534e362b415", null ],
     [ "readElements", "classtk_1_1_gmsh_mesh_reader.html#a24fd1ee0283a5710734d38e83f228fb6", null ],
     [ "readMesh", "classtk_1_1_gmsh_mesh_reader.html#ab1918efbc04de6b7f30fbc46e08fbd39", null ],
     [ "readMeshFormat", "classtk_1_1_gmsh_mesh_reader.html#a80e8e595b6a2aeb1ffdb18f0bfc0ef48", null ],
