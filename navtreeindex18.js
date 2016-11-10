@@ -1,15 +1,5 @@
 var NAVTREEINDEX18 =
 {
-"structtk_1_1tuple_1_1tagged__tuple__size_3_01const_01volatile_01___tp_01_4.html":[22,0,6,5,13],
-"structtk_1_1tuple_1_1tagged__tuple__size_3_01tagged__tuple_3_01___elements_8_8_8_01_4_01_4.html":[22,0,6,5,14],
-"structtk_1_1tuple_1_1tagged__tuple__size_3_01volatile_01___tp_01_4.html":[22,0,6,5,15],
-"structtk_1_1tuple_1_1tt__impl.html":[22,0,6,5,16],
-"structtk_1_1tuple_1_1tt__impl_3_01typelist_3_01_ss_8_8_8_01_4_00_01typelist_3_01_ts_8_8_8_01_4_01_4.html":[22,0,6,5,17],
-"structtk_1_1tuple_1_1tt__impl_3_01typelist_3_01_ss_8_8_8_01_4_00_01typelist_3_01_ts_8_8_8_01_4_01_4.html#a2ff7e36935b4a26adde9c5cc4bb8cd01":[22,0,6,5,17,6],
-"structtk_1_1tuple_1_1tt__impl_3_01typelist_3_01_ss_8_8_8_01_4_00_01typelist_3_01_ts_8_8_8_01_4_01_4.html#a32ca6acd458ceb4424909f4f119c642b":[22,0,6,5,17,3],
-"structtk_1_1tuple_1_1tt__impl_3_01typelist_3_01_ss_8_8_8_01_4_00_01typelist_3_01_ts_8_8_8_01_4_01_4.html#a5455317da0984922dbfaed38cbb536eb":[22,0,6,5,17,1],
-"structtk_1_1tuple_1_1tt__impl_3_01typelist_3_01_ss_8_8_8_01_4_00_01typelist_3_01_ts_8_8_8_01_4_01_4.html#a5ce8c73af45fbcd076d1c78d6f09fe13":[22,0,6,5,17,5],
-"structtk_1_1tuple_1_1tt__impl_3_01typelist_3_01_ss_8_8_8_01_4_00_01typelist_3_01_ts_8_8_8_01_4_01_4.html#a66efb16b07df8427d29a1bb47cb8d342":[22,0,6,5,17,7],
 "structtk_1_1tuple_1_1tt__impl_3_01typelist_3_01_ss_8_8_8_01_4_00_01typelist_3_01_ts_8_8_8_01_4_01_4.html#a69d083e2798de1700d4e9bc66a8c89b5":[22,0,6,5,17,2],
 "structtk_1_1tuple_1_1tt__impl_3_01typelist_3_01_ss_8_8_8_01_4_00_01typelist_3_01_ts_8_8_8_01_4_01_4.html#a8f76951c9926caad61d286abb38184f7":[22,0,6,5,17,0],
 "structtk_1_1tuple_1_1tt__impl_3_01typelist_3_01_ss_8_8_8_01_4_00_01typelist_3_01_ts_8_8_8_01_4_01_4.html#ae12f9e4fe19e6724163ebf8c18444f88":[22,0,6,5,17,4],
@@ -249,5 +239,15 @@ var NAVTREEINDEX18 =
 "structwalker_1_1_diff_eq_stack_1_1register_diff_eq.html#a5763b0f7e4fb9700e33342a9acc93397":[22,0,9,10,0,2],
 "structwalker_1_1_diff_eq_stack_1_1register_diff_eq.html#a65bda05d7ac6da781e990f1fa8938c33":[22,0,9,10,0,0],
 "structwalker_1_1_diff_eq_stack_1_1register_diff_eq.html#adc22a25ab5b043d2d85a73f4ac1c3b55":[22,0,9,10,0,1],
-"structwalker_1_1_init_beta.html":[22,0,9,18]
+"structwalker_1_1_init_beta.html":[22,0,9,18],
+"structwalker_1_1_init_beta.html#a2230fe372339f73b170757a702331fda":[22,0,9,18,1],
+"structwalker_1_1_init_beta.html#a3629bf3c7e11e20f874e8af7224f97aa":[22,0,9,18,0],
+"structwalker_1_1_init_delta.html":[22,0,9,19],
+"structwalker_1_1_init_delta.html#a7d39b47f12b00f7adf6bc7f94bca3bf0":[22,0,9,19,1],
+"structwalker_1_1_init_delta.html#ab3687389d481850ab550ec16baea4149":[22,0,9,19,0],
+"structwalker_1_1_init_raw.html":[22,0,9,20],
+"structwalker_1_1_init_raw.html#a7c0072b051b1bda5dc20a6a28d29adc6":[22,0,9,20,0],
+"structwalker_1_1_init_raw.html#abf2dfc0585f1361add16551969678aad":[22,0,9,20,1],
+"structwalker_1_1_init_zero.html":[22,0,9,21],
+"structwalker_1_1_init_zero.html#ae48976b7449ce1b16fa4b1d70103833a":[22,0,9,21,1]
 };

@@ -1,15 +1,5 @@
 var NAVTREEINDEX19 =
 {
-"structwalker_1_1_init_beta.html#a2230fe372339f73b170757a702331fda":[22,0,9,18,1],
-"structwalker_1_1_init_beta.html#a3629bf3c7e11e20f874e8af7224f97aa":[22,0,9,18,0],
-"structwalker_1_1_init_delta.html":[22,0,9,19],
-"structwalker_1_1_init_delta.html#a7d39b47f12b00f7adf6bc7f94bca3bf0":[22,0,9,19,1],
-"structwalker_1_1_init_delta.html#ab3687389d481850ab550ec16baea4149":[22,0,9,19,0],
-"structwalker_1_1_init_raw.html":[22,0,9,20],
-"structwalker_1_1_init_raw.html#a7c0072b051b1bda5dc20a6a28d29adc6":[22,0,9,20,0],
-"structwalker_1_1_init_raw.html#abf2dfc0585f1361add16551969678aad":[22,0,9,20,1],
-"structwalker_1_1_init_zero.html":[22,0,9,21],
-"structwalker_1_1_init_zero.html#ae48976b7449ce1b16fa4b1d70103833a":[22,0,9,21,1],
 "structwalker_1_1_init_zero.html#af6c2be9f303379d859f6aeb1f9799d57":[22,0,9,21,0],
 "structwalker_1_1cmd_1_1help.html":[22,0,9,0,0],
 "structwalker_1_1cmd_1_1helpctr.html":[22,0,9,0,1],

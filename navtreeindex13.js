@@ -1,15 +1,5 @@
 var NAVTREEINDEX13 =
 {
-"classwalker_1_1_mix_mass_frac_beta_coeff_decay.html#ace0b2ff54e515185e6b7fe9a0871b06c":[22,0,9,26,1],
-"classwalker_1_1_mix_mass_frac_beta_coeff_decay.html#ada9d70bfa566c9bca27f1473ef6822ef":[22,0,9,26,0],
-"classwalker_1_1_mix_mass_frac_beta_coeff_hom_decay.html":[22,0,9,27],
-"classwalker_1_1_mix_mass_frac_beta_coeff_hom_decay.html#a06e200868adbed1aea5b5f4751524a0e":[22,0,9,27,3],
-"classwalker_1_1_mix_mass_frac_beta_coeff_hom_decay.html#a5825d1038a3f3322b06508dfee9df999":[22,0,9,27,1],
-"classwalker_1_1_mix_mass_frac_beta_coeff_hom_decay.html#a6263968844b18ab6b52a2eec26dda8eb":[22,0,9,27,0],
-"classwalker_1_1_mix_mass_frac_beta_coeff_hom_decay.html#ad55baa005a85ab41934350f569f277ea":[22,0,9,27,2],
-"classwalker_1_1_mix_mass_frac_beta_coeff_hydro_time_scale_hom_decay.html":[22,0,9,28],
-"classwalker_1_1_mix_mass_frac_beta_coeff_hydro_time_scale_hom_decay.html#a14309bdc4bbc1f0a4d74a451fcdced06":[22,0,9,28,3],
-"classwalker_1_1_mix_mass_frac_beta_coeff_hydro_time_scale_hom_decay.html#a588bf0c5129c238d96c425b3c02875f5":[22,0,9,28,4],
 "classwalker_1_1_mix_mass_frac_beta_coeff_hydro_time_scale_hom_decay.html#a6e21289e98e5a8a70f2ef568e4b757d1":[22,0,9,28,2],
 "classwalker_1_1_mix_mass_frac_beta_coeff_hydro_time_scale_hom_decay.html#a970726261ab318c7b04685d54f860ddb":[22,0,9,28,1],
 "classwalker_1_1_mix_mass_frac_beta_coeff_hydro_time_scale_hom_decay.html#aec0155cebbd21d6dfbf2f9884c88e1b9":[22,0,9,28,0],
@@ -249,5 +239,15 @@ var NAVTREEINDEX13 =
 "distributor_8ci.html":[23,0,1,16,4],
 "distributor_8ci_source.html":[23,0,1,16,4],
 "distributor_8decl_8h.html":[23,0,1,9,10],
-"distributor_8decl_8h_source.html":[23,0,1,9,10]
+"distributor_8decl_8h_source.html":[23,0,1,9,10],
+"distributor_8def_8h.html":[23,0,1,9,11],
+"distributor_8def_8h_source.html":[23,0,1,9,11],
+"examples.html":[20],
+"examples.html#rngtest_examples":[20,1],
+"examples.html#walker_examples":[20,0],
+"exodus_i_i_8h.html":[23,0,1,9,12],
+"exodus_i_i_8h_source.html":[23,0,1,9,12],
+"files.html":[23,0],
+"for__each_8h.html":[23,0,1,9,14],
+"for__each_8h_source.html":[23,0,1,9,14]
 };
