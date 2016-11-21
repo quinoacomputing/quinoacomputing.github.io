@@ -75,6 +75,7 @@ var namespacetag =
     [ "helpctr", "structtag_1_1helpctr.html", null ],
     [ "helpkw", "structtag_1_1helpkw.html", null ],
     [ "hydro", "structtag_1_1hydro.html", null ],
+    [ "hydrotimescales", "structtag_1_1hydrotimescales.html", null ],
     [ "id", "structtag_1_1id.html", null ],
     [ "init", "structtag_1_1init.html", null ],
     [ "initpolicy", "structtag_1_1initpolicy.html", null ],

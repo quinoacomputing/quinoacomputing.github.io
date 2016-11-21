@@ -50,6 +50,7 @@ var namespacetk_1_1grm =
     [ "Store_back", "structtk_1_1grm_1_1_store__back.html", "structtk_1_1grm_1_1_store__back" ],
     [ "Store_back_back", "structtk_1_1grm_1_1_store__back__back.html", "structtk_1_1grm_1_1_store__back__back" ],
     [ "Store_back_back_back", "structtk_1_1grm_1_1_store__back__back__back.html", "structtk_1_1grm_1_1_store__back__back__back" ],
+    [ "store_back_back_option", "structtk_1_1grm_1_1store__back__back__option.html", "structtk_1_1grm_1_1store__back__back__option" ],
     [ "store_back_option", "structtk_1_1grm_1_1store__back__option.html", "structtk_1_1grm_1_1store__back__option" ],
     [ "store_precision", "structtk_1_1grm_1_1store__precision.html", "structtk_1_1grm_1_1store__precision" ],
     [ "Store_switch", "structtk_1_1grm_1_1_store__switch.html", "structtk_1_1grm_1_1_store__switch" ],

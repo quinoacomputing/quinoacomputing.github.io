@@ -45,12 +45,14 @@ var hierarchy =
       [ "tk::grm::Store_back< Stack, tag, tags >", "structtk_1_1grm_1_1_store__back.html", null ],
       [ "tk::grm::Store_back_back< Stack, tag, tags >", "structtk_1_1grm_1_1_store__back__back.html", null ],
       [ "tk::grm::Store_back_back_back< Stack, tag, tags >", "structtk_1_1grm_1_1_store__back__back__back.html", null ],
+      [ "tk::grm::store_back_back_option< Stack, use, Option, tag, tags >", "structtk_1_1grm_1_1store__back__back__option.html", null ],
       [ "tk::grm::store_back_option< Stack, use, Option, tag, tags >", "structtk_1_1grm_1_1store__back__option.html", null ],
       [ "tk::grm::store_precision< Stack, prec >", "structtk_1_1grm_1_1store__precision.html", null ],
       [ "tk::grm::Store_switch< Stack, tag, tags >", "structtk_1_1grm_1_1_store__switch.html", null ],
       [ "tk::grm::warning< Stack, key >", "structtk_1_1grm_1_1warning.html", null ],
       [ "tk::rngsse::insert_seq< Stack, use, Option, field, sel, vec, tag, tags >", "structtk_1_1rngsse_1_1insert__seq.html", null ],
       [ "walker::deck::check_eq< eq >", "structwalker_1_1deck_1_1check__eq.html", null ],
+      [ "walker::deck::check_hydrotimescales< Stack, eq, param >", "structwalker_1_1deck_1_1check__hydrotimescales.html", null ],
       [ "walker::deck::check_init< eq >", "structwalker_1_1deck_1_1check__init.html", null ],
       [ "walker::deck::register_eq< eq >", "structwalker_1_1deck_1_1register__eq.html", null ],
       [ "walker::deck::store_option< Option, tags >", "structwalker_1_1deck_1_1store__option.html", null ]
@@ -186,8 +188,8 @@ var hierarchy =
     [ "tag::Collision", "structtag_1_1_collision.html", null ],
     [ "tag::CollisionOver", "structtag_1_1_collision_over.html", null ],
     [ "tag::CollisionPermut", "structtag_1_1_collision_permut.html", null ],
-    [ "inciter::CompFlow< Physics, Problem >", "classinciter_1_1_comp_flow.html", null ],
     [ "tag::compflow", "structtag_1_1compflow.html", null ],
+    [ "inciter::CompFlow< Physics, Problem >", "classinciter_1_1_comp_flow.html", null ],
     [ "inciter::CompFlowPhysicsEuler", "classinciter_1_1_comp_flow_physics_euler.html", null ],
     [ "inciter::CompFlowPhysicsNavierStokes", "classinciter_1_1_comp_flow_physics_navier_stokes.html", null ],
     [ "inciter::CompFlowProblemUserDefined", "classinciter_1_1_comp_flow_problem_user_defined.html", null ],
@@ -319,6 +321,7 @@ var hierarchy =
     [ "tk::ctr::HelpKw", "structtk_1_1ctr_1_1_help_kw.html", null ],
     [ "tag::helpkw", "structtag_1_1helpkw.html", null ],
     [ "tag::hydro", "structtag_1_1hydro.html", null ],
+    [ "tag::hydrotimescales", "structtag_1_1hydrotimescales.html", null ],
     [ "tk::hypre::HypreMatrix", "classtk_1_1hypre_1_1_hypre_matrix.html", null ],
     [ "tk::hypre::HypreSolver", "classtk_1_1hypre_1_1_hypre_solver.html", null ],
     [ "tk::hypre::HypreVector", "classtk_1_1hypre_1_1_hypre_vector.html", null ],
@@ -524,12 +527,12 @@ var hierarchy =
     [ "tut::charm::tag::name", "structtut_1_1charm_1_1tag_1_1name.html", null ],
     [ "tut::TaggedTuple_common::name", "structtut_1_1_tagged_tuple__common_1_1name.html", null ],
     [ "tag::ncomp", "structtag_1_1ncomp.html", null ],
-    [ "tk::HasTypedefProxy< T >::no", "structtk_1_1_has_typedef_proxy_1_1no.html", null ],
     [ "tk::HasTypedefAlias< T >::no", "structtk_1_1_has_typedef_alias_1_1no.html", null ],
     [ "tk::HasTypedefCode< T >::no", "structtk_1_1_has_typedef_code_1_1no.html", null ],
     [ "tk::HasTypedefExpectType< T >::no", "structtk_1_1_has_typedef_expect_type_1_1no.html", null ],
     [ "tk::HasFunctionExpectDescription< T >::no", "structtk_1_1_has_function_expect_description_1_1no.html", null ],
     [ "tk::HasFunctionExpectChoices< T >::no", "structtk_1_1_has_function_expect_choices_1_1no.html", null ],
+    [ "tk::HasTypedefProxy< T >::no", "structtk_1_1_has_typedef_proxy_1_1no.html", null ],
     [ "tut::Has_common::noAlias", "structtut_1_1_has__common_1_1no_alias.html", null ],
     [ "tut::Has_common::noCode", "structtut_1_1_has__common_1_1no_code.html", null ],
     [ "tut::Has_common::noExpectChoices", "structtut_1_1_has__common_1_1no_expect_choices.html", null ],
@@ -546,6 +549,9 @@ var hierarchy =
     [ "walker::NumberFractionBetaCoeffConst", "classwalker_1_1_number_fraction_beta_coeff_const.html", null ],
     [ "tag::numfracbeta", "structtag_1_1numfracbeta.html", null ],
     [ "tag::omega", "structtag_1_1omega.html", null ],
+    [ "option_vector", null, [
+      [ "walker::deck::sde_option_vector< Option, keyword, eq, param, check >", "structwalker_1_1deck_1_1sde__option__vector.html", null ]
+    ] ],
     [ "tag::ordinary", "structtag_1_1ordinary.html", null ],
     [ "tag::ordpdf", "structtag_1_1ordpdf.html", null ],
     [ "walker::OrnsteinUhlenbeck< Init, Coefficients >", "classwalker_1_1_ornstein_uhlenbeck.html", null ],
@@ -624,8 +630,8 @@ var hierarchy =
     [ "tag::physics", "structtag_1_1physics.html", null ],
     [ "tag::plot", "structtag_1_1plot.html", null ],
     [ "tag::poisson", "structtag_1_1poisson.html", null ],
-    [ "inciter::InciterPrint::Policies", "classinciter_1_1_inciter_print_1_1_policies.html", null ],
     [ "walker::WalkerPrint::Policies", "classwalker_1_1_walker_print_1_1_policies.html", null ],
+    [ "inciter::InciterPrint::Policies", "classinciter_1_1_inciter_print_1_1_policies.html", null ],
     [ "tag::position", "structtag_1_1position.html", null ],
     [ "tag::prec", "structtag_1_1prec.html", null ],
     [ "tk::Print", "classtk_1_1_print.html", [
@@ -660,8 +666,8 @@ var hierarchy =
     [ "inciter::PDEStack::registerPDE< Eq >", "structinciter_1_1_p_d_e_stack_1_1register_p_d_e.html", null ],
     [ "tag::reorder", "structtag_1_1reorder.html", null ],
     [ "tag::rho2", "structtag_1_1rho2.html", null ],
-    [ "tag::rng", "structtag_1_1rng.html", null ],
     [ "tk::RNG", "classtk_1_1_r_n_g.html", null ],
+    [ "tag::rng", "structtag_1_1rng.html", null ],
     [ "tut::RNG_common", "structtut_1_1_r_n_g__common.html", null ],
     [ "tag::rngmkl", "structtag_1_1rngmkl.html", null ],
     [ "tut::RNGOptions_common", "structtut_1_1_r_n_g_options__common.html", null ],
@@ -791,6 +797,9 @@ var hierarchy =
     [ "tk::Toggle< FrequencyType >", "classtk_1_1_toggle.html", [
       [ "breeze::ctr::Frequency", "classbreeze_1_1ctr_1_1_frequency.html", null ]
     ] ],
+    [ "tk::Toggle< HydroTimeScalesType >", "classtk_1_1_toggle.html", [
+      [ "walker::ctr::HydroTimeScales", "classwalker_1_1ctr_1_1_hydro_time_scales.html", null ]
+    ] ],
     [ "tk::Toggle< HydroType >", "classtk_1_1_toggle.html", [
       [ "breeze::ctr::Hydro", "classbreeze_1_1ctr_1_1_hydro.html", null ]
     ] ],
@@ -853,8 +862,8 @@ var hierarchy =
     ] ],
     [ "tut::Toggle_common", "structtut_1_1_toggle__common.html", null ],
     [ "tk::Tracker", "classtk_1_1_tracker.html", null ],
-    [ "inciter::Transport< Physics, Problem >", "classinciter_1_1_transport.html", null ],
     [ "tag::transport", "structtag_1_1transport.html", null ],
+    [ "inciter::Transport< Physics, Problem >", "classinciter_1_1_transport.html", null ],
     [ "inciter::TransportPhysicsAdvDiff", "classinciter_1_1_transport_physics_adv_diff.html", null ],
     [ "inciter::TransportPhysicsAdvection", "classinciter_1_1_transport_physics_advection.html", null ],
     [ "inciter::TransportProblemShearDiff", "classinciter_1_1_transport_problem_shear_diff.html", null ],
@@ -931,8 +940,8 @@ var hierarchy =
       ] ]
     ] ],
     [ "tk::ctr::unused", "structtk_1_1ctr_1_1unused.html", null ],
-    [ "tut::Factory_common::VBase", "structtut_1_1_factory__common_1_1_v_base.html", null ],
     [ "tut::VBase", "structtut_1_1_v_base.html", null ],
+    [ "tut::Factory_common::VBase", "structtut_1_1_factory__common_1_1_v_base.html", null ],
     [ "tut::Factory_common::VChild", "structtut_1_1_factory__common_1_1_v_child.html", null ],
     [ "tut::Vector_common", "structtut_1_1_vector__common.html", null ],
     [ "tag::verbose", "structtag_1_1verbose.html", null ],
@@ -957,7 +966,7 @@ var hierarchy =
     [ "tut::Has_common::yesExpectChoices", "structtut_1_1_has__common_1_1yes_expect_choices.html", null ],
     [ "tut::Has_common::yesExpectDescription", "structtut_1_1_has__common_1_1yes_expect_description.html", null ],
     [ "tut::Has_common::yesExpectType", "structtut_1_1_has__common_1_1yes_expect_type.html", null ],
-    [ "tut::Has_common::yesProxy", "structtut_1_1_has__common_1_1yes_proxy.html", null ],
     [ "tut::CharmUtil_common::yesProxy", "structtut_1_1_charm_util__common_1_1yes_proxy.html", null ],
+    [ "tut::Has_common::yesProxy", "structtut_1_1_has__common_1_1yes_proxy.html", null ],
     [ "tk::ctr::ncomponents< Tags >::zero", "structtk_1_1ctr_1_1ncomponents_1_1zero.html", null ]
 ];

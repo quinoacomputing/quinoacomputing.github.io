@@ -11,7 +11,7 @@ var _control_2_walker_2_types_8h =
     [ "ios", "_control_2_walker_2_types_8h.html#a80d0c7a77b2a11ac93935784a61f6dc7", null ],
     [ "Location", "_control_2_walker_2_types_8h.html#a091b5583ea31da82a072097bd9391f1b", null ],
     [ "MassFractionBetaParameters", "_control_2_walker_2_types_8h.html#a41aad52f6a017b9db71139ce93549e44", null ],
-    [ "MixMassFractionBetaParameters", "_control_2_walker_2_types_8h.html#a3724c4925a63a5a27b8e36bea72f8df5", null ],
+    [ "MixMassFractionBetaParameters", "_control_2_walker_2_types_8h.html#ad89494e6686672112d27f8d8334cee33", null ],
     [ "MixNumberFractionBetaParameters", "_control_2_walker_2_types_8h.html#a2e82acb9fb4be90e23d639f4b4c26bd3", null ],
     [ "NumberFractionBetaParameters", "_control_2_walker_2_types_8h.html#a541006cd46370010ea0e475f2a74c5e2", null ],
     [ "OrnsteinUhlenbeckParameters", "_control_2_walker_2_types_8h.html#a41820dabe8a115eab56aa2fb0e4dae18", null ],

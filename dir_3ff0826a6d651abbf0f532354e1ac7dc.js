@@ -93,6 +93,7 @@ var dir_3ff0826a6d651abbf0f532354e1ac7dc =
       [ "gamma", "structtag_1_1gamma.html", null ],
       [ "spike", "structtag_1_1spike.html", null ],
       [ "betapdf", "structtag_1_1betapdf.html", null ],
+      [ "hydrotimescales", "structtag_1_1hydrotimescales.html", null ],
       [ "diffeq", "structtag_1_1diffeq.html", null ],
       [ "pde", "structtag_1_1pde.html", null ],
       [ "partitioner", "structtag_1_1partitioner.html", null ],

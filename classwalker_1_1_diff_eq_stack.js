@@ -20,6 +20,7 @@ var classwalker_1_1_diff_eq_stack =
     [ "infoSkewNormal", "classwalker_1_1_diff_eq_stack.html#ac2b735311938acc735210fc29cfcf078", null ],
     [ "infoWrightFisher", "classwalker_1_1_diff_eq_stack.html#a4b3b43ae0ff4e3bddc2b51e51cce9bd9", null ],
     [ "ntypes", "classwalker_1_1_diff_eq_stack.html#a64a2b3383aec5f1b1bac655babce26d4", null ],
+    [ "options", "classwalker_1_1_diff_eq_stack.html#af15baa130dfe87808c87b6a211aa3928", null ],
     [ "parameters", "classwalker_1_1_diff_eq_stack.html#a3d490cf728768aa9048f7e018fc0ec54", null ],
     [ "selected", "classwalker_1_1_diff_eq_stack.html#a61bfdc613c0f5edd1a715fc1059fe8d7", null ],
     [ "spikes", "classwalker_1_1_diff_eq_stack.html#a518be40e6318b51adc43f0d5546fbd98", null ],
