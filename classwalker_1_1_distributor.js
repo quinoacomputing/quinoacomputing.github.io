@@ -2,9 +2,9 @@ var classwalker_1_1_distributor =
 [
     [ "Distributor", "classwalker_1_1_distributor.html#aba72a9b33997ac8efe1c7a3540d9b18e", null ],
     [ "computedt", "classwalker_1_1_distributor.html#a9c9f7e64314dd6ceac753211a4f726b4", null ],
-    [ "estimateCen", "classwalker_1_1_distributor.html#a1f99de69e8c3fd6b7b9a1d7db12687b2", null ],
+    [ "estimateCen", "classwalker_1_1_distributor.html#a09e14b38e71b81fc554a635379358da8", null ],
     [ "estimateCenPDF", "classwalker_1_1_distributor.html#a270abb073123b7c9fcf083b50b962a24", null ],
-    [ "estimateOrd", "classwalker_1_1_distributor.html#a194f199b33b65c906237691f70c32b45", null ],
+    [ "estimateOrd", "classwalker_1_1_distributor.html#a888cb0fa72031663a308904e131fc05f", null ],
     [ "estimateOrdPDF", "classwalker_1_1_distributor.html#aa3cfc7a4d4e8bddcc0b144501a3bba50", null ],
     [ "evaluateTime", "classwalker_1_1_distributor.html#a3bfa8fd95c0d8d41119791cbcf4ffb82", null ],
     [ "finish", "classwalker_1_1_distributor.html#a47e049f25139fe701a45a1e0bbe3c6c5", null ],
