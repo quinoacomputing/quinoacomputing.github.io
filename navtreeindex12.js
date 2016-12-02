@@ -1,14 +1,5 @@
 var NAVTREEINDEX12 =
 {
-"classtut_1_1_migrated.html#ad1d8221c12038f5eb8b041cb9cee7209":[22,0,7,21,6],
-"classtut_1_1_migrated.html#ade03322454e7daaab059e57ef37b0ae1":[22,0,7,21,15],
-"classtut_1_1_migrated.html#ae1c47bd5650c2d357e9544f82ff11f63":[22,0,7,21,7],
-"classtut_1_1_migrated.html#ae4f7a4719b1640c8b28c875a6cc669b5":[22,0,7,21,20],
-"classtut_1_1_migrated.html#aec67241da79267ec6bca324bb7b10bfc":[22,0,7,21,13],
-"classtut_1_1_test_array.html":[22,0,7,46],
-"classtut_1_1_test_array.html#a4fa5b663b9fb89d59788ea5378d50dfb":[22,0,7,46,0],
-"classtut_1_1_test_array.html#ab2e79caeb07405e4bb7f689a8a818354":[22,0,7,46,1],
-"classunittest_1_1_cmd_line_parser.html":[22,0,8,2],
 "classunittest_1_1_cmd_line_parser.html#a17480692398b2f1299600bfb24867bd8":[22,0,8,2,0],
 "classunittest_1_1_t_u_t_suite.html":[22,0,8,3],
 "classunittest_1_1_t_u_t_suite.html#a04a6242ccac2bbba88b7462608f5aeeb":[22,0,8,3,6],
@@ -249,5 +240,14 @@ var NAVTREEINDEX12 =
 "classwalker_1_1_mass_fraction_beta.html#a0f661ed0ca50858bf0eee596787b9738":[22,0,9,24,2],
 "classwalker_1_1_mass_fraction_beta.html#a1c53ed81f782e275c21060f47a5d4996":[22,0,9,24,3],
 "classwalker_1_1_mass_fraction_beta.html#a4158ef2ea5181662311fd6f4b7323874":[22,0,9,24,13],
-"classwalker_1_1_mass_fraction_beta.html#a4709f586c7e0b3e7f4a2ced81c300afc":[22,0,9,24,9]
+"classwalker_1_1_mass_fraction_beta.html#a4709f586c7e0b3e7f4a2ced81c300afc":[22,0,9,24,9],
+"classwalker_1_1_mass_fraction_beta.html#a47a8d65ec90f95e14684f67d826681c3":[22,0,9,24,0],
+"classwalker_1_1_mass_fraction_beta.html#a5769561a261bcaa22cf3451876d41851":[22,0,9,24,16],
+"classwalker_1_1_mass_fraction_beta.html#a6a24bf4e5cc891c7c695ce4cf588c6d2":[22,0,9,24,5],
+"classwalker_1_1_mass_fraction_beta.html#a7679ec5474040383a25ce0a153823c5c":[22,0,9,24,11],
+"classwalker_1_1_mass_fraction_beta.html#a80f25c5d2df4cad6d271083c7977a85e":[22,0,9,24,10],
+"classwalker_1_1_mass_fraction_beta.html#a91cf2b7d0d3ce5d6d2a010883fbfe28d":[22,0,9,24,7],
+"classwalker_1_1_mass_fraction_beta.html#a961fcd97c6c8dd055fb01c1bf850b697":[22,0,9,24,8],
+"classwalker_1_1_mass_fraction_beta.html#aaced08e5940822850c8edbfe5938b16d":[22,0,9,24,15],
+"classwalker_1_1_mass_fraction_beta.html#ab0719d732bbb310417ae8b5cd83bddc0":[22,0,9,24,1]
 };
