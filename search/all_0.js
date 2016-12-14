@@ -31,7 +31,7 @@ var searchData=
   ['advdiff',['ADVDIFF',['../namespaceinciter_1_1ctr.html#a05792aa346ef778c24407416c5560d14aaf7c4a5054faf0cfd894c7aea8cfe384',1,'inciter::ctr']]],
   ['advection',['ADVECTION',['../namespaceinciter_1_1ctr.html#a05792aa346ef778c24407416c5560d14a21d5412bbfc0a49ed5cb827c133bb3fb',1,'inciter::ctr']]],
   ['advection',['advection',['../structtag_1_1advection.html',1,'tag']]],
-  ['aec',['aec',['../classinciter_1_1_carrier.html#a7c3bd79d4a5212a35cac3ec6509f4717',1,'inciter::Carrier::aec()'],['../classinciter_1_1_flux_corrector.html#a44768199205058c52a989a8da8a1f161',1,'inciter::FluxCorrector::aec()']]],
+  ['aec',['aec',['../classinciter_1_1_carrier.html#a7c3bd79d4a5212a35cac3ec6509f4717',1,'inciter::Carrier::aec()'],['../classinciter_1_1_flux_corrector.html#ac8ea44becb58f8dd9d0b30f110b73968',1,'inciter::FluxCorrector::aec()']]],
   ['aec_20license',['AEC license',['../_a_e_c_license.html',1,'licenses']]],
   ['aec_5flicense_2edox',['AEC_license.dox',['../_a_e_c__license_8dox.html',1,'']]],
   ['age',['age',['../structtut_1_1charm_1_1tag_1_1age.html',1,'tut::charm::tag']]],

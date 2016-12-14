@@ -11,5 +11,6 @@ var structinciter_1_1_p_d_e_1_1_concept =
     [ "names", "structinciter_1_1_p_d_e_1_1_concept.html#af473f228392db1093086d0add4978a53", null ],
     [ "output", "structinciter_1_1_p_d_e_1_1_concept.html#afc798b8b87309fc7b74e57f52f44f302", null ],
     [ "rhs", "structinciter_1_1_p_d_e_1_1_concept.html#ad075c9992e7aa82594c72755fa8d492f", null ],
+    [ "side", "structinciter_1_1_p_d_e_1_1_concept.html#a28c880955d4dd1cd79f339bad48a7458", null ],
     [ "velocity", "structinciter_1_1_p_d_e_1_1_concept.html#a086fabb1a66ac4e755db51e74f4e4263", null ]
 ];

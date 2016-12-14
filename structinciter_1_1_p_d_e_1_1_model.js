@@ -9,6 +9,7 @@ var structinciter_1_1_p_d_e_1_1_model =
     [ "names", "structinciter_1_1_p_d_e_1_1_model.html#a10748449e7f6a3eb5cdaa79211a9a5f8", null ],
     [ "output", "structinciter_1_1_p_d_e_1_1_model.html#ab965cd5543dcbe448d99a0090138340d", null ],
     [ "rhs", "structinciter_1_1_p_d_e_1_1_model.html#a0c030abaab481f2c34972cc3e285ae57", null ],
+    [ "side", "structinciter_1_1_p_d_e_1_1_model.html#ad047fc2cec6f995e9a403d16bcef528c", null ],
     [ "velocity", "structinciter_1_1_p_d_e_1_1_model.html#a4550d5f8286a87446f243cb4e28b2a50", null ],
     [ "data", "structinciter_1_1_p_d_e_1_1_model.html#a5b02b3e75621f58952ec5ca0e010eb4e", null ]
 ];

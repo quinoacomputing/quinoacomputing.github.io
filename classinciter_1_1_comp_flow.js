@@ -9,6 +9,7 @@ var classinciter_1_1_comp_flow =
     [ "names", "classinciter_1_1_comp_flow.html#a5886e1cd585272a26703544efdb759f0", null ],
     [ "output", "classinciter_1_1_comp_flow.html#afcaf7def7f2bb0ed0cca9bba9ae56ebf", null ],
     [ "rhs", "classinciter_1_1_comp_flow.html#a87d2d9481ec589ffe077934b71e0032f", null ],
+    [ "side", "classinciter_1_1_comp_flow.html#ac35129c821564a46323dffef310d954e", null ],
     [ "velocity", "classinciter_1_1_comp_flow.html#a780eb2a9adb53e09684ee6a2d6d23466", null ],
     [ "m_offset", "classinciter_1_1_comp_flow.html#a4c5e6b336f4e8ffe1cf3e1082ba6f3af", null ]
 ];

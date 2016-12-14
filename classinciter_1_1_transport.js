@@ -9,6 +9,7 @@ var classinciter_1_1_transport =
     [ "names", "classinciter_1_1_transport.html#a57ed81960d0120c2e330c8293e5bcfe0", null ],
     [ "output", "classinciter_1_1_transport.html#ae19067efe14de01fb04da02371d54167", null ],
     [ "rhs", "classinciter_1_1_transport.html#aed94cacdcc7324fe76a49c26b73dfdf5", null ],
+    [ "side", "classinciter_1_1_transport.html#a239353da51c234de09418f704384e0ff", null ],
     [ "velocity", "classinciter_1_1_transport.html#a6bc92f1e83e2870f2a3d0b31eeabfcc5", null ],
     [ "m_c", "classinciter_1_1_transport.html#a501678de9c03bbd91dfe1b7f5edbaf99", null ],
     [ "m_ncomp", "classinciter_1_1_transport.html#afc8ed9f8f0b240f565ff5dcc478cf99e", null ],
