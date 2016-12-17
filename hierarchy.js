@@ -52,6 +52,7 @@ var hierarchy =
       [ "tk::grm::warning< Stack, key >", "structtk_1_1grm_1_1warning.html", null ],
       [ "tk::rngsse::insert_seq< Stack, use, Option, field, sel, vec, tag, tags >", "structtk_1_1rngsse_1_1insert__seq.html", null ],
       [ "walker::deck::check_eq< eq >", "structwalker_1_1deck_1_1check__eq.html", null ],
+      [ "walker::deck::check_hydroproductions< Stack, eq, param >", "structwalker_1_1deck_1_1check__hydroproductions.html", null ],
       [ "walker::deck::check_hydrotimescales< Stack, eq, param >", "structwalker_1_1deck_1_1check__hydrotimescales.html", null ],
       [ "walker::deck::check_init< eq >", "structwalker_1_1deck_1_1check__init.html", null ],
       [ "walker::deck::register_eq< eq >", "structwalker_1_1deck_1_1register__eq.html", null ],
@@ -321,6 +322,7 @@ var hierarchy =
     [ "tk::ctr::HelpKw", "structtk_1_1ctr_1_1_help_kw.html", null ],
     [ "tag::helpkw", "structtag_1_1helpkw.html", null ],
     [ "tag::hydro", "structtag_1_1hydro.html", null ],
+    [ "tag::hydroproductions", "structtag_1_1hydroproductions.html", null ],
     [ "tag::hydrotimescales", "structtag_1_1hydrotimescales.html", null ],
     [ "tk::hypre::HypreMatrix", "classtk_1_1hypre_1_1_hypre_matrix.html", null ],
     [ "tk::hypre::HypreSolver", "classtk_1_1hypre_1_1_hypre_solver.html", null ],
@@ -630,8 +632,8 @@ var hierarchy =
     [ "tag::physics", "structtag_1_1physics.html", null ],
     [ "tag::plot", "structtag_1_1plot.html", null ],
     [ "tag::poisson", "structtag_1_1poisson.html", null ],
-    [ "walker::WalkerPrint::Policies", "classwalker_1_1_walker_print_1_1_policies.html", null ],
     [ "inciter::InciterPrint::Policies", "classinciter_1_1_inciter_print_1_1_policies.html", null ],
+    [ "walker::WalkerPrint::Policies", "classwalker_1_1_walker_print_1_1_policies.html", null ],
     [ "tag::position", "structtag_1_1position.html", null ],
     [ "tag::prec", "structtag_1_1prec.html", null ],
     [ "tk::Print", "classtk_1_1_print.html", [
@@ -671,8 +673,8 @@ var hierarchy =
     [ "tut::RNG_common", "structtut_1_1_r_n_g__common.html", null ],
     [ "tag::rngmkl", "structtag_1_1rngmkl.html", null ],
     [ "tut::RNGOptions_common", "structtut_1_1_r_n_g_options__common.html", null ],
-    [ "tk::RNGSSE< State, SeqNumType, Generate >", "classtk_1_1_r_n_g_s_s_e.html", null ],
     [ "tag::rngsse", "structtag_1_1rngsse.html", null ],
+    [ "tk::RNGSSE< State, SeqNumType, Generate >", "classtk_1_1_r_n_g_s_s_e.html", null ],
     [ "tut::RNGSSE_common", "structtut_1_1_r_n_g_s_s_e__common.html", null ],
     [ "tk::RNGStack", "classtk_1_1_r_n_g_stack.html", null ],
     [ "rngtest::RNGTestDriver", "classrngtest_1_1_r_n_g_test_driver.html", null ],
@@ -796,6 +798,9 @@ var hierarchy =
     ] ],
     [ "tk::Toggle< FrequencyType >", "classtk_1_1_toggle.html", [
       [ "breeze::ctr::Frequency", "classbreeze_1_1ctr_1_1_frequency.html", null ]
+    ] ],
+    [ "tk::Toggle< HydroProductionsType >", "classtk_1_1_toggle.html", [
+      [ "walker::ctr::HydroProductions", "classwalker_1_1ctr_1_1_hydro_productions.html", null ]
     ] ],
     [ "tk::Toggle< HydroTimeScalesType >", "classtk_1_1_toggle.html", [
       [ "walker::ctr::HydroTimeScales", "classwalker_1_1ctr_1_1_hydro_time_scales.html", null ]
@@ -949,8 +954,8 @@ var hierarchy =
     [ "walker::WalkerDriver", "classwalker_1_1_walker_driver.html", null ],
     [ "tk::Timer::Watch", "structtk_1_1_timer_1_1_watch.html", null ],
     [ "tag::WeightDistrib", "structtag_1_1_weight_distrib.html", null ],
-    [ "walker::WrightFisher< Init, Coefficients >", "classwalker_1_1_wright_fisher.html", null ],
     [ "tag::wrightfisher", "structtag_1_1wrightfisher.html", null ],
+    [ "walker::WrightFisher< Init, Coefficients >", "classwalker_1_1_wright_fisher.html", null ],
     [ "walker::WrightFisherCoeffConst", "classwalker_1_1_wright_fisher_coeff_const.html", null ],
     [ "tk::Writer", "classtk_1_1_writer.html", [
       [ "tk::DiagWriter", "classtk_1_1_diag_writer.html", null ],

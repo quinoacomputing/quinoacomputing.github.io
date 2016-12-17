@@ -25,6 +25,7 @@ var dir_cb1fa340cd9a8b2fc43d51565d542644 =
       [ "GeneralizedDirichlet", "classwalker_1_1_generalized_dirichlet.html", "classwalker_1_1_generalized_dirichlet" ]
     ] ],
     [ "GeneralizedDirichletCoeffPolicy.h", "_generalized_dirichlet_coeff_policy_8h.html", "_generalized_dirichlet_coeff_policy_8h" ],
+    [ "HydroProductions.h", "_diff_eq_2_hydro_productions_8h.html", "_diff_eq_2_hydro_productions_8h" ],
     [ "HydroTimeScales.h", "_diff_eq_2_hydro_time_scales_8h.html", "_diff_eq_2_hydro_time_scales_8h" ],
     [ "InitPolicy.h", "_diff_eq_2_init_policy_8h.html", "_diff_eq_2_init_policy_8h" ],
     [ "MassFractionBeta.h", "_mass_fraction_beta_8h.html", [

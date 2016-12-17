@@ -5,6 +5,7 @@ var _walker_2_input_deck_2_grammar_8h =
     [ "check_eq", "structwalker_1_1deck_1_1check__eq.html", "structwalker_1_1deck_1_1check__eq" ],
     [ "check_init", "structwalker_1_1deck_1_1check__init.html", "structwalker_1_1deck_1_1check__init" ],
     [ "check_hydrotimescales", "structwalker_1_1deck_1_1check__hydrotimescales.html", "structwalker_1_1deck_1_1check__hydrotimescales" ],
+    [ "check_hydroproductions", "structwalker_1_1deck_1_1check__hydroproductions.html", "structwalker_1_1deck_1_1check__hydroproductions" ],
     [ "scan_sde", "structwalker_1_1deck_1_1scan__sde.html", null ],
     [ "discretization_parameters", "structwalker_1_1deck_1_1discretization__parameters.html", null ],
     [ "rngs", "structwalker_1_1deck_1_1rngs.html", null ],

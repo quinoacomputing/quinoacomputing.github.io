@@ -1,12 +1,13 @@
 var searchData=
 [
+  ['sample',['sample',['../namespacetk.html#a28a553d30e4fd16f06342dd643d26c25',1,'tk']]],
   ['samplecorr',['SampleCorr',['../classrngtest_1_1_test_u01_stack.html#a5a2767bd80f08c414c046273788a7eb0',1,'rngtest::TestU01Stack']]],
   ['samplemean',['SampleMean',['../classrngtest_1_1_test_u01_stack.html#a3b581e591520b96d5df172d08643c9e9',1,'rngtest::TestU01Stack']]],
   ['sampleprod',['SampleProd',['../classrngtest_1_1_test_u01_stack.html#ad7c2a6cf48ffe10b753972702a3c4a69',1,'rngtest::TestU01Stack']]],
   ['save',['save',['../classtk_1_1_print.html#ac8685b240252f4f5efec912e2ea2d765',1,'tk::Print']]],
   ['savetrace',['saveTrace',['../classtk_1_1_exception.html#ab7960d6cf9c3c98eec51b07b6273e00d',1,'tk::Exception']]],
   ['savir2',['Savir2',['../classrngtest_1_1_test_u01_stack.html#a6cf542998d9685a4813df4890e72a75e',1,'rngtest::TestU01Stack']]],
-  ['section',['section',['../classtk_1_1_print.html#a2e8ce48bec4d0776ac12d4c0a8d4a2d0',1,'tk::Print::section(const std::string &amp;t) const'],['../classtk_1_1_print.html#ab436bf1549179609a96bdd61c61822ca',1,'tk::Print::section(const std::string &amp;name, const std::string &amp;value) const'],['../classrngtest_1_1_r_n_g_test_print.html#af733b6f71c4a46d4c4d4266cd3faf240',1,'rngtest::RNGTestPrint::Section()'],['../classwalker_1_1_walker_print.html#a0464ad11417eccaa7ab66bc161528428',1,'walker::WalkerPrint::Section()']]],
+  ['section',['Section',['../classrngtest_1_1_r_n_g_test_print.html#af733b6f71c4a46d4c4d4266cd3faf240',1,'rngtest::RNGTestPrint::Section()'],['../classwalker_1_1_walker_print.html#a0464ad11417eccaa7ab66bc161528428',1,'walker::WalkerPrint::Section()'],['../classtk_1_1_print.html#a2e8ce48bec4d0776ac12d4c0a8d4a2d0',1,'tk::Print::section(const std::string &amp;t) const'],['../classtk_1_1_print.html#ab436bf1549179609a96bdd61c61822ca',1,'tk::Print::section(const std::string &amp;name, const std::string &amp;value) const']]],
   ['selected',['selected',['../classwalker_1_1_diff_eq_stack.html#a61bfdc613c0f5edd1a715fc1059fe8d7',1,'walker::DiffEqStack::selected()'],['../classinciter_1_1_p_d_e_stack.html#a7b3dba0561565709fd78508b6fb571da',1,'inciter::PDEStack::selected()'],['../classtk_1_1_r_n_g_stack.html#ab1c30742819f7c22826dcce8c620539f',1,'tk::RNGStack::selected()']]],
   ['serialize',['serialize',['../namespacetk.html#a8a928cb4648630899f34ee7ad08fd754',1,'tk::serialize(const std::unordered_map&lt; Key, T, Hash, KeyEqual &gt; &amp;m)'],['../namespacetk.html#ab33ea32478ab229dc49f14585c74fec2',1,'tk::serialize(const std::vector&lt; std::size_t &gt; &amp;v)'],['../namespaceinciter.html#a4f783d4aff15afea46369c0118c0c7f5',1,'inciter::serialize()'],['../namespacetk.html#a95434266ed0be6503251e90e0fe60823',1,'tk::serialize()']]],
   ['serialover',['SerialOver',['../classrngtest_1_1_test_u01_stack.html#a1065302f0668c95335ed1d087ddb423b',1,'rngtest::TestU01Stack']]],

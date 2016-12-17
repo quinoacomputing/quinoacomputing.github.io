@@ -3,6 +3,7 @@ var namespacewalker_1_1deck =
     [ "beta", "structwalker_1_1deck_1_1beta.html", null ],
     [ "check_eq", "structwalker_1_1deck_1_1check__eq.html", "structwalker_1_1deck_1_1check__eq" ],
     [ "check_errors", "structwalker_1_1deck_1_1check__errors.html", null ],
+    [ "check_hydroproductions", "structwalker_1_1deck_1_1check__hydroproductions.html", "structwalker_1_1deck_1_1check__hydroproductions" ],
     [ "check_hydrotimescales", "structwalker_1_1deck_1_1check__hydrotimescales.html", "structwalker_1_1deck_1_1check__hydrotimescales" ],
     [ "check_init", "structwalker_1_1deck_1_1check__init.html", "structwalker_1_1deck_1_1check__init" ],
     [ "diag_ou", "structwalker_1_1deck_1_1diag__ou.html", null ],
