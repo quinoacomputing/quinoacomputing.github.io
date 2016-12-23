@@ -1,5 +1,13 @@
 var NAVTREEINDEX17 =
 {
+"structtag_1_1slm.html":[22,0,5,150],
+"structtag_1_1spike.html":[22,0,5,151],
+"structtag_1_1stat.html":[22,0,5,152],
+"structtag_1_1t0.html":[22,0,5,155],
+"structtag_1_1term.html":[22,0,5,156],
+"structtag_1_1theta.html":[22,0,5,157],
+"structtag_1_1timescale.html":[22,0,5,158],
+"structtag_1_1title.html":[22,0,5,159],
 "structtag_1_1transport.html":[22,0,5,160],
 "structtag_1_1tty.html":[22,0,5,161],
 "structtag_1_1u0.html":[22,0,5,162],
@@ -241,13 +249,5 @@ var NAVTREEINDEX17 =
 "structtk_1_1grm_1_1readkw.html":[22,0,6,1,36],
 "structtk_1_1grm_1_1rng__option.html":[22,0,6,1,37],
 "structtk_1_1grm_1_1sample__space__var.html":[22,0,6,1,38],
-"structtk_1_1grm_1_1samples.html":[22,0,6,1,39],
-"structtk_1_1grm_1_1save__field.html":[22,0,6,1,40],
-"structtk_1_1grm_1_1save__field.html#a0dd69e3ff94b566ad0b21f15ba514010":[22,0,6,1,40,0],
-"structtk_1_1grm_1_1scan.html":[22,0,6,1,41],
-"structtk_1_1grm_1_1scan__until.html":[22,0,6,1,42],
-"structtk_1_1grm_1_1start__vector.html":[22,0,6,1,44],
-"structtk_1_1grm_1_1start__vector.html#acd56467faffd3ac6e06400a45d5835c9":[22,0,6,1,44,0],
-"structtk_1_1grm_1_1start__vector__back.html":[22,0,6,1,45],
-"structtk_1_1grm_1_1start__vector__back.html#a2f42bc7c48a825141511dd067cd25e06":[22,0,6,1,45,0]
+"structtk_1_1grm_1_1samples.html":[22,0,6,1,39]
 };

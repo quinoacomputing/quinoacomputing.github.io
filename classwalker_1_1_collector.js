@@ -11,6 +11,7 @@ var classwalker_1_1_collector =
     [ "m_centpdf", "classwalker_1_1_collector.html#aea4b463ddaeab7b3dac402f4a3a80a49", null ],
     [ "m_central", "classwalker_1_1_collector.html#a5793ab5bfba377a8343f1afeaf119ed4", null ],
     [ "m_cenupdf", "classwalker_1_1_collector.html#ab12583221ba75d33deb6433f988cd996", null ],
+    [ "m_extra", "classwalker_1_1_collector.html#a26dcc6fc18a9ff7badcc077e8b4a5afd", null ],
     [ "m_hostproxy", "classwalker_1_1_collector.html#a8061fa4720cf4fc848ebd2e4dfa0674c", null ],
     [ "m_ncen", "classwalker_1_1_collector.html#ae5d4473192c070742df97dc449a4ea97", null ],
     [ "m_nchare", "classwalker_1_1_collector.html#ab2cefb5c706eaf7722d1adbcb3a7fc24", null ],

@@ -9,7 +9,7 @@ var classwalker_1_1_distributor =
     [ "evaluateTime", "classwalker_1_1_distributor.html#a3bfa8fd95c0d8d41119791cbcf4ffb82", null ],
     [ "finish", "classwalker_1_1_distributor.html#a47e049f25139fe701a45a1e0bbe3c6c5", null ],
     [ "header", "classwalker_1_1_distributor.html#a3a9d9ae85496378c323ed5d30d3dc8b6", null ],
-    [ "info", "classwalker_1_1_distributor.html#ac1833229b8bfeed2b5ffdf15dd1c42d6", null ],
+    [ "info", "classwalker_1_1_distributor.html#a70f71976d73ddf963ecf85958226e1c7", null ],
     [ "nostat", "classwalker_1_1_distributor.html#a4daa707c2a6328539c58f46d9d1ccee6", null ],
     [ "outBiPDF", "classwalker_1_1_distributor.html#a2b9669b6e6fa7eaab5c3f9ada3321cdd", null ],
     [ "outPDF", "classwalker_1_1_distributor.html#a9c224bf6f53cfc34dd88cce8ecb12023", null ],
@@ -39,5 +39,6 @@ var classwalker_1_1_distributor =
     [ "m_output", "classwalker_1_1_distributor.html#a3c2c17115cc6bb47af8ab5b6ef879559", null ],
     [ "m_print", "classwalker_1_1_distributor.html#a65b8f27d07472acb65ddfdfae0c3694c", null ],
     [ "m_t", "classwalker_1_1_distributor.html#a7688950c846113be4be06b0c7d440536", null ],
+    [ "m_tables", "classwalker_1_1_distributor.html#ae5bc0592caaea16cb7c726d1129c99f3", null ],
     [ "m_timer", "classwalker_1_1_distributor.html#a1192511092e117ec3d439f4feffedbbb", null ]
 ];

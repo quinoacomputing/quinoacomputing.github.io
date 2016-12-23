@@ -52,9 +52,9 @@ var hierarchy =
       [ "tk::grm::warning< Stack, key >", "structtk_1_1grm_1_1warning.html", null ],
       [ "tk::rngsse::insert_seq< Stack, use, Option, field, sel, vec, tag, tags >", "structtk_1_1rngsse_1_1insert__seq.html", null ],
       [ "walker::deck::check_eq< eq >", "structwalker_1_1deck_1_1check__eq.html", null ],
-      [ "walker::deck::check_hydroproductions< Stack, eq, param >", "structwalker_1_1deck_1_1check__hydroproductions.html", null ],
-      [ "walker::deck::check_hydrotimescales< Stack, eq, param >", "structwalker_1_1deck_1_1check__hydrotimescales.html", null ],
       [ "walker::deck::check_init< eq >", "structwalker_1_1deck_1_1check__init.html", null ],
+      [ "walker::deck::check_vector_exists< eq, vec, Key >", "structwalker_1_1deck_1_1check__vector__exists.html", null ],
+      [ "walker::deck::check_vector_size< Stack, eq, vec >", "structwalker_1_1deck_1_1check__vector__size.html", null ],
       [ "walker::deck::register_eq< eq >", "structwalker_1_1deck_1_1register__eq.html", null ],
       [ "walker::deck::store_option< Option, tags >", "structwalker_1_1deck_1_1store__option.html", null ]
     ] ],
@@ -695,7 +695,7 @@ var hierarchy =
       [ "tk::grm::verbose< keyword >", "structtk_1_1grm_1_1verbose.html", [
         [ "tk::grm::readcmd< Stack, keyword, typename >", "structtk_1_1grm_1_1readcmd.html", null ]
       ] ],
-      [ "walker::deck::check_errors< eq >", "structwalker_1_1deck_1_1check__errors.html", null ]
+      [ "walker::deck::check_errors< eq, extra_checks >", "structwalker_1_1deck_1_1check__errors.html", null ]
     ] ],
     [ "tag::seqlen", "structtag_1_1seqlen.html", null ],
     [ "tag::SerialOver", "structtag_1_1_serial_over.html", null ],
@@ -954,8 +954,8 @@ var hierarchy =
     [ "walker::WalkerDriver", "classwalker_1_1_walker_driver.html", null ],
     [ "tk::Timer::Watch", "structtk_1_1_timer_1_1_watch.html", null ],
     [ "tag::WeightDistrib", "structtag_1_1_weight_distrib.html", null ],
-    [ "tag::wrightfisher", "structtag_1_1wrightfisher.html", null ],
     [ "walker::WrightFisher< Init, Coefficients >", "classwalker_1_1_wright_fisher.html", null ],
+    [ "tag::wrightfisher", "structtag_1_1wrightfisher.html", null ],
     [ "walker::WrightFisherCoeffConst", "classwalker_1_1_wright_fisher_coeff_const.html", null ],
     [ "tk::Writer", "classtk_1_1_writer.html", [
       [ "tk::DiagWriter", "classtk_1_1_diag_writer.html", null ],
@@ -971,7 +971,7 @@ var hierarchy =
     [ "tut::Has_common::yesExpectChoices", "structtut_1_1_has__common_1_1yes_expect_choices.html", null ],
     [ "tut::Has_common::yesExpectDescription", "structtut_1_1_has__common_1_1yes_expect_description.html", null ],
     [ "tut::Has_common::yesExpectType", "structtut_1_1_has__common_1_1yes_expect_type.html", null ],
-    [ "tut::CharmUtil_common::yesProxy", "structtut_1_1_charm_util__common_1_1yes_proxy.html", null ],
     [ "tut::Has_common::yesProxy", "structtut_1_1_has__common_1_1yes_proxy.html", null ],
+    [ "tut::CharmUtil_common::yesProxy", "structtut_1_1_charm_util__common_1_1yes_proxy.html", null ],
     [ "tk::ctr::ncomponents< Tags >::zero", "structtk_1_1ctr_1_1ncomponents_1_1zero.html", null ]
 ];

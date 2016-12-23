@@ -1,5 +1,7 @@
 var NAVTREEINDEX3 =
 {
+"_mix_number_fraction_beta_coeff_policy_8h_source.html":[23,0,1,2,21],
+"_mix_rate_8h.html":[23,0,1,1,0,1,5],
 "_mix_rate_8h.html#a60dc899ec64c13c74fe35b6bafc986f1":[23,0,1,1,0,1,5,1],
 "_mix_rate_8h.html#a60dc899ec64c13c74fe35b6bafc986f1a32f38407d23b5eb3d61237c5528cffbd":[23,0,1,1,0,1,5,1,0],
 "_mix_rate_8h.html#a60dc899ec64c13c74fe35b6bafc986f1a469bb22a9f1f560331b06cd6ef0da944":[23,0,1,1,0,1,5,1,1],
@@ -247,7 +249,5 @@ var NAVTREEINDEX3 =
 "_reorder_8_c_source.html":[23,0,1,8,2],
 "_reorder_8h.html":[23,0,1,8,3],
 "_reorder_8h.html#a0ee7abd71123782d48e2ec04906fe982":[23,0,1,8,3,1],
-"_reorder_8h.html#a1d0312d71017d8ffd9f11811a46e5a16":[23,0,1,8,3,3],
-"_reorder_8h.html#a293dd6fafcc3b8f4b28bef4f3ef050e1":[23,0,1,8,3,4],
-"_reorder_8h.html#a5ac2475f6c08b5fcb81392b14aad73a4":[23,0,1,8,3,2]
+"_reorder_8h.html#a1d0312d71017d8ffd9f11811a46e5a16":[23,0,1,8,3,3]
 };
