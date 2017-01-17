@@ -31,8 +31,7 @@ var searchData=
   ['testprocesscontrol_2eh',['TestProcessControl.h',['../_test_process_control_8h.html',1,'']]],
   ['testpuputil_2eh',['TestPUPUtil.h',['../_test_p_u_p_util_8h.html',1,'']]],
   ['testreader_2eh',['TestReader.h',['../_test_reader_8h.html',1,'']]],
-  ['testrng_2eh',['TestRNG.h',['../_control_2_options_2_test_r_n_g_8h.html',1,'']]],
-  ['testrng_2eh',['TestRNG.h',['../_r_n_g_2_test_r_n_g_8h.html',1,'']]],
+  ['testrng_2eh',['TestRNG.h',['../_control_2_options_2_test_r_n_g_8h.html',1,'(Global Namespace)'],['../_r_n_g_2_test_r_n_g_8h.html',1,'(Global Namespace)']]],
   ['testrngsse_2eh',['TestRNGSSE.h',['../_test_r_n_g_s_s_e_8h.html',1,'']]],
   ['teststack_2eh',['TestStack.h',['../_test_stack_8h.html',1,'']]],
   ['teststrconvutil_2eh',['TestStrConvUtil.h',['../_test_str_conv_util_8h.html',1,'']]],
@@ -92,10 +91,5 @@ var searchData=
   ['txtfloatformat_2eh',['TxtFloatFormat.h',['../_txt_float_format_8h.html',1,'']]],
   ['txtstatwriter_2ec',['TxtStatWriter.C',['../_txt_stat_writer_8_c.html',1,'']]],
   ['txtstatwriter_2eh',['TxtStatWriter.h',['../_txt_stat_writer_8h.html',1,'']]],
-  ['types_2eh',['Types.h',['../_control_2_r_n_g_test_2_types_8h.html',1,'']]],
-  ['types_2eh',['Types.h',['../_control_2_walker_2_types_8h.html',1,'']]],
-  ['types_2eh',['Types.h',['../_control_2_unit_test_2_types_8h.html',1,'']]],
-  ['types_2eh',['Types.h',['../_control_2_mesh_conv_2_types_8h.html',1,'']]],
-  ['types_2eh',['Types.h',['../_base_2_types_8h.html',1,'']]],
-  ['types_2eh',['Types.h',['../_control_2_inciter_2_types_8h.html',1,'']]]
+  ['types_2eh',['Types.h',['../_base_2_types_8h.html',1,'(Global Namespace)'],['../_control_2_inciter_2_types_8h.html',1,'(Global Namespace)'],['../_control_2_mesh_conv_2_types_8h.html',1,'(Global Namespace)'],['../_control_2_r_n_g_test_2_types_8h.html',1,'(Global Namespace)'],['../_control_2_unit_test_2_types_8h.html',1,'(Global Namespace)'],['../_control_2_walker_2_types_8h.html',1,'(Global Namespace)']]]
 ];

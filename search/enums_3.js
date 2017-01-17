@@ -1,6 +1,5 @@
 var searchData=
 [
-  ['energytype',['EnergyType',['../namespacebreeze_1_1ctr.html#ae2e6f781962574e1a4f783489ac826a6',1,'breeze::ctr']]],
   ['enum',['Enum',['../structtut_1_1_toggle__common.html#a2dbd4b9dda965c5ac693eb51fc69e4b8',1,'tut::Toggle_common']]],
   ['enum_5fcstyle',['Enum_cstyle',['../namespacetut_1_1charm.html#a5ea44be76b31372ed4771cb7016cdb70',1,'tut::charm']]],
   ['enum_5fdefault',['Enum_default',['../namespacetut_1_1charm.html#a92b94feeefb4419442b00dc6704c3386',1,'tut::charm']]],

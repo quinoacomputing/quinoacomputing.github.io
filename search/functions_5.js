@@ -18,6 +18,5 @@ var searchData=
   ['found',['found',['../classtk_1_1ctr_1_1_r_n_g.html#a238ce675dc9b1a505f83998fe7ef6dc3',1,'tk::ctr::RNG']]],
   ['foundpar',['foundpar',['../classinciter_1_1_carrier.html#a1b16852874880bf90603bd43c638b14b',1,'inciter::Carrier::foundpar()'],['../classtk_1_1_tracker.html#abce3ebc0d95530100e00cf5c545d00f5',1,'tk::Tracker::foundpar()']]],
   ['fourier3',['Fourier3',['../classrngtest_1_1_test_u01_stack.html#adbd1ef96e568cb8fa4b42e2d319c2019',1,'rngtest::TestU01Stack']]],
-  ['frequency',['Frequency',['../classbreeze_1_1ctr_1_1_frequency.html#acf9c220897b452ce927c10dd0665a785',1,'breeze::ctr::Frequency']]],
   ['func',['func',['../classtk_1_1_exception.html#a219a7caf05e53633886d7959cd324155',1,'tk::Exception']]]
 ];

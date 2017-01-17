@@ -1,7 +1,6 @@
 var searchData=
 [
-  ['battery_2eh',['Battery.h',['../_control_2_r_n_g_test_2_options_2_battery_8h.html',1,'']]],
-  ['battery_2eh',['Battery.h',['../_r_n_g_test_2_battery_8h.html',1,'']]],
+  ['battery_2eh',['Battery.h',['../_control_2_r_n_g_test_2_options_2_battery_8h.html',1,'(Global Namespace)'],['../_r_n_g_test_2_battery_8h.html',1,'(Global Namespace)']]],
   ['beta_2edox',['Beta.dox',['../_beta_8dox.html',1,'']]],
   ['beta_2eh',['Beta.h',['../_beta_8h.html',1,'']]],
   ['beta_5fdistribution_2eh',['beta_distribution.h',['../beta__distribution_8h.html',1,'']]],
