@@ -1,5 +1,7 @@
 var searchData=
 [
+  ['random123',['Random123',['../classtk_1_1_random123.html#a90816fc5e44adc2d0127736b60964b46',1,'tk::Random123::Random123()'],['../namespacetut.html#a48910abea3b3a3f1850c42f4730db166',1,'tut::Random123()']]],
+  ['random123params',['Random123Params',['../classtk_1_1_r_n_g_print.html#ac955be023ce3bcd8de2d82c28035355c',1,'tk::RNGPrint']]],
   ['randomwalk1',['RandomWalk1',['../classrngtest_1_1_test_u01_stack.html#a63471c08d45c065e124bd93b134b9dae',1,'rngtest::TestU01Stack']]],
   ['rank',['rank',['../classrngtest_1_1_r_n_g_test_print.html#a6b70bdf3a6e6a3043a46ab798b9e1934',1,'rngtest::RNGTestPrint']]],
   ['raw',['raw',['../classtk_1_1_print.html#a346e0944ed2897d1c0529fb11e72a445',1,'tk::Print::raw()'],['../namespacetk_1_1ctr.html#af176a3bacd8979ebdb32e7f4cf2c4324',1,'tk::ctr::raw()']]],
@@ -33,7 +35,7 @@ var searchData=
   ['registerpde',['registerPDE',['../structinciter_1_1_p_d_e_stack_1_1register_p_d_e.html#acbf0b00f9e4ffe2e8d8b23358180fc97',1,'inciter::PDEStack::registerPDE']]],
   ['registerpdfmerger',['registerPDFMerger',['../classwalker_1_1_collector.html#a10552a8f82d83de051f0793d2baabf59',1,'walker::Collector']]],
   ['registerreducers',['registerReducers',['../classinciter_1_1_carrier.html#a10aa2fee7d7526824b028115dcb4c0e5',1,'inciter::Carrier']]],
-  ['regrngsse',['regRNGSSE',['../classtk_1_1_r_n_g_stack.html#a8535a1b06387f2bca5de4d3054b26e7b',1,'tk::RNGStack']]],
+  ['regrandom123',['regRandom123',['../classtk_1_1_r_n_g_stack.html#a390d51baf7bd0c10521c286251c66203',1,'tk::RNGStack']]],
   ['remap',['remap',['../namespacetk.html#a5ac2475f6c08b5fcb81392b14aad73a4',1,'tk']]],
   ['remove',['remove',['../classtk_1_1_tracker.html#a6d8b7d2cd845457521cab52a3634a576',1,'tk::Tracker']]],
   ['renumber',['renumber',['../namespacetk.html#a1d0312d71017d8ffd9f11811a46e5a16',1,'tk']]],
@@ -57,7 +59,7 @@ var searchData=
   ['rngsse',['RNGSSE',['../classtk_1_1_r_n_g_s_s_e.html#aa9bf996149a9f0742f1930bebbe00264',1,'tk::RNGSSE::RNGSSE(SeqNumType n, InitFn fnShort, ctr::RNGSSESeqLenType seqlen=ctr::RNGSSESeqLenType::SHORT, InitFn fnLong=nullptr, InitFn fnMed=nullptr)'],['../classtk_1_1_r_n_g_s_s_e.html#a2fa2b9a535205457e9d6505225424b92',1,'tk::RNGSSE::RNGSSE(const RNGSSE &amp;x)'],['../classtk_1_1_r_n_g_s_s_e.html#af5bbe68de7ebd5943cc23b23f020ca12',1,'tk::RNGSSE::RNGSSE(RNGSSE &amp;&amp;x)'],['../namespacetut.html#ab099d6a452b3f5ffb435aa8b791166e1',1,'tut::RNGSSE()']]],
   ['rngsseparams',['RNGSSEParams',['../classtk_1_1_r_n_g_print.html#addcaaa75e0c7971224ac43dc4e975677',1,'tk::RNGPrint']]],
   ['rngsseseqlen',['RNGSSESeqLen',['../classtk_1_1ctr_1_1_r_n_g_s_s_e_seq_len.html#a1f3d4848ecdb037ccb4850edcca73127',1,'tk::ctr::RNGSSESeqLen']]],
-  ['rngstack',['RNGStack',['../classtk_1_1_r_n_g_stack.html#a09b60d99f8d073dd45a9818ac9616902',1,'tk::RNGStack']]],
+  ['rngstack',['RNGStack',['../classtk_1_1_r_n_g_stack.html#a9a6c5a9d5ff824e5778664177bc2da57',1,'tk::RNGStack']]],
   ['rngtestdriver',['RNGTestDriver',['../classrngtest_1_1_r_n_g_test_driver.html#a31b864e4f7a9a6c77554b4878c9057e6',1,'rngtest::RNGTestDriver']]],
   ['rngtestprint',['RNGTestPrint',['../classrngtest_1_1_r_n_g_test_print.html#aa396672fdb4b06e4d38cc218c57c965a',1,'rngtest::RNGTestPrint']]],
   ['rowcomplete',['rowcomplete',['../classinciter_1_1_transporter.html#a75b5c8355505a4834c74f3732e5afa9b',1,'inciter::Transporter::rowcomplete()'],['../classtk_1_1_lin_sys_merger.html#acb60864e487a5af5d5380f7f4e61f8a6',1,'tk::LinSysMerger::rowcomplete()']]],

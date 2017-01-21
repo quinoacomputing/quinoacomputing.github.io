@@ -48,7 +48,7 @@ var searchData=
   ['action_3c_20store_5frngtest_5foption_3c_20option_2c_20tags_2e_2e_2e_20_3e_20_3e',['action&lt; store_rngtest_option&lt; Option, tags... &gt; &gt;',['../structtk_1_1grm_1_1action_3_01store__rngtest__option_3_01_option_00_01tags_8_8_8_01_4_01_4.html',1,'tk::grm']]],
   ['action_3c_20store_5fswitch_3c_20tags_2e_2e_2e_20_3e_20_3e',['action&lt; Store_switch&lt; tags... &gt; &gt;',['../structtk_1_1grm_1_1action_3_01_store__switch_3_01tags_8_8_8_01_4_01_4.html',1,'tk::grm']]],
   ['action_3c_20store_5fwalker_5foption_3c_20option_2c_20tags_2e_2e_2e_20_3e_20_3e',['action&lt; store_walker_option&lt; Option, tags... &gt; &gt;',['../structtk_1_1grm_1_1action_3_01store__walker__option_3_01_option_00_01tags_8_8_8_01_4_01_4.html',1,'tk::grm']]],
-  ['adaptor',['Adaptor',['../structtk_1_1_r_n_g_s_s_e_1_1_adaptor.html',1,'tk::RNGSSE']]],
+  ['adaptor',['Adaptor',['../structtk_1_1_random123_1_1_adaptor.html',1,'tk::Random123&lt; CBRNG &gt;::Adaptor'],['../structtk_1_1_r_n_g_s_s_e_1_1_adaptor.html',1,'tk::RNGSSE&lt; State, SeqNumType, Generate &gt;::Adaptor']]],
   ['add_5fdepvar',['add_depvar',['../structtk_1_1grm_1_1add__depvar.html',1,'tk::grm']]],
   ['addncomp',['addncomp',['../structtk_1_1ctr_1_1ncomponents_1_1addncomp.html',1,'tk::ctr::ncomponents']]],
   ['addncomp4tag',['addncomp4tag',['../structtk_1_1ctr_1_1ncomponents_1_1addncomp4tag.html',1,'tk::ctr::ncomponents']]],

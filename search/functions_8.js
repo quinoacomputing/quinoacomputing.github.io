@@ -4,7 +4,7 @@ var searchData=
   ['inc',['inc',['../classtk_1_1_progress.html#a21919e68e3ddc463804f5276950dd09b',1,'tk::Progress']]],
   ['inciterdriver',['InciterDriver',['../classinciter_1_1_inciter_driver.html#af01b6010b6eef550dab42759f3050351',1,'inciter::InciterDriver']]],
   ['inciterprint',['InciterPrint',['../classinciter_1_1_inciter_print.html#acba60f7809a70232b842f35c61601f7a',1,'inciter::InciterPrint']]],
-  ['info',['info',['../classwalker_1_1_diff_eq_stack.html#a3116748cda4e84251191042f4f6ffbfd',1,'walker::DiffEqStack::info()'],['../classinciter_1_1_p_d_e_stack.html#a6adc713f4b4a42cffbd6e0b5b9ff5201',1,'inciter::PDEStack::info()'],['../classwalker_1_1_distributor.html#a70f71976d73ddf963ecf85958226e1c7',1,'walker::Distributor::info()'],['../structtk_1_1ctr_1_1_info.html#af9c815d6bbc267594989a026c477d5f5',1,'tk::ctr::Info::Info()']]],
+  ['info',['Info',['../structtk_1_1ctr_1_1_info.html#af9c815d6bbc267594989a026c477d5f5',1,'tk::ctr::Info::Info()'],['../classwalker_1_1_diff_eq_stack.html#a3116748cda4e84251191042f4f6ffbfd',1,'walker::DiffEqStack::info()'],['../classinciter_1_1_p_d_e_stack.html#a6adc713f4b4a42cffbd6e0b5b9ff5201',1,'inciter::PDEStack::info()'],['../classwalker_1_1_distributor.html#a70f71976d73ddf963ecf85958226e1c7',1,'walker::Distributor::info()']]],
   ['infobeta',['infoBeta',['../classwalker_1_1_diff_eq_stack.html#ac70334d8d9dbf3be2629d417dfa59d9b',1,'walker::DiffEqStack']]],
   ['infocompflow',['infoCompFlow',['../classinciter_1_1_p_d_e_stack.html#afed9ddc52c394e80d2f96b14b3712112',1,'inciter::PDEStack']]],
   ['infodiagou',['infoDiagOU',['../classwalker_1_1_diff_eq_stack.html#adc8a04faa5e0aa1d60ef44c5b927eb44',1,'walker::DiffEqStack']]],

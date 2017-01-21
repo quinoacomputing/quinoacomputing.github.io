@@ -12,5 +12,6 @@ var searchData=
   ['containerutil_5fobject',['ContainerUtil_object',['../namespacetut.html#ab0c2560cdd5cadd71279b2b0db84e650',1,'tut']]],
   ['control',['control',['../structtut_1_1_control__common.html#af76d59428969d1bca7eb726cb68f1a29',1,'tut::Control_common']]],
   ['control_5fgroup',['Control_group',['../namespacetut.html#acd72be9d49d9df1d06c5e43eca9386d7',1,'tut']]],
-  ['control_5fobject',['Control_object',['../namespacetut.html#acce6a2e0dbb5b456f55a2749c4ed7793',1,'tut']]]
+  ['control_5fobject',['Control_object',['../namespacetut.html#acce6a2e0dbb5b456f55a2749c4ed7793',1,'tut']]],
+  ['ctr_5ftype',['ctr_type',['../classtk_1_1_random123.html#a2f4454ff4e319b869406384125593618',1,'tk::Random123']]]
 ];
