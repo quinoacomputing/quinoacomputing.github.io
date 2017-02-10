@@ -7,6 +7,7 @@ var searchData=
   ['derived',['derived',['../classwalker_1_1_mix_mass_fraction_beta.html#a13b9a8ad5dd19b2705aeeae67a38ff0b',1,'walker::MixMassFractionBeta']]],
   ['deriveddata',['DerivedData',['../namespacetut.html#a5bd34dbf2b7c3e622279d9c011e0e115',1,'tut']]],
   ['description',['description',['../structtut_1_1_has__common_1_1yes_expect_description_1_1expect.html#abfff66afc66ae27e9e20121aa1181be3',1,'tut::Has_common::yesExpectDescription::expect']]],
+  ['destroy',['destroy',['../namespacetk.html#a9140b408dcbd2eaef58f9c3a54fa104a',1,'tk']]],
   ['detectinput',['detectInput',['../namespacetk.html#a08e7ddf794b944c7d2095c1222f4244a',1,'tk']]],
   ['diag',['diag',['../classtk_1_1_print.html#a14a1afdf9dfabe05f87fbeeefc10541d',1,'tk::Print::diag()'],['../classtk_1_1_diag_writer.html#a39d33ff7ae7311122ea3f7d579fdea95',1,'tk::DiagWriter::diag()']]],
   ['diagcomplete',['diagcomplete',['../classinciter_1_1_transporter.html#a46ff143875b1ff5539458cbd5a5382f0',1,'inciter::Transporter::diagcomplete()'],['../classtk_1_1_lin_sys_merger.html#a242fd55040c13c25a559a1d49ac60fbc',1,'tk::LinSysMerger::diagcomplete()']]],

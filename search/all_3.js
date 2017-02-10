@@ -18,6 +18,7 @@ var searchData=
   ['deriveddata_5fgroup',['DerivedData_group',['../namespacetut.html#a3edf1e84f64691ab03223c724836176d',1,'tut']]],
   ['deriveddata_5fobject',['DerivedData_object',['../namespacetut.html#a3c51b5583ef056dbb4596004d921c726',1,'tut']]],
   ['description',['description',['../structtut_1_1_has__common_1_1yes_expect_description_1_1expect.html#abfff66afc66ae27e9e20121aa1181be3',1,'tut::Has_common::yesExpectDescription::expect']]],
+  ['destroy',['destroy',['../namespacetk.html#a9140b408dcbd2eaef58f9c3a54fa104a',1,'tk']]],
   ['detectinput',['detectInput',['../namespacetk.html#a08e7ddf794b944c7d2095c1222f4244a',1,'tk']]],
   ['diag',['diag',['../structtag_1_1diag.html',1,'tag::diag'],['../classtk_1_1_print.html#a14a1afdf9dfabe05f87fbeeefc10541d',1,'tk::Print::diag()'],['../classtk_1_1_diag_writer.html#a39d33ff7ae7311122ea3f7d579fdea95',1,'tk::DiagWriter::diag()']]],
   ['diag_5fou',['diag_ou',['../structwalker_1_1deck_1_1diag__ou.html',1,'walker::deck::diag_ou'],['../namespacewalker_1_1ctr.html#a4592cfa71c6e4c64a71c5691df56c79fada477cde126703cf71b7a64019cd608b',1,'walker::ctr::DIAG_OU()']]],
