@@ -122,7 +122,7 @@ var searchData=
   ['print_5fobject',['Print_object',['../namespacetut.html#a7b5ea24d2a2bae1e06afe31e98cc0c97',1,'tut']]],
   ['prob',['prob',['../classinciter_1_1_inciter_print_1_1_policies.html#a0cf51f9e3763166713b1d27c2f381e59',1,'inciter::InciterPrint::Policies']]],
   ['probability',['Probability',['../namespacetk_1_1ctr.html#add1137a52c9f2f15c0394cf74f3089e9',1,'tk::ctr']]],
-  ['problem',['Problem',['../classinciter_1_1ctr_1_1_problem.html',1,'inciter::ctr::Problem'],['../structtag_1_1problem.html',1,'tag::problem'],['../classinciter_1_1ctr_1_1_problem.html#a29ebdfbc0cf8e7098ddb2f9077cf4132',1,'inciter::ctr::Problem::Problem()']]],
+  ['problem',['problem',['../structtag_1_1problem.html',1,'tag::problem'],['../classinciter_1_1ctr_1_1_problem.html',1,'inciter::ctr::Problem'],['../classinciter_1_1ctr_1_1_problem.html#a29ebdfbc0cf8e7098ddb2f9077cf4132',1,'inciter::ctr::Problem::Problem()']]],
   ['problem_2eh',['Problem.h',['../_problem_8h.html',1,'']]],
   ['problemtype',['ProblemType',['../namespaceinciter_1_1ctr.html#a6233f49244094f9b305675039fe62482',1,'inciter::ctr']]],
   ['process',['process',['../structtk_1_1grm_1_1process.html',1,'tk::grm']]],

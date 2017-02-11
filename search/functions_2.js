@@ -11,7 +11,7 @@ var searchData=
   ['charebc',['charebc',['../classtk_1_1_lin_sys_merger.html#a7aa8aba0b4495c87a2f80d28ede5eac5',1,'tk::LinSysMerger']]],
   ['charecen',['chareCen',['../classwalker_1_1_collector.html#a5edc7c9ce6bb4cc8a29f0b2ba12ca782',1,'walker::Collector']]],
   ['charecenpdf',['chareCenPDF',['../classwalker_1_1_collector.html#a7715d3b9c996b2db9d3c2d91bfe7703d',1,'walker::Collector']]],
-  ['charediag',['charediag',['../classtk_1_1_lin_sys_merger.html#a5e95eee8ebcf7af6f6b47e8216e11a8e',1,'tk::LinSysMerger']]],
+  ['charediag',['charediag',['../classtk_1_1_lin_sys_merger.html#a05c131d06d3a8b31aab0cb51050210af',1,'tk::LinSysMerger']]],
   ['charedistribution',['chareDistribution',['../classinciter_1_1_partitioner.html#aa19aeca1d4f6515b81040d2204da4f0b',1,'inciter::Partitioner']]],
   ['charelhs',['charelhs',['../classtk_1_1_lin_sys_merger.html#a2fd0298dced99e96a1961b46bb6b8b05',1,'tk::LinSysMerger']]],
   ['charenodes',['chareNodes',['../classinciter_1_1_partitioner.html#adfa8e1e70659b60b808e966ecc076b13',1,'inciter::Partitioner']]],

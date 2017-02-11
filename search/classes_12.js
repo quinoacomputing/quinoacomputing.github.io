@@ -59,7 +59,7 @@ var searchData=
   ['toggle_3c_20txtfloatformattype_20_3e',['Toggle&lt; TxtFloatFormatType &gt;',['../classtk_1_1_toggle.html',1,'tk']]],
   ['toggle_5fcommon',['Toggle_common',['../structtut_1_1_toggle__common.html',1,'tut']]],
   ['tracker',['Tracker',['../classtk_1_1_tracker.html',1,'tk']]],
-  ['transport',['transport',['../structtag_1_1transport.html',1,'tag::transport'],['../structinciter_1_1deck_1_1transport.html',1,'inciter::deck::transport'],['../classinciter_1_1_transport.html',1,'inciter::Transport&lt; Physics, Problem &gt;']]],
+  ['transport',['transport',['../structinciter_1_1deck_1_1transport.html',1,'inciter::deck::transport'],['../classinciter_1_1_transport.html',1,'inciter::Transport&lt; Physics, Problem &gt;'],['../structtag_1_1transport.html',1,'tag::transport']]],
   ['transporter',['Transporter',['../classinciter_1_1_transporter.html',1,'inciter']]],
   ['transportphysicsadvdiff',['TransportPhysicsAdvDiff',['../classinciter_1_1_transport_physics_adv_diff.html',1,'inciter']]],
   ['transportphysicsadvection',['TransportPhysicsAdvection',['../classinciter_1_1_transport_physics_advection.html',1,'inciter']]],
