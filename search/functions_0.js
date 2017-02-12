@@ -10,7 +10,7 @@ var searchData=
   ['addauxlhs',['addauxlhs',['../classinciter_1_1_aux_solver_lump_mass_diff.html#a9419e540fea080ef7abf1608fa0d6c22',1,'inciter::AuxSolverLumpMassDiff::addauxlhs()'],['../classtk_1_1_lin_sys_merger.html#a034d8fa215a984fc310918c8cd155059',1,'tk::LinSysMerger::addauxlhs()']]],
   ['addauxrhs',['addauxrhs',['../classinciter_1_1_aux_solver_lump_mass_diff.html#a05719c700869da6ead2eabd63461f1cb',1,'inciter::AuxSolverLumpMassDiff::addauxrhs()'],['../classtk_1_1_lin_sys_merger.html#a0fbf20988faa2e61cb9ce741ee38d9d9',1,'tk::LinSysMerger::addauxrhs()']]],
   ['addbc',['addbc',['../classtk_1_1_lin_sys_merger.html#a167a9ed8adb0104c48219867103edca7',1,'tk::LinSysMerger']]],
-  ['adddiag',['adddiag',['../classtk_1_1_lin_sys_merger.html#ac059228f7c51fd6f9b45cc2727451066',1,'tk::LinSysMerger']]],
+  ['adddiag',['adddiag',['../classtk_1_1_lin_sys_merger.html#a613d0c5c15476e38a6d7e73a2c27fb29',1,'tk::LinSysMerger']]],
   ['addlhs',['addlhs',['../classtk_1_1_lin_sys_merger.html#a32ac48277b246906723e3c1ef143cb95',1,'tk::LinSysMerger']]],
   ['addncomp',['addncomp',['../structtk_1_1ctr_1_1ncomponents_1_1addncomp.html#a5f3f18c334fe5e90798c7b3c1be18661',1,'tk::ctr::ncomponents::addncomp']]],
   ['addncomp4tag',['addncomp4tag',['../structtk_1_1ctr_1_1ncomponents_1_1addncomp4tag.html#abcee3378f06f43e6dc340bce090b7b97',1,'tk::ctr::ncomponents::addncomp4tag']]],
