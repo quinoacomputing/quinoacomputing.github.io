@@ -17,6 +17,7 @@ var searchData=
   ['init',['init',['../structtag_1_1init.html',1,'tag']]],
   ['initbeta',['InitBeta',['../structwalker_1_1_init_beta.html',1,'walker']]],
   ['initdelta',['InitDelta',['../structwalker_1_1_init_delta.html',1,'walker']]],
+  ['initialamr',['InitialAMR',['../classtk_1_1ctr_1_1_initial_a_m_r.html',1,'tk::ctr::InitialAMR'],['../structtag_1_1initialamr.html',1,'tag::initialamr']]],
   ['initpolicy',['InitPolicy',['../classwalker_1_1ctr_1_1_init_policy.html',1,'walker::ctr::InitPolicy'],['../structtag_1_1initpolicy.html',1,'tag::initpolicy']]],
   ['initraw',['InitRaw',['../structwalker_1_1_init_raw.html',1,'walker']]],
   ['initzero',['InitZero',['../structwalker_1_1_init_zero.html',1,'walker']]],

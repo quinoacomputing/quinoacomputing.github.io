@@ -11,6 +11,7 @@ var searchData=
   ['addauxrhs',['addauxrhs',['../classinciter_1_1_aux_solver_lump_mass_diff.html#a05719c700869da6ead2eabd63461f1cb',1,'inciter::AuxSolverLumpMassDiff::addauxrhs()'],['../classtk_1_1_lin_sys_merger.html#a0fbf20988faa2e61cb9ce741ee38d9d9',1,'tk::LinSysMerger::addauxrhs()']]],
   ['addbc',['addbc',['../classtk_1_1_lin_sys_merger.html#a167a9ed8adb0104c48219867103edca7',1,'tk::LinSysMerger']]],
   ['adddiag',['adddiag',['../classtk_1_1_lin_sys_merger.html#a613d0c5c15476e38a6d7e73a2c27fb29',1,'tk::LinSysMerger']]],
+  ['addedgenodecoords',['addEdgeNodeCoords',['../classinciter_1_1_carrier.html#a0f8b7b3308a25b74bbaea5de55f0068b',1,'inciter::Carrier']]],
   ['addlhs',['addlhs',['../classtk_1_1_lin_sys_merger.html#a32ac48277b246906723e3c1ef143cb95',1,'tk::LinSysMerger']]],
   ['addncomp',['addncomp',['../structtk_1_1ctr_1_1ncomponents_1_1addncomp.html#a5f3f18c334fe5e90798c7b3c1be18661',1,'tk::ctr::ncomponents::addncomp']]],
   ['addncomp4tag',['addncomp4tag',['../structtk_1_1ctr_1_1ncomponents_1_1addncomp4tag.html#abcee3378f06f43e6dc340bce090b7b97',1,'tk::ctr::ncomponents::addncomp4tag']]],

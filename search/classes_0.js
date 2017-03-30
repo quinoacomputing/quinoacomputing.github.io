@@ -56,6 +56,7 @@ var searchData=
   ['age',['age',['../structtut_1_1charm_1_1tag_1_1age.html',1,'tut::charm::tag::age'],['../structtut_1_1_tagged_tuple__common_1_1age.html',1,'tut::TaggedTuple_common::age']]],
   ['alias',['alias',['../structtk_1_1grm_1_1alias.html',1,'tk::grm::alias&lt; keyword &gt;'],['../structkw_1_1_alias.html',1,'kw::Alias&lt; Char &gt;']]],
   ['alpha',['alpha',['../structtag_1_1alpha.html',1,'tag']]],
+  ['amr',['amr',['../structinciter_1_1deck_1_1amr.html',1,'inciter::deck']]],
   ['appearancespacings',['AppearanceSpacings',['../structtag_1_1_appearance_spacings.html',1,'tag']]],
   ['assertpolicycodes',['assertPolicyCodes',['../structwalker_1_1ctr_1_1_coeff_policy_1_1assert_policy_codes.html',1,'walker::ctr::CoeffPolicy::assertPolicyCodes'],['../structwalker_1_1ctr_1_1_init_policy_1_1assert_policy_codes.html',1,'walker::ctr::InitPolicy::assertPolicyCodes'],['../structinciter_1_1ctr_1_1_physics_1_1assert_policy_codes.html',1,'inciter::ctr::Physics::assertPolicyCodes'],['../structinciter_1_1ctr_1_1_problem_1_1assert_policy_codes.html',1,'inciter::ctr::Problem::assertPolicyCodes']]],
   ['atwood',['atwood',['../structtag_1_1atwood.html',1,'tag']]],

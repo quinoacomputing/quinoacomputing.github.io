@@ -1,6 +1,8 @@
 var searchData=
 [
   ['echopolicies',['echoPolicies',['../structtk_1_1_print_1_1echo_policies.html',1,'tk::Print']]],
+  ['edgeeq',['EdgeEq',['../structtk_1_1_uns_mesh_1_1_edge_eq.html',1,'tk::UnsMesh']]],
+  ['edgehash',['EdgeHash',['../structtk_1_1_uns_mesh_1_1_edge_hash.html',1,'tk::UnsMesh']]],
   ['email',['email',['../structtut_1_1charm_1_1tag_1_1email.html',1,'tut::charm::tag::email'],['../structtut_1_1_tagged_tuple__common_1_1email.html',1,'tut::TaggedTuple_common::email']]],
   ['energy',['energy',['../structtag_1_1energy.html',1,'tag']]],
   ['eq1',['eq1',['../structtut_1_1eq1.html',1,'tut']]],

@@ -7,7 +7,7 @@ var searchData=
   ['nelem',['nelem',['../classtk_1_1_exodus_i_i_mesh_reader.html#aa5dac77b5c3139795822df7ab406fff5',1,'tk::ExodusIIMeshReader::nelem()'],['../classtk_1_1_uns_mesh.html#aed2f449cf20494f2ddff2c79ec41398f',1,'tk::UnsMesh::nelem()']]],
   ['netgenmeshreader',['NetgenMeshReader',['../classtk_1_1_netgen_mesh_reader.html#a453149f8a65d464cfcd3557aa0802c3e',1,'tk::NetgenMeshReader']]],
   ['netgenmeshwriter',['NetgenMeshWriter',['../classtk_1_1_netgen_mesh_writer.html#a84b450fbac3d6dc76ad6e5a9faa9132c',1,'tk::NetgenMeshWriter']]],
-  ['neworder',['neworder',['../classinciter_1_1_partitioner.html#a1ab52efd260a165da6fd2e4505930e22',1,'inciter::Partitioner']]],
+  ['neworder',['neworder',['../classinciter_1_1_partitioner.html#a46496f1ad6de9a11149ec0b63ed22cc1',1,'inciter::Partitioner::neworder(const std::unordered_map&lt; std::size_t, std::size_t &gt; &amp;nd)'],['../classinciter_1_1_partitioner.html#a50666ca6a9687d209d3ae05514fa6d9e',1,'inciter::Partitioner::neworder(const tk::UnsMesh::EdgeNodes &amp;ed)']]],
   ['nnode',['nnode',['../classtk_1_1_s_t_l_mesh.html#a9de4b1d7774d73f3c7804691fd33bcea',1,'tk::STLMesh::nnode()'],['../classtk_1_1_uns_mesh.html#a4ac3cf73164b914787b96d9966016237',1,'tk::UnsMesh::nnode() const noexcept'],['../classtk_1_1_uns_mesh.html#a78deb5e4ce38cb82be92400e5fdfa21c',1,'tk::UnsMesh::nnode() noexcept']]],
   ['nodeinit',['nodeInit',['../classrngtest_1_1_test_u01_suite.html#ad818b3882bc52b986f751b7cb9f80650',1,'rngtest::TestU01Suite']]],
   ['nostat',['nostat',['../classwalker_1_1_distributor.html#a4daa707c2a6328539c58f46d9d1ccee6',1,'walker::Distributor']]],
