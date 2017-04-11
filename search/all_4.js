@@ -84,8 +84,6 @@ var searchData=
   ['exists',['EXISTS',['../namespacetk_1_1grm.html#a86dbe384e8ce31796b7eb5f6ac87e1a3a6a240802522e95fc9e2c1d09122d8ec4',1,'tk::grm']]],
   ['exodusii',['EXODUSII',['../namespacetk_1_1ctr.html#a39b4992a011792b2f9621efd03c5df7ba834c8a77b335ad1c7bb2b632b6857339',1,'tk::ctr::EXODUSII()'],['../namespacetk.html#a748833535365d6e320da5fcb7d213c30a834c8a77b335ad1c7bb2b632b6857339',1,'tk::EXODUSII()'],['../namespacetk.html#a43d2f365ad601e02c8d64479adfd4a7fa834c8a77b335ad1c7bb2b632b6857339',1,'tk::EXODUSII()']]],
   ['exodusii_2eh',['exodusII.h',['../exodus_i_i_8h.html',1,'']]],
-  ['exodusii_20license',['ExodusII license',['../_exodus_i_i_license.html',1,'licenses']]],
-  ['exodusii_5flicense_2edox',['ExodusII_license.dox',['../_exodus_i_i__license_8dox.html',1,'']]],
   ['exodusiimeshreader',['ExodusIIMeshReader',['../classtk_1_1_exodus_i_i_mesh_reader.html',1,'tk::ExodusIIMeshReader'],['../classtk_1_1_exodus_i_i_mesh_reader.html#af5950dc8507343ba931ecc268d2c50a1',1,'tk::ExodusIIMeshReader::ExodusIIMeshReader()'],['../namespacetut.html#a88f40e8bb56ea7c640a69bb6a75fa769',1,'tut::ExodusIIMeshReader()']]],
   ['exodusiimeshreader_2ec',['ExodusIIMeshReader.C',['../_exodus_i_i_mesh_reader_8_c.html',1,'']]],
   ['exodusiimeshreader_2eh',['ExodusIIMeshReader.h',['../_exodus_i_i_mesh_reader_8h.html',1,'']]],
