@@ -39,7 +39,7 @@ var searchData=
   ['m_5fcmdparser',['m_cmdParser',['../class_main.html#ac3558dbd6ee5fdbedcde94a96d0af077',1,'Main::m_cmdParser()'],['../class_main.html#a83dec76ba9135a1f228d22fbaf492acd',1,'Main::m_cmdParser()'],['../class_main.html#a496808907d7bd0c9c1f024526b10b89d',1,'Main::m_cmdParser()'],['../class_main.html#a2551020f6c034d5621974d9df7d34ff4',1,'Main::m_cmdParser()'],['../class_main.html#a4bb8d7a5ecf1949a48fe012911b84fb6',1,'Main::m_cmdParser()']]],
   ['m_5fcollproxy',['m_collproxy',['../classwalker_1_1_integrator.html#a5213f01abfa2e87d34622c3049ed7a7d',1,'walker::Integrator']]],
   ['m_5fcomps',['m_comps',['../structtut_1_1_system_components__common_1_1testncomp.html#ab221b8f16b00515123bd860a68020859',1,'tut::SystemComponents_common::testncomp']]],
-  ['m_5fcoord',['m_coord',['../classinciter_1_1_carrier.html#a768361d74c89f68957f014340eca4e3d',1,'inciter::Carrier::m_coord()'],['../classinciter_1_1_partitioner.html#aad7f6e9cf184b0f3aea1f19f3f983b37',1,'inciter::Partitioner::m_coord()']]],
+  ['m_5fcoord',['m_coord',['../classinciter_1_1_carrier.html#a768361d74c89f68957f014340eca4e3d',1,'inciter::Carrier']]],
   ['m_5fcost',['m_cost',['../classinciter_1_1_partitioner.html#ab809fed852fdc8403c3f9759536ea7eb',1,'inciter::Partitioner']]],
   ['m_5fctr',['m_ctr',['../classtk_1_1_statistics.html#a98aa3c4f97a6e86e32c33607bf13eaf0',1,'tk::Statistics']]],
   ['m_5fctrbipdf',['m_ctrBiPDF',['../classtk_1_1_statistics.html#aff55832f6c825f073df07c378776afb2',1,'tk::Statistics']]],

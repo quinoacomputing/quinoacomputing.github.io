@@ -94,7 +94,7 @@ var searchData=
   ['testtaggedtuple_2eh',['TestTaggedTuple.h',['../_test_tagged_tuple_8h.html',1,'']]],
   ['testtimer_2eh',['TestTimer.h',['../_test_timer_8h.html',1,'']]],
   ['testtoggle_2eh',['TestToggle.h',['../_test_toggle_8h.html',1,'']]],
-  ['testu01',['TestU01',['../classrngtest_1_1_test_u01.html',1,'rngtest::TestU01&lt; TestU01Props &gt;'],['../structrngtest_1_1deck_1_1testu01.html',1,'rngtest::deck::testu01&lt; battery_kw &gt;'],['../structrngtest_1_1_test_stack.html#afc0e2d8cb91864dfb9a5727dfea4a23f',1,'rngtest::TestStack::TestU01()'],['../classrngtest_1_1_test_u01.html#abe7ef1ba75c4b49fe1dc7a5e7a6bba39',1,'rngtest::TestU01::TestU01()']]],
+  ['testu01',['testu01',['../structrngtest_1_1deck_1_1testu01.html',1,'rngtest::deck::testu01&lt; battery_kw &gt;'],['../classrngtest_1_1_test_u01.html',1,'rngtest::TestU01&lt; TestU01Props &gt;'],['../structrngtest_1_1_test_stack.html#afc0e2d8cb91864dfb9a5727dfea4a23f',1,'rngtest::TestStack::TestU01()'],['../classrngtest_1_1_test_u01.html#abe7ef1ba75c4b49fe1dc7a5e7a6bba39',1,'rngtest::TestU01::TestU01()']]],
   ['testu01_2ec',['TestU01.C',['../_test_u01_8_c.html',1,'']]],
   ['testu01_2eci',['testu01.ci',['../testu01_8ci.html',1,'']]],
   ['testu01_2edecl_2eh',['testu01.decl.h',['../testu01_8decl_8h.html',1,'']]],

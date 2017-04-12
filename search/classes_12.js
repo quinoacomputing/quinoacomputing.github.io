@@ -28,7 +28,7 @@ var searchData=
   ['testncomp',['testncomp',['../structtut_1_1_system_components__common_1_1testncomp.html',1,'tut::SystemComponents_common']]],
   ['testoffset',['testoffset',['../structtut_1_1_system_components__common_1_1testoffset.html',1,'tut::SystemComponents_common']]],
   ['teststack',['TestStack',['../structrngtest_1_1_test_stack.html',1,'rngtest']]],
-  ['testu01',['TestU01',['../classrngtest_1_1_test_u01.html',1,'rngtest::TestU01&lt; TestU01Props &gt;'],['../structrngtest_1_1deck_1_1testu01.html',1,'rngtest::deck::testu01&lt; battery_kw &gt;']]],
+  ['testu01',['testu01',['../structrngtest_1_1deck_1_1testu01.html',1,'rngtest::deck::testu01&lt; battery_kw &gt;'],['../classrngtest_1_1_test_u01.html',1,'rngtest::TestU01&lt; TestU01Props &gt;']]],
   ['testu01props',['TestU01Props',['../classrngtest_1_1_test_u01_props.html',1,'rngtest']]],
   ['testu01stack',['TestU01Stack',['../classrngtest_1_1_test_u01_stack.html',1,'rngtest']]],
   ['testu01suite',['TestU01Suite',['../classrngtest_1_1_test_u01_suite.html',1,'rngtest']]],
