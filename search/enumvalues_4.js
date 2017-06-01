@@ -1,6 +1,7 @@
 var searchData=
 [
   ['elem',['ELEM',['../namespacetk_1_1ctr.html#a62dbe24719817137376179bca05d0112ad3e3387a4f355276d41eefead65395c5',1,'tk::ctr']]],
+  ['energy_5funfinished',['ENERGY_UNFINISHED',['../namespacetk_1_1grm.html#a86dbe384e8ce31796b7eb5f6ac87e1a3a0d5f138976016b78162f5272b8a674ee',1,'tk::grm']]],
   ['eq_5fa005h',['EQ_A005H',['../namespacewalker_1_1ctr.html#aa39b258a505c5281de73b77b06661828a27b1ecbbfa679f987ad6366b5fe1add1',1,'walker::ctr']]],
   ['eq_5fa005l',['EQ_A005L',['../namespacewalker_1_1ctr.html#aa39b258a505c5281de73b77b06661828ac72e85a3f6d63b3f4ba941c92e68d55f',1,'walker::ctr']]],
   ['eq_5fa005s',['EQ_A005S',['../namespacewalker_1_1ctr.html#aa39b258a505c5281de73b77b06661828a06cddfd37be363809bf683a4d3af45e6',1,'walker::ctr']]],

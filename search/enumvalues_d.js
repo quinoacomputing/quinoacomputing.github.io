@@ -2,6 +2,7 @@ var searchData=
 [
   ['navierstokes',['NAVIERSTOKES',['../namespaceinciter_1_1ctr.html#a05792aa346ef778c24407416c5560d14ac74d97ca4e839b2b3d2f80e8054a3c3e',1,'inciter::ctr']]],
   ['netgen',['NETGEN',['../namespacetk.html#a748833535365d6e320da5fcb7d213c30a8d2dc7a7e41c392a0da416ec0626e676',1,'tk::NETGEN()'],['../namespacetk.html#a43d2f365ad601e02c8d64479adfd4a7fa8d2dc7a7e41c392a0da416ec0626e676',1,'tk::NETGEN()']]],
+  ['nl_5fenergy_5fgrowth',['NL_ENERGY_GROWTH',['../namespaceinciter_1_1ctr.html#a6233f49244094f9b305675039fe62482a141fe4c7195b7b4eb9badc8e0115adae',1,'inciter::ctr']]],
   ['no_5fbattery',['NO_BATTERY',['../namespacerngtest_1_1ctr.html#a151ceec1487ba03f04e1bcf5b3d10194a012d5205bceecda00a3dab4df16d49bd',1,'rngtest::ctr']]],
   ['no_5fdiffeq',['NO_DIFFEQ',['../namespacewalker_1_1ctr.html#a4592cfa71c6e4c64a71c5691df56c79faa525371f16783775387889fc7c70289a',1,'walker::ctr']]],
   ['no_5flib',['NO_LIB',['../namespacetk_1_1ctr.html#a13e328475bb9cd39458a944f1fdff7ffaa9f28feb7175159951c483fc0a86879b',1,'tk::ctr']]],

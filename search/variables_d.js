@@ -2,7 +2,7 @@ var searchData=
 [
   ['p',['p',['../structtut_1_1_toggle__common.html#a99312c9c1476526663d7e4c8aa70b4ca',1,'tut::Toggle_common']]],
   ['p_5f',['p_',['../classtk_1_1str__const.html#adb64e1bc27f42a5c6b6dc6a613992697',1,'tk::str_const']]],
-  ['pdfmerger',['PDFMerger',['../namespacewalker.html#afc860ac847b7736cec6571d64c1bebdc',1,'walker']]],
+  ['pdfmerger',['PDFMerger',['../namespaceinciter.html#a94ddacdf052f01c6e796a4ed0daffb5f',1,'inciter::PDFMerger()'],['../namespacewalker.html#afc860ac847b7736cec6571d64c1bebdc',1,'walker::PDFMerger()']]],
   ['pdfnames',['pdfnames',['../namespacetk_1_1grm.html#aadf18699e85fe7ff02a1dfbb37d78977',1,'tk::grm']]],
   ['phys',['phys',['../classinciter_1_1_inciter_print_1_1_policies.html#a14d84462fe93479a9293dc2a6dd77a4f',1,'inciter::InciterPrint::Policies']]],
   ['policy',['policy',['../classinciter_1_1ctr_1_1_physics.html#a25fc7b0cc6d84a310843d342562d3ee9',1,'inciter::ctr::Physics::policy()'],['../classinciter_1_1ctr_1_1_problem.html#a61d92f86fb70a3316da5b7f4f27cb358',1,'inciter::ctr::Problem::policy()'],['../classwalker_1_1ctr_1_1_coeff_policy.html#a13a2a7907f7519615fcf8f35f0eb7e94',1,'walker::ctr::CoeffPolicy::policy()'],['../classwalker_1_1ctr_1_1_init_policy.html#a7be5154de08c035e708b3efd7395a83a',1,'walker::ctr::InitPolicy::policy()']]],

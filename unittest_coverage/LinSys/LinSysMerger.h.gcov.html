@@ -24,16 +24,16 @@
           </tr>
           <tr>
             <td class="headerItem">Commit:</td>
-            <td class="headerValue"><a href="https://github.com/quinoacomputing/quinoa/commit/4c45a63e">Quinoa_v0.1-814-g4c45a63e</a></td>
+            <td class="headerValue"><a href="https://github.com/quinoacomputing/quinoa/commit/3bacce72">Quinoa_v0.1-875-g3bacce72</a></td>
             <td></td>
             <td class="headerItem">Lines:</td>
             <td class="headerCovTableEntry">0</td>
-            <td class="headerCovTableEntry">385</td>
+            <td class="headerCovTableEntry">386</td>
             <td class="headerCovTableEntryLo">0.0 %</td>
           </tr>
           <tr>
             <td class="headerItem">Date:</td>
-            <td class="headerValue">2017-04-27 18:09:46</td>
+            <td class="headerValue">2017-05-31 18:10:45</td>
             <td></td>
             <td class="headerItem">Functions:</td>
             <td class="headerCovTableEntry">0</td>
@@ -437,7 +437,7 @@
 <span class="lineNum">     363 </span>                :            :         // Create linear solver
 <span class="lineNum">     364 </span>                :<span class="lineNoCov">          0 :         m_solver.create();</span>
 <span class="lineNum">     365 </span>                :            :         // Signal back to host that setup of workers can start
-<span class="lineNum">     366 </span>                :<span class="lineNoCov">          0 :         signal2host_setup( m_host );</span>
+<span class="lineNum">     366 </span>                :<span class="lineNoCov">          0 :         signal2host_coord( m_host );</span>
 <span class="lineNum">     367 </span>                :            :       }
 <span class="lineNum">     368 </span>                :<span class="lineNoCov">          0 :     }</span>
 <a name="369"><span class="lineNum">     369 </span>                :            : </a>
@@ -1221,147 +1221,149 @@
 <span class="lineNum">    1147 </span>                :<span class="lineNoCov">          0 :       auxsolve_complete();</span>
 <span class="lineNum">    1148 </span>                :<span class="lineNoCov">          0 :     }</span>
 <span class="lineNum">    1149 </span>                :            : 
-<a name="1150"><span class="lineNum">    1150 </span>                :            :     //! Compute diagnostics (residuals) and contribute them back to host</a>
-<span class="lineNum">    1151 </span>                :            :     //! \details Diagnostics: L1 norm for all components
-<span class="lineNum">    1152 </span>                :<span class="lineNoCov">          0 :     void diagnostics() {</span>
-<span class="lineNum">    1153 </span>                :<span class="lineNoCov">          0 :       Assert( diagcomplete(),</span>
-<span class="lineNum">    1154 </span>                :            :               &quot;Values of distributed solution vector (for diagnostics) on PE &quot; +
-<span class="lineNum">    1155 </span>                :            :               std::to_string( CkMyPe() ) + &quot; is incomplete&quot; );
-<span class="lineNum">    1156 </span>                :<span class="lineNoCov">          0 :       std::vector&lt; tk::real &gt; diag( m_ncomp*2, 0.0 );</span>
-<span class="lineNum">    1157 </span>                :<span class="lineNoCov">          0 :       for (const auto&amp; s : m_diag) {</span>
-<span class="lineNum">    1158 </span>                :<span class="lineNoCov">          0 :         Assert( s.second.size() == 2, &quot;Size of diagnostics vector must be 2&quot; );</span>
-<span class="lineNum">    1159 </span>                :            :         // Compute L1 norm of the numerical solution
-<span class="lineNum">    1160 </span>                :<span class="lineNoCov">          0 :         for (std::size_t c=0; c&lt;m_ncomp; ++c)</span>
-<span class="lineNum">    1161 </span>                :<span class="lineNoCov">          0 :           diag[c] += std::abs( s.second[0][c] );</span>
-<span class="lineNum">    1162 </span>                :            :         // Compute L1 norm of the numerical - analytical solution
-<span class="lineNum">    1163 </span>                :<span class="lineNoCov">          0 :         for (std::size_t c=0; c&lt;m_ncomp; ++c)</span>
-<span class="lineNum">    1164 </span>                :<span class="lineNoCov">          0 :           diag[m_ncomp+c] += std::abs( s.second[0][c] - s.second[1][c] );</span>
-<span class="lineNum">    1165 </span>                :            :       }
-<span class="lineNum">    1166 </span>                :            :       // Contribute to diagnostics across all PEs
-<span class="lineNum">    1167 </span>                :<span class="lineNoCov">          0 :       signal2host_diag( m_host, diag );</span>
-<span class="lineNum">    1168 </span>                :<span class="lineNoCov">          0 :     }</span>
-<span class="lineNum">    1169 </span>                :            : 
-<span class="lineNum">    1170 </span>                :            :     #if defined(__clang__)
-<span class="lineNum">    1171 </span>                :            :       #pragma clang diagnostic push
-<span class="lineNum">    1172 </span>                :            :       #pragma clang diagnostic ignored &quot;-Wdocumentation&quot;
-<span class="lineNum">    1173 </span>                :            :     #endif
-<span class="lineNum">    1174 </span>                :            :     /** @name Host signal calls
-<span class="lineNum">    1175 </span>                :            :       * \brief These functions signal back to the host via a global reduction
-<span class="lineNum">    1176 </span>                :            :       *   originating from each PE branch
-<span class="lineNum">    1177 </span>                :            :       * \details Singal calls contribute to a reduction on all branches (PEs)
-<span class="lineNum">    1178 </span>                :            :       *   of LinSysMerger to the host, e.g., inciter::CProxy_Transporter, given
-<span class="lineNum">    1179 </span>                :            :       *   by the template argument HostProxy. The signal functions are overloads
-<span class="lineNum">    1180 </span>                :            :       *   on the specialization, e.g., inciter::CProxy_Transporter, of the
-<span class="lineNum">    1181 </span>                :            :       *   LinSysMerger template. They create Charm++ reduction targets via
-<span class="lineNum">    1182 </span>                :            :       *   creating a callback that invokes the typed reduction client, where
-<span class="lineNum">    1183 </span>                :            :       *   host is the proxy on which the reduction target method, given by the
-<span class="lineNum">    1184 </span>                :            :       *   string followed by &quot;redn_wrapper_&quot;, e.g., rowcomplete(), is called
-<span class="lineNum">    1185 </span>                :            :       *   upon completion of the reduction.
-<span class="lineNum">    1186 </span>                :            :       *
-<span class="lineNum">    1187 </span>                :            :       *   Note that we do not use Charm++'s CkReductionTarget macro here,
-<span class="lineNum">    1188 </span>                :            :       *   but instead explicitly generate the code that that macro would
-<span class="lineNum">    1189 </span>                :            :       *   generate. To explain why, here is Charm++'s CkReductionTarget macro's
-<span class="lineNum">    1190 </span>                :            :       *   definition, given in ckreduction.h:
-<span class="lineNum">    1191 </span>                :            :       *   \code{.cpp}
-<span class="lineNum">    1192 </span>                :            :       *      #define CkReductionTarget(me, method) \
-<span class="lineNum">    1193 </span>                :            :       *        CkIndex_##me::redn_wrapper_##method(NULL)
-<span class="lineNum">    1194 </span>                :            :       *   \endcode
-<span class="lineNum">    1195 </span>                :            :       *   This macro takes arguments 'me' (a class name) and 'method' a member
-<span class="lineNum">    1196 </span>                :            :       *   function of class 'me' and generates the call
-<span class="lineNum">    1197 </span>                :            :       *   'CkIndex_&lt;class&gt;::redn_wrapper_&lt;method&gt;(NULL)'. With the overloads the
-<span class="lineNum">    1198 </span>                :            :       *   signal2* functions generate, we do the above macro's job for
-<span class="lineNum">    1199 </span>                :            :       *   LinSysMerger specialized by HostProxy, hard-coded here, as well its
-<span class="lineNum">    1200 </span>                :            :       *   reduction target. This is required since
-<span class="lineNum">    1201 </span>                :            :       *    * Charm++'s CkReductionTarget macro's preprocessing happens earlier
-<span class="lineNum">    1202 </span>                :            :       *      than type resolution and the string of the template argument would
-<span class="lineNum">    1203 </span>                :            :       *      be substituted instead of the type specialized (which is not what
-<span class="lineNum">    1204 </span>                :            :       *      we want here), and
-<span class="lineNum">    1205 </span>                :            :       *    * the template argument class, e.g, CProxy_Transporter, is in a
-<span class="lineNum">    1206 </span>                :            :       *      namespace different than that of LinSysMerger. When a new class is
-<span class="lineNum">    1207 </span>                :            :       *      used to specialize LinSysMerger, the compiler will alert that a new
-<span class="lineNum">    1208 </span>                :            :       *      overload needs to be defined.
-<span class="lineNum">    1209 </span>                :            :       *
-<span class="lineNum">    1210 </span>                :            :       * \note This simplifies client-code, e.g., inciter::Transporter, which now
-<span class="lineNum">    1211 </span>                :            :       *   requires no explicit book-keeping with counters, etc. Also a reduction
-<span class="lineNum">    1212 </span>                :            :       *   (instead of a direct call to the host) better utilizes the
-<span class="lineNum">    1213 </span>                :            :       *   communication network as computational nodes can send their aggregated
-<span class="lineNum">    1214 </span>                :            :       *   contribution to other nodes on a network instead of all chares sending
-<span class="lineNum">    1215 </span>                :            :       *   their (smaller) contributions to the same host, (hopefully)
-<span class="lineNum">    1216 </span>                :            :       *   implemented using a tree among the PEs.
-<span class="lineNum">    1217 </span>                :            :       * \see http://charm.cs.illinois.edu/manuals/html/charm++/manual.html,
-<span class="lineNum">    1218 </span>                :            :       *   Sections &quot;Processor-Aware Chare Collections&quot; and &quot;Chare Arrays&quot;.
-<span class="lineNum">    1219 </span>                :            :       * */
-<span class="lineNum">    1220 </span>                :            :     ///@{
-<a name="1221"><span class="lineNum">    1221 </span>                :            :     //! \brief Signal back to host that the initialization of the row indices of</a>
-<span class="lineNum">    1222 </span>                :            :     //!   the linear system is complete
-<span class="lineNum">    1223 </span>                :<span class="lineNoCov">          0 :     void signal2host_row_complete( const inciter::CProxy_Transporter&amp; host ) {</span>
-<span class="lineNum">    1224 </span>                :            :       using inciter::CkIndex_Transporter;
-<span class="lineNum">    1225 </span>                :<span class="lineNoCov">          0 :       Group::contribute(</span>
-<span class="lineNum">    1226 </span>                :            :         CkCallback( CkIndex_Transporter::redn_wrapper_rowcomplete(NULL), host ) );
-<span class="lineNum">    1227 </span>                :<span class="lineNoCov">          0 :     }</span>
-<a name="1228"><span class="lineNum">    1228 </span>                :            :     //! \brief Signal back to host that enabling the SDAG waits for assembling</a>
-<span class="lineNum">    1229 </span>                :            :     //!    the right-hand side is complete and ready for a new advance in time
-<span class="lineNum">    1230 </span>                :<span class="lineNoCov">          0 :     void signal2host_computedt( const inciter::CProxy_Transporter&amp; host ) {</span>
-<span class="lineNum">    1231 </span>                :            :       using inciter::CkIndex_Transporter;
-<span class="lineNum">    1232 </span>                :<span class="lineNoCov">          0 :       Group::contribute(</span>
-<span class="lineNum">    1233 </span>                :            :        CkCallback( CkIndex_Transporter::redn_wrapper_computedt(NULL), host ) );
-<span class="lineNum">    1234 </span>                :<span class="lineNoCov">          0 :     }</span>
-<a name="1235"><span class="lineNum">    1235 </span>                :            :     //! \brief Signal back to host that receiving the inverse PE-division map is</a>
-<span class="lineNum">    1236 </span>                :            :     //!  complete and we are ready for Prformers to start their setup.
-<span class="lineNum">    1237 </span>                :<span class="lineNoCov">          0 :     void signal2host_setup( const inciter::CProxy_Transporter&amp; host ) {</span>
-<span class="lineNum">    1238 </span>                :            :       using inciter::CkIndex_Transporter;
-<span class="lineNum">    1239 </span>                :<span class="lineNoCov">          0 :       Group::contribute(</span>
-<span class="lineNum">    1240 </span>                :            :        CkCallback( CkIndex_Transporter::redn_wrapper_setup(NULL), host ) );
-<a name="1241"><span class="lineNum">    1241 </span>                :<span class="lineNoCov">          0 :     }</span></a>
-<span class="lineNum">    1242 </span>                :            :     //! Contribute diagnostics back to host
-<span class="lineNum">    1243 </span>                :<span class="lineNoCov">          0 :     void signal2host_diag( const inciter::CProxy_Transporter&amp; host,</span>
-<span class="lineNum">    1244 </span>                :            :                            const std::vector&lt; tk::real &gt;&amp; diag ) {
-<span class="lineNum">    1245 </span>                :            :       using inciter::CkIndex_Transporter;
-<span class="lineNum">    1246 </span>                :<span class="lineNoCov">          0 :       Group::contribute( static_cast&lt; int &gt;( diag.size() * sizeof(tk::real) ),</span>
-<span class="lineNum">    1247 </span>                :<span class="lineNoCov">          0 :                          diag.data(), CkReduction::sum_double,</span>
-<span class="lineNum">    1248 </span>                :            :         CkCallback( CkReductionTarget( Transporter, diagnostics), host ) );
-<span class="lineNum">    1249 </span>                :<span class="lineNoCov">          0 :     }</span>
-<span class="lineNum">    1250 </span>                :            :     ///@}
-<span class="lineNum">    1251 </span>                :            :     #if defined(__clang__)
-<span class="lineNum">    1252 </span>                :            :       #pragma GCC diagnostic pop
-<span class="lineNum">    1253 </span>                :            :     #endif
-<span class="lineNum">    1254 </span>                :            : };
-<span class="lineNum">    1255 </span>                :            : 
-<span class="lineNum">    1256 </span>                :            : #if defined(__clang__)
-<span class="lineNum">    1257 </span>                :            :   #pragma clang diagnostic pop
-<span class="lineNum">    1258 </span>                :            : #endif
-<span class="lineNum">    1259 </span>                :            : 
-<span class="lineNum">    1260 </span>                :            : } // tk::
+<span class="lineNum">    1150 </span>                :            :     //! Compute diagnostics (residuals) and contribute them back to host
+<a name="1151"><span class="lineNum">    1151 </span>                :            :     //! \details Diagnostics: L2 norm for all components.</a>
+<span class="lineNum">    1152 </span>                :            :     //! \see For info, see e.g., inciter::Carrier::diagnostics().
+<span class="lineNum">    1153 </span>                :<span class="lineNoCov">          0 :     void diagnostics() {</span>
+<span class="lineNum">    1154 </span>                :<span class="lineNoCov">          0 :       Assert( diagcomplete(),</span>
+<span class="lineNum">    1155 </span>                :            :               &quot;Values of distributed solution vector (for diagnostics) on PE &quot; +
+<span class="lineNum">    1156 </span>                :            :               std::to_string( CkMyPe() ) + &quot; is incomplete&quot; );
+<span class="lineNum">    1157 </span>                :<span class="lineNoCov">          0 :       std::vector&lt; tk::real &gt; diag( m_ncomp*2, 0.0 );</span>
+<span class="lineNum">    1158 </span>                :<span class="lineNoCov">          0 :       for (const auto&amp; s : m_diag) {</span>
+<span class="lineNum">    1159 </span>                :<span class="lineNoCov">          0 :         Assert( s.second.size() == 2, &quot;Size of diagnostics vector must be 2&quot; );</span>
+<span class="lineNum">    1160 </span>                :            :         // Compute L1 norm of the numerical solution
+<span class="lineNum">    1161 </span>                :<span class="lineNoCov">          0 :         for (std::size_t c=0; c&lt;m_ncomp; ++c)</span>
+<span class="lineNum">    1162 </span>                :<span class="lineNoCov">          0 :           diag[c] += s.second[0][c] * s.second[0][c];</span>
+<span class="lineNum">    1163 </span>                :            :         // Compute L1 norm of the numerical - analytical solution
+<span class="lineNum">    1164 </span>                :<span class="lineNoCov">          0 :         for (std::size_t c=0; c&lt;m_ncomp; ++c)</span>
+<span class="lineNum">    1165 </span>                :<span class="lineNoCov">          0 :           diag[m_ncomp+c] += (s.second[0][c] - s.second[1][c]) *</span>
+<span class="lineNum">    1166 </span>                :<span class="lineNoCov">          0 :                              (s.second[0][c] - s.second[1][c]);</span>
+<span class="lineNum">    1167 </span>                :            :       }
+<span class="lineNum">    1168 </span>                :            :       // Contribute to diagnostics across all PEs
+<span class="lineNum">    1169 </span>                :<span class="lineNoCov">          0 :       signal2host_diag( m_host, diag );</span>
+<span class="lineNum">    1170 </span>                :<span class="lineNoCov">          0 :     }</span>
+<span class="lineNum">    1171 </span>                :            : 
+<span class="lineNum">    1172 </span>                :            :     #if defined(__clang__)
+<span class="lineNum">    1173 </span>                :            :       #pragma clang diagnostic push
+<span class="lineNum">    1174 </span>                :            :       #pragma clang diagnostic ignored &quot;-Wdocumentation&quot;
+<span class="lineNum">    1175 </span>                :            :     #endif
+<span class="lineNum">    1176 </span>                :            :     /** @name Host signal calls
+<span class="lineNum">    1177 </span>                :            :       * \brief These functions signal back to the host via a global reduction
+<span class="lineNum">    1178 </span>                :            :       *   originating from each PE branch
+<span class="lineNum">    1179 </span>                :            :       * \details Singal calls contribute to a reduction on all branches (PEs)
+<span class="lineNum">    1180 </span>                :            :       *   of LinSysMerger to the host, e.g., inciter::CProxy_Transporter, given
+<span class="lineNum">    1181 </span>                :            :       *   by the template argument HostProxy. The signal functions are overloads
+<span class="lineNum">    1182 </span>                :            :       *   on the specialization, e.g., inciter::CProxy_Transporter, of the
+<span class="lineNum">    1183 </span>                :            :       *   LinSysMerger template. They create Charm++ reduction targets via
+<span class="lineNum">    1184 </span>                :            :       *   creating a callback that invokes the typed reduction client, where
+<span class="lineNum">    1185 </span>                :            :       *   host is the proxy on which the reduction target method, given by the
+<span class="lineNum">    1186 </span>                :            :       *   string followed by &quot;redn_wrapper_&quot;, e.g., rowcomplete(), is called
+<span class="lineNum">    1187 </span>                :            :       *   upon completion of the reduction.
+<span class="lineNum">    1188 </span>                :            :       *
+<span class="lineNum">    1189 </span>                :            :       *   Note that we do not use Charm++'s CkReductionTarget macro here,
+<span class="lineNum">    1190 </span>                :            :       *   but instead explicitly generate the code that that macro would
+<span class="lineNum">    1191 </span>                :            :       *   generate. To explain why, here is Charm++'s CkReductionTarget macro's
+<span class="lineNum">    1192 </span>                :            :       *   definition, given in ckreduction.h:
+<span class="lineNum">    1193 </span>                :            :       *   \code{.cpp}
+<span class="lineNum">    1194 </span>                :            :       *      #define CkReductionTarget(me, method) \
+<span class="lineNum">    1195 </span>                :            :       *        CkIndex_##me::redn_wrapper_##method(NULL)
+<span class="lineNum">    1196 </span>                :            :       *   \endcode
+<span class="lineNum">    1197 </span>                :            :       *   This macro takes arguments 'me' (a class name) and 'method' a member
+<span class="lineNum">    1198 </span>                :            :       *   function of class 'me' and generates the call
+<span class="lineNum">    1199 </span>                :            :       *   'CkIndex_&lt;class&gt;::redn_wrapper_&lt;method&gt;(NULL)'. With the overloads the
+<span class="lineNum">    1200 </span>                :            :       *   signal2* functions generate, we do the above macro's job for
+<span class="lineNum">    1201 </span>                :            :       *   LinSysMerger specialized by HostProxy, hard-coded here, as well its
+<span class="lineNum">    1202 </span>                :            :       *   reduction target. This is required since
+<span class="lineNum">    1203 </span>                :            :       *    * Charm++'s CkReductionTarget macro's preprocessing happens earlier
+<span class="lineNum">    1204 </span>                :            :       *      than type resolution and the string of the template argument would
+<span class="lineNum">    1205 </span>                :            :       *      be substituted instead of the type specialized (which is not what
+<span class="lineNum">    1206 </span>                :            :       *      we want here), and
+<span class="lineNum">    1207 </span>                :            :       *    * the template argument class, e.g, CProxy_Transporter, is in a
+<span class="lineNum">    1208 </span>                :            :       *      namespace different than that of LinSysMerger. When a new class is
+<span class="lineNum">    1209 </span>                :            :       *      used to specialize LinSysMerger, the compiler will alert that a new
+<span class="lineNum">    1210 </span>                :            :       *      overload needs to be defined.
+<span class="lineNum">    1211 </span>                :            :       *
+<span class="lineNum">    1212 </span>                :            :       * \note This simplifies client-code, e.g., inciter::Transporter, which now
+<span class="lineNum">    1213 </span>                :            :       *   requires no explicit book-keeping with counters, etc. Also a reduction
+<span class="lineNum">    1214 </span>                :            :       *   (instead of a direct call to the host) better utilizes the
+<span class="lineNum">    1215 </span>                :            :       *   communication network as computational nodes can send their aggregated
+<span class="lineNum">    1216 </span>                :            :       *   contribution to other nodes on a network instead of all chares sending
+<span class="lineNum">    1217 </span>                :            :       *   their (smaller) contributions to the same host, (hopefully)
+<span class="lineNum">    1218 </span>                :            :       *   implemented using a tree among the PEs.
+<span class="lineNum">    1219 </span>                :            :       * \see http://charm.cs.illinois.edu/manuals/html/charm++/manual.html,
+<span class="lineNum">    1220 </span>                :            :       *   Sections &quot;Processor-Aware Chare Collections&quot; and &quot;Chare Arrays&quot;.
+<span class="lineNum">    1221 </span>                :            :       * */
+<span class="lineNum">    1222 </span>                :            :     ///@{
+<a name="1223"><span class="lineNum">    1223 </span>                :            :     //! \brief Signal back to host that the initialization of the row indices of</a>
+<span class="lineNum">    1224 </span>                :            :     //!   the linear system is complete
+<span class="lineNum">    1225 </span>                :<span class="lineNoCov">          0 :     void signal2host_row_complete( const inciter::CProxy_Transporter&amp; host ) {</span>
+<span class="lineNum">    1226 </span>                :            :       using inciter::CkIndex_Transporter;
+<span class="lineNum">    1227 </span>                :<span class="lineNoCov">          0 :       Group::contribute(</span>
+<span class="lineNum">    1228 </span>                :            :         CkCallback( CkIndex_Transporter::redn_wrapper_rowcomplete(NULL), host ) );
+<span class="lineNum">    1229 </span>                :<span class="lineNoCov">          0 :     }</span>
+<a name="1230"><span class="lineNum">    1230 </span>                :            :     //! \brief Signal back to host that enabling the SDAG waits for assembling</a>
+<span class="lineNum">    1231 </span>                :            :     //!    the right-hand side is complete and ready for a new advance in time
+<span class="lineNum">    1232 </span>                :<span class="lineNoCov">          0 :     void signal2host_computedt( const inciter::CProxy_Transporter&amp; host ) {</span>
+<span class="lineNum">    1233 </span>                :            :       using inciter::CkIndex_Transporter;
+<span class="lineNum">    1234 </span>                :<span class="lineNoCov">          0 :       Group::contribute(</span>
+<span class="lineNum">    1235 </span>                :            :        CkCallback( CkIndex_Transporter::redn_wrapper_computedt(NULL), host ) );
+<span class="lineNum">    1236 </span>                :<span class="lineNoCov">          0 :     }</span>
+<a name="1237"><span class="lineNum">    1237 </span>                :            :     //! \brief Signal back to host that receiving the inverse PE-division map is</a>
+<span class="lineNum">    1238 </span>                :            :     //!  complete and we are ready for Prformers to start their setup.
+<span class="lineNum">    1239 </span>                :<span class="lineNoCov">          0 :     void signal2host_coord( const inciter::CProxy_Transporter&amp; host ) {</span>
+<span class="lineNum">    1240 </span>                :            :       using inciter::CkIndex_Transporter;
+<span class="lineNum">    1241 </span>                :<span class="lineNoCov">          0 :       Group::contribute(</span>
+<span class="lineNum">    1242 </span>                :            :        CkCallback( CkIndex_Transporter::redn_wrapper_coord(NULL), host ) );
+<a name="1243"><span class="lineNum">    1243 </span>                :<span class="lineNoCov">          0 :     }</span></a>
+<span class="lineNum">    1244 </span>                :            :     //! Contribute diagnostics back to host
+<span class="lineNum">    1245 </span>                :<span class="lineNoCov">          0 :     void signal2host_diag( const inciter::CProxy_Transporter&amp; host,</span>
+<span class="lineNum">    1246 </span>                :            :                            const std::vector&lt; tk::real &gt;&amp; diag ) {
+<span class="lineNum">    1247 </span>                :            :       using inciter::CkIndex_Transporter;
+<span class="lineNum">    1248 </span>                :<span class="lineNoCov">          0 :       Group::contribute( static_cast&lt; int &gt;( diag.size() * sizeof(tk::real) ),</span>
+<span class="lineNum">    1249 </span>                :<span class="lineNoCov">          0 :                          diag.data(), CkReduction::sum_double,</span>
+<span class="lineNum">    1250 </span>                :            :         CkCallback( CkReductionTarget( Transporter, diagnostics), host ) );
+<span class="lineNum">    1251 </span>                :<span class="lineNoCov">          0 :     }</span>
+<span class="lineNum">    1252 </span>                :            :     ///@}
+<span class="lineNum">    1253 </span>                :            :     #if defined(__clang__)
+<span class="lineNum">    1254 </span>                :            :       #pragma GCC diagnostic pop
+<span class="lineNum">    1255 </span>                :            :     #endif
+<span class="lineNum">    1256 </span>                :            : };
+<span class="lineNum">    1257 </span>                :            : 
+<span class="lineNum">    1258 </span>                :            : #if defined(__clang__)
+<span class="lineNum">    1259 </span>                :            :   #pragma clang diagnostic pop
+<span class="lineNum">    1260 </span>                :            : #endif
 <span class="lineNum">    1261 </span>                :            : 
-<span class="lineNum">    1262 </span>                :            : #if defined(__clang__)
-<span class="lineNum">    1263 </span>                :            :   #pragma clang diagnostic push
-<span class="lineNum">    1264 </span>                :            :   #pragma clang diagnostic ignored &quot;-Wextra-semi&quot;
-<span class="lineNum">    1265 </span>                :            :   #pragma clang diagnostic ignored &quot;-Wold-style-cast&quot;
-<span class="lineNum">    1266 </span>                :            :   #pragma clang diagnostic ignored &quot;-Wsign-conversion&quot;
-<span class="lineNum">    1267 </span>                :            :   #pragma clang diagnostic ignored &quot;-Wunused-parameter&quot;
-<span class="lineNum">    1268 </span>                :            :   #pragma clang diagnostic ignored &quot;-Wshorten-64-to-32&quot;
-<span class="lineNum">    1269 </span>                :            :   #pragma clang diagnostic ignored &quot;-Wreorder&quot;
-<span class="lineNum">    1270 </span>                :            :   #pragma clang diagnostic ignored &quot;-Wunused-variable&quot;
-<span class="lineNum">    1271 </span>                :            : #elif defined(STRICT_GNUC)
-<span class="lineNum">    1272 </span>                :            :   #pragma GCC diagnostic push
-<span class="lineNum">    1273 </span>                :            :   #pragma GCC diagnostic ignored &quot;-Wnon-virtual-dtor&quot;
-<span class="lineNum">    1274 </span>                :            :   #pragma GCC diagnostic ignored &quot;-Wreorder&quot;
-<span class="lineNum">    1275 </span>                :            :   #pragma GCC diagnostic ignored &quot;-Wcast-qual&quot;
-<span class="lineNum">    1276 </span>                :            :   #pragma GCC diagnostic ignored &quot;-Wunused-parameter&quot;
-<span class="lineNum">    1277 </span>                :            :   #pragma GCC diagnostic ignored &quot;-Wunused-variable&quot;
-<span class="lineNum">    1278 </span>                :            : #endif
-<span class="lineNum">    1279 </span>                :            : 
-<span class="lineNum">    1280 </span>                :            : #define CK_TEMPLATES_ONLY
-<span class="lineNum">    1281 </span>                :            : #include &quot;linsysmerger.def.h&quot;
-<span class="lineNum">    1282 </span>                :            : #undef CK_TEMPLATES_ONLY
-<span class="lineNum">    1283 </span>                :            : 
-<span class="lineNum">    1284 </span>                :            : #if defined(__clang__)
-<span class="lineNum">    1285 </span>                :            :   #pragma clang diagnostic pop
-<span class="lineNum">    1286 </span>                :            : #elif defined(STRICT_GNUC)
-<span class="lineNum">    1287 </span>                :            :   #pragma GCC diagnostic pop
-<span class="lineNum">    1288 </span>                :            : #endif
-<span class="lineNum">    1289 </span>                :            : 
-<span class="lineNum">    1290 </span>                :            : #endif // LinSysMerger_h
+<span class="lineNum">    1262 </span>                :            : } // tk::
+<span class="lineNum">    1263 </span>                :            : 
+<span class="lineNum">    1264 </span>                :            : #if defined(__clang__)
+<span class="lineNum">    1265 </span>                :            :   #pragma clang diagnostic push
+<span class="lineNum">    1266 </span>                :            :   #pragma clang diagnostic ignored &quot;-Wextra-semi&quot;
+<span class="lineNum">    1267 </span>                :            :   #pragma clang diagnostic ignored &quot;-Wold-style-cast&quot;
+<span class="lineNum">    1268 </span>                :            :   #pragma clang diagnostic ignored &quot;-Wsign-conversion&quot;
+<span class="lineNum">    1269 </span>                :            :   #pragma clang diagnostic ignored &quot;-Wunused-parameter&quot;
+<span class="lineNum">    1270 </span>                :            :   #pragma clang diagnostic ignored &quot;-Wshorten-64-to-32&quot;
+<span class="lineNum">    1271 </span>                :            :   #pragma clang diagnostic ignored &quot;-Wreorder&quot;
+<span class="lineNum">    1272 </span>                :            :   #pragma clang diagnostic ignored &quot;-Wunused-variable&quot;
+<span class="lineNum">    1273 </span>                :            : #elif defined(STRICT_GNUC)
+<span class="lineNum">    1274 </span>                :            :   #pragma GCC diagnostic push
+<span class="lineNum">    1275 </span>                :            :   #pragma GCC diagnostic ignored &quot;-Wnon-virtual-dtor&quot;
+<span class="lineNum">    1276 </span>                :            :   #pragma GCC diagnostic ignored &quot;-Wreorder&quot;
+<span class="lineNum">    1277 </span>                :            :   #pragma GCC diagnostic ignored &quot;-Wcast-qual&quot;
+<span class="lineNum">    1278 </span>                :            :   #pragma GCC diagnostic ignored &quot;-Wunused-parameter&quot;
+<span class="lineNum">    1279 </span>                :            :   #pragma GCC diagnostic ignored &quot;-Wunused-variable&quot;
+<span class="lineNum">    1280 </span>                :            : #endif
+<span class="lineNum">    1281 </span>                :            : 
+<span class="lineNum">    1282 </span>                :            : #define CK_TEMPLATES_ONLY
+<span class="lineNum">    1283 </span>                :            : #include &quot;linsysmerger.def.h&quot;
+<span class="lineNum">    1284 </span>                :            : #undef CK_TEMPLATES_ONLY
+<span class="lineNum">    1285 </span>                :            : 
+<span class="lineNum">    1286 </span>                :            : #if defined(__clang__)
+<span class="lineNum">    1287 </span>                :            :   #pragma clang diagnostic pop
+<span class="lineNum">    1288 </span>                :            : #elif defined(STRICT_GNUC)
+<span class="lineNum">    1289 </span>                :            :   #pragma GCC diagnostic pop
+<span class="lineNum">    1290 </span>                :            : #endif
+<span class="lineNum">    1291 </span>                :            : 
+<span class="lineNum">    1292 </span>                :            : #endif // LinSysMerger_h
 </pre>
       </td>
     </tr>
