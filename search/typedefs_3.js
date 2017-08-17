@@ -2,24 +2,15 @@ var searchData=
 [
   ['data_5fgroup',['Data_group',['../namespacetut.html#a043d311e2e6dfed28712fd636ccfda67',1,'tut']]],
   ['data_5fobject',['Data_object',['../namespacetut.html#a0a38f979fe9073321e265a811cf13b23',1,'tut']]],
-  ['decay',['decay',['../namespacekw.html#a6d7b4976ff35f5ade65abfcf1c5d7efe',1,'kw']]],
-  ['density',['density',['../namespacekw.html#a565295e49a16166bdc134fff37b2c63b',1,'kw']]],
-  ['density_5ffluctuation',['density_fluctuation',['../namespacekw.html#a57fdf46f7335cafb08f3f96032b32f99',1,'kw']]],
-  ['depvar',['depvar',['../namespacekw.html#aaafb339c11f81895324718491872504d',1,'kw']]],
   ['deriveddata_5fgroup',['DerivedData_group',['../namespacetut.html#a3edf1e84f64691ab03223c724836176d',1,'tut']]],
   ['deriveddata_5fobject',['DerivedData_object',['../namespacetut.html#a3c51b5583ef056dbb4596004d921c726',1,'tut']]],
-  ['diag_5fou',['diag_ou',['../namespacekw.html#a79e61e9c0405d8c19abc5b13202b2636',1,'kw']]],
-  ['diagnostics',['diagnostics',['../namespacekw.html#aef992ecfaf85fabdcb4ebfabf1d8663c',1,'kw']]],
+  ['diagnostics',['diagnostics',['../namespaceinciter_1_1ctr.html#aa569fd3b9a64de4cd23c3489d4a7787b',1,'inciter::ctr']]],
   ['diagornsteinuhlenbeckcoeffpolicies',['DiagOrnsteinUhlenbeckCoeffPolicies',['../namespacewalker.html#a4bd971eb799077656f7116db3f0932a4',1,'walker']]],
   ['diagornsteinuhlenbeckparameters',['DiagOrnsteinUhlenbeckParameters',['../namespacewalker_1_1ctr.html#afb5fcbb642cca00724370839e7a0f6d4',1,'walker::ctr']]],
   ['diffeqfactory',['DiffEqFactory',['../namespacewalker.html#a5499a752c142cddd741277d77e101bf5',1,'walker']]],
   ['diffeqkey',['DiffEqKey',['../namespacewalker_1_1ctr.html#ab452f8fe7a986b01b99b58d2c16554d0',1,'walker::ctr']]],
-  ['dir_5fneu',['dir_neu',['../namespacekw.html#a46b38de701d1450e53633f290bf181f5',1,'kw']]],
-  ['dirichlet',['dirichlet',['../namespacekw.html#a3608162a911e98c75cc2582bbbbf3813',1,'kw']]],
   ['dirichletcoeffpolicies',['DirichletCoeffPolicies',['../namespacewalker.html#affe17f2d7f33918861c5a982d2097bf4',1,'walker']]],
   ['dirichletparameters',['DirichletParameters',['../namespacewalker_1_1ctr.html#a3318d5f74a1f5879014390868d3692fa',1,'walker::ctr']]],
   ['discretization',['discretization',['../namespaceinciter_1_1ctr.html#ab821c9b614e541e20d53a80f5ea8eaba',1,'inciter::ctr::discretization()'],['../namespacewalker_1_1ctr.html#a2dec00532bc48e95d36a806b3eae1495',1,'walker::ctr::discretization()']]],
-  ['dmpi',['dmpi',['../namespacekw.html#a1d33ce4ba281f07a8a81252207b1acd9',1,'kw']]],
-  ['dsec',['Dsec',['../classtk_1_1_timer.html#ac1e4b53f806eeb46879f9d0acec4c68b',1,'tk::Timer']]],
-  ['dt',['dt',['../namespacekw.html#ae55319f82e9bc6892ec039c74226de60',1,'kw']]]
+  ['dsec',['Dsec',['../classtk_1_1_timer.html#ac1e4b53f806eeb46879f9d0acec4c68b',1,'tk::Timer']]]
 ];

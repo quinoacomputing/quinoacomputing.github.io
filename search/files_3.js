@@ -6,6 +6,8 @@ var searchData=
   ['diagornsteinuhlenbeck_2eh',['DiagOrnsteinUhlenbeck.h',['../_diag_ornstein_uhlenbeck_8h.html',1,'']]],
   ['diagornsteinuhlenbeckcoeffpolicy_2eh',['DiagOrnsteinUhlenbeckCoeffPolicy.h',['../_diag_ornstein_uhlenbeck_coeff_policy_8h.html',1,'']]],
   ['diagou_2edox',['DiagOU.dox',['../_diag_o_u_8dox.html',1,'']]],
+  ['diagreducer_2ec',['DiagReducer.C',['../_diag_reducer_8_c.html',1,'']]],
+  ['diagreducer_2eh',['DiagReducer.h',['../_diag_reducer_8h.html',1,'']]],
   ['diagwriter_2ec',['DiagWriter.C',['../_diag_writer_8_c.html',1,'']]],
   ['diagwriter_2eh',['DiagWriter.h',['../_diag_writer_8h.html',1,'']]],
   ['diffeq_2edox',['diffeq.dox',['../diffeq_8dox.html',1,'']]],

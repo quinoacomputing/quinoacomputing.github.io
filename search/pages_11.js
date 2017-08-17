@@ -11,5 +11,6 @@ var searchData=
   ['walker_3a_20integrating_20the_20mix_20mass_2dfraction_20beta_20sde',['Walker: Integrating the mix mass-fraction beta SDE',['../walker_example_mixmassfracbeta.html',1,'examples']]],
   ['walker_3a_20integrating_20the_20number_2dfraction_20beta_20sde',['Walker: Integrating the number-fraction beta SDE',['../walker_example_numfracbeta.html',1,'examples']]],
   ['walker_3a_20integrating_20the_20ornstein_2duhlenbeck_20sde',['Walker: Integrating the Ornstein-Uhlenbeck SDE',['../walker_example_ou.html',1,'examples']]],
-  ['walker_3a_20integrating_20the_20skew_2dnormal_20sde',['Walker: Integrating the skew-normal SDE',['../walker_example_skewnormal.html',1,'examples']]]
+  ['walker_3a_20integrating_20the_20skew_2dnormal_20sde',['Walker: Integrating the skew-normal SDE',['../walker_example_skewnormal.html',1,'examples']]],
+  ['workflow',['Workflow',['../workflow.html',1,'']]]
 ];
