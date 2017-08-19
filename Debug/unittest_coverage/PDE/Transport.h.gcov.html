@@ -1,0 +1,494 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html lang="en">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>Quinoa unit test code coverage report</title>
+  <link rel="stylesheet" type="text/css" href="../gcov.css">
+</head>
+<body>
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title">Quinoa unit test code coverage report</td></tr>
+    <tr><td class="ruler"><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../index.html">top level</a> - <a href="index.html">PDE</a> - Transport.h<span style="font-size: 80%;"> (source / <a href="Transport.h.func-sort-c.html">functions</a>)</span></td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Commit:</td>
+            <td class="headerValue"><a href="https://github.com/quinoacomputing/quinoa/commit/5c0a5a5">Quinoa_v0.1-1114-g5c0a5a5</a></td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">0</td>
+            <td class="headerCovTableEntry">159</td>
+            <td class="headerCovTableEntryLo">0.0 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2017-08-17 14:40:29</td>
+            <td></td>
+            <td class="headerItem">Functions:</td>
+            <td class="headerCovTableEntry">0</td>
+            <td class="headerCovTableEntry">48</td>
+            <td class="headerCovTableEntryLo">0.0 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Legend:</td>
+            <td class="headerValueLeg">            Lines:
+            <span class="coverLegendCov">hit</span>
+            <span class="coverLegendNoCov">not hit</span>
+            | Branches:
+            <span class="coverLegendCov">+</span> taken
+            <span class="coverLegendNoCov">-</span> not taken
+            <span class="coverLegendNoCov">#</span> not executed
+</td>
+            <td></td>
+            <td class="headerItem">Branches:</td>
+            <td class="headerCovTableEntry">0</td>
+            <td class="headerCovTableEntry">0</td>
+            <td class="headerCovTableEntryHi">-</td>
+          </tr>
+          <tr><td><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">           Branch data     Line data    Source code</pre>
+<pre class="source">
+<a name="1"><span class="lineNum">       1 </span>                :            : // *****************************************************************************</a>
+<span class="lineNum">       2 </span>                :            : /*!
+<span class="lineNum">       3 </span>                :            :   \file      src/PDE/Transport.h
+<span class="lineNum">       4 </span>                :            :   \copyright 2012-2015, J. Bakosi, 2016-2017, Los Alamos National Security, LLC.
+<span class="lineNum">       5 </span>                :            :   \brief     Transport equation
+<span class="lineNum">       6 </span>                :            :   \details   This file implements the time integration of a transport equation
+<span class="lineNum">       7 </span>                :            :      of set of scalars.
+<span class="lineNum">       8 </span>                :            : */
+<span class="lineNum">       9 </span>                :            : // *****************************************************************************
+<span class="lineNum">      10 </span>                :            : #ifndef Transport_h
+<span class="lineNum">      11 </span>                :            : #define Transport_h
+<span class="lineNum">      12 </span>                :            : 
+<span class="lineNum">      13 </span>                :            : #include &lt;vector&gt;
+<span class="lineNum">      14 </span>                :            : #include &lt;array&gt;
+<span class="lineNum">      15 </span>                :            : #include &lt;limits&gt;
+<span class="lineNum">      16 </span>                :            : #include &lt;cmath&gt;
+<span class="lineNum">      17 </span>                :            : #include &lt;unordered_set&gt;
+<span class="lineNum">      18 </span>                :            : #include &lt;unordered_map&gt;
+<span class="lineNum">      19 </span>                :            : 
+<span class="lineNum">      20 </span>                :            : #include &quot;TransportPhysics.h&quot;
+<span class="lineNum">      21 </span>                :            : #include &quot;TransportProblem.h&quot;
+<span class="lineNum">      22 </span>                :            : #include &quot;Vector.h&quot;
+<span class="lineNum">      23 </span>                :            : #include &quot;DerivedData.h&quot;
+<span class="lineNum">      24 </span>                :            : #include &quot;Exception.h&quot;
+<span class="lineNum">      25 </span>                :            : #include &quot;Macro.h&quot;
+<span class="lineNum">      26 </span>                :            : 
+<span class="lineNum">      27 </span>                :            : namespace inciter {
+<span class="lineNum">      28 </span>                :            : 
+<span class="lineNum">      29 </span>                :            : extern ctr::InputDeck g_inputdeck;
+<span class="lineNum">      30 </span>                :            : 
+<span class="lineNum">      31 </span>                :            : //! \brief Transport equation used polymorphically with tk::PDE
+<span class="lineNum">      32 </span>                :            : //! \details The template argument(s) specify policies and are used to configure
+<span class="lineNum">      33 </span>                :            : //!   the behavior of the class. The policies are:
+<span class="lineNum">      34 </span>                :            : //!   - Physics - physics configuration, see PDE/TransportPhysics.h
+<span class="lineNum">      35 </span>                :            : //!   - Problem - problem configuration, see PDE/TransportProblem.h
+<span class="lineNum">      36 </span>                :            : //! \note The default physics is Advection, set in
+<span class="lineNum">      37 </span>                :            : //!    inciter::deck::check_transport()
+<span class="lineNum">      38 </span>                :            : template&lt; class Physics, class Problem &gt;
+<span class="lineNum">      39 </span>                :            : class Transport {
+<span class="lineNum">      40 </span>                :            : 
+<span class="lineNum">      41 </span>                :            :   private:
+<span class="lineNum">      42 </span>                :            :     using ncomp_t = kw::ncomp::info::expect::type;
+<span class="lineNum">      43 </span>                :            : 
+<span class="lineNum">      44 </span>                :            :   public:
+<a name="45"><span class="lineNum">      45 </span>                :            :     //! Constructor</a>
+<span class="lineNum">      46 </span>                :            :     //! \param[in] c Equation system index (among multiple systems configured)
+<span class="lineNum">      47 </span>                :<span class="lineNoCov">          0 :     explicit Transport( ncomp_t c ) :</span>
+<span class="lineNum">      48 </span>                :            :       m_c( c ),
+<span class="lineNum">      49 </span>                :            :       m_ncomp(
+<span class="lineNum">      50 </span>                :<span class="lineNoCov">          0 :         g_inputdeck.get&lt; tag::component &gt;().get&lt; tag::transport &gt;().at(c) ),</span>
+<span class="lineNum">      51 </span>                :            :       m_offset(
+<span class="lineNum">      52 </span>                :<span class="lineNoCov">          0 :         g_inputdeck.get&lt; tag::component &gt;().offset&lt; tag::transport &gt;(c) )</span>
+<span class="lineNum">      53 </span>                :            :     {
+<span class="lineNum">      54 </span>                :<span class="lineNoCov">          0 :       Problem::template errchk&lt; tag::transport &gt;( m_c, m_ncomp );</span>
+<span class="lineNum">      55 </span>                :<span class="lineNoCov">          0 :     }</span>
+<span class="lineNum">      56 </span>                :            : 
+<span class="lineNum">      57 </span>                :            :     //! Initalize the transport equations using problem policy
+<span class="lineNum">      58 </span>                :            :     //! \param[in] coord Mesh node coordinates
+<a name="59"><span class="lineNum">      59 </span>                :            :     //! \param[in,out] unk Array of unknowns</a>
+<span class="lineNum">      60 </span>                :            :     //! \param[in] t Physical time
+<span class="lineNum">      61 </span>                :<span class="lineNoCov">          0 :     void initialize( const std::array&lt; std::vector&lt; tk::real &gt;, 3 &gt;&amp; coord,</span>
+<span class="lineNum">      62 </span>                :            :                      tk::Fields&amp; unk,
+<span class="lineNum">      63 </span>                :            :                      tk::real t,
+<span class="lineNum">      64 </span>                :            :                      const std::vector&lt; std::size_t &gt;&amp; ) const
+<span class="lineNum">      65 </span>                :            :     {
+<span class="lineNum">      66 </span>                :<span class="lineNoCov">          0 :       Problem::template</span>
+<span class="lineNum">      67 </span>                :<span class="lineNoCov">          0 :        init&lt; tag::transport &gt;( coord, unk, m_c, m_ncomp, m_offset, t );</span>
+<span class="lineNum">      68 </span>                :<span class="lineNoCov">          0 :     }</span>
+<span class="lineNum">      69 </span>                :            : 
+<span class="lineNum">      70 </span>                :            :     //! Compute the left hand side sparse matrix
+<span class="lineNum">      71 </span>                :            :     //! \param[in] coord Mesh node coordinates
+<span class="lineNum">      72 </span>                :            :     //! \param[in] inpoel Mesh element connectivity
+<span class="lineNum">      73 </span>                :            :     //! \param[in] psup Linked lists storing IDs of points surrounding points
+<span class="lineNum">      74 </span>                :            :     //! \param[in,out] lhsd Diagonal of the sparse matrix storing nonzeros
+<span class="lineNum">      75 </span>                :            :     //! \param[in,out] lhso Off-diagonal of the sparse matrix storing nonzeros
+<span class="lineNum">      76 </span>                :            :     //! \details Sparse matrix storing the nonzero matrix values at rows and
+<span class="lineNum">      77 </span>                :            :     //!   columns given by psup. The format is similar to compressed row
+<span class="lineNum">      78 </span>                :            :     //!   storage, but the diagonal and off-diagonal data are stored in separate
+<span class="lineNum">      79 </span>                :            :     //!   vectors. For the off-diagonal data the local row and column indices,
+<span class="lineNum">      80 </span>                :            :     //!   at which values are nonzero, are stored by psup (psup1 and psup2,
+<span class="lineNum">      81 </span>                :            :     //!   where psup2 holds the indices at which psup1 holds the point ids
+<a name="82"><span class="lineNum">      82 </span>                :            :     //!   surrounding points, see also tk::genPsup()). Note that the number of</a>
+<span class="lineNum">      83 </span>                :            :     //!   mesh points (our chunk) npoin = psup.second.size()-1.
+<span class="lineNum">      84 </span>                :<span class="lineNoCov">          0 :     void lhs( const std::array&lt; std::vector&lt; tk::real &gt;, 3 &gt;&amp; coord,</span>
+<span class="lineNum">      85 </span>                :            :               const std::vector&lt; std::size_t &gt;&amp; inpoel,
+<span class="lineNum">      86 </span>                :            :               const std::pair&lt; std::vector&lt; std::size_t &gt;,
+<span class="lineNum">      87 </span>                :            :                                std::vector&lt; std::size_t &gt; &gt;&amp; psup,
+<span class="lineNum">      88 </span>                :            :               tk::Fields&amp; lhsd,
+<span class="lineNum">      89 </span>                :            :               tk::Fields&amp; lhso ) const
+<span class="lineNum">      90 </span>                :            :     {
+<span class="lineNum">      91 </span>                :<span class="lineNoCov">          0 :       Assert( psup.second.size()-1 == coord[0].size(),</span>
+<span class="lineNum">      92 </span>                :            :               &quot;Number of mesh points and number of global IDs unequal&quot; );
+<span class="lineNum">      93 </span>                :<span class="lineNoCov">          0 :       Assert( lhsd.nunk() == psup.second.size()-1, &quot;Number of unknowns in &quot;</span>
+<span class="lineNum">      94 </span>                :            :               &quot;diagonal sparse matrix storage incorrect&quot; );
+<span class="lineNum">      95 </span>                :<span class="lineNoCov">          0 :       Assert( lhso.nunk() == psup.first.size(), &quot;Number of unknowns in &quot;</span>
+<span class="lineNum">      96 </span>                :            :               &quot;off-diagonal sparse matrix storage incorrect&quot; );
+<span class="lineNum">      97 </span>                :            : 
+<a name="98"><span class="lineNum">      98 </span>                :            :       // Lambda to compute the sparse matrix vector index for row and column</a>
+<span class="lineNum">      99 </span>                :            :       // indices. Used only for off-diagonal entries.
+<span class="lineNum">     100 </span>                :<span class="lineNoCov">          0 :       auto spidx = [ &amp;psup ]( std::size_t r, std::size_t c ) -&gt; std::size_t {</span>
+<span class="lineNum">     101 </span>                :<span class="lineNoCov">          0 :         Assert( r != c, &quot;Only for computing the off-diagonal indices&quot; );</span>
+<span class="lineNum">     102 </span>                :<span class="lineNoCov">          0 :         for (auto i=psup.second[r]+1; i&lt;=psup.second[r+1]; ++i)</span>
+<span class="lineNum">     103 </span>                :<span class="lineNoCov">          0 :           if (c == psup.first[i]) return i;</span>
+<span class="lineNum">     104 </span>                :<span class="lineNoCov">          0 :         Throw( &quot;Cannot find row, column: &quot; + std::to_string(r) + ',' +</span>
+<span class="lineNum">     105 </span>                :            :                std::to_string(c) + &quot; in sparse matrix&quot; );
+<span class="lineNum">     106 </span>                :<span class="lineNoCov">          0 :       };</span>
+<span class="lineNum">     107 </span>                :            : 
+<span class="lineNum">     108 </span>                :<span class="lineNoCov">          0 :       const auto&amp; x = coord[0];</span>
+<span class="lineNum">     109 </span>                :<span class="lineNoCov">          0 :       const auto&amp; y = coord[1];</span>
+<span class="lineNum">     110 </span>                :<span class="lineNoCov">          0 :       const auto&amp; z = coord[2];</span>
+<span class="lineNum">     111 </span>                :            : 
+<span class="lineNum">     112 </span>                :            :       // Zero matrix for all components
+<span class="lineNum">     113 </span>                :<span class="lineNoCov">          0 :       for (ncomp_t c=0; c&lt;m_ncomp; ++c) {</span>
+<span class="lineNum">     114 </span>                :<span class="lineNoCov">          0 :         lhsd.fill( c, m_offset, 0.0 );</span>
+<span class="lineNum">     115 </span>                :<span class="lineNoCov">          0 :         lhso.fill( c, m_offset, 0.0 );</span>
+<span class="lineNum">     116 </span>                :            :       }
+<span class="lineNum">     117 </span>                :            : 
+<span class="lineNum">     118 </span>                :<span class="lineNoCov">          0 :       for (std::size_t e=0; e&lt;inpoel.size()/4; ++e) {</span>
+<span class="lineNum">     119 </span>                :<span class="lineNoCov">          0 :         const auto A = inpoel[e*4+0];</span>
+<span class="lineNum">     120 </span>                :<span class="lineNoCov">          0 :         const auto B = inpoel[e*4+1];</span>
+<span class="lineNum">     121 </span>                :<span class="lineNoCov">          0 :         const auto C = inpoel[e*4+2];</span>
+<span class="lineNum">     122 </span>                :<span class="lineNoCov">          0 :         const auto D = inpoel[e*4+3];</span>
+<span class="lineNum">     123 </span>                :<span class="lineNoCov">          0 :         std::array&lt; tk::real, 3 &gt; ba{{ x[B]-x[A], y[B]-y[A], z[B]-z[A] }},</span>
+<span class="lineNum">     124 </span>                :<span class="lineNoCov">          0 :                                   ca{{ x[C]-x[A], y[C]-y[A], z[C]-z[A] }},</span>
+<span class="lineNum">     125 </span>                :<span class="lineNoCov">          0 :                                   da{{ x[D]-x[A], y[D]-y[A], z[D]-z[A] }};</span>
+<span class="lineNum">     126 </span>                :<span class="lineNoCov">          0 :         const auto J = tk::triple( ba, ca, da ) / 120.0;</span>
+<span class="lineNum">     127 </span>                :<span class="lineNoCov">          0 :         Assert( J &gt; 0, &quot;Element Jacobian non-positive&quot; );</span>
+<span class="lineNum">     128 </span>                :            : 
+<span class="lineNum">     129 </span>                :<span class="lineNoCov">          0 :         for (ncomp_t c=0; c&lt;m_ncomp; ++c) {</span>
+<span class="lineNum">     130 </span>                :<span class="lineNoCov">          0 :           const auto r = lhsd.cptr( c, m_offset );</span>
+<span class="lineNum">     131 </span>                :<span class="lineNoCov">          0 :           lhsd.var( r, A ) += 2.0 * J;</span>
+<span class="lineNum">     132 </span>                :<span class="lineNoCov">          0 :           lhsd.var( r, B ) += 2.0 * J;</span>
+<span class="lineNum">     133 </span>                :<span class="lineNoCov">          0 :           lhsd.var( r, C ) += 2.0 * J;</span>
+<span class="lineNum">     134 </span>                :<span class="lineNoCov">          0 :           lhsd.var( r, D ) += 2.0 * J;</span>
+<span class="lineNum">     135 </span>                :            : 
+<span class="lineNum">     136 </span>                :<span class="lineNoCov">          0 :           const auto s = lhso.cptr( c, m_offset );</span>
+<span class="lineNum">     137 </span>                :<span class="lineNoCov">          0 :           lhso.var( s, spidx(A,B) ) += J;</span>
+<span class="lineNum">     138 </span>                :<span class="lineNoCov">          0 :           lhso.var( s, spidx(A,C) ) += J;</span>
+<span class="lineNum">     139 </span>                :<span class="lineNoCov">          0 :           lhso.var( s, spidx(A,D) ) += J;</span>
+<span class="lineNum">     140 </span>                :            : 
+<span class="lineNum">     141 </span>                :<span class="lineNoCov">          0 :           lhso.var( s, spidx(B,A) ) += J;</span>
+<span class="lineNum">     142 </span>                :<span class="lineNoCov">          0 :           lhso.var( s, spidx(B,C) ) += J;</span>
+<span class="lineNum">     143 </span>                :<span class="lineNoCov">          0 :           lhso.var( s, spidx(B,D) ) += J;</span>
+<span class="lineNum">     144 </span>                :            : 
+<span class="lineNum">     145 </span>                :<span class="lineNoCov">          0 :           lhso.var( s, spidx(C,A) ) += J;</span>
+<span class="lineNum">     146 </span>                :<span class="lineNoCov">          0 :           lhso.var( s, spidx(C,B) ) += J;</span>
+<span class="lineNum">     147 </span>                :<span class="lineNoCov">          0 :           lhso.var( s, spidx(C,D) ) += J;</span>
+<span class="lineNum">     148 </span>                :            : 
+<span class="lineNum">     149 </span>                :<span class="lineNoCov">          0 :           lhso.var( s, spidx(D,A) ) += J;</span>
+<span class="lineNum">     150 </span>                :<span class="lineNoCov">          0 :           lhso.var( s, spidx(D,B) ) += J;</span>
+<span class="lineNum">     151 </span>                :<span class="lineNoCov">          0 :           lhso.var( s, spidx(D,C) ) += J;</span>
+<span class="lineNum">     152 </span>                :            :         }
+<span class="lineNum">     153 </span>                :            :       }
+<span class="lineNum">     154 </span>                :<span class="lineNoCov">          0 :     }</span>
+<span class="lineNum">     155 </span>                :            : 
+<span class="lineNum">     156 </span>                :            :     //! Compute right hand side
+<span class="lineNum">     157 </span>                :            :     //! \param[in] deltat Size of time step
+<span class="lineNum">     158 </span>                :            :     //! \param[in] coord Mesh node coordinates
+<span class="lineNum">     159 </span>                :            :     //! \param[in] inpoel Mesh element connectivity
+<a name="160"><span class="lineNum">     160 </span>                :            :     //! \param[in] U Solution vector at recent time step stage</a>
+<span class="lineNum">     161 </span>                :            :     //! \param[in,out] R Right-hand side vector computed
+<span class="lineNum">     162 </span>                :<span class="lineNoCov">          0 :     void rhs( tk::real,</span>
+<span class="lineNum">     163 </span>                :            :               tk::real deltat,
+<span class="lineNum">     164 </span>                :            :               const std::array&lt; std::vector&lt; tk::real &gt;, 3 &gt;&amp; coord,
+<span class="lineNum">     165 </span>                :            :               const std::vector&lt; std::size_t &gt;&amp; inpoel,
+<span class="lineNum">     166 </span>                :            :               const tk::Fields&amp; U,
+<span class="lineNum">     167 </span>                :            :               tk::Fields&amp; R ) const
+<span class="lineNum">     168 </span>                :            :     {
+<span class="lineNum">     169 </span>                :<span class="lineNoCov">          0 :       Assert( U.nunk() == coord[0].size(), &quot;Number of unknowns in solution &quot;</span>
+<span class="lineNum">     170 </span>                :            :               &quot;vector at recent time step incorrect&quot; );
+<span class="lineNum">     171 </span>                :<span class="lineNoCov">          0 :       Assert( R.nunk() == coord[0].size() &amp;&amp; R.nprop() == m_ncomp,</span>
+<span class="lineNum">     172 </span>                :            :               &quot;Number of unknowns and/or number of components in right-hand &quot;
+<span class="lineNum">     173 </span>                :            :               &quot;side vector incorrect&quot; );
+<span class="lineNum">     174 </span>                :            : 
+<span class="lineNum">     175 </span>                :<span class="lineNoCov">          0 :       const auto&amp; x = coord[0];</span>
+<span class="lineNum">     176 </span>                :<span class="lineNoCov">          0 :       const auto&amp; y = coord[1];</span>
+<span class="lineNum">     177 </span>                :<span class="lineNoCov">          0 :       const auto&amp; z = coord[2];</span>
+<span class="lineNum">     178 </span>                :            : 
+<span class="lineNum">     179 </span>                :            :       // zero right hand side for all components
+<span class="lineNum">     180 </span>                :<span class="lineNoCov">          0 :       for (ncomp_t c=0; c&lt;m_ncomp; ++c) R.fill( c, m_offset, 0.0 );</span>
+<span class="lineNum">     181 </span>                :            : 
+<span class="lineNum">     182 </span>                :<span class="lineNoCov">          0 :       for (std::size_t e=0; e&lt;inpoel.size()/4; ++e) {</span>
+<span class="lineNum">     183 </span>                :            :         const std::array&lt; std::size_t, 4 &gt; N{{ inpoel[e*4+0], inpoel[e*4+1],
+<span class="lineNum">     184 </span>                :<span class="lineNoCov">          0 :                                                inpoel[e*4+2], inpoel[e*4+3] }};</span>
+<span class="lineNum">     185 </span>                :            :         // compute element Jacobi determinant
+<span class="lineNum">     186 </span>                :            :         const std::array&lt; tk::real, 3 &gt;
+<span class="lineNum">     187 </span>                :<span class="lineNoCov">          0 :           ba{{ x[N[1]]-x[N[0]], y[N[1]]-y[N[0]], z[N[1]]-z[N[0]] }},</span>
+<span class="lineNum">     188 </span>                :<span class="lineNoCov">          0 :           ca{{ x[N[2]]-x[N[0]], y[N[2]]-y[N[0]], z[N[2]]-z[N[0]] }},</span>
+<span class="lineNum">     189 </span>                :<span class="lineNoCov">          0 :           da{{ x[N[3]]-x[N[0]], y[N[3]]-y[N[0]], z[N[3]]-z[N[0]] }};</span>
+<span class="lineNum">     190 </span>                :<span class="lineNoCov">          0 :         const auto J = tk::triple( ba, ca, da );</span>
+<span class="lineNum">     191 </span>                :<span class="lineNoCov">          0 :         Assert( J &gt; 0, &quot;Element Jacobian non-positive&quot; );</span>
+<span class="lineNum">     192 </span>                :            : 
+<span class="lineNum">     193 </span>                :            :         // construct tetrahedron element-level matrices
+<span class="lineNum">     194 </span>                :            : 
+<span class="lineNum">     195 </span>                :            :         // consistent mass
+<span class="lineNum">     196 </span>                :            :         std::array&lt; std::array&lt; tk::real, 4 &gt;, 4 &gt; mass;  // nnode*nnode [4][4]
+<span class="lineNum">     197 </span>                :<span class="lineNoCov">          0 :         mass[0][0] = mass[1][1] = mass[2][2] = mass[3][3] = J/60.0;  // diagonal</span>
+<span class="lineNum">     198 </span>                :<span class="lineNoCov">          0 :         mass[0][1] = mass[0][2] = mass[0][3] =                   // off-diagonal</span>
+<span class="lineNum">     199 </span>                :<span class="lineNoCov">          0 :         mass[1][0] = mass[1][2] = mass[1][3] =</span>
+<span class="lineNum">     200 </span>                :<span class="lineNoCov">          0 :         mass[2][0] = mass[2][1] = mass[2][3] =</span>
+<span class="lineNum">     201 </span>                :<span class="lineNoCov">          0 :         mass[3][0] = mass[3][1] = mass[3][2] = J/120.0;</span>
+<span class="lineNum">     202 </span>                :            : 
+<span class="lineNum">     203 </span>                :            :         // shape function derivatives
+<span class="lineNum">     204 </span>                :            :         std::array&lt; std::array&lt; tk::real, 3 &gt;, 4 &gt; grad;  // nnode*ndim [4][3]
+<span class="lineNum">     205 </span>                :<span class="lineNoCov">          0 :         grad[1] = tk::crossdiv( ca, da, J );</span>
+<span class="lineNum">     206 </span>                :<span class="lineNoCov">          0 :         grad[2] = tk::crossdiv( da, ba, J );</span>
+<span class="lineNum">     207 </span>                :<span class="lineNoCov">          0 :         grad[3] = tk::crossdiv( ba, ca, J );</span>
+<span class="lineNum">     208 </span>                :<span class="lineNoCov">          0 :         for (std::size_t i=0; i&lt;3; ++i)</span>
+<span class="lineNum">     209 </span>                :<span class="lineNoCov">          0 :           grad[0][i] = -grad[1][i]-grad[2][i]-grad[3][i];</span>
+<span class="lineNum">     210 </span>                :            : 
+<span class="lineNum">     211 </span>                :            :         // access solution at element nodes at recent time step stage
+<span class="lineNum">     212 </span>                :<span class="lineNoCov">          0 :         std::vector&lt; std::array&lt; tk::real, 4 &gt; &gt; u( m_ncomp );</span>
+<span class="lineNum">     213 </span>                :<span class="lineNoCov">          0 :         for (ncomp_t c=0; c&lt;m_ncomp; ++c) u[c] = U.extract( c, m_offset, N );</span>
+<span class="lineNum">     214 </span>                :            :         // access pointer to right hand side at component and offset
+<span class="lineNum">     215 </span>                :<span class="lineNoCov">          0 :         std::vector&lt; const tk::real* &gt; r( m_ncomp );</span>
+<span class="lineNum">     216 </span>                :<span class="lineNoCov">          0 :         for (ncomp_t c=0; c&lt;m_ncomp; ++c) r[c] = R.cptr( c, m_offset );</span>
+<span class="lineNum">     217 </span>                :            : 
+<span class="lineNum">     218 </span>                :            :         // get velocity for problem
+<span class="lineNum">     219 </span>                :            :         const auto vel =
+<span class="lineNum">     220 </span>                :            :           Problem::template
+<span class="lineNum">     221 </span>                :<span class="lineNoCov">          0 :             prescribedVelocity&lt; tag::transport &gt;( N, coord, m_c, m_ncomp );</span>
+<span class="lineNum">     222 </span>                :            : 
+<span class="lineNum">     223 </span>                :            :         // add advection contribution to right hand side
+<span class="lineNum">     224 </span>                :<span class="lineNoCov">          0 :         for (ncomp_t c=0; c&lt;m_ncomp; ++c)</span>
+<span class="lineNum">     225 </span>                :<span class="lineNoCov">          0 :           for (std::size_t i=0; i&lt;4; ++i)</span>
+<span class="lineNum">     226 </span>                :<span class="lineNoCov">          0 :             for (std::size_t j=0; j&lt;4; ++j)</span>
+<span class="lineNum">     227 </span>                :<span class="lineNoCov">          0 :               for (std::size_t k=0; k&lt;3; ++k)</span>
+<span class="lineNum">     228 </span>                :<span class="lineNoCov">          0 :                 for (std::size_t l=0; l&lt;4; ++l)</span>
+<span class="lineNum">     229 </span>                :<span class="lineNoCov">          0 :                   R.var(r[c],N[j]) -= deltat * mass[j][i] * vel[c][k][i]</span>
+<span class="lineNum">     230 </span>                :<span class="lineNoCov">          0 :                                              * grad[l][k] * u[c][l];</span>
+<span class="lineNum">     231 </span>                :            : 
+<span class="lineNum">     232 </span>                :            :         // add diffusion contribution to right hand side
+<span class="lineNum">     233 </span>                :<span class="lineNoCov">          0 :         Physics::diffusionRhs( m_c, m_ncomp, deltat, J, N, grad, u, r, R );</span>
+<span class="lineNum">     234 </span>                :            :       }
+<span class="lineNum">     235 </span>                :<span class="lineNoCov">          0 :     }</span>
+<span class="lineNum">     236 </span>                :            : 
+<span class="lineNum">     237 </span>                :            :     //! Compute the minimum time step size
+<span class="lineNum">     238 </span>                :            :     //! \param[in] U Solution vector at recent time step stage
+<span class="lineNum">     239 </span>                :            :     //! \param[in] coord Mesh node coordinates
+<a name="240"><span class="lineNum">     240 </span>                :            :     //! \param[in] inpoel Mesh element connectivity</a>
+<span class="lineNum">     241 </span>                :            :     //! \return Minimum time step size
+<span class="lineNum">     242 </span>                :<span class="lineNoCov">          0 :     tk::real dt( const std::array&lt; std::vector&lt; tk::real &gt;, 3 &gt;&amp; coord,</span>
+<span class="lineNum">     243 </span>                :            :                  const std::vector&lt; std::size_t &gt;&amp; inpoel,
+<span class="lineNum">     244 </span>                :            :                  const tk::Fields&amp; U ) const
+<span class="lineNum">     245 </span>                :            :     {
+<span class="lineNum">     246 </span>                :<span class="lineNoCov">          0 :       Assert( U.nunk() == coord[0].size(), &quot;Number of unknowns in solution &quot;</span>
+<span class="lineNum">     247 </span>                :            :               &quot;vector at recent time step incorrect&quot; );
+<span class="lineNum">     248 </span>                :<span class="lineNoCov">          0 :       const auto&amp; x = coord[0];</span>
+<span class="lineNum">     249 </span>                :<span class="lineNoCov">          0 :       const auto&amp; y = coord[1];</span>
+<span class="lineNum">     250 </span>                :<span class="lineNoCov">          0 :       const auto&amp; z = coord[2];</span>
+<span class="lineNum">     251 </span>                :            :       // compute the minimum dt across all elements we own
+<span class="lineNum">     252 </span>                :<span class="lineNoCov">          0 :       tk::real mindt = std::numeric_limits&lt; tk::real &gt;::max();</span>
+<span class="lineNum">     253 </span>                :<span class="lineNoCov">          0 :       for (std::size_t e=0; e&lt;inpoel.size()/4; ++e) {</span>
+<span class="lineNum">     254 </span>                :            :         const std::array&lt; std::size_t, 4 &gt; N{{ inpoel[e*4+0], inpoel[e*4+1],
+<span class="lineNum">     255 </span>                :<span class="lineNoCov">          0 :                                                inpoel[e*4+2], inpoel[e*4+3] }};</span>
+<span class="lineNum">     256 </span>                :            :         // compute cubic root of element volume as the characteristic length
+<span class="lineNum">     257 </span>                :            :         const std::array&lt; tk::real, 3 &gt;
+<span class="lineNum">     258 </span>                :<span class="lineNoCov">          0 :           ba{{ x[N[1]]-x[N[0]], y[N[1]]-y[N[0]], z[N[1]]-z[N[0]] }},</span>
+<span class="lineNum">     259 </span>                :<span class="lineNoCov">          0 :           ca{{ x[N[2]]-x[N[0]], y[N[2]]-y[N[0]], z[N[2]]-z[N[0]] }},</span>
+<span class="lineNum">     260 </span>                :<span class="lineNoCov">          0 :           da{{ x[N[3]]-x[N[0]], y[N[3]]-y[N[0]], z[N[3]]-z[N[0]] }};</span>
+<span class="lineNum">     261 </span>                :<span class="lineNoCov">          0 :         const auto L = std::cbrt( tk::triple( ba, ca, da ) / 6.0 );</span>
+<span class="lineNum">     262 </span>                :            :         // access solution at element nodes at recent time step stage
+<span class="lineNum">     263 </span>                :<span class="lineNoCov">          0 :         std::vector&lt; std::array&lt; tk::real, 4 &gt; &gt; u( m_ncomp );</span>
+<span class="lineNum">     264 </span>                :<span class="lineNoCov">          0 :         for (ncomp_t c=0; c&lt;m_ncomp; ++c) u[c] = U.extract( c, m_offset, N );</span>
+<span class="lineNum">     265 </span>                :            :         // get velocity for problem
+<span class="lineNum">     266 </span>                :            :         const auto vel =
+<span class="lineNum">     267 </span>                :            :           Problem::template
+<span class="lineNum">     268 </span>                :<span class="lineNoCov">          0 :             prescribedVelocity&lt; tag::transport &gt;( N, coord, m_c, m_ncomp );</span>
+<span class="lineNum">     269 </span>                :            :         // compute the maximum length of the characteristic velocity (advection
+<span class="lineNum">     270 </span>                :            :         // velocity) across the four element nodes
+<span class="lineNum">     271 </span>                :<span class="lineNoCov">          0 :         tk::real maxvel = 0.0;</span>
+<span class="lineNum">     272 </span>                :<span class="lineNoCov">          0 :         for (ncomp_t c=0; c&lt;m_ncomp; ++c)</span>
+<span class="lineNum">     273 </span>                :<span class="lineNoCov">          0 :           for (std::size_t i=0; i&lt;4; ++i) {</span>
+<span class="lineNum">     274 </span>                :<span class="lineNoCov">          0 :             auto v = std::sqrt( vel[c][0][i]*vel[c][0][i] + </span>
+<span class="lineNum">     275 </span>                :<span class="lineNoCov">          0 :                                 vel[c][1][i]*vel[c][1][i] +</span>
+<span class="lineNum">     276 </span>                :<span class="lineNoCov">          0 :                                 vel[c][2][i]*vel[c][2][i] );</span>
+<span class="lineNum">     277 </span>                :<span class="lineNoCov">          0 :             if (v &gt; maxvel) maxvel = v;</span>
+<span class="lineNum">     278 </span>                :            :           }
+<span class="lineNum">     279 </span>                :            :         // compute element dt for the advection
+<span class="lineNum">     280 </span>                :<span class="lineNoCov">          0 :         auto advection_dt = L / maxvel;</span>
+<span class="lineNum">     281 </span>                :            :         // compute element dt based on diffusion
+<span class="lineNum">     282 </span>                :<span class="lineNoCov">          0 :         auto diffusion_dt = Physics::diffusion_dt( m_c, m_ncomp, L, u );</span>
+<span class="lineNum">     283 </span>                :            :         // compute minimum element dt
+<span class="lineNum">     284 </span>                :<span class="lineNoCov">          0 :         auto elemdt = std::min( advection_dt, diffusion_dt );</span>
+<span class="lineNum">     285 </span>                :            :         // find minimum dt across all elements
+<span class="lineNum">     286 </span>                :<span class="lineNoCov">          0 :         if (elemdt &lt; mindt) mindt = elemdt;</span>
+<span class="lineNum">     287 </span>                :            :       }
+<span class="lineNum">     288 </span>                :<span class="lineNoCov">          0 :       return mindt;</span>
+<span class="lineNum">     289 </span>                :            :     }
+<span class="lineNum">     290 </span>                :            : 
+<span class="lineNum">     291 </span>                :            :     //! Extract the transport velocity field at cell nodes
+<span class="lineNum">     292 </span>                :            :     //! \param[in] U Solution vector at recent time step stage
+<span class="lineNum">     293 </span>                :            :     //! \param[in] coord Mesh node coordinates
+<span class="lineNum">     294 </span>                :            :     //! \param[in] N Element node indices    
+<a name="295"><span class="lineNum">     295 </span>                :            :     //! \return Array of the four values of the transport velocity</a>
+<span class="lineNum">     296 </span>                :            :     std::array&lt; std::array&lt; tk::real, 4 &gt;, 3 &gt;
+<span class="lineNum">     297 </span>                :<span class="lineNoCov">          0 :     velocity( const tk::Fields&amp; U,</span>
+<span class="lineNum">     298 </span>                :            :               const std::array&lt; std::vector&lt; tk::real &gt;, 3 &gt;&amp; coord,
+<span class="lineNum">     299 </span>                :            :               const std::array&lt; std::size_t, 4 &gt;&amp; N ) const
+<span class="lineNum">     300 </span>                :<span class="lineNoCov">          0 :     { return Problem::velocity( U, coord, N ); }</span>
+<span class="lineNum">     301 </span>                :            : 
+<a name="302"><span class="lineNum">     302 </span>                :            :     //! \brief Query all side set IDs the user has configured for all components</a>
+<span class="lineNum">     303 </span>                :            :     //!   in this PDE system
+<span class="lineNum">     304 </span>                :<span class="lineNoCov">          0 :     static void side( std::unordered_set&lt; int &gt;&amp; ) {}</span>
+<span class="lineNum">     305 </span>                :            : 
+<span class="lineNum">     306 </span>                :            :     //! \brief Query Dirichlet boundary condition value on a given side set for
+<span class="lineNum">     307 </span>                :            :     //!    all components in this PDE system
+<span class="lineNum">     308 </span>                :            :     //! \return Vector of pairs of bool and boundary condition value associated
+<span class="lineNum">     309 </span>                :            :     //!   to mesh node IDs at which Dirichlet boundary conditions are set. Note
+<span class="lineNum">     310 </span>                :            :     //!   that instead of the actual boundary condition value, we return the
+<span class="lineNum">     311 </span>                :            :     //!   increment between t+dt and t, since that is what the solution requires
+<a name="312"><span class="lineNum">     312 </span>                :            :     //!   as we solve for the soution increments and not the solution itself.</a>
+<span class="lineNum">     313 </span>                :            :     std::unordered_map&lt; std::size_t, std::vector&lt; std::pair&lt;bool,tk::real&gt; &gt; &gt;
+<span class="lineNum">     314 </span>                :<span class="lineNoCov">          0 :     dirbc( tk::real,</span>
+<span class="lineNum">     315 </span>                :            :            tk::real,
+<span class="lineNum">     316 </span>                :            :            const std::pair&lt; const int, std::vector&lt; std::size_t &gt; &gt;&amp;,
+<span class="lineNum">     317 </span>                :            :            const std::array&lt; std::vector&lt; tk::real &gt;, 3 &gt;&amp; ) const
+<span class="lineNum">     318 </span>                :            :     {
+<span class="lineNum">     319 </span>                :            :       using tag::param; using tag::compflow; using tag::bcdir;
+<span class="lineNum">     320 </span>                :            :       using NodeBC = std::vector&lt; std::pair&lt; bool, tk::real &gt; &gt;;
+<span class="lineNum">     321 </span>                :<span class="lineNoCov">          0 :       std::unordered_map&lt; std::size_t, NodeBC &gt; bc;</span>
+<span class="lineNum">     322 </span>                :            :       // TODO
+<span class="lineNum">     323 </span>                :<span class="lineNoCov">          0 :       return bc;</span>
+<span class="lineNum">     324 </span>                :            :     }
+<span class="lineNum">     325 </span>                :            : 
+<span class="lineNum">     326 </span>                :            :     //! Return field names to be output to file
+<span class="lineNum">     327 </span>                :            :     //! \return Vector of strings labelling fields output in file
+<a name="328"><span class="lineNum">     328 </span>                :            :     //! \details This functions should be written in conjunction with</a>
+<span class="lineNum">     329 </span>                :            :     //!   fieldOutput(), which provides the vector of fields to be output
+<span class="lineNum">     330 </span>                :<span class="lineNoCov">          0 :     std::vector&lt; std::string &gt; fieldNames() const {</span>
+<span class="lineNum">     331 </span>                :<span class="lineNoCov">          0 :       std::vector&lt; std::string &gt; n;</span>
+<span class="lineNum">     332 </span>                :            :       const auto&amp; depvar =
+<span class="lineNum">     333 </span>                :<span class="lineNoCov">          0 :         g_inputdeck.get&lt; tag::param, tag::transport, tag::depvar &gt;().at(m_c);</span>
+<span class="lineNum">     334 </span>                :            :       // will output numerical solution for all components
+<span class="lineNum">     335 </span>                :<span class="lineNoCov">          0 :       for (ncomp_t c=0; c&lt;m_ncomp; ++c)</span>
+<span class="lineNum">     336 </span>                :<span class="lineNoCov">          0 :         n.push_back( depvar + std::to_string(c) + &quot;_numerical&quot; );</span>
+<span class="lineNum">     337 </span>                :            :       // will output analytic solution for all components
+<span class="lineNum">     338 </span>                :<span class="lineNoCov">          0 :       for (ncomp_t c=0; c&lt;m_ncomp; ++c)</span>
+<span class="lineNum">     339 </span>                :<span class="lineNoCov">          0 :         n.push_back( depvar + std::to_string(c) + &quot;_analytic&quot; );</span>
+<span class="lineNum">     340 </span>                :            :       // will output error for all components
+<span class="lineNum">     341 </span>                :<span class="lineNoCov">          0 :       for (ncomp_t c=0; c&lt;m_ncomp; ++c)</span>
+<span class="lineNum">     342 </span>                :<span class="lineNoCov">          0 :         n.push_back( depvar + std::to_string(c) + &quot;_error&quot; );</span>
+<span class="lineNum">     343 </span>                :<span class="lineNoCov">          0 :       return n;</span>
+<span class="lineNum">     344 </span>                :            :     }
+<span class="lineNum">     345 </span>                :            : 
+<span class="lineNum">     346 </span>                :            :     //! Return field output going to file
+<span class="lineNum">     347 </span>                :            :     //! \param[in] t Physical time
+<span class="lineNum">     348 </span>                :            :     //! \param[in] V Total mesh volume
+<span class="lineNum">     349 </span>                :            :     //! \param[in] coord Mesh node coordinates
+<span class="lineNum">     350 </span>                :            :     //! \param[in] v Nodal volumes
+<span class="lineNum">     351 </span>                :            :     //! \param[in,out] U Solution vector at recent time step stage
+<span class="lineNum">     352 </span>                :            :     //! \return Vector of vectors to be output to file
+<span class="lineNum">     353 </span>                :            :     //! \details This functions should be written in conjunction with names(),
+<span class="lineNum">     354 </span>                :            :     //!   which provides the vector of field names
+<a name="355"><span class="lineNum">     355 </span>                :            :     //! \note U is overwritten</a>
+<span class="lineNum">     356 </span>                :            :     std::vector&lt; std::vector&lt; tk::real &gt; &gt;
+<span class="lineNum">     357 </span>                :<span class="lineNoCov">          0 :     fieldOutput( tk::real t,</span>
+<span class="lineNum">     358 </span>                :            :                  tk::real V,
+<span class="lineNum">     359 </span>                :            :                  const std::array&lt; std::vector&lt; tk::real &gt;, 3 &gt;&amp; coord,
+<span class="lineNum">     360 </span>                :            :                  const std::vector&lt; tk::real &gt;&amp; v,
+<span class="lineNum">     361 </span>                :            :                  tk::Fields&amp; U ) const
+<span class="lineNum">     362 </span>                :            :     {
+<span class="lineNum">     363 </span>                :<span class="lineNoCov">          0 :       std::vector&lt; std::vector&lt; tk::real &gt; &gt; out;</span>
+<span class="lineNum">     364 </span>                :            :       // will output numerical solution for all components
+<span class="lineNum">     365 </span>                :<span class="lineNoCov">          0 :       auto E = U;</span>
+<span class="lineNum">     366 </span>                :<span class="lineNoCov">          0 :       for (ncomp_t c=0; c&lt;m_ncomp; ++c)</span>
+<span class="lineNum">     367 </span>                :<span class="lineNoCov">          0 :         out.push_back( U.extract( c, m_offset ) );</span>
+<span class="lineNum">     368 </span>                :            :       // evaluate analytic solution at time t
+<span class="lineNum">     369 </span>                :<span class="lineNoCov">          0 :       initialize( coord, U, t, {{}} );</span>
+<span class="lineNum">     370 </span>                :            :       // will output analytic solution for all components
+<span class="lineNum">     371 </span>                :<span class="lineNoCov">          0 :       for (ncomp_t c=0; c&lt;m_ncomp; ++c)</span>
+<span class="lineNum">     372 </span>                :<span class="lineNoCov">          0 :         out.push_back( U.extract( c, m_offset ) );</span>
+<span class="lineNum">     373 </span>                :            :       // will output error for all components
+<span class="lineNum">     374 </span>                :<span class="lineNoCov">          0 :       for (ncomp_t c=0; c&lt;m_ncomp; ++c) {</span>
+<span class="lineNum">     375 </span>                :<span class="lineNoCov">          0 :         auto u = U.extract( c, m_offset );</span>
+<span class="lineNum">     376 </span>                :<span class="lineNoCov">          0 :         auto e = E.extract( c, m_offset );</span>
+<span class="lineNum">     377 </span>                :<span class="lineNoCov">          0 :         Assert( u.size() == e.size(), &quot;Size mismatch&quot; );</span>
+<span class="lineNum">     378 </span>                :<span class="lineNoCov">          0 :         Assert( u.size() == v.size(), &quot;Size mismatch&quot; );</span>
+<span class="lineNum">     379 </span>                :<span class="lineNoCov">          0 :         for (std::size_t i=0; i&lt;u.size(); ++i)</span>
+<span class="lineNum">     380 </span>                :<span class="lineNoCov">          0 :           e[i] = std::pow( e[i] - u[i], 2.0 ) * v[i] / V;</span>
+<span class="lineNum">     381 </span>                :<span class="lineNoCov">          0 :         out.push_back( e );</span>
+<span class="lineNum">     382 </span>                :            :       }
+<span class="lineNum">     383 </span>                :<span class="lineNoCov">          0 :       return out;</span>
+<span class="lineNum">     384 </span>                :            :     }
+<span class="lineNum">     385 </span>                :            : 
+<a name="386"><span class="lineNum">     386 </span>                :            :     //! Return names of integral variables to be output to diagnostics file</a>
+<span class="lineNum">     387 </span>                :            :     //! \return Vector of strings labelling integral variables output
+<span class="lineNum">     388 </span>                :<span class="lineNoCov">          0 :     std::vector&lt; std::string &gt; names() const {</span>
+<span class="lineNum">     389 </span>                :<span class="lineNoCov">          0 :       std::vector&lt; std::string &gt; n;</span>
+<span class="lineNum">     390 </span>                :            :       const auto&amp; depvar =
+<span class="lineNum">     391 </span>                :<span class="lineNoCov">          0 :         g_inputdeck.get&lt; tag::param, tag::transport, tag::depvar &gt;().at(m_c);</span>
+<span class="lineNum">     392 </span>                :            :       // construct the name of the numerical solution for all components
+<span class="lineNum">     393 </span>                :<span class="lineNoCov">          0 :       for (ncomp_t c=0; c&lt;m_ncomp; ++c)</span>
+<span class="lineNum">     394 </span>                :<span class="lineNoCov">          0 :         n.push_back( depvar + std::to_string(c) );</span>
+<span class="lineNum">     395 </span>                :<span class="lineNoCov">          0 :       return n;</span>
+<span class="lineNum">     396 </span>                :            :     }
+<span class="lineNum">     397 </span>                :            : 
+<span class="lineNum">     398 </span>                :            :   private:
+<span class="lineNum">     399 </span>                :            :     const ncomp_t m_c;                  //!&lt; Equation system index
+<span class="lineNum">     400 </span>                :            :     const ncomp_t m_ncomp;              //!&lt; Number of components in this PDE
+<span class="lineNum">     401 </span>                :            :     const ncomp_t m_offset;             //!&lt; Offset this PDE operates from
+<span class="lineNum">     402 </span>                :            : };
+<span class="lineNum">     403 </span>                :            : 
+<span class="lineNum">     404 </span>                :            : } // inciter::
+<span class="lineNum">     405 </span>                :            : 
+<span class="lineNum">     406 </span>                :            : #endif // Transport_h
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.12</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>
