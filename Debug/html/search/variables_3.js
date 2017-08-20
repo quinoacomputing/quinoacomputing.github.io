@@ -1,7 +1,0 @@
-var searchData=
-[
-  ['data',['data',['../structwalker_1_1_diff_eq_1_1_model.html#a890a113914407facf22919543ab96d02',1,'walker::DiffEq::Model::data()'],['../structtk_1_1_driver_1_1_model.html#af9c24e62cde696d9a3e1c39af5872e92',1,'tk::Driver::Model::data()'],['../structinciter_1_1_p_d_e_1_1_model.html#a5b02b3e75621f58952ec5ca0e010eb4e',1,'inciter::PDE::Model::data()'],['../structtk_1_1_random123_1_1_adaptor.html#a6ce2e96b22e2a5f802f96176900c903f',1,'tk::Random123::Adaptor::data()'],['../structtk_1_1_r_n_g_1_1_model.html#a9f67a81ae1edf8da6377c9cbe0df1aad',1,'tk::RNG::Model::data()'],['../structrngtest_1_1_battery_1_1_model.html#a510d3f678b1d37de09d25e8870a5020f',1,'rngtest::Battery::Model::data()'],['../structrngtest_1_1_stat_test_1_1_model.html#a989b8a82110f65366b0843f10326d5dc',1,'rngtest::StatTest::Model::data()'],['../structtut_1_1_factory__common_1_1_v_base_1_1_model.html#a6a746fcdc3344c19d8b36979b5bde212',1,'tut::Factory_common::VBase::Model::data()'],['../structtut_1_1_v_base_1_1_model.html#a5898343be6628b791c14879ad7a1f6cf',1,'tut::VBase::Model::data()']]],
-  ['depvars',['depvars',['../namespacetk_1_1grm.html#ab631f9f35bdba1b71a2cff1112364971',1,'tk::grm']]],
-  ['diagmerger',['DiagMerger',['../namespacetk.html#ad252eef00813878543c56f7074e475f1',1,'tk']]],
-  ['dim',['dim',['../classtk_1_1_bi_p_d_f.html#aa61758933e172269a7547ab83c157dc1',1,'tk::BiPDF::dim()'],['../classtk_1_1_tri_p_d_f.html#ad5a364bf2938a6622796be37b044d55e',1,'tk::TriPDF::dim()'],['../classtk_1_1_uni_p_d_f.html#a8b2515fa9239e8b634a803db1935b25f',1,'tk::UniPDF::dim()']]]
-];
