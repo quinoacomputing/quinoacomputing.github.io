@@ -1,0 +1,1511 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html lang="en">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>Quinoa unit test code coverage report</title>
+  <link rel="stylesheet" type="text/css" href="../gcov.css">
+</head>
+<body>
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title">Quinoa unit test code coverage report</td></tr>
+    <tr><td class="ruler"><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../index.html">top level</a> - <a href="index.html">LinSys</a> - Solver.h<span style="font-size: 80%;"> (source / <a href="Solver.h.func-sort-c.html">functions</a>)</span></td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Commit:</td>
+            <td class="headerValue"><a href="https://github.com/quinoacomputing/quinoa/commit/3af442c">Quinoa_v0.2-130-g3af442c</a></td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">0</td>
+            <td class="headerCovTableEntry">440</td>
+            <td class="headerCovTableEntryLo">0.0 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2017-10-05 12:29:56</td>
+            <td></td>
+            <td class="headerItem">Functions:</td>
+            <td class="headerCovTableEntry">0</td>
+            <td class="headerCovTableEntry">57</td>
+            <td class="headerCovTableEntryLo">0.0 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Legend:</td>
+            <td class="headerValueLeg">            Lines:
+            <span class="coverLegendCov">hit</span>
+            <span class="coverLegendNoCov">not hit</span>
+            | Branches:
+            <span class="coverLegendCov">+</span> taken
+            <span class="coverLegendNoCov">-</span> not taken
+            <span class="coverLegendNoCov">#</span> not executed
+</td>
+            <td></td>
+            <td class="headerItem">Branches:</td>
+            <td class="headerCovTableEntry">0</td>
+            <td class="headerCovTableEntry">0</td>
+            <td class="headerCovTableEntryHi">-</td>
+          </tr>
+          <tr><td><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">           Branch data     Line data    Source code</pre>
+<pre class="source">
+<a name="1"><span class="lineNum">       1 </span>                :            : // *****************************************************************************</a>
+<span class="lineNum">       2 </span>                :            : /*!
+<span class="lineNum">       3 </span>                :            :   \file      src/LinSys/Solver.h
+<span class="lineNum">       4 </span>                :            :   \copyright 2012-2015, J. Bakosi, 2016-2017, Los Alamos National Security, LLC.
+<span class="lineNum">       5 </span>                :            :   \brief     Charm++ chare linear system merger group to solve a linear system
+<span class="lineNum">       6 </span>                :            :   \details   Charm++ chare linear system merger group used to collect and
+<span class="lineNum">       7 </span>                :            :     assemble the left hand side matrix (lhs), the right hand side (rhs) vector,
+<span class="lineNum">       8 </span>                :            :     and the solution (unknown) vector from individual worker
+<span class="lineNum">       9 </span>                :            :     chares. Beside collection and assembly, the system is also solved. The
+<span class="lineNum">      10 </span>                :            :     solution is outsourced to hypre, an MPI-only library. Once the solution is
+<span class="lineNum">      11 </span>                :            :     available, the individual worker chares are updated with the new solution.
+<span class="lineNum">      12 </span>                :            : 
+<span class="lineNum">      13 </span>                :            :     This class assembles and solves two linear systems, whose rhs vectors may
+<span class="lineNum">      14 </span>                :            :     change during time stepping. One of the two linear systems is called a
+<span class="lineNum">      15 </span>                :            :     high-order and the other one is the low-order linear system.
+<span class="lineNum">      16 </span>                :            : 
+<span class="lineNum">      17 </span>                :            :     Characteristics of the low-order linear system: (1) the left hand side
+<span class="lineNum">      18 </span>                :            :     matrix is diagonal, (2) the right hand side vector is a combination of the
+<span class="lineNum">      19 </span>                :            :     high-order right hand side vector and another vector, assembled separately
+<span class="lineNum">      20 </span>                :            :     (and overlapped with that of the high-order system). This dual system
+<span class="lineNum">      21 </span>                :            :     solution is done here as required by the flux-corrected transport algorithm
+<span class="lineNum">      22 </span>                :            :     used for transport equations in inciter.
+<span class="lineNum">      23 </span>                :            : 
+<span class="lineNum">      24 </span>                :            :     The implementation uses the Charm++ runtime system and is fully
+<span class="lineNum">      25 </span>                :            :     asynchronous, overlapping computation and communication. The algorithm
+<span class="lineNum">      26 </span>                :            :     utilizes the structured dagger (SDAG) Charm++ functionality. The high-level
+<span class="lineNum">      27 </span>                :            :     overview of the algorithm structure and how it interfaces with Charm++ is
+<span class="lineNum">      28 </span>                :            :     discussed in the Charm++ interface file src/LinSys/solver.ci.
+<span class="lineNum">      29 </span>                :            : 
+<span class="lineNum">      30 </span>                :            :     #### Call graph ####
+<span class="lineNum">      31 </span>                :            :     The following is a directed acyclic graph (DAG) that outlines the
+<span class="lineNum">      32 </span>                :            :     asynchronous algorithm implemented in this class The detailed discussion of
+<span class="lineNum">      33 </span>                :            :     the algorithm is given in the Charm++ interface file solver.ci. On the
+<span class="lineNum">      34 </span>                :            :     DAG orange fills denote global synchronization points that contain or
+<span class="lineNum">      35 </span>                :            :     eventually lead to global reductions. Dashed lines are potential shortcuts
+<span class="lineNum">      36 </span>                :            :     that allow jumping over some of the task-graph under some circumstances or
+<span class="lineNum">      37 </span>                :            :     optional code paths (taken, e.g., only in DEBUG mode). See the detailed
+<span class="lineNum">      38 </span>                :            :     discussion in linsysmrger.ci.
+<span class="lineNum">      39 </span>                :            :     \dot
+<span class="lineNum">      40 </span>                :            :     digraph &quot;Solver SDAG&quot; {
+<span class="lineNum">      41 </span>                :            :       rankdir=&quot;LR&quot;;
+<span class="lineNum">      42 </span>                :            :       node [shape=record, fontname=Helvetica, fontsize=10];
+<span class="lineNum">      43 </span>                :            :       ChRow [ label=&quot;ChRow&quot;
+<span class="lineNum">      44 </span>                :            :               tooltip=&quot;chares contribute their global row IDs&quot;
+<span class="lineNum">      45 </span>                :            :               URL=&quot;\ref tk::Solver::charerow&quot;];
+<span class="lineNum">      46 </span>                :            :       ChBC [ label=&quot;ChBC&quot;
+<span class="lineNum">      47 </span>                :            :              tooltip=&quot;chares contribute their global node IDs at which
+<span class="lineNum">      48 </span>                :            :                       they can set boundary conditions&quot;
+<span class="lineNum">      49 </span>                :            :              URL=&quot;\ref tk::Solver::charebc&quot;];
+<span class="lineNum">      50 </span>                :            :       RowComplete   [ label=&quot;RowComplete&quot; color=&quot;#e6851c&quot; style=&quot;filled&quot;
+<span class="lineNum">      51 </span>                :            :               tooltip=&quot;all linear system solver branches have done heir part of
+<span class="lineNum">      52 </span>                :            :               storing and exporting global row ids&quot;
+<span class="lineNum">      53 </span>                :            :               URL=&quot;\ref inciter::Transporter::rowcomplete&quot;];
+<span class="lineNum">      54 </span>                :            :       Init [ label=&quot;Init&quot;
+<span class="lineNum">      55 </span>                :            :               tooltip=&quot;Workers start setting and outputing ICs, computing
+<span class="lineNum">      56 </span>                :            :                        initial dt, computing LHS&quot;];
+<span class="lineNum">      57 </span>                :            :       dt [ label=&quot;dt&quot;
+<span class="lineNum">      58 </span>                :            :            tooltip=&quot;Worker chares compute their minimum time step size&quot;
+<span class="lineNum">      59 </span>                :            :            color=&quot;#e6851c&quot; style=&quot;filled&quot;];
+<span class="lineNum">      60 </span>                :            :       Ver  [ label=&quot;Ver&quot;
+<span class="lineNum">      61 </span>                :            :               tooltip=&quot;start optional verifications, query BCs, and converting
+<span class="lineNum">      62 </span>                :            :                        row IDs to hypre format&quot;
+<span class="lineNum">      63 </span>                :            :               URL=&quot;\ref tk::Solver::rowsreceived&quot;];
+<span class="lineNum">      64 </span>                :            :       LhsBC [ label=&quot;LhsBC&quot;
+<span class="lineNum">      65 </span>                :            :               tooltip=&quot;set boundary conditions on the left-hand side matrix&quot;
+<span class="lineNum">      66 </span>                :            :               URL=&quot;\ref tk::Solver::lhsbc&quot;];
+<span class="lineNum">      67 </span>                :            :       RhsBC [ label=&quot;RhsBC&quot;
+<span class="lineNum">      68 </span>                :            :               tooltip=&quot;set boundary conditions on the right-hand side vector&quot;
+<span class="lineNum">      69 </span>                :            :               URL=&quot;\ref tk::Solver::rhsbc&quot;];
+<span class="lineNum">      70 </span>                :            :       ChSol [ label=&quot;ChSol&quot;
+<span class="lineNum">      71 </span>                :            :               tooltip=&quot;chares contribute their solution vector nonzeros&quot;
+<span class="lineNum">      72 </span>                :            :               URL=&quot;\ref tk::Solver::charesol&quot;];
+<span class="lineNum">      73 </span>                :            :       ChLhs [ label=&quot;ChLhs&quot;
+<span class="lineNum">      74 </span>                :            :               tooltip=&quot;chares contribute their left hand side matrix nonzeros&quot;
+<span class="lineNum">      75 </span>                :            :               URL=&quot;\ref tk::Solver::charelhs&quot;];
+<span class="lineNum">      76 </span>                :            :       ChLoLhs [ label=&quot;ChLowLhs&quot;
+<span class="lineNum">      77 </span>                :            :               tooltip=&quot;chares contribute their low-order left hand side matrix&quot;
+<span class="lineNum">      78 </span>                :            :               URL=&quot;\ref tk::Solver::charelow&quot;];
+<span class="lineNum">      79 </span>                :            :       ChRhs [ label=&quot;ChRhs&quot;
+<span class="lineNum">      80 </span>                :            :               tooltip=&quot;chares contribute their right hand side vector nonzeros&quot;
+<span class="lineNum">      81 </span>                :            :               URL=&quot;\ref tk::Solver::charesol&quot;];
+<span class="lineNum">      82 </span>                :            :       ChLoRhs [ label=&quot;ChLowRhs&quot;
+<span class="lineNum">      83 </span>                :            :               tooltip=&quot;chares contribute their contribution to the low-order
+<span class="lineNum">      84 </span>                :            :                        right hand side vector&quot;
+<span class="lineNum">      85 </span>                :            :               URL=&quot;\ref tk::Solver::charelowrhs&quot;];
+<span class="lineNum">      86 </span>                :            :       HypreRow [ label=&quot;HypreRow&quot;
+<span class="lineNum">      87 </span>                :            :               tooltip=&quot;convert global row ID vector to hypre format&quot;
+<span class="lineNum">      88 </span>                :            :               URL=&quot;\ref tk::Solver::hyprerow&quot;];
+<span class="lineNum">      89 </span>                :            :       HypreSol [ label=&quot;HypreSol&quot;
+<span class="lineNum">      90 </span>                :            :               tooltip=&quot;convert solution vector to hypre format&quot;
+<span class="lineNum">      91 </span>                :            :               URL=&quot;\ref tk::Solver::hypresol&quot;];
+<span class="lineNum">      92 </span>                :            :       HypreLhs [ label=&quot;HypreLhs&quot;
+<span class="lineNum">      93 </span>                :            :               tooltip=&quot;convert left hand side matrix to hypre format&quot;
+<span class="lineNum">      94 </span>                :            :               URL=&quot;\ref tk::Solver::hyprelhs&quot;];
+<span class="lineNum">      95 </span>                :            :       HypreRhs [ label=&quot;HypreRhs&quot;
+<span class="lineNum">      96 </span>                :            :               tooltip=&quot;convert right hand side vector to hypre format&quot;
+<span class="lineNum">      97 </span>                :            :               URL=&quot;\ref tk::Solver::hyprerhs&quot;];
+<span class="lineNum">      98 </span>                :            :       FillSol [ label=&quot;FillSol&quot;
+<span class="lineNum">      99 </span>                :            :               tooltip=&quot;fill/set solution vector&quot;
+<span class="lineNum">     100 </span>                :            :               URL=&quot;\ref tk::Solver::sol&quot;];
+<span class="lineNum">     101 </span>                :            :       FillLhs [ label=&quot;FillLhs&quot;
+<span class="lineNum">     102 </span>                :            :               tooltip=&quot;fill/set left hand side matrix&quot;
+<span class="lineNum">     103 </span>                :            :               URL=&quot;\ref tk::Solver::lhs&quot;];
+<span class="lineNum">     104 </span>                :            :       FillRhs [ label=&quot;FillRhs&quot;
+<span class="lineNum">     105 </span>                :            :               tooltip=&quot;fill/set right hand side vector&quot;
+<span class="lineNum">     106 </span>                :            :               URL=&quot;\ref tk::Solver::rhs&quot;];
+<span class="lineNum">     107 </span>                :            :       AsmSol [ label=&quot;AsmSol&quot;
+<span class="lineNum">     108 </span>                :            :               tooltip=&quot;assemble solution vector&quot;
+<span class="lineNum">     109 </span>                :            :               URL=&quot;\ref tk::Solver::assemblesol&quot;];
+<span class="lineNum">     110 </span>                :            :       AsmLhs [ label=&quot;AsmLhs&quot;
+<span class="lineNum">     111 </span>                :            :               tooltip=&quot;assemble left hand side matrix&quot;
+<span class="lineNum">     112 </span>                :            :               URL=&quot;\ref tk::Solver::assemblelhs&quot;];
+<span class="lineNum">     113 </span>                :            :       AsmRhs [ label=&quot;AsmRhs&quot;
+<span class="lineNum">     114 </span>                :            :               tooltip=&quot;assemble right hand side vector&quot;
+<span class="lineNum">     115 </span>                :            :               URL=&quot;\ref tk::Solver::assemblerhs&quot;];
+<span class="lineNum">     116 </span>                :            :       Solve [ label=&quot;Solve&quot; tooltip=&quot;solve linear system&quot;
+<span class="lineNum">     117 </span>                :            :               URL=&quot;\ref tk::Solver::solve&quot;];
+<span class="lineNum">     118 </span>                :            :       LoSolve [ label=&quot;LoSolve&quot; tooltip=&quot;solve low-order linear system&quot;
+<span class="lineNum">     119 </span>                :            :               URL=&quot;\ref tk::Solver::lowsolve&quot;];
+<span class="lineNum">     120 </span>                :            :       Upd [ label=&quot;Upd&quot; tooltip=&quot;update solution&quot;
+<span class="lineNum">     121 </span>                :            :                 color=&quot;#e6851c&quot; style=&quot;filled&quot;
+<span class="lineNum">     122 </span>                :            :                 URL=&quot;\ref tk::Solver::updateSol&quot;];
+<span class="lineNum">     123 </span>                :            :       LowUpd [ label=&quot;LowUpd&quot; tooltip=&quot;update low-order solution&quot;
+<span class="lineNum">     124 </span>                :            :                color=&quot;#e6851c&quot;style=&quot;filled&quot;
+<span class="lineNum">     125 </span>                :            :                URL=&quot;\ref tk::Solver::updateLowol&quot;];
+<span class="lineNum">     126 </span>                :            :       ChRow -&gt; RowComplete [ style=&quot;solid&quot; ];
+<span class="lineNum">     127 </span>                :            :       RowComplete -&gt; Init [ style=&quot;solid&quot; ];
+<span class="lineNum">     128 </span>                :            :       RowComplete -&gt; Ver [ style=&quot;solid&quot; ];
+<span class="lineNum">     129 </span>                :            :       Ver -&gt; HypreRow [ style=&quot;solid&quot; ];
+<span class="lineNum">     130 </span>                :            :       ChLhs -&gt; LhsBC [ style=&quot;solid&quot; ];
+<span class="lineNum">     131 </span>                :            :       ChRhs -&gt; RhsBC [ style=&quot;solid&quot; ];
+<span class="lineNum">     132 </span>                :            :       LhsBC -&gt; HypreLhs [ style=&quot;solid&quot; ];
+<span class="lineNum">     133 </span>                :            :       RhsBC -&gt; HypreRhs [ style=&quot;solid&quot; ];
+<span class="lineNum">     134 </span>                :            :       RhsBC -&gt; LowSolve [ style=&quot;solid&quot; ];
+<span class="lineNum">     135 </span>                :            :       ChLowRhs -&gt; LowSolve [ style=&quot;solid&quot; ];
+<span class="lineNum">     136 </span>                :            :       ChLowLhs -&gt; LowSolve [ style=&quot;solid&quot; ];
+<span class="lineNum">     137 </span>                :            :       Init -&gt; ChSol [ style=&quot;solid&quot; ];
+<span class="lineNum">     138 </span>                :            :       Init -&gt; ChLhs [ style=&quot;solid&quot; ];
+<span class="lineNum">     139 </span>                :            :       Init -&gt; ChLowLhs [ style=&quot;solid&quot; ];
+<span class="lineNum">     140 </span>                :            :       Init -&gt; dt [ style=&quot;solid&quot; ];
+<span class="lineNum">     141 </span>                :            :       dt -&gt; ChRhs [ style=&quot;solid&quot; ];
+<span class="lineNum">     142 </span>                :            :       dt -&gt; ChLowRhs [ style=&quot;solid&quot; ];
+<span class="lineNum">     143 </span>                :            :       dt -&gt; ChBC [ style=&quot;solid&quot; ];
+<span class="lineNum">     144 </span>                :            :       ChBC -&gt; LhsBC [ style=&quot;solid&quot; ];
+<span class="lineNum">     145 </span>                :            :       ChBC -&gt; RhsBC [ style=&quot;solid&quot; ];
+<span class="lineNum">     146 </span>                :            :       HypreRow -&gt; FillSol [ style=&quot;solid&quot; ];
+<span class="lineNum">     147 </span>                :            :       HypreRow -&gt; FillLhs [ style=&quot;solid&quot; ];
+<span class="lineNum">     148 </span>                :            :       HypreRow -&gt; FillRhs [ style=&quot;solid&quot; ];
+<span class="lineNum">     149 </span>                :            :       ChSol -&gt; HypreSol -&gt; FillSol -&gt; AsmSol -&gt; Solve [ style=&quot;solid&quot; ];
+<span class="lineNum">     150 </span>                :            :       HypreLhs -&gt; FillLhs -&gt; AsmLhs -&gt; Solve [ style=&quot;solid&quot; ];
+<span class="lineNum">     151 </span>                :            :       HypreRhs -&gt; FillRhs -&gt; AsmRhs -&gt; Solve [ style=&quot;solid&quot; ];
+<span class="lineNum">     152 </span>                :            :       Solve -&gt; Upd [ style=&quot;solid&quot; ];
+<span class="lineNum">     153 </span>                :            :       LowSolve -&gt; LowUpd [ style=&quot;solid&quot; ];
+<span class="lineNum">     154 </span>                :            :     }
+<span class="lineNum">     155 </span>                :            :     \enddot
+<span class="lineNum">     156 </span>                :            :     \include LinSys/solver.ci
+<span class="lineNum">     157 </span>                :            : */
+<span class="lineNum">     158 </span>                :            : // *****************************************************************************
+<span class="lineNum">     159 </span>                :            : #ifndef Solver_h
+<span class="lineNum">     160 </span>                :            : #define Solver_h
+<span class="lineNum">     161 </span>                :            : 
+<span class="lineNum">     162 </span>                :            : #include &lt;vector&gt;
+<span class="lineNum">     163 </span>                :            : #include &lt;map&gt;
+<span class="lineNum">     164 </span>                :            : #include &lt;unordered_map&gt;
+<span class="lineNum">     165 </span>                :            : #include &lt;utility&gt;
+<span class="lineNum">     166 </span>                :            : #include &lt;numeric&gt;
+<span class="lineNum">     167 </span>                :            : #include &lt;algorithm&gt;
+<span class="lineNum">     168 </span>                :            : #include &lt;iosfwd&gt;
+<span class="lineNum">     169 </span>                :            : #include &lt;cstddef&gt;
+<span class="lineNum">     170 </span>                :            : #include &lt;limits&gt;
+<span class="lineNum">     171 </span>                :            : 
+<span class="lineNum">     172 </span>                :            : #include &quot;Types.h&quot;
+<span class="lineNum">     173 </span>                :            : #include &quot;Tags.h&quot;
+<span class="lineNum">     174 </span>                :            : #include &quot;Exception.h&quot;
+<span class="lineNum">     175 </span>                :            : #include &quot;ContainerUtil.h&quot;
+<span class="lineNum">     176 </span>                :            : #include &quot;PUPUtil.h&quot;
+<span class="lineNum">     177 </span>                :            : #include &quot;Fields.h&quot;
+<span class="lineNum">     178 </span>                :            : #include &quot;HypreMatrix.h&quot;
+<span class="lineNum">     179 </span>                :            : #include &quot;HypreVector.h&quot;
+<span class="lineNum">     180 </span>                :            : #include &quot;HypreSolver.h&quot;
+<span class="lineNum">     181 </span>                :            : #include &quot;VectorReducer.h&quot;
+<span class="lineNum">     182 </span>                :            : #include &quot;HashMapReducer.h&quot;
+<span class="lineNum">     183 </span>                :            : #include &quot;DiagReducer.h&quot;
+<span class="lineNum">     184 </span>                :            : #include &quot;TaggedTuple.h&quot;
+<span class="lineNum">     185 </span>                :            : 
+<span class="lineNum">     186 </span>                :            : #include &quot;NoWarning/solver.decl.h&quot;
+<span class="lineNum">     187 </span>                :            : 
+<span class="lineNum">     188 </span>                :            : namespace tk {
+<span class="lineNum">     189 </span>                :            : 
+<span class="lineNum">     190 </span>                :            : extern CkReduction::reducerType BCVectorMerger;
+<span class="lineNum">     191 </span>                :            : extern CkReduction::reducerType BCMapMerger;
+<span class="lineNum">     192 </span>                :            : extern CkReduction::reducerType DiagMerger;
+<span class="lineNum">     193 </span>                :            : 
+<span class="lineNum">     194 </span>                :            : #if defined(__clang__)
+<span class="lineNum">     195 </span>                :            :   #pragma clang diagnostic push
+<span class="lineNum">     196 </span>                :            :   #pragma clang diagnostic ignored &quot;-Wundefined-func-template&quot;
+<span class="lineNum">     197 </span>                :            : #endif
+<span class="lineNum">     198 </span>                :            : 
+<span class="lineNum">     199 </span>                :            : //! Linear system merger and solver Charm++ chare group class
+<span class="lineNum">     200 </span>                :            : //! \details Instantiations of Solver comprise a processor aware Charm++
+<span class="lineNum">     201 </span>                :            : //!   chare group. When instantiated, a new object is created on each PE and not
+<span class="lineNum">     202 </span>                :            : //!   more (as opposed to individual chares or chare array object elements). The
+<span class="lineNum">     203 </span>                :            : //!   group's elements are used to collect information from all chare objects
+<span class="lineNum">     204 </span>                :            : //!   that happen to be on a given PE. See also the Charm++ interface file
+<a name="205"><span class="lineNum">     205 </span>                :            : //!   solver.ci.</a>
+<span class="lineNum">     206 </span>                :            : template&lt; class WorkerProxy &gt;
+<span class="lineNum">     207 </span>                :<span class="lineNoCov">          0 : class Solver : public CBase_Solver&lt; WorkerProxy &gt; {</span>
+<span class="lineNum">     208 </span>                :            : 
+<span class="lineNum">     209 </span>                :            :   #if defined(__clang__)
+<span class="lineNum">     210 </span>                :            :     #pragma clang diagnostic push
+<span class="lineNum">     211 </span>                :            :     #pragma clang diagnostic ignored &quot;-Wunused-parameter&quot;
+<span class="lineNum">     212 </span>                :            :     #pragma clang diagnostic ignored &quot;-Wdeprecated-declarations&quot;
+<span class="lineNum">     213 </span>                :            :   #elif defined(STRICT_GNUC)
+<span class="lineNum">     214 </span>                :            :     #pragma GCC diagnostic push
+<span class="lineNum">     215 </span>                :            :     #pragma GCC diagnostic ignored &quot;-Wdeprecated-declarations&quot;
+<span class="lineNum">     216 </span>                :            :     #pragma GCC diagnostic ignored &quot;-Wunused-parameter&quot;
+<span class="lineNum">     217 </span>                :            :   #elif defined(__INTEL_COMPILER)
+<span class="lineNum">     218 </span>                :            :     #pragma warning( push )
+<span class="lineNum">     219 </span>                :            :     #pragma warning( disable: 1478 )
+<span class="lineNum">     220 </span>                :            :   #endif
+<a name="221"><span class="lineNum">     221 </span>                :            :   // Include Charm++ SDAG code. See http://charm.cs.illinois.edu/manuals/html/</a>
+<span class="lineNum">     222 </span>                :            :   // charm++/manual.html, Sec. &quot;Structured Control Flow: Structured Dagger&quot;.
+<span class="lineNum">     223 </span>                :<span class="lineNoCov">          0 :   Solver_SDAG_CODE</span>
+<span class="lineNum">     224 </span>                :            :   #if defined(__clang__)
+<span class="lineNum">     225 </span>                :            :     #pragma clang diagnostic pop
+<span class="lineNum">     226 </span>                :            :   #elif defined(STRICT_GNUC)
+<span class="lineNum">     227 </span>                :            :     #pragma GCC diagnostic pop
+<span class="lineNum">     228 </span>                :            :   #elif defined(__INTEL_COMPILER)
+<span class="lineNum">     229 </span>                :            :     #pragma warning( pop )
+<span class="lineNum">     230 </span>                :            :   #endif
+<span class="lineNum">     231 </span>                :            : 
+<span class="lineNum">     232 </span>                :            :   private:
+<span class="lineNum">     233 </span>                :            :     using Group = CBase_Solver&lt; WorkerProxy &gt;;
+<span class="lineNum">     234 </span>                :            :     using GroupIdx = CkIndex_Solver&lt; WorkerProxy &gt;;
+<span class="lineNum">     235 </span>                :            : 
+<span class="lineNum">     236 </span>                :            :   public:
+<span class="lineNum">     237 </span>                :            :     //! Constructor
+<span class="lineNum">     238 </span>                :            :     //! \param[in] cb Charm++ callbacks
+<span class="lineNum">     239 </span>                :            :     //! \param[in] worker Charm++ worker proxy
+<span class="lineNum">     240 </span>                :            :     //! \param[in] s Mesh node IDs mapped to side set ids
+<a name="241"><span class="lineNum">     241 </span>                :            :     //! \param[in] n Total number of scalar components in the linear system</a>
+<span class="lineNum">     242 </span>                :            :     //! \param[in] feedback Whether to send sub-task feedback to host    
+<span class="lineNum">     243 </span>                :<span class="lineNoCov">          0 :     Solver( const std::vector&lt; CkCallback &gt;&amp; cb,</span>
+<span class="lineNum">     244 </span>                :            :             const WorkerProxy&amp; worker,
+<span class="lineNum">     245 </span>                :            :             const std::map&lt; int, std::vector&lt; std::size_t &gt; &gt;&amp; s,
+<span class="lineNum">     246 </span>                :            :             std::size_t n,
+<span class="lineNum">     247 </span>                :            :             bool feedback ) :
+<span class="lineNum">     248 </span>                :            :       __dep(),
+<span class="lineNum">     249 </span>                :            :       m_cb( cb[0], cb[1], cb[2], cb[3] ),
+<span class="lineNum">     250 </span>                :            :       m_worker( worker ),
+<span class="lineNum">     251 </span>                :            :       m_side( s ),
+<span class="lineNum">     252 </span>                :            :       m_ncomp( n ),
+<span class="lineNum">     253 </span>                :            :       m_nchare( 0 ),
+<span class="lineNum">     254 </span>                :            :       m_nperow( 0 ),
+<span class="lineNum">     255 </span>                :            :       m_nchbc( 0 ),
+<span class="lineNum">     256 </span>                :            :       m_lower( 0 ),
+<span class="lineNum">     257 </span>                :            :       m_upper( 0 ),
+<span class="lineNum">     258 </span>                :            :       m_feedback( feedback ),
+<span class="lineNum">     259 </span>                :            :       m_myworker(),
+<span class="lineNum">     260 </span>                :            :       m_rowimport(),
+<span class="lineNum">     261 </span>                :            :       m_solimport(),
+<span class="lineNum">     262 </span>                :            :       m_lhsimport(),
+<span class="lineNum">     263 </span>                :            :       m_rhsimport(),
+<span class="lineNum">     264 </span>                :            :       m_lowrhsimport(),
+<span class="lineNum">     265 </span>                :            :       m_lowlhsimport(),
+<span class="lineNum">     266 </span>                :            :       m_diagimport(),
+<span class="lineNum">     267 </span>                :            :       m_row(),
+<span class="lineNum">     268 </span>                :            :       m_sol(),
+<span class="lineNum">     269 </span>                :            :       m_lhs(),
+<span class="lineNum">     270 </span>                :            :       m_rhs(),
+<span class="lineNum">     271 </span>                :            :       m_lowrhs(),
+<span class="lineNum">     272 </span>                :            :       m_lowlhs(),
+<span class="lineNum">     273 </span>                :            :       m_diag(),
+<span class="lineNum">     274 </span>                :            :       m_x(),
+<span class="lineNum">     275 </span>                :            :       m_A(),
+<span class="lineNum">     276 </span>                :            :       m_b(),
+<span class="lineNum">     277 </span>                :            :       m_solver(),
+<span class="lineNum">     278 </span>                :            :       m_hypreRows(),
+<span class="lineNum">     279 </span>                :            :       m_hypreNcols(),
+<span class="lineNum">     280 </span>                :            :       m_hypreCols(),
+<span class="lineNum">     281 </span>                :            :       m_hypreMat(),
+<span class="lineNum">     282 </span>                :            :       m_hypreRhs(),
+<span class="lineNum">     283 </span>                :            :       m_hypreSol(),
+<span class="lineNum">     284 </span>                :            :       m_lid(),
+<span class="lineNum">     285 </span>                :            :       m_div(),
+<span class="lineNum">     286 </span>                :            :       m_pe(),
+<span class="lineNum">     287 </span>                :<span class="lineNoCov">          0 :       m_bc()</span>
+<span class="lineNum">     288 </span>                :            :     {
+<span class="lineNum">     289 </span>                :            :       // Activate SDAG waits
+<span class="lineNum">     290 </span>                :<span class="lineNoCov">          0 :       wait4row();</span>
+<span class="lineNum">     291 </span>                :<span class="lineNoCov">          0 :       wait4lhsbc();</span>
+<span class="lineNum">     292 </span>                :<span class="lineNoCov">          0 :       wait4rhsbc();</span>
+<span class="lineNum">     293 </span>                :<span class="lineNoCov">          0 :       wait4sol();</span>
+<span class="lineNum">     294 </span>                :<span class="lineNoCov">          0 :       wait4lhs();</span>
+<span class="lineNum">     295 </span>                :<span class="lineNoCov">          0 :       wait4rhs();</span>
+<span class="lineNum">     296 </span>                :<span class="lineNoCov">          0 :       wait4hypresol();</span>
+<span class="lineNum">     297 </span>                :<span class="lineNoCov">          0 :       wait4hyprelhs();</span>
+<span class="lineNum">     298 </span>                :<span class="lineNoCov">          0 :       wait4hyprerhs();</span>
+<span class="lineNum">     299 </span>                :<span class="lineNoCov">          0 :       wait4fillsol();</span>
+<span class="lineNum">     300 </span>                :<span class="lineNoCov">          0 :       wait4filllhs();</span>
+<span class="lineNum">     301 </span>                :<span class="lineNoCov">          0 :       wait4fillrhs();</span>
+<span class="lineNum">     302 </span>                :<span class="lineNoCov">          0 :       wait4asm();</span>
+<span class="lineNum">     303 </span>                :<span class="lineNoCov">          0 :       wait4low();</span>
+<span class="lineNum">     304 </span>                :<span class="lineNoCov">          0 :       wait4solve();</span>
+<span class="lineNum">     305 </span>                :<span class="lineNoCov">          0 :       wait4lowsolve();</span>
+<span class="lineNum">     306 </span>                :<span class="lineNoCov">          0 :     }</span>
+<span class="lineNum">     307 </span>                :            : 
+<span class="lineNum">     308 </span>                :            :     //! \brief Configure Charm++ reduction types for concatenating BC nodelists
+<span class="lineNum">     309 </span>                :            :     //! \details Since this is a [nodeinit] routine, see solver.ci, the
+<span class="lineNum">     310 </span>                :            :     //!   Charm++ runtime system executes the routine exactly once on every
+<span class="lineNum">     311 </span>                :            :     //!   logical node early on in the Charm++ init sequence. Must be static as
+<span class="lineNum">     312 </span>                :            :     //!   it is called without an object. See also: Section &quot;Initializations at
+<a name="313"><span class="lineNum">     313 </span>                :            :     //!   Program Startup&quot; at in the Charm++ manual</a>
+<span class="lineNum">     314 </span>                :            :     //!   http://charm.cs.illinois.edu/manuals/html/charm++/manual.html.
+<span class="lineNum">     315 </span>                :<span class="lineNoCov">          0 :     static void registerBCMerger() {</span>
+<span class="lineNum">     316 </span>                :<span class="lineNoCov">          0 :       BCVectorMerger = CkReduction::addReducer( tk::mergeVector );</span>
+<span class="lineNum">     317 </span>                :<span class="lineNoCov">          0 :       BCMapMerger = CkReduction::addReducer(</span>
+<span class="lineNum">     318 </span>                :            :                       tk::mergeHashMap&lt; std::size_t,
+<span class="lineNum">     319 </span>                :<span class="lineNoCov">          0 :                         std::vector&lt; std::pair&lt; bool, tk::real &gt; &gt; &gt; );</span>
+<span class="lineNum">     320 </span>                :<span class="lineNoCov">          0 :       DiagMerger = CkReduction::addReducer( tk::mergeDiag );</span>
+<span class="lineNum">     321 </span>                :<span class="lineNoCov">          0 :     }</span>
+<span class="lineNum">     322 </span>                :            : 
+<span class="lineNum">     323 </span>                :            :     //! Receive lower and upper global node IDs all PEs will operate on
+<span class="lineNum">     324 </span>                :            :     //! \param[in] p PE whose bounds being received
+<a name="325"><span class="lineNum">     325 </span>                :            :     //! \param[in] lower Lower index of the global rows on my PE</a>
+<span class="lineNum">     326 </span>                :            :     //! \param[in] upper Upper index of the global rows on my PE
+<span class="lineNum">     327 </span>                :<span class="lineNoCov">          0 :     void bounds( int p, std::size_t lower, std::size_t upper ) {</span>
+<span class="lineNum">     328 </span>                :<span class="lineNoCov">          0 :       Assert( lower &lt; upper, &quot;Lower bound must be lower than the upper bound: &quot;</span>
+<span class="lineNum">     329 </span>                :            :               &quot;(&quot; + std::to_string(lower) + &quot;...&quot; +  std::to_string(upper) +
+<span class="lineNum">     330 </span>                :            :               &quot;) sent by PE &quot; + std::to_string(p) );
+<span class="lineNum">     331 </span>                :            :       // Store our bounds
+<span class="lineNum">     332 </span>                :<span class="lineNoCov">          0 :       if (p == CkMyPe()) {</span>
+<span class="lineNum">     333 </span>                :<span class="lineNoCov">          0 :         m_lower = lower;</span>
+<span class="lineNum">     334 </span>                :<span class="lineNoCov">          0 :         m_upper = upper;</span>
+<span class="lineNum">     335 </span>                :            :       }
+<span class="lineNum">     336 </span>                :            :       // Store inverse of PE-division map stored on all PE
+<span class="lineNum">     337 </span>                :<span class="lineNoCov">          0 :       m_div[ {lower,upper} ] = p;</span>
+<span class="lineNum">     338 </span>                :            :       // If we have all PEs' bounds, signal the runtime system to continue
+<span class="lineNum">     339 </span>                :<span class="lineNoCov">          0 :       if (m_div.size() == static_cast&lt;std::size_t&gt;(CkNumPes())) {</span>
+<span class="lineNum">     340 </span>                :            :         // Create my PE's lhs matrix distributed across all PEs
+<span class="lineNum">     341 </span>                :<span class="lineNoCov">          0 :         m_A.create( m_lower*m_ncomp, m_upper*m_ncomp );</span>
+<span class="lineNum">     342 </span>                :            :         // Create my PE's rhs and unknown vectors distributed across all PEs
+<span class="lineNum">     343 </span>                :<span class="lineNoCov">          0 :         m_b.create( m_lower*m_ncomp, m_upper*m_ncomp );</span>
+<span class="lineNum">     344 </span>                :<span class="lineNoCov">          0 :         m_x.create( m_lower*m_ncomp, m_upper*m_ncomp );</span>
+<span class="lineNum">     345 </span>                :            :         // Create linear solver
+<span class="lineNum">     346 </span>                :<span class="lineNoCov">          0 :         m_solver.create();</span>
+<span class="lineNum">     347 </span>                :            :         // Signal back to host that setup of workers can start
+<span class="lineNum">     348 </span>                :<span class="lineNoCov">          0 :         Group::contribute( m_cb.get&lt; tag::coord &gt;() );</span>
+<span class="lineNum">     349 </span>                :            :       }
+<span class="lineNum">     350 </span>                :<span class="lineNoCov">          0 :     }</span>
+<a name="351"><span class="lineNum">     351 </span>                :            : </a>
+<span class="lineNum">     352 </span>                :            :     //! Re-enable SDAG waits for rebuilding the right-hand side vector only
+<span class="lineNum">     353 </span>                :<span class="lineNoCov">          0 :     void enable_wait4rhs() {</span>
+<span class="lineNum">     354 </span>                :<span class="lineNoCov">          0 :       wait4rhs();</span>
+<span class="lineNum">     355 </span>                :<span class="lineNoCov">          0 :       wait4rhsbc();</span>
+<span class="lineNum">     356 </span>                :<span class="lineNoCov">          0 :       wait4hyprerhs();</span>
+<span class="lineNum">     357 </span>                :<span class="lineNoCov">          0 :       wait4fillrhs();</span>
+<span class="lineNum">     358 </span>                :<span class="lineNoCov">          0 :       wait4asm();</span>
+<span class="lineNum">     359 </span>                :<span class="lineNoCov">          0 :       wait4low();</span>
+<span class="lineNum">     360 </span>                :<span class="lineNoCov">          0 :       wait4solve();</span>
+<span class="lineNum">     361 </span>                :<span class="lineNoCov">          0 :       wait4lowsolve();</span>
+<span class="lineNum">     362 </span>                :<span class="lineNoCov">          0 :       m_rhsimport.clear();</span>
+<span class="lineNum">     363 </span>                :<span class="lineNoCov">          0 :       m_lowrhsimport.clear();</span>
+<span class="lineNum">     364 </span>                :<span class="lineNoCov">          0 :       m_diagimport.clear();</span>
+<span class="lineNum">     365 </span>                :<span class="lineNoCov">          0 :       m_rhs.clear();</span>
+<span class="lineNum">     366 </span>                :<span class="lineNoCov">          0 :       m_bc.clear();</span>
+<span class="lineNum">     367 </span>                :<span class="lineNoCov">          0 :       m_lowrhs.clear();</span>
+<span class="lineNum">     368 </span>                :<span class="lineNoCov">          0 :       m_hypreRhs.clear();</span>
+<span class="lineNum">     369 </span>                :<span class="lineNoCov">          0 :       m_diag.clear();</span>
+<span class="lineNum">     370 </span>                :<span class="lineNoCov">          0 :       lowlhs_complete();</span>
+<span class="lineNum">     371 </span>                :<span class="lineNoCov">          0 :       hyprerow_complete();</span>
+<span class="lineNum">     372 </span>                :<span class="lineNoCov">          0 :       asmsol_complete();</span>
+<span class="lineNum">     373 </span>                :<span class="lineNoCov">          0 :       asmlhs_complete();</span>
+<span class="lineNum">     374 </span>                :<span class="lineNoCov">          0 :       lhsbc_complete();</span>
+<span class="lineNum">     375 </span>                :<span class="lineNoCov">          0 :       Group::contribute( m_cb.get&lt; tag::dt &gt;() );</span>
+<span class="lineNum">     376 </span>                :<span class="lineNoCov">          0 :     }</span>
+<span class="lineNum">     377 </span>                :            : 
+<span class="lineNum">     378 </span>                :            :     //! Chares register on my PE
+<a name="379"><span class="lineNum">     379 </span>                :            :     //! \note This function does not have to be declared as a Charm++ entry</a>
+<span class="lineNum">     380 </span>                :            :     //!   method since it is always called by chares on the same PE.
+<span class="lineNum">     381 </span>                :<span class="lineNoCov">          0 :     void checkin() { ++m_nchare; }</span>
+<span class="lineNum">     382 </span>                :            : 
+<span class="lineNum">     383 </span>                :            :     //! Chares contribute their global row ids
+<span class="lineNum">     384 </span>                :            :     //! \param[in] fromch Charm chare array index contribution coming from
+<span class="lineNum">     385 </span>                :            :     //! \param[in] row Global mesh point (row) indices contributed
+<a name="386"><span class="lineNum">     386 </span>                :            :     //! \note This function does not have to be declared as a Charm++ entry</a>
+<span class="lineNum">     387 </span>                :            :     //!   method since it is always called by chares on the same PE.
+<span class="lineNum">     388 </span>                :<span class="lineNoCov">          0 :     void charerow( int fromch, const std::vector&lt; std::size_t &gt;&amp; row ) {</span>
+<span class="lineNum">     389 </span>                :            :       // Collect global ids of workers on my PE
+<span class="lineNum">     390 </span>                :<span class="lineNoCov">          0 :       m_myworker.push_back( fromch );</span>
+<span class="lineNum">     391 </span>                :            :       // Store rows owned and pack those to be exported, also build import map
+<span class="lineNum">     392 </span>                :            :       // used to test for completion
+<span class="lineNum">     393 </span>                :<span class="lineNoCov">          0 :       std::map&lt; int, std::set&lt; std::size_t &gt; &gt; exp;</span>
+<span class="lineNum">     394 </span>                :<span class="lineNoCov">          0 :       for (auto gid : row) {</span>
+<span class="lineNum">     395 </span>                :<span class="lineNoCov">          0 :         if (gid &gt;= m_lower &amp;&amp; gid &lt; m_upper) {  // if own</span>
+<span class="lineNum">     396 </span>                :<span class="lineNoCov">          0 :           m_rowimport[ fromch ].push_back( gid );</span>
+<span class="lineNum">     397 </span>                :<span class="lineNoCov">          0 :           m_row.insert( gid );</span>
+<span class="lineNum">     398 </span>                :<span class="lineNoCov">          0 :         } else exp[ pe(gid) ].insert( gid );</span>
+<span class="lineNum">     399 </span>                :            :       }
+<span class="lineNum">     400 </span>                :            :       // Export non-owned parts to fellow branches that own them
+<span class="lineNum">     401 </span>                :<span class="lineNoCov">          0 :       m_nperow += exp.size();</span>
+<span class="lineNum">     402 </span>                :<span class="lineNoCov">          0 :       for (const auto&amp; p : exp) {</span>
+<span class="lineNum">     403 </span>                :<span class="lineNoCov">          0 :         auto tope = static_cast&lt; int &gt;( p.first );</span>
+<span class="lineNum">     404 </span>                :<span class="lineNoCov">          0 :         Group::thisProxy[ tope ].addrow( fromch, CkMyPe(), p.second );</span>
+<span class="lineNum">     405 </span>                :            :       }
+<span class="lineNum">     406 </span>                :<span class="lineNoCov">          0 :       checkifrowcomplete();</span>
+<span class="lineNum">     407 </span>                :<span class="lineNoCov">          0 :     }</span>
+<span class="lineNum">     408 </span>                :            :     //! Receive global row ids from fellow group branches
+<span class="lineNum">     409 </span>                :            :     //! \param[in] fromch Charm chare array index contribution coming from
+<a name="410"><span class="lineNum">     410 </span>                :            :     //! \param[in] frompe PE contribution coming from</a>
+<span class="lineNum">     411 </span>                :            :     //! \param[in] row Global mesh point (row) indices received
+<span class="lineNum">     412 </span>                :<span class="lineNoCov">          0 :     void addrow( int fromch, int frompe, const std::set&lt; std::size_t &gt;&amp; row ) {</span>
+<span class="lineNum">     413 </span>                :<span class="lineNoCov">          0 :       for (auto r : row) {</span>
+<span class="lineNum">     414 </span>                :<span class="lineNoCov">          0 :         m_rowimport[ fromch ].push_back( r );</span>
+<span class="lineNum">     415 </span>                :<span class="lineNoCov">          0 :         m_row.insert( r );</span>
+<span class="lineNum">     416 </span>                :            :       }
+<span class="lineNum">     417 </span>                :<span class="lineNoCov">          0 :       Group::thisProxy[ frompe ].recrow();</span>
+<a name="418"><span class="lineNum">     418 </span>                :<span class="lineNoCov">          0 :     }</span></a>
+<span class="lineNum">     419 </span>                :            :     //! Acknowledge received row ids
+<span class="lineNum">     420 </span>                :<span class="lineNoCov">          0 :     void recrow() {</span>
+<span class="lineNum">     421 </span>                :<span class="lineNoCov">          0 :       --m_nperow;</span>
+<span class="lineNum">     422 </span>                :<span class="lineNoCov">          0 :       checkifrowcomplete();</span>
+<span class="lineNum">     423 </span>                :<span class="lineNoCov">          0 :     }</span>
+<span class="lineNum">     424 </span>                :            : 
+<span class="lineNum">     425 </span>                :            :     //! Chares contribute their solution nonzero values
+<span class="lineNum">     426 </span>                :            :     //! \param[in] fromch Charm chare array index contribution coming from
+<span class="lineNum">     427 </span>                :            :     //! \param[in] gid Global row indices of the vector contributed
+<span class="lineNum">     428 </span>                :            :     //! \param[in] solution Portion of the unknown/solution vector contributed
+<a name="429"><span class="lineNum">     429 </span>                :            :     //! \note This function does not have to be declared as a Charm++ entry</a>
+<span class="lineNum">     430 </span>                :            :     //!   method since it is always called by chares on the same PE.
+<span class="lineNum">     431 </span>                :<span class="lineNoCov">          0 :     void charesol( int fromch,</span>
+<span class="lineNum">     432 </span>                :            :                    const std::vector&lt; std::size_t &gt;&amp; gid,
+<span class="lineNum">     433 </span>                :            :                    const Fields&amp; solution )
+<span class="lineNum">     434 </span>                :            :     {
+<span class="lineNum">     435 </span>                :<span class="lineNoCov">          0 :       Assert( gid.size() == solution.nunk(),</span>
+<span class="lineNum">     436 </span>                :            :               &quot;Size of solution and row ID vectors must equal&quot; );
+<span class="lineNum">     437 </span>                :            :       // Store solution vector nonzero values owned and pack those to be
+<span class="lineNum">     438 </span>                :            :       // exported, also build import map used to test for completion
+<span class="lineNum">     439 </span>                :<span class="lineNoCov">          0 :       std::map&lt; int, std::map&lt; std::size_t, std::vector&lt; tk::real &gt; &gt; &gt; exp;</span>
+<span class="lineNum">     440 </span>                :<span class="lineNoCov">          0 :       for (std::size_t i=0; i&lt;gid.size(); ++i)</span>
+<span class="lineNum">     441 </span>                :<span class="lineNoCov">          0 :         if (gid[i] &gt;= m_lower &amp;&amp; gid[i] &lt; m_upper) {    // if own</span>
+<span class="lineNum">     442 </span>                :<span class="lineNoCov">          0 :           m_solimport[ fromch ].push_back( gid[i] );</span>
+<span class="lineNum">     443 </span>                :<span class="lineNoCov">          0 :           m_sol[ gid[i] ] = solution[i];</span>
+<span class="lineNum">     444 </span>                :            :         } else {
+<span class="lineNum">     445 </span>                :<span class="lineNoCov">          0 :           exp[ pe(gid[i]) ][ gid[i] ] = solution[i];</span>
+<span class="lineNum">     446 </span>                :            :         }
+<span class="lineNum">     447 </span>                :            :       // Export non-owned vector values to fellow branches that own them
+<span class="lineNum">     448 </span>                :<span class="lineNoCov">          0 :       for (const auto&amp; p : exp) {</span>
+<span class="lineNum">     449 </span>                :<span class="lineNoCov">          0 :         auto tope = static_cast&lt; int &gt;( p.first );</span>
+<span class="lineNum">     450 </span>                :<span class="lineNoCov">          0 :         Group::thisProxy[ tope ].addsol( fromch, p.second );</span>
+<span class="lineNum">     451 </span>                :            :       }
+<span class="lineNum">     452 </span>                :<span class="lineNoCov">          0 :       checkifsolcomplete();</span>
+<span class="lineNum">     453 </span>                :<span class="lineNoCov">          0 :     }</span>
+<span class="lineNum">     454 </span>                :            :     //! Receive solution vector nonzeros from fellow group branches
+<span class="lineNum">     455 </span>                :            :     //! \param[in] fromch Charm chare array index contribution coming from
+<a name="456"><span class="lineNum">     456 </span>                :            :     //! \param[in] solution Portion of the unknown/solution vector contributed,</a>
+<span class="lineNum">     457 </span>                :            :     //!   containing global row indices and values for all components
+<span class="lineNum">     458 </span>                :<span class="lineNoCov">          0 :     void addsol( int fromch,</span>
+<span class="lineNum">     459 </span>                :            :                  const std::map&lt; std::size_t,
+<span class="lineNum">     460 </span>                :            :                                  std::vector&lt; tk::real &gt; &gt;&amp; solution )
+<span class="lineNum">     461 </span>                :            :     {
+<span class="lineNum">     462 </span>                :<span class="lineNoCov">          0 :       for (const auto&amp; r : solution) {</span>
+<span class="lineNum">     463 </span>                :<span class="lineNoCov">          0 :         m_solimport[ fromch ].push_back( r.first );</span>
+<span class="lineNum">     464 </span>                :<span class="lineNoCov">          0 :         m_sol[ r.first ] = r.second;</span>
+<span class="lineNum">     465 </span>                :            :       }
+<span class="lineNum">     466 </span>                :<span class="lineNoCov">          0 :       checkifsolcomplete();</span>
+<span class="lineNum">     467 </span>                :<span class="lineNoCov">          0 :     }</span>
+<span class="lineNum">     468 </span>                :            : 
+<span class="lineNum">     469 </span>                :            :     //! Chares contribute their matrix nonzero values
+<span class="lineNum">     470 </span>                :            :     //! \param[in] fromch Charm chare array index contribution coming from
+<span class="lineNum">     471 </span>                :            :     //! \param[in] gid Global row indices of the matrix chunk contributed
+<span class="lineNum">     472 </span>                :            :     //! \param[in] psup Points surrounding points using local indices. See also
+<span class="lineNum">     473 </span>                :            :     //!   tk::genPsup().
+<span class="lineNum">     474 </span>                :            :     //! \param[in] lhsd Portion of the left-hand side matrix contributed,
+<span class="lineNum">     475 </span>                :            :     //!   containing non-zero values (for all scalar components of the equations
+<span class="lineNum">     476 </span>                :            :     //!   solved) as a sparse matrix diagonal
+<span class="lineNum">     477 </span>                :            :     //! \param[in] lhso Portion of the left-hand side matrix contributed,
+<span class="lineNum">     478 </span>                :            :     //!   containing non-zero values (for all scalar components of the equations
+<span class="lineNum">     479 </span>                :            :     //!   solved) as a sparse matrix off-diagonal entries in compressed row
+<span class="lineNum">     480 </span>                :            :     //!   storage format
+<a name="481"><span class="lineNum">     481 </span>                :            :     //! \note This function does not have to be declared as a Charm++ entry</a>
+<span class="lineNum">     482 </span>                :            :     //!   method since it is always called by chares on the same PE.
+<span class="lineNum">     483 </span>                :<span class="lineNoCov">          0 :     void charelhs( int fromch,</span>
+<span class="lineNum">     484 </span>                :            :                    const std::vector&lt; std::size_t &gt;&amp; gid,
+<span class="lineNum">     485 </span>                :            :                    const std::pair&lt; std::vector&lt; std::size_t &gt;,
+<span class="lineNum">     486 </span>                :            :                                     std::vector&lt; std::size_t &gt; &gt;&amp; psup,
+<span class="lineNum">     487 </span>                :            :                    const tk::Fields&amp; lhsd,
+<span class="lineNum">     488 </span>                :            :                    const tk::Fields&amp; lhso )
+<span class="lineNum">     489 </span>                :            :     {
+<span class="lineNum">     490 </span>                :<span class="lineNoCov">          0 :       Assert( psup.second.size()-1 == gid.size(),</span>
+<span class="lineNum">     491 </span>                :            :               &quot;Number of mesh points and number of global IDs unequal&quot; );
+<span class="lineNum">     492 </span>                :<span class="lineNoCov">          0 :       Assert( psup.second.size()-1 == lhsd.nunk(),</span>
+<span class="lineNum">     493 </span>                :            :               &quot;Number of mesh points and number of diagonals unequal&quot; );
+<span class="lineNum">     494 </span>                :<span class="lineNoCov">          0 :       Assert( psup.first.size() == lhso.nunk(),</span>
+<span class="lineNum">     495 </span>                :            :               &quot;Number of off-diagonals and their number of indices unequal&quot; );
+<span class="lineNum">     496 </span>                :            :       // Store matrix nonzero values owned and pack those to be exported, also
+<span class="lineNum">     497 </span>                :            :       // build import map used to test for completion
+<span class="lineNum">     498 </span>                :            :       std::map&lt; int, std::map&lt; std::size_t,
+<span class="lineNum">     499 </span>                :            :                                std::map&lt; std::size_t,
+<span class="lineNum">     500 </span>                :<span class="lineNoCov">          0 :                                          std::vector&lt; tk::real &gt; &gt; &gt; &gt; exp;</span>
+<span class="lineNum">     501 </span>                :<span class="lineNoCov">          0 :       for (std::size_t i=0; i&lt;gid.size(); ++i)</span>
+<span class="lineNum">     502 </span>                :<span class="lineNoCov">          0 :         if (gid[i] &gt;= m_lower &amp;&amp; gid[i] &lt; m_upper) {  // if own</span>
+<span class="lineNum">     503 </span>                :<span class="lineNoCov">          0 :           m_lhsimport[ fromch ].push_back( gid[i] );</span>
+<span class="lineNum">     504 </span>                :<span class="lineNoCov">          0 :           auto&amp; row = m_lhs[ gid[i] ];</span>
+<span class="lineNum">     505 </span>                :<span class="lineNoCov">          0 :           row[ gid[i] ] += lhsd[i];</span>
+<span class="lineNum">     506 </span>                :<span class="lineNoCov">          0 :           for (auto j=psup.second[i]+1; j&lt;=psup.second[i+1]; ++j)</span>
+<span class="lineNum">     507 </span>                :<span class="lineNoCov">          0 :             row[ gid[ psup.first[j] ] ] += lhso[j];</span>
+<span class="lineNum">     508 </span>                :            :         } else {
+<span class="lineNum">     509 </span>                :<span class="lineNoCov">          0 :           auto&amp; row = exp[ pe(gid[i]) ][ gid[i] ];</span>
+<span class="lineNum">     510 </span>                :<span class="lineNoCov">          0 :           row[ gid[i] ] = lhsd[i];</span>
+<span class="lineNum">     511 </span>                :<span class="lineNoCov">          0 :           for (auto j=psup.second[i]+1; j&lt;=psup.second[i+1]; ++j)</span>
+<span class="lineNum">     512 </span>                :<span class="lineNoCov">          0 :             row[ gid[ psup.first[j] ] ] = lhso[j];</span>
+<span class="lineNum">     513 </span>                :            :         }
+<span class="lineNum">     514 </span>                :            :       // Export non-owned matrix rows values to fellow branches that own them
+<span class="lineNum">     515 </span>                :<span class="lineNoCov">          0 :       for (const auto&amp; p : exp)</span>
+<span class="lineNum">     516 </span>                :<span class="lineNoCov">          0 :         Group::thisProxy[ p.first ].addlhs( fromch, p.second );</span>
+<span class="lineNum">     517 </span>                :<span class="lineNoCov">          0 :       if (lhscomplete()) lhs_complete();</span>
+<span class="lineNum">     518 </span>                :<span class="lineNoCov">          0 :     }</span>
+<span class="lineNum">     519 </span>                :            :     //! Receive matrix nonzeros from fellow group branches
+<span class="lineNum">     520 </span>                :            :     //! \param[in] fromch Charm chare array index contribution coming from
+<a name="521"><span class="lineNum">     521 </span>                :            :     //! \param[in] l Portion of the left-hand side matrix contributed,</a>
+<span class="lineNum">     522 </span>                :            :     //!   containing global row and column indices and non-zero values
+<span class="lineNum">     523 </span>                :<span class="lineNoCov">          0 :     void addlhs( int fromch,</span>
+<span class="lineNum">     524 </span>                :            :                  const std::map&lt; std::size_t,
+<span class="lineNum">     525 </span>                :            :                                  std::map&lt; std::size_t,
+<span class="lineNum">     526 </span>                :            :                                            std::vector&lt; tk::real &gt; &gt; &gt;&amp; l )
+<span class="lineNum">     527 </span>                :            :     {
+<span class="lineNum">     528 </span>                :<span class="lineNoCov">          0 :       for (const auto&amp; r : l) {</span>
+<span class="lineNum">     529 </span>                :<span class="lineNoCov">          0 :         m_lhsimport[ fromch ].push_back( r.first );</span>
+<span class="lineNum">     530 </span>                :<span class="lineNoCov">          0 :         auto&amp; row = m_lhs[ r.first ];</span>
+<span class="lineNum">     531 </span>                :<span class="lineNoCov">          0 :         for (const auto&amp; c : r.second) row[ c.first ] += c.second;</span>
+<span class="lineNum">     532 </span>                :            :       }
+<span class="lineNum">     533 </span>                :<span class="lineNoCov">          0 :       if (lhscomplete()) lhs_complete();</span>
+<span class="lineNum">     534 </span>                :<span class="lineNoCov">          0 :     }</span>
+<span class="lineNum">     535 </span>                :            : 
+<span class="lineNum">     536 </span>                :            :     //! Chares contribute their rhs nonzero values
+<span class="lineNum">     537 </span>                :            :     //! \param[in] fromch Charm chare array index contribution coming from
+<span class="lineNum">     538 </span>                :            :     //! \param[in] gid Global row indices of the vector contributed
+<span class="lineNum">     539 </span>                :            :     //! \param[in] r Portion of the right-hand side vector contributed
+<a name="540"><span class="lineNum">     540 </span>                :            :     //! \note This function does not have to be declared as a Charm++ entry</a>
+<span class="lineNum">     541 </span>                :            :     //!   method since it is always called by chares on the same PE.
+<span class="lineNum">     542 </span>                :<span class="lineNoCov">          0 :     void charerhs( int fromch,</span>
+<span class="lineNum">     543 </span>                :            :                    const std::vector&lt; std::size_t &gt;&amp; gid,
+<span class="lineNum">     544 </span>                :            :                    const Fields&amp; r )
+<span class="lineNum">     545 </span>                :            :     {
+<span class="lineNum">     546 </span>                :<span class="lineNoCov">          0 :       Assert( gid.size() == r.nunk(),</span>
+<span class="lineNum">     547 </span>                :            :               &quot;Size of right-hand side and row ID vectors must equal&quot; );
+<span class="lineNum">     548 </span>                :            :       // Store+add vector of nonzero values owned and pack those to be exported
+<span class="lineNum">     549 </span>                :<span class="lineNoCov">          0 :       std::map&lt; int, std::map&lt; std::size_t, std::vector&lt; tk::real &gt; &gt; &gt; exp;</span>
+<span class="lineNum">     550 </span>                :<span class="lineNoCov">          0 :       for (std::size_t i=0; i&lt;gid.size(); ++i)</span>
+<span class="lineNum">     551 </span>                :<span class="lineNoCov">          0 :         if (gid[i] &gt;= m_lower &amp;&amp; gid[i] &lt; m_upper) {  // if own</span>
+<span class="lineNum">     552 </span>                :<span class="lineNoCov">          0 :           m_rhsimport[ fromch ].push_back( gid[i] );</span>
+<span class="lineNum">     553 </span>                :<span class="lineNoCov">          0 :           m_rhs[ gid[i] ] += r[i];</span>
+<span class="lineNum">     554 </span>                :            :         } else
+<span class="lineNum">     555 </span>                :<span class="lineNoCov">          0 :           exp[ pe(gid[i]) ][ gid[i] ] = r[i];</span>
+<span class="lineNum">     556 </span>                :            :       // Export non-owned vector values to fellow branches that own them
+<span class="lineNum">     557 </span>                :<span class="lineNoCov">          0 :       for (const auto&amp; p : exp) {</span>
+<span class="lineNum">     558 </span>                :<span class="lineNoCov">          0 :         auto tope = static_cast&lt; int &gt;( p.first );</span>
+<span class="lineNum">     559 </span>                :<span class="lineNoCov">          0 :         Group::thisProxy[ tope ].addrhs( fromch, p.second );</span>
+<span class="lineNum">     560 </span>                :            :       }
+<span class="lineNum">     561 </span>                :<span class="lineNoCov">          0 :       if (rhscomplete()) rhs_complete();</span>
+<span class="lineNum">     562 </span>                :<span class="lineNoCov">          0 :     }</span>
+<span class="lineNum">     563 </span>                :            :     //! Receive+add right-hand side vector nonzeros from fellow group branches
+<span class="lineNum">     564 </span>                :            :     //! \param[in] fromch Charm chare array index contribution coming from
+<a name="565"><span class="lineNum">     565 </span>                :            :     //! \param[in] r Portion of the right-hand side vector contributed,</a>
+<span class="lineNum">     566 </span>                :            :     //!   containing global row indices and values
+<span class="lineNum">     567 </span>                :<span class="lineNoCov">          0 :     void addrhs( int fromch,</span>
+<span class="lineNum">     568 </span>                :            :                  const std::map&lt; std::size_t, std::vector&lt; tk::real &gt; &gt;&amp; r ) {
+<span class="lineNum">     569 </span>                :<span class="lineNoCov">          0 :       for (const auto&amp; l : r) {</span>
+<span class="lineNum">     570 </span>                :<span class="lineNoCov">          0 :         m_rhsimport[ fromch ].push_back( l.first );</span>
+<span class="lineNum">     571 </span>                :<span class="lineNoCov">          0 :         m_rhs[ l.first ] += l.second;</span>
+<span class="lineNum">     572 </span>                :            :       }
+<span class="lineNum">     573 </span>                :<span class="lineNoCov">          0 :       if (rhscomplete()) rhs_complete();</span>
+<span class="lineNum">     574 </span>                :<span class="lineNoCov">          0 :     }</span>
+<span class="lineNum">     575 </span>                :            : 
+<span class="lineNum">     576 </span>                :            :     //! Chares contribute to the rhs of the low-order linear system
+<span class="lineNum">     577 </span>                :            :     //! \param[in] fromch Charm chare array index contribution coming from
+<span class="lineNum">     578 </span>                :            :     //! \param[in] gid Global row indices of the vector contributed
+<span class="lineNum">     579 </span>                :            :     //! \param[in] lowrhs Portion of the low-order rhs vector contributed
+<a name="580"><span class="lineNum">     580 </span>                :            :     //! \note This function does not have to be declared as a Charm++ entry</a>
+<span class="lineNum">     581 </span>                :            :     //!   method since it is always called by chares on the same PE.
+<span class="lineNum">     582 </span>                :<span class="lineNoCov">          0 :     void charelowrhs( int fromch,</span>
+<span class="lineNum">     583 </span>                :            :                       const std::vector&lt; std::size_t &gt;&amp; gid,
+<span class="lineNum">     584 </span>                :            :                       const Fields&amp; lowrhs )
+<span class="lineNum">     585 </span>                :            :     {
+<span class="lineNum">     586 </span>                :            :       using tk::operator+=;
+<span class="lineNum">     587 </span>                :<span class="lineNoCov">          0 :       Assert( gid.size() == lowrhs.nunk(),</span>
+<span class="lineNum">     588 </span>                :            :               &quot;Size of mass diffusion rhs and row ID vectors must equal&quot; );
+<span class="lineNum">     589 </span>                :            :       // Store+add vector of nonzero values owned and pack those to be exported
+<span class="lineNum">     590 </span>                :<span class="lineNoCov">          0 :       std::map&lt; int, std::map&lt; std::size_t, std::vector&lt; tk::real &gt; &gt; &gt; exp;</span>
+<span class="lineNum">     591 </span>                :<span class="lineNoCov">          0 :       for (std::size_t i=0; i&lt;gid.size(); ++i)</span>
+<span class="lineNum">     592 </span>                :<span class="lineNoCov">          0 :         if (gid[i] &gt;= m_lower &amp;&amp; gid[i] &lt; m_upper) {  // if own</span>
+<span class="lineNum">     593 </span>                :<span class="lineNoCov">          0 :           m_lowrhsimport[ fromch ].push_back( gid[i] );</span>
+<span class="lineNum">     594 </span>                :<span class="lineNoCov">          0 :           m_lowrhs[ gid[i] ] += lowrhs[i];</span>
+<span class="lineNum">     595 </span>                :            :         } else
+<span class="lineNum">     596 </span>                :<span class="lineNoCov">          0 :           exp[ pe(gid[i]) ][ gid[i] ] = lowrhs[i];</span>
+<span class="lineNum">     597 </span>                :            :       // Export non-owned vector values to fellow branches that own them
+<span class="lineNum">     598 </span>                :<span class="lineNoCov">          0 :       for (const auto&amp; p : exp) {</span>
+<span class="lineNum">     599 </span>                :<span class="lineNoCov">          0 :         auto tope = static_cast&lt; int &gt;( p.first );</span>
+<span class="lineNum">     600 </span>                :<span class="lineNoCov">          0 :         Group::thisProxy[ tope ].addlowrhs( fromch, p.second );</span>
+<span class="lineNum">     601 </span>                :            :       }
+<span class="lineNum">     602 </span>                :<span class="lineNoCov">          0 :       if (lowrhscomplete()) lowrhs_complete();</span>
+<span class="lineNum">     603 </span>                :<span class="lineNoCov">          0 :     }</span>
+<span class="lineNum">     604 </span>                :            :     //! Receive+add low-order rhs vector nonzeros from fellow group branches
+<span class="lineNum">     605 </span>                :            :     //! \param[in] fromch Charm chare array index contribution coming from
+<a name="606"><span class="lineNum">     606 </span>                :            :     //! \param[in] lowrhs Portion of the low-order rhs vector contributed,</a>
+<span class="lineNum">     607 </span>                :            :     //!   containing global row indices and values
+<span class="lineNum">     608 </span>                :<span class="lineNoCov">          0 :     void addlowrhs( int fromch, const std::map&lt; std::size_t,</span>
+<span class="lineNum">     609 </span>                :            :                                    std::vector&lt; tk::real &gt; &gt;&amp; lowrhs )
+<span class="lineNum">     610 </span>                :            :     {
+<span class="lineNum">     611 </span>                :            :       using tk::operator+=;
+<span class="lineNum">     612 </span>                :<span class="lineNoCov">          0 :       for (const auto&amp; r : lowrhs) {</span>
+<span class="lineNum">     613 </span>                :<span class="lineNoCov">          0 :         m_lowrhsimport[ fromch ].push_back( r.first );</span>
+<span class="lineNum">     614 </span>                :<span class="lineNoCov">          0 :         m_lowrhs[ r.first ] += r.second;</span>
+<span class="lineNum">     615 </span>                :            :       }
+<span class="lineNum">     616 </span>                :<span class="lineNoCov">          0 :       if (lowrhscomplete()) lowrhs_complete();</span>
+<span class="lineNum">     617 </span>                :<span class="lineNoCov">          0 :     }</span>
+<span class="lineNum">     618 </span>                :            : 
+<span class="lineNum">     619 </span>                :            :     //! Chares contribute to the lhs of the low-order linear system
+<span class="lineNum">     620 </span>                :            :     //! \param[in] fromch Charm chare array the contribution coming from
+<span class="lineNum">     621 </span>                :            :     //! \param[in] gid Global row indices of the vector contributed
+<span class="lineNum">     622 </span>                :            :     //! \param[in] lowlhs Portion of the low-order lhs vector contributed
+<a name="623"><span class="lineNum">     623 </span>                :            :     //! \note This function does not have to be declared as a Charm++ entry</a>
+<span class="lineNum">     624 </span>                :            :     //!   method since it is always called by chares on the same PE.
+<span class="lineNum">     625 </span>                :<span class="lineNoCov">          0 :     void charelowlhs( int fromch,</span>
+<span class="lineNum">     626 </span>                :            :                       const std::vector&lt; std::size_t &gt;&amp; gid,
+<span class="lineNum">     627 </span>                :            :                       const Fields&amp; lowlhs )
+<span class="lineNum">     628 </span>                :            :     {
+<span class="lineNum">     629 </span>                :            :       using tk::operator+=;
+<span class="lineNum">     630 </span>                :<span class="lineNoCov">          0 :       Assert( gid.size() == lowlhs.nunk(),</span>
+<span class="lineNum">     631 </span>                :            :               &quot;Size of mass diffusion lhs and row ID vectors must equal&quot; );
+<span class="lineNum">     632 </span>                :            :       // Store+add vector of nonzero values owned and pack those to be exported
+<span class="lineNum">     633 </span>                :<span class="lineNoCov">          0 :       std::map&lt; int, std::map&lt; std::size_t, std::vector&lt; tk::real &gt; &gt; &gt; exp;</span>
+<span class="lineNum">     634 </span>                :<span class="lineNoCov">          0 :       for (std::size_t i=0; i&lt;gid.size(); ++i)</span>
+<span class="lineNum">     635 </span>                :<span class="lineNoCov">          0 :         if (gid[i] &gt;= m_lower &amp;&amp; gid[i] &lt; m_upper) {  // if own</span>
+<span class="lineNum">     636 </span>                :<span class="lineNoCov">          0 :           m_lowlhsimport[ fromch ].push_back( gid[i] );</span>
+<span class="lineNum">     637 </span>                :<span class="lineNoCov">          0 :           m_lowlhs[ gid[i] ] += lowlhs[i];</span>
+<span class="lineNum">     638 </span>                :            :         } else
+<span class="lineNum">     639 </span>                :<span class="lineNoCov">          0 :           exp[ pe(gid[i]) ][ gid[i] ] = lowlhs[i];</span>
+<span class="lineNum">     640 </span>                :            :       // Export non-owned vector values to fellow branches that own them
+<span class="lineNum">     641 </span>                :<span class="lineNoCov">          0 :       for (const auto&amp; p : exp) {</span>
+<span class="lineNum">     642 </span>                :<span class="lineNoCov">          0 :         auto tope = static_cast&lt; int &gt;( p.first );</span>
+<span class="lineNum">     643 </span>                :<span class="lineNoCov">          0 :         Group::thisProxy[ tope ].addlowlhs( fromch, p.second );</span>
+<span class="lineNum">     644 </span>                :            :       }
+<span class="lineNum">     645 </span>                :<span class="lineNoCov">          0 :       if (lowlhscomplete()) lowlhs_complete();</span>
+<span class="lineNum">     646 </span>                :<span class="lineNoCov">          0 :     }</span>
+<span class="lineNum">     647 </span>                :            :     //! \brief Receive and add lhs vector to the low-order system from fellow
+<span class="lineNum">     648 </span>                :            :     //!   group branches
+<span class="lineNum">     649 </span>                :            :     //! \param[in] fromch Charm chare array index contribution coming from
+<a name="650"><span class="lineNum">     650 </span>                :            :     //! \param[in] lowlhs Portion of the lhs vector contributed to the low-order</a>
+<span class="lineNum">     651 </span>                :            :     //!   linear system, containing global row indices and values
+<span class="lineNum">     652 </span>                :<span class="lineNoCov">          0 :     void addlowlhs( int fromch, const std::map&lt; std::size_t,</span>
+<span class="lineNum">     653 </span>                :            :                                   std::vector&lt; tk::real &gt; &gt;&amp; lowlhs )
+<span class="lineNum">     654 </span>                :            :     {
+<span class="lineNum">     655 </span>                :            :       using tk::operator+=;
+<span class="lineNum">     656 </span>                :<span class="lineNoCov">          0 :       for (const auto&amp; r : lowlhs) {</span>
+<span class="lineNum">     657 </span>                :<span class="lineNoCov">          0 :         m_lowlhsimport[ fromch ].push_back( r.first );</span>
+<span class="lineNum">     658 </span>                :<span class="lineNoCov">          0 :         m_lowlhs[ r.first ] += r.second;</span>
+<span class="lineNum">     659 </span>                :            :       }
+<span class="lineNum">     660 </span>                :<span class="lineNoCov">          0 :       if (lowlhscomplete()) lowlhs_complete();</span>
+<span class="lineNum">     661 </span>                :<span class="lineNoCov">          0 :     }</span>
+<span class="lineNum">     662 </span>                :            : 
+<span class="lineNum">     663 </span>                :            :     //! Assert that all global row indices have been received on my PE
+<span class="lineNum">     664 </span>                :            :     //! \details The assert consists of three necessary conditions, which
+<a name="665"><span class="lineNum">     665 </span>                :            :     //!   together comprise the sufficient condition that all global row indices</a>
+<span class="lineNum">     666 </span>                :            :     //!   have been received owned by this PE.
+<span class="lineNum">     667 </span>                :<span class="lineNoCov">          0 :     void rowsreceived() {</span>
+<span class="lineNum">     668 </span>                :<span class="lineNoCov">          0 :       Assert( // 1. have heard from every chare on my PE</span>
+<span class="lineNum">     669 </span>                :            :               m_myworker.size() == m_nchare &amp;&amp;
+<span class="lineNum">     670 </span>                :            :               // 2. number of rows equals that of the expected on my PE
+<span class="lineNum">     671 </span>                :            :               m_row.size() == m_upper-m_lower &amp;&amp;
+<span class="lineNum">     672 </span>                :            :               // 3. all fellow PEs have received my row ids contribution
+<span class="lineNum">     673 </span>                :            :               m_nperow == 0,
+<span class="lineNum">     674 </span>                :            :               // if any of the above is unsatisfied, the row ids are incomplete
+<span class="lineNum">     675 </span>                :            :               &quot;Row ids are incomplete on PE &quot; + std::to_string(CkMyPe()) );
+<span class="lineNum">     676 </span>                :            :       // now that the global row ids are complete, build Hypre data from it
+<span class="lineNum">     677 </span>                :<span class="lineNoCov">          0 :       hyprerow();</span>
+<span class="lineNum">     678 </span>                :<span class="lineNoCov">          0 :     }</span>
+<span class="lineNum">     679 </span>                :            : 
+<span class="lineNum">     680 </span>                :            :     //! Chares query side set info
+<a name="681"><span class="lineNum">     681 </span>                :            :     //! \note This function does not have to be declared as a Charm++ entry</a>
+<span class="lineNum">     682 </span>                :            :     //!   method since it is always called by chares on the same PE.
+<span class="lineNum">     683 </span>                :<span class="lineNoCov">          0 :     const std::map&lt; int, std::vector&lt; std::size_t &gt; &gt;&amp; side() { return m_side; }</span>
+<span class="lineNum">     684 </span>                :            : 
+<span class="lineNum">     685 </span>                :            :     //! Chares query Dirichlet boundary conditions
+<span class="lineNum">     686 </span>                :            :     //! \note This function does not have to be declared as a Charm++ entry
+<span class="lineNum">     687 </span>                :            :     //!   method since it is always called by chares on the same PE.
+<a name="688"><span class="lineNum">     688 </span>                :            :     const std::unordered_map&lt; std::size_t,</a>
+<span class="lineNum">     689 </span>                :            :             std::vector&lt; std::pair&lt; bool, tk::real &gt; &gt; &gt;&amp;
+<span class="lineNum">     690 </span>                :<span class="lineNoCov">          0 :       dirbc() { return m_bc; }</span>
+<span class="lineNum">     691 </span>                :            : 
+<span class="lineNum">     692 </span>                :            :     //! \brief Chares contribute their global row ids and associated Dirichlet
+<span class="lineNum">     693 </span>                :            :     //!   boundary condition values at which they set BCs
+<span class="lineNum">     694 </span>                :            :     //! \param[in] bc Vector of pairs of bool and BC value (BC vector)
+<span class="lineNum">     695 </span>                :            :     //!   associated to global node IDs at which the boundary condition is set.
+<span class="lineNum">     696 </span>                :            :     //!   Here the bool indicates whether the BC value is set at the given node
+<span class="lineNum">     697 </span>                :            :     //!   by the user. The size of the vectors is the number of PDEs integrated
+<span class="lineNum">     698 </span>                :            :     //!   times the number of scalar components in all PDEs.
+<a name="699"><span class="lineNum">     699 </span>                :            :     //! \note This function does not have to be declared as a Charm++ entry</a>
+<span class="lineNum">     700 </span>                :            :     //!   method since it is always called by chares on the same PE.
+<span class="lineNum">     701 </span>                :<span class="lineNoCov">          0 :     void charebc( const std::unordered_map&lt; std::size_t,</span>
+<span class="lineNum">     702 </span>                :            :                           std::vector&lt; std::pair&lt; bool, tk::real &gt; &gt; &gt;&amp; bc )
+<span class="lineNum">     703 </span>                :            :     {
+<span class="lineNum">     704 </span>                :            :       // Associate BC vectors to mesh nodes owned
+<span class="lineNum">     705 </span>                :<span class="lineNoCov">          0 :       if (!bc.empty())  // only if chare has anything to offer</span>
+<span class="lineNum">     706 </span>                :<span class="lineNoCov">          0 :         for (const auto&amp; n : bc) {</span>
+<span class="lineNum">     707 </span>                :<span class="lineNoCov">          0 :           Assert( n.second.size() == m_ncomp, &quot;The total number of scalar &quot;</span>
+<span class="lineNum">     708 </span>                :            :           &quot;components does not equal that of set in the BC vector.&quot; );
+<span class="lineNum">     709 </span>                :<span class="lineNoCov">          0 :           m_bc[ n.first ] = n.second;</span>
+<span class="lineNum">     710 </span>                :            :         }
+<span class="lineNum">     711 </span>                :            :       // Forward all BC vectors received to fellow branches
+<span class="lineNum">     712 </span>                :<span class="lineNoCov">          0 :       if (++m_nchbc == m_nchare) {</span>
+<span class="lineNum">     713 </span>                :<span class="lineNoCov">          0 :         auto stream = tk::serialize( m_bc );</span>
+<span class="lineNum">     714 </span>                :<span class="lineNoCov">          0 :         Group::contribute( stream.first, stream.second.get(), BCMapMerger,</span>
+<span class="lineNum">     715 </span>                :<span class="lineNoCov">          0 :                       CkCallback(GroupIdx::addbc(nullptr),Group::thisProxy) );</span>
+<span class="lineNum">     716 </span>                :            :       }
+<a name="717"><span class="lineNum">     717 </span>                :<span class="lineNoCov">          0 :     }</span></a>
+<span class="lineNum">     718 </span>                :            :     // Reduction target collecting the final aggregated BC node list map
+<span class="lineNum">     719 </span>                :<span class="lineNoCov">          0 :     void addbc( CkReductionMsg* msg ) {</span>
+<span class="lineNum">     720 </span>                :<span class="lineNoCov">          0 :       PUP::fromMem creator( msg-&gt;getData() );</span>
+<span class="lineNum">     721 </span>                :<span class="lineNoCov">          0 :       creator | m_bc;</span>
+<span class="lineNum">     722 </span>                :<span class="lineNoCov">          0 :       delete msg;</span>
+<span class="lineNum">     723 </span>                :            :       //if (m_feedback) m_host.pebccomplete();    // send progress report to host
+<span class="lineNum">     724 </span>                :<span class="lineNoCov">          0 :       bc_complete_lhs(); bc_complete_rhs();</span>
+<span class="lineNum">     725 </span>                :<span class="lineNoCov">          0 :       m_nchbc = 0;</span>
+<span class="lineNum">     726 </span>                :<span class="lineNoCov">          0 :     }</span>
+<span class="lineNum">     727 </span>                :            : 
+<span class="lineNum">     728 </span>                :            :     //! \brief Chares contribute their numerical and analytical solutions
+<span class="lineNum">     729 </span>                :            :     //!   nonzero values for computing diagnostics
+<span class="lineNum">     730 </span>                :            :     //! \param[in] fromch Charm chare array index contribution coming from
+<span class="lineNum">     731 </span>                :            :     //! \param[in] gid Global row indices of the vector contributed
+<span class="lineNum">     732 </span>                :            :     //! \param[in] u Portion of the numerical unknown/solution vector
+<span class="lineNum">     733 </span>                :            :     //! \param[in] a Portion of the analytical solution vector
+<span class="lineNum">     734 </span>                :            :     //! \param[in] v Vector of nodal volumes
+<a name="735"><span class="lineNum">     735 </span>                :            :     //! \note This function does not have to be declared as a Charm++ entry</a>
+<span class="lineNum">     736 </span>                :            :     //!   method since it is always called by chares on the same PE.
+<span class="lineNum">     737 </span>                :<span class="lineNoCov">          0 :     void charediag( int fromch,</span>
+<span class="lineNum">     738 </span>                :            :                     const std::vector&lt; std::size_t &gt;&amp; gid,
+<span class="lineNum">     739 </span>                :            :                     const Fields&amp; u,
+<span class="lineNum">     740 </span>                :            :                     const Fields&amp; a,
+<span class="lineNum">     741 </span>                :            :                     const std::vector&lt; tk::real &gt;&amp; v )
+<span class="lineNum">     742 </span>                :            :     {
+<span class="lineNum">     743 </span>                :<span class="lineNoCov">          0 :       Assert( gid.size() == u.nunk(),</span>
+<span class="lineNum">     744 </span>                :            :               &quot;Size of numerical solution and row ID vectors must equal&quot; );
+<span class="lineNum">     745 </span>                :            :       // Store numerical and analytical solution vector nonzero values owned and
+<span class="lineNum">     746 </span>                :            :       // pack those to be exported, also build import map used to test for
+<span class="lineNum">     747 </span>                :            :       // completion
+<span class="lineNum">     748 </span>                :            :       std::map&lt; int, std::map&lt; std::size_t,
+<span class="lineNum">     749 </span>                :<span class="lineNoCov">          0 :                        std::vector&lt; std::vector&lt; tk::real &gt; &gt; &gt; &gt; exp;</span>
+<span class="lineNum">     750 </span>                :<span class="lineNoCov">          0 :       for (std::size_t i=0; i&lt;gid.size(); ++i)</span>
+<span class="lineNum">     751 </span>                :<span class="lineNoCov">          0 :         if (gid[i] &gt;= m_lower &amp;&amp; gid[i] &lt; m_upper) {    // if own</span>
+<span class="lineNum">     752 </span>                :<span class="lineNoCov">          0 :           m_diagimport[ fromch ].push_back( gid[i] );</span>
+<span class="lineNum">     753 </span>                :<span class="lineNoCov">          0 :           updateDiag( gid[i], u[i], a[i], v[i] );</span>
+<span class="lineNum">     754 </span>                :            :         } else
+<span class="lineNum">     755 </span>                :<span class="lineNoCov">          0 :           exp[ pe(gid[i]) ][ gid[i] ] = {{ u[i],</span>
+<span class="lineNum">     756 </span>                :            :                                            a[i],
+<span class="lineNum">     757 </span>                :            :                                            std::vector&lt;tk::real&gt;(1,v[i]) }};
+<span class="lineNum">     758 </span>                :            :       // Export non-owned vector values to fellow branches that own them
+<span class="lineNum">     759 </span>                :<span class="lineNoCov">          0 :       for (const auto&amp; p : exp) {</span>
+<span class="lineNum">     760 </span>                :<span class="lineNoCov">          0 :         auto tope = static_cast&lt; int &gt;( p.first );</span>
+<span class="lineNum">     761 </span>                :<span class="lineNoCov">          0 :         Group::thisProxy[ tope ].adddiag( fromch, p.second );</span>
+<span class="lineNum">     762 </span>                :            :       }
+<span class="lineNum">     763 </span>                :<span class="lineNoCov">          0 :       if (diagcomplete()) diagnostics();</span>
+<span class="lineNum">     764 </span>                :<span class="lineNoCov">          0 :     }</span>
+<span class="lineNum">     765 </span>                :            :     //! \brief Receive numerical and analytical solution vector nonzeros from
+<span class="lineNum">     766 </span>                :            :     //!   fellow group branches for computing diagnostics
+<span class="lineNum">     767 </span>                :            :     //! \param[in] fromch Charm chare array index contribution coming from
+<span class="lineNum">     768 </span>                :            :     //! \param[in] solution Portion of the solution vector contributed,
+<a name="769"><span class="lineNum">     769 </span>                :            :     //!   containing global row indices and values for all components of the</a>
+<span class="lineNum">     770 </span>                :            :     //!   numerical and analytical solutions (if available)
+<span class="lineNum">     771 </span>                :<span class="lineNoCov">          0 :     void adddiag( int fromch,</span>
+<span class="lineNum">     772 </span>                :            :                   std::map&lt; std::size_t,
+<span class="lineNum">     773 </span>                :            :                             std::vector&lt; std::vector&lt; tk::real &gt; &gt; &gt;&amp; solution )
+<span class="lineNum">     774 </span>                :            :     {
+<span class="lineNum">     775 </span>                :<span class="lineNoCov">          0 :       for (auto&amp;&amp; r : solution) {</span>
+<span class="lineNum">     776 </span>                :<span class="lineNoCov">          0 :         m_diagimport[ fromch ].push_back( r.first );</span>
+<span class="lineNum">     777 </span>                :<span class="lineNoCov">          0 :         updateDiag( r.first, std::move(r.second[0]), std::move(r.second[1]),</span>
+<span class="lineNum">     778 </span>                :<span class="lineNoCov">          0 :                     r.second[2][0] );</span>
+<span class="lineNum">     779 </span>                :            :       }
+<span class="lineNum">     780 </span>                :<span class="lineNoCov">          0 :       if (diagcomplete()) diagnostics();</span>
+<span class="lineNum">     781 </span>                :<span class="lineNoCov">          0 :     }</span>
+<span class="lineNum">     782 </span>                :            : 
+<span class="lineNum">     783 </span>                :            :     //! Check if our portion of the right-hand side vector values is complete
+<a name="784"><span class="lineNum">     784 </span>                :            :     //! \return True if all parts of the right-hand side vector have been</a>
+<span class="lineNum">     785 </span>                :            :     //!   received
+<span class="lineNum">     786 </span>                :<span class="lineNoCov">          0 :     bool rhscomplete() const { return m_rhsimport == m_rowimport; }</span>
+<a name="787"><span class="lineNum">     787 </span>                :            :     //! Check if our portion of the low-order rhs vector values is complete</a>
+<span class="lineNum">     788 </span>                :            :     //! \return True if all parts of the low-order rhs vector have been received
+<span class="lineNum">     789 </span>                :<span class="lineNoCov">          0 :     bool lowrhscomplete() const { return m_lowrhsimport == m_rowimport; }</span>
+<a name="790"><span class="lineNum">     790 </span>                :            :     //! Check if our portion of the low-order lhs vector values is complete</a>
+<span class="lineNum">     791 </span>                :            :     //! \return True if all parts of the low-order lhs vector have been received
+<span class="lineNum">     792 </span>                :<span class="lineNoCov">          0 :     bool lowlhscomplete() const { return m_lowlhsimport == m_rowimport; }</span>
+<span class="lineNum">     793 </span>                :            : 
+<span class="lineNum">     794 </span>                :            :     //! Return processing element for global mesh row id
+<span class="lineNum">     795 </span>                :            :     //! \param[in] gid Global mesh point (matrix or vector row) id
+<span class="lineNum">     796 </span>                :            :     //! \details First we attempt to the point index in the cache. If that
+<span class="lineNum">     797 </span>                :            :     //!   fails, we resort to a linear search across the division map. Once the
+<span class="lineNum">     798 </span>                :            :     //!   PE is found, we store it in the cache, so next time the search is
+<a name="799"><span class="lineNum">     799 </span>                :            :     //!   quicker. This procedure must find the PE for the id.</a>
+<span class="lineNum">     800 </span>                :            :     //! \return PE that owns global row id
+<span class="lineNum">     801 </span>                :<span class="lineNoCov">          0 :     int pe( std::size_t gid ) {</span>
+<span class="lineNum">     802 </span>                :<span class="lineNoCov">          0 :       int p = -1;</span>
+<span class="lineNum">     803 </span>                :<span class="lineNoCov">          0 :       auto it = m_pe.find( gid );</span>
+<span class="lineNum">     804 </span>                :<span class="lineNoCov">          0 :       if (it != end(m_pe))</span>
+<span class="lineNum">     805 </span>                :<span class="lineNoCov">          0 :         p = it-&gt;second;</span>
+<span class="lineNum">     806 </span>                :            :       else
+<span class="lineNum">     807 </span>                :<span class="lineNoCov">          0 :         for (const auto&amp; d : m_div)</span>
+<span class="lineNum">     808 </span>                :<span class="lineNoCov">          0 :           if (gid &gt;= d.first.first &amp;&amp; gid &lt; d.first.second)</span>
+<span class="lineNum">     809 </span>                :<span class="lineNoCov">          0 :             p = m_pe[ gid ] = d.second;</span>
+<span class="lineNum">     810 </span>                :<span class="lineNoCov">          0 :       Assert( p &gt;= 0, &quot;PE not found for node id &quot; + std::to_string(gid) );</span>
+<span class="lineNum">     811 </span>                :<span class="lineNoCov">          0 :       Assert( p &lt; CkNumPes(), &quot;Assigning to nonexistent PE&quot; );</span>
+<span class="lineNum">     812 </span>                :<span class="lineNoCov">          0 :       return p;</span>
+<span class="lineNum">     813 </span>                :            :     }
+<span class="lineNum">     814 </span>                :            : 
+<span class="lineNum">     815 </span>                :            :   private:
+<span class="lineNum">     816 </span>                :            :     //! Charm++ callbacks associated to compile-time tags
+<span class="lineNum">     817 </span>                :            :     tk::tuple::tagged_tuple&lt;
+<span class="lineNum">     818 </span>                :            :         tag::row,   CkCallback
+<span class="lineNum">     819 </span>                :            :       , tag::dt,    CkCallback
+<span class="lineNum">     820 </span>                :            :       , tag::coord, CkCallback
+<span class="lineNum">     821 </span>                :            :       , tag::diag,  CkCallback
+<span class="lineNum">     822 </span>                :            :     &gt; m_cb;
+<span class="lineNum">     823 </span>                :            :     WorkerProxy m_worker;       //!&lt; Worker proxy
+<span class="lineNum">     824 </span>                :            :     //! Global (as in file) mesh node IDs mapped to side set ids of the mesh
+<span class="lineNum">     825 </span>                :            :     std::map&lt; int, std::vector&lt; std::size_t &gt; &gt; m_side;
+<span class="lineNum">     826 </span>                :            :     std::size_t m_ncomp;        //!&lt; Number of scalar components per unknown
+<span class="lineNum">     827 </span>                :            :     std::size_t m_nchare;       //!&lt; Number of chares contributing to my PE
+<span class="lineNum">     828 </span>                :            :     std::size_t m_nperow;       //!&lt; Number of fellow PEs to send row ids to
+<span class="lineNum">     829 </span>                :            :     std::size_t m_nchbc;        //!&lt; Number of chares we received bcs from
+<span class="lineNum">     830 </span>                :            :     std::size_t m_lower;        //!&lt; Lower index of the global rows on my PE
+<span class="lineNum">     831 </span>                :            :     std::size_t m_upper;        //!&lt; Upper index of the global rows on my PE
+<span class="lineNum">     832 </span>                :            :     bool m_feedback;            //!&lt; Whether to send sub-task feedback to host
+<span class="lineNum">     833 </span>                :            :     //! Ids of workers on my PE
+<span class="lineNum">     834 </span>                :            :     std::vector&lt; int &gt; m_myworker;
+<span class="lineNum">     835 </span>                :            :     //! \brief Import map associating a list of global row ids to a worker chare
+<span class="lineNum">     836 </span>                :            :     //!   id during the communication of the global row ids
+<span class="lineNum">     837 </span>                :            :     std::map&lt; int, std::vector&lt; std::size_t &gt; &gt; m_rowimport;
+<span class="lineNum">     838 </span>                :            :     //! \brief Import map associating a list of global row ids to a worker chare
+<span class="lineNum">     839 </span>                :            :     //!   id during the communication of the solution/unknown vector
+<span class="lineNum">     840 </span>                :            :     std::map&lt; int, std::vector&lt; std::size_t &gt; &gt; m_solimport;
+<span class="lineNum">     841 </span>                :            :     //! \brief Import map associating a list of global row ids to a worker chare
+<span class="lineNum">     842 </span>                :            :     //!   id during the communication of the left-hand side matrix
+<span class="lineNum">     843 </span>                :            :     std::map&lt; int, std::vector&lt; std::size_t &gt; &gt; m_lhsimport;
+<span class="lineNum">     844 </span>                :            :     //! \brief Import map associating a list of global row ids to a worker chare
+<span class="lineNum">     845 </span>                :            :     //!   id during the communication of the righ-hand side vector
+<span class="lineNum">     846 </span>                :            :     std::map&lt; int, std::vector&lt; std::size_t &gt; &gt; m_rhsimport;
+<span class="lineNum">     847 </span>                :            :     //! \brief Import map associating a list of global row ids to a worker chare
+<span class="lineNum">     848 </span>                :            :     //!   id during the communication of the low-order rhs vector
+<span class="lineNum">     849 </span>                :            :     std::map&lt; int, std::vector&lt; std::size_t &gt; &gt; m_lowrhsimport;
+<span class="lineNum">     850 </span>                :            :     //! \brief Import map associating a list of global row ids to a worker chare
+<span class="lineNum">     851 </span>                :            :     //!   id during the communication of the low-order lhs vector
+<span class="lineNum">     852 </span>                :            :     std::map&lt; int, std::vector&lt; std::size_t &gt; &gt; m_lowlhsimport;
+<span class="lineNum">     853 </span>                :            :     //! \brief Import map associating a list of global row ids to a worker chare
+<span class="lineNum">     854 </span>                :            :     //!   id during the communication of the solution/unknown vector for
+<span class="lineNum">     855 </span>                :            :     //!   computing diagnostics, e.g., residuals
+<span class="lineNum">     856 </span>                :            :     std::map&lt; int, std::vector&lt; std::size_t &gt; &gt; m_diagimport;
+<span class="lineNum">     857 </span>                :            :     //! Part of global row indices owned by my PE
+<span class="lineNum">     858 </span>                :            :     std::set&lt; std::size_t &gt; m_row;
+<span class="lineNum">     859 </span>                :            :     //! \brief Part of unknown/solution vector owned by my PE
+<span class="lineNum">     860 </span>                :            :     //! \details Vector of values (for each scalar equation solved) associated
+<span class="lineNum">     861 </span>                :            :     //!   to global mesh point row IDs
+<span class="lineNum">     862 </span>                :            :     std::map&lt; std::size_t, std::vector&lt; tk::real &gt; &gt; m_sol;
+<span class="lineNum">     863 </span>                :            :     //! \brief Part of left-hand side matrix owned by my PE
+<span class="lineNum">     864 </span>                :            :     //! \details Nonzero values (for each scalar equation solved) associated to
+<span class="lineNum">     865 </span>                :            :     //!   global mesh point row and column IDs.
+<span class="lineNum">     866 </span>                :            :     std::map&lt; std::size_t,
+<span class="lineNum">     867 </span>                :            :               std::map&lt; std::size_t, std::vector&lt; tk::real &gt; &gt; &gt; m_lhs;
+<span class="lineNum">     868 </span>                :            :     //! \brief Part of right-hand side vector owned by my PE
+<span class="lineNum">     869 </span>                :            :     //! \details Vector of values (for each scalar equation solved) associated
+<span class="lineNum">     870 </span>                :            :     //!   to global mesh point row ids
+<span class="lineNum">     871 </span>                :            :     std::map&lt; std::size_t, std::vector&lt; tk::real &gt; &gt; m_rhs;
+<span class="lineNum">     872 </span>                :            :     //! \brief Part of low-order right-hand side vector owned by my PE
+<span class="lineNum">     873 </span>                :            :     //! \details Vector of values (for each scalar equation solved) associated
+<span class="lineNum">     874 </span>                :            :     //!   to global mesh point row ids. This vector collects the rhs
+<span class="lineNum">     875 </span>                :            :     //!   terms to be combined with the rhs to produce the low-order rhs.
+<span class="lineNum">     876 </span>                :            :     std::map&lt; std::size_t, std::vector&lt; tk::real &gt; &gt; m_lowrhs;
+<span class="lineNum">     877 </span>                :            :     //! \brief Part of the low-order system left-hand side vector owned by my PE
+<span class="lineNum">     878 </span>                :            :     //! \details Vector of values (for each scalar equation solved) associated
+<span class="lineNum">     879 </span>                :            :     //!   to global mesh point row ids. This vector collects the nonzero values
+<span class="lineNum">     880 </span>                :            :     //!   of the low-order system lhs &quot;matrix&quot; solution.
+<span class="lineNum">     881 </span>                :            :     std::map&lt; std::size_t, std::vector&lt; tk::real &gt; &gt; m_lowlhs;
+<span class="lineNum">     882 </span>                :            :     //! \brief Part of solution vector owned by my PE
+<span class="lineNum">     883 </span>                :            :     //! \details Vector of values (for each scalar equation solved) associated
+<span class="lineNum">     884 </span>                :            :     //!   to global mesh point row IDs. The map-value is a pair of vectors,
+<span class="lineNum">     885 </span>                :            :     //!   where the first one is the numerical and the second one is the
+<span class="lineNum">     886 </span>                :            :     //!   analytical solution. If the analytical solution for a PDE is not
+<span class="lineNum">     887 </span>                :            :     //!   defined, it is the initial condition.
+<span class="lineNum">     888 </span>                :            :     //! \see charediag(), adddiag(), e.g., inciter::CG::diagnostics()
+<span class="lineNum">     889 </span>                :            :     std::map&lt; std::size_t, std::vector&lt; std::vector&lt; tk::real &gt; &gt; &gt; m_diag;
+<span class="lineNum">     890 </span>                :            :     tk::hypre::HypreVector m_x; //!&lt; Hypre vector to store the solution/unknowns
+<span class="lineNum">     891 </span>                :            :     tk::hypre::HypreMatrix m_A; //!&lt; Hypre matrix to store the left-hand side
+<span class="lineNum">     892 </span>                :            :     tk::hypre::HypreVector m_b; //!&lt; Hypre vector to store the right-hand side
+<span class="lineNum">     893 </span>                :            :     //! Hypre solver
+<span class="lineNum">     894 </span>                :            :     tk::hypre::HypreSolver m_solver;
+<span class="lineNum">     895 </span>                :            :     //! Row indices for my PE
+<span class="lineNum">     896 </span>                :            :     std::vector&lt; int &gt; m_hypreRows;
+<span class="lineNum">     897 </span>                :            :     //! Number of matrix columns/rows on my PE
+<span class="lineNum">     898 </span>                :            :     std::vector&lt; int &gt; m_hypreNcols;
+<span class="lineNum">     899 </span>                :            :     //! Matrix column indices for rows on my PE
+<span class="lineNum">     900 </span>                :            :     std::vector&lt; int &gt; m_hypreCols;
+<span class="lineNum">     901 </span>                :            :     //! Matrix nonzero values for my PE
+<span class="lineNum">     902 </span>                :            :     std::vector&lt; tk::real &gt; m_hypreMat;
+<span class="lineNum">     903 </span>                :            :     //! RHS vector nonzero values for my PE
+<span class="lineNum">     904 </span>                :            :     std::vector&lt; tk::real &gt; m_hypreRhs;
+<span class="lineNum">     905 </span>                :            :     //! Solution vector nonzero values for my PE
+<span class="lineNum">     906 </span>                :            :     std::vector&lt; tk::real &gt; m_hypreSol;
+<span class="lineNum">     907 </span>                :            :     //! Global-&gt;local row id map for sending back solution vector parts
+<span class="lineNum">     908 </span>                :            :     std::map&lt; std::size_t, std::size_t &gt; m_lid;
+<span class="lineNum">     909 </span>                :            :     //! \brief PEs associated to lower and upper global row indices
+<span class="lineNum">     910 </span>                :            :     //! \details These are the divisions at which the linear system is divided
+<span class="lineNum">     911 </span>                :            :     //!   along PE boundaries.
+<span class="lineNum">     912 </span>                :            :     std::map&lt; std::pair&lt; std::size_t, std::size_t &gt;, int &gt; m_div;
+<span class="lineNum">     913 </span>                :            :     //! \brief PEs associated to global mesh point indices
+<span class="lineNum">     914 </span>                :            :     //! \details This is used to cache the PE associated to mesh nodes
+<span class="lineNum">     915 </span>                :            :     //!   communicated, so that a quicker-than-linear-cost search can be used to
+<span class="lineNum">     916 </span>                :            :     //!   find the PE for a communicated mesh node after the node is in the
+<span class="lineNum">     917 </span>                :            :     //!   cache.
+<span class="lineNum">     918 </span>                :            :     std::map&lt; std::size_t, int &gt; m_pe;
+<span class="lineNum">     919 </span>                :            :     //! \brief Values (for each scalar equation solved) of Dirichlet boundary
+<span class="lineNum">     920 </span>                :            :     //!   conditions assigned to global node IDs we set
+<span class="lineNum">     921 </span>                :            :     //! \details The map key is the global mesh node/row ID, the value is a
+<span class="lineNum">     922 </span>                :            :     //!   vector of pairs in which the bool (.first) indicates whether the
+<span class="lineNum">     923 </span>                :            :     //!   boundary condition value (.second) is set at the given node. The size
+<span class="lineNum">     924 </span>                :            :     //!   of the vectors is the number of PDEs integrated times the number of
+<span class="lineNum">     925 </span>                :            :     //!   scalar components in all PDEs. This BC map stores all row IDs at which
+<span class="lineNum">     926 </span>                :            :     //!   Dirichlet boundary conditions are prescribed, i.e., including boundary
+<span class="lineNum">     927 </span>                :            :     //!   conditions set across all PEs, not just the ones need to be set on
+<span class="lineNum">     928 </span>                :            :     //!   this PE.
+<span class="lineNum">     929 </span>                :            :     std::unordered_map&lt; std::size_t,
+<span class="lineNum">     930 </span>                :            :                         std::vector&lt; std::pair&lt; bool, tk::real &gt; &gt; &gt; m_bc;
+<span class="lineNum">     931 </span>                :            :     //! \brief Matrix non-zero coefficients for Dirichlet boundary conditions
+<span class="lineNum">     932 </span>                :            :     std::unordered_map&lt; std::size_t,
+<span class="lineNum">     933 </span>                :            :                         std::map&lt; std::size_t, std::vector&lt;tk::real&gt; &gt; &gt; m_bca;
+<span class="lineNum">     934 </span>                :            : 
+<span class="lineNum">     935 </span>                :            :     //! Check if we have done our part in storing and exporting global row ids
+<span class="lineNum">     936 </span>                :            :     //! \details This does not mean the global row ids on our PE is complete
+<span class="lineNum">     937 </span>                :            :     //!   (which is tested by an assert in rowsreceived), only that we have done
+<span class="lineNum">     938 </span>                :            :     //!   our part of receiving contributions from chare array groups storing
+<span class="lineNum">     939 </span>                :            :     //!   the parts that we own and have sent the parts we do not own to fellow
+<span class="lineNum">     940 </span>                :            :     //!   PEs, i.e., we have nothing else to export. Only when all other fellow
+<span class="lineNum">     941 </span>                :            :     //!   branches have received all contributions are the row ids complete on
+<span class="lineNum">     942 </span>                :            :     //!   all PEs. This latter condition can only be tested after the global
+<span class="lineNum">     943 </span>                :            :     //!   reduction initiated by signal2host_row_complete, which is called when
+<span class="lineNum">     944 </span>                :            :     //!   all fellow branches have returned true from rowcomplete.
+<a name="945"><span class="lineNum">     945 </span>                :            :     //! \see rowsreceived()</a>
+<span class="lineNum">     946 </span>                :            :     //! \return True if we have done our part storing and exporting row ids
+<span class="lineNum">     947 </span>                :<span class="lineNoCov">          0 :     bool rowcomplete() const {</span>
+<span class="lineNum">     948 </span>                :            :       return // have heard from every chare on my PE
+<span class="lineNum">     949 </span>                :<span class="lineNoCov">          0 :              m_myworker.size() == m_nchare &amp;&amp;</span>
+<span class="lineNum">     950 </span>                :            :              // all fellow PEs have received my row ids contribution
+<span class="lineNum">     951 </span>                :<span class="lineNoCov">          0 :              m_nperow == 0;</span>
+<span class="lineNum">     952 </span>                :            :     }
+<span class="lineNum">     953 </span>                :            :     //! Check if our portion of the solution vector values is complete
+<a name="954"><span class="lineNum">     954 </span>                :            :     //! \return True if all parts of the unknown/solution vector have been</a>
+<span class="lineNum">     955 </span>                :            :     //!   received
+<span class="lineNum">     956 </span>                :<span class="lineNoCov">          0 :     bool solcomplete() const { return m_solimport == m_rowimport; }</span>
+<span class="lineNum">     957 </span>                :            :     //! Check if our portion of the matrix values is complete
+<a name="958"><span class="lineNum">     958 </span>                :            :     //! \return True if all parts of the left-hand side matrix have been</a>
+<span class="lineNum">     959 </span>                :            :     //!   received
+<span class="lineNum">     960 </span>                :<span class="lineNoCov">          0 :     bool lhscomplete() const { return m_lhsimport == m_rowimport; }</span>
+<span class="lineNum">     961 </span>                :            :     //! \brief Check if our portion of the solution vector values (for
+<span class="lineNum">     962 </span>                :            :     //!   diagnostics) is complete
+<a name="963"><span class="lineNum">     963 </span>                :            :     //! \return True if all parts of the unknown/solution vector have been</a>
+<span class="lineNum">     964 </span>                :            :     //!   received
+<span class="lineNum">     965 </span>                :<span class="lineNoCov">          0 :     bool diagcomplete() const { return m_diagimport == m_rowimport; }</span>
+<span class="lineNum">     966 </span>                :            : 
+<span class="lineNum">     967 </span>                :            :     //! Check if contributions to global row IDs are complete
+<a name="968"><span class="lineNum">     968 </span>                :            :     //! \details If so, send progress report to host that this sub-task is done,</a>
+<span class="lineNum">     969 </span>                :            :     //!   and tell the runtime system that this is complete.
+<span class="lineNum">     970 </span>                :<span class="lineNoCov">          0 :     void checkifrowcomplete() {</span>
+<span class="lineNum">     971 </span>                :<span class="lineNoCov">          0 :       if (rowcomplete()) {</span>
+<span class="lineNum">     972 </span>                :            :         //if (m_feedback) m_host.perowcomplete();
+<span class="lineNum">     973 </span>                :<span class="lineNoCov">          0 :         row_complete();</span>
+<span class="lineNum">     974 </span>                :            :       };
+<span class="lineNum">     975 </span>                :<span class="lineNoCov">          0 :     }</span>
+<span class="lineNum">     976 </span>                :            :     //! Check if contributions to unknown/solution vector are complete
+<a name="977"><span class="lineNum">     977 </span>                :            :     //! \details If so, send progress report to host that this sub-task is done,</a>
+<span class="lineNum">     978 </span>                :            :     //!   and tell the runtime system that this is complete.
+<span class="lineNum">     979 </span>                :<span class="lineNoCov">          0 :     void checkifsolcomplete() {</span>
+<span class="lineNum">     980 </span>                :<span class="lineNoCov">          0 :       if (solcomplete()) {</span>
+<span class="lineNum">     981 </span>                :            :         //if (m_feedback) m_host.pesolcomplete();
+<span class="lineNum">     982 </span>                :<span class="lineNoCov">          0 :         sol_complete();</span>
+<span class="lineNum">     983 </span>                :            :       }
+<span class="lineNum">     984 </span>                :<span class="lineNoCov">          0 :     }</span>
+<span class="lineNum">     985 </span>                :            : 
+<span class="lineNum">     986 </span>                :            :     //! Build Hypre data for our portion of the global row ids
+<a name="987"><span class="lineNum">     987 </span>                :            :     //! \note Hypre only likes one-based indexing. Zero-based row indexing fails</a>
+<span class="lineNum">     988 </span>                :            :     //!   to update the vector with HYPRE_IJVectorGetValues().
+<span class="lineNum">     989 </span>                :<span class="lineNoCov">          0 :     void hyprerow() {</span>
+<span class="lineNum">     990 </span>                :<span class="lineNoCov">          0 :       for (auto r : m_row) {</span>
+<span class="lineNum">     991 </span>                :<span class="lineNoCov">          0 :         std::vector&lt; int &gt; h( m_ncomp );</span>
+<span class="lineNum">     992 </span>                :<span class="lineNoCov">          0 :         std::iota( begin(h), end(h), r*m_ncomp+1 );</span>
+<span class="lineNum">     993 </span>                :<span class="lineNoCov">          0 :         m_hypreRows.insert( end(m_hypreRows), begin(h), end(h) );</span>
+<span class="lineNum">     994 </span>                :            :       }
+<span class="lineNum">     995 </span>                :<span class="lineNoCov">          0 :       hyprerow_complete(); hyprerow_complete(); hyprerow_complete();</span>
+<span class="lineNum">     996 </span>                :<span class="lineNoCov">          0 :     }</span>
+<span class="lineNum">     997 </span>                :            : 
+<span class="lineNum">     998 </span>                :            :     //! Set boundary conditions on the left-hand side matrix
+<span class="lineNum">     999 </span>                :            :     //! \details Setting boundary conditions on the left-hand side matrix is
+<a name="1000"><span class="lineNum">    1000 </span>                :            :     //!   done by zeroing all nonzero entries in rows where BCs are prescribed</a>
+<span class="lineNum">    1001 </span>                :            :     //!   and putting in 1.0 for the diagonal.
+<span class="lineNum">    1002 </span>                :<span class="lineNoCov">          0 :     void lhsbc() {</span>
+<span class="lineNum">    1003 </span>                :<span class="lineNoCov">          0 :       Assert( lhscomplete(),</span>
+<span class="lineNum">    1004 </span>                :            :               &quot;Nonzero values of distributed matrix on PE &quot; +
+<span class="lineNum">    1005 </span>                :            :               std::to_string( CkMyPe() ) + &quot; is incomplete: cannot set BCs&quot; );
+<span class="lineNum">    1006 </span>                :            : 
+<span class="lineNum">    1007 </span>                :            :       // Set Dirichlet BCs on the lhs matrix. Loop through all BCs and if a BC
+<span class="lineNum">    1008 </span>                :            :       // is prescribed on a row we own, find that row (r) and in that row the
+<span class="lineNum">    1009 </span>                :            :       // position of the diagonal entry (diag) in the LHS matrix. Then for all
+<span class="lineNum">    1010 </span>                :            :       // scalar components the system of system of PDEs we intagrate, query the
+<span class="lineNum">    1011 </span>                :            :       // entry in the BC data structure to see if we need to set BC for the
+<span class="lineNum">    1012 </span>                :            :       // given component and set the off-diagonals to zero while put 1.0 into
+<span class="lineNum">    1013 </span>                :            :       // the diagonal.
+<span class="lineNum">    1014 </span>                :            : 
+<span class="lineNum">    1015 </span>                :            : //std::cout &lt;&lt; &quot;l: &quot;;
+<span class="lineNum">    1016 </span>                :            : // std::map&lt; std::size_t, std::vector&lt; std::pair&lt; bool, tk::real &gt; &gt; &gt;
+<span class="lineNum">    1017 </span>                :            : //   s( begin(m_bc), end(m_bc) );
+<span class="lineNum">    1018 </span>                :            : // for (const auto&amp; n : s) std::cout &lt;&lt; n.first &lt;&lt; ' '; std::cout &lt;&lt; '\n';
+<span class="lineNum">    1019 </span>                :            : 
+<span class="lineNum">    1020 </span>                :<span class="lineNoCov">          0 :       for (const auto&amp; n : m_bc) {</span>
+<span class="lineNum">    1021 </span>                :<span class="lineNoCov">          0 :         if (n.first &gt;= m_lower &amp;&amp; n.first &lt; m_upper) {</span>
+<span class="lineNum">    1022 </span>                :<span class="lineNoCov">          0 :           auto&amp; r = tk::ref_find( m_lhs, n.first );</span>
+<span class="lineNum">    1023 </span>                :<span class="lineNoCov">          0 :           auto&amp; diag = tk::ref_find( r, n.first );</span>
+<span class="lineNum">    1024 </span>                :<span class="lineNoCov">          0 :           for (std::size_t i=0; i&lt;m_ncomp; ++i)</span>
+<span class="lineNum">    1025 </span>                :<span class="lineNoCov">          0 :             if (n.second[i].first) {</span>
+<span class="lineNum">    1026 </span>                :<span class="lineNoCov">          0 :               for (auto&amp; c : r) c.second[i] = 0.0;  // zero columns in BC row</span>
+<span class="lineNum">    1027 </span>                :<span class="lineNoCov">          0 :               diag[i] = 1.0;    // put 1.0 in diagonal of BC row</span>
+<span class="lineNum">    1028 </span>                :            :             }
+<span class="lineNum">    1029 </span>                :            :         }
+<span class="lineNum">    1030 </span>                :            :       }
+<span class="lineNum">    1031 </span>                :            : 
+<span class="lineNum">    1032 </span>                :            : //       for (const auto&amp; n : m_bc) {
+<span class="lineNum">    1033 </span>                :            : //         auto r = m_lhs.find( n.first );
+<span class="lineNum">    1034 </span>                :            : //         if (r != end(m_lhs)) {
+<span class="lineNum">    1035 </span>                :            : //           m_bca[ n.first ] = r-&gt;second;
+<span class="lineNum">    1036 </span>                :            : //           for (const auto&amp; c : r-&gt;second)
+<span class="lineNum">    1037 </span>                :            : //             if (c.first != n.first ) {
+<span class="lineNum">    1038 </span>                :            : //               auto a = m_lhs.find( c.first );
+<span class="lineNum">    1039 </span>                :            : //               if (a != end(m_lhs)) {
+<span class="lineNum">    1040 </span>                :            : //                 auto&amp; b = tk::ref_find( a-&gt;second, n.first );
+<span class="lineNum">    1041 </span>                :            : //                 for (std::size_t i=0; i&lt;m_ncomp; ++i)
+<span class="lineNum">    1042 </span>                :            : //                   if (n.second[i].first)
+<span class="lineNum">    1043 </span>                :            : //                     b[i] = 0.0;
+<span class="lineNum">    1044 </span>                :            : //               }
+<span class="lineNum">    1045 </span>                :            : //             }
+<span class="lineNum">    1046 </span>                :            : //         }
+<span class="lineNum">    1047 </span>                :            : //       }
+<span class="lineNum">    1048 </span>                :            : 
+<span class="lineNum">    1049 </span>                :            : //       // test BCs in matrix (only in serial)
+<span class="lineNum">    1050 </span>                :            : //       auto eps = std::numeric_limits&lt; tk::real &gt;::epsilon();
+<span class="lineNum">    1051 </span>                :            : //       for (const auto&amp; n : m_bc) {
+<span class="lineNum">    1052 </span>                :            : //         auto r = m_lhs.find( n.first );
+<span class="lineNum">    1053 </span>                :            : //         if (r != end(m_lhs)) {
+<span class="lineNum">    1054 </span>                :            : //           std::size_t ver_row = 0, ver_col = 0;
+<span class="lineNum">    1055 </span>                :            : //           for (const auto&amp; c : r-&gt;second)
+<span class="lineNum">    1056 </span>                :            : //             if (c.first != n.first) {
+<span class="lineNum">    1057 </span>                :            : //               // test row
+<span class="lineNum">    1058 </span>                :            : //               for (std::size_t i=0; i&lt;m_ncomp; ++i)
+<span class="lineNum">    1059 </span>                :            : //                 if (std::abs(c.second[i]) &gt; eps)      // test zero
+<span class="lineNum">    1060 </span>                :            : //                   std::cout &lt;&lt; 'r';
+<span class="lineNum">    1061 </span>                :            : //                 else                                  // count nonzeros
+<span class="lineNum">    1062 </span>                :            : //                   ++ver_row;
+<span class="lineNum">    1063 </span>                :            : //               // test column
+<span class="lineNum">    1064 </span>                :            : //               auto b = m_lhs.find( c.first );
+<span class="lineNum">    1065 </span>                :            : //               if (b !=end(m_lhs)) {
+<span class="lineNum">    1066 </span>                :            : //                 auto d = b-&gt;second.find( n.first );
+<span class="lineNum">    1067 </span>                :            : //                 if (d != end(b-&gt;second)) {
+<span class="lineNum">    1068 </span>                :            : //                   for (std::size_t i=0; i&lt;m_ncomp; ++i)
+<span class="lineNum">    1069 </span>                :            : //                     if (std::abs(d-&gt;second[i]) &gt; eps)  // test zero
+<span class="lineNum">    1070 </span>                :            : //                       std::cout &lt;&lt; 'c';
+<span class="lineNum">    1071 </span>                :            : //                     else
+<span class="lineNum">    1072 </span>                :            : //                       ++ver_col;                       // count nonzeros
+<span class="lineNum">    1073 </span>                :            : //                 }
+<span class="lineNum">    1074 </span>                :            : //               }
+<span class="lineNum">    1075 </span>                :            : //             }
+<span class="lineNum">    1076 </span>                :            : //           // test number of nonzeros in BC row
+<span class="lineNum">    1077 </span>                :            : //           if (ver_row != (r-&gt;second.size()-1)*m_ncomp) std::cout &lt;&lt; 'R';
+<span class="lineNum">    1078 </span>                :            : //           // test number of nonzeros in BC column
+<span class="lineNum">    1079 </span>                :            : //           if (ver_col != (r-&gt;second.size()-1)*m_ncomp) std::cout &lt;&lt; 'C';
+<span class="lineNum">    1080 </span>                :            : //         }
+<span class="lineNum">    1081 </span>                :            : //       }
+<span class="lineNum">    1082 </span>                :            : // 
+<span class="lineNum">    1083 </span>                :            : //       // test symmetry of matrix (only in serial)
+<span class="lineNum">    1084 </span>                :            : //       for (const auto&amp; r : m_lhs)
+<span class="lineNum">    1085 </span>                :            : //         for (const auto&amp; c : r.second) {
+<span class="lineNum">    1086 </span>                :            : //           const auto&amp; v = tk::cref_find( m_lhs, c.first );
+<span class="lineNum">    1087 </span>                :            : //           const auto&amp; w = tk::cref_find( v, r.first );
+<span class="lineNum">    1088 </span>                :            : //           for (std::size_t i=0; i&lt;m_ncomp; ++i)
+<span class="lineNum">    1089 </span>                :            : //             if (std::abs(c.second[i]-w[i]) &gt; 1.0e-14)
+<span class="lineNum">    1090 </span>                :            : //               std::cout &lt;&lt; 's';
+<span class="lineNum">    1091 </span>                :            : //         }
+<span class="lineNum">    1092 </span>                :            : 
+<span class="lineNum">    1093 </span>                :<span class="lineNoCov">          0 :       lhsbc_complete(); lhsbc_complete();</span>
+<span class="lineNum">    1094 </span>                :<span class="lineNoCov">          0 :     }</span>
+<span class="lineNum">    1095 </span>                :            : 
+<span class="lineNum">    1096 </span>                :            :     //! Set Dirichlet boundary conditions on the right-hand side vector
+<a name="1097"><span class="lineNum">    1097 </span>                :            :     //! \details Since we solve for the solution increment, this amounts to</a>
+<span class="lineNum">    1098 </span>                :            :     //!    enforcing zero rhs (no solution increment) at BC nodes
+<span class="lineNum">    1099 </span>                :<span class="lineNoCov">          0 :     void rhsbc() {</span>
+<span class="lineNum">    1100 </span>                :<span class="lineNoCov">          0 :       Assert( rhscomplete(),</span>
+<span class="lineNum">    1101 </span>                :            :               &quot;Values of distributed right-hand-side vector on PE &quot; +
+<span class="lineNum">    1102 </span>                :            :               std::to_string( CkMyPe() ) + &quot; is incomplete: cannot set BCs&quot; );
+<span class="lineNum">    1103 </span>                :            : 
+<span class="lineNum">    1104 </span>                :            : //       for (const auto&amp; n : m_bc) {
+<span class="lineNum">    1105 </span>                :            : //          auto r = m_bca.find( n.first );
+<span class="lineNum">    1106 </span>                :            : //          if (r != end(m_bca))
+<span class="lineNum">    1107 </span>                :            : //            for (const auto&amp; c : r-&gt;second)
+<span class="lineNum">    1108 </span>                :            : //              if (c.first != n.first ) {
+<span class="lineNum">    1109 </span>                :            : //                auto a = m_rhs.find( c.first );
+<span class="lineNum">    1110 </span>                :            : //                if (a != end(m_rhs))
+<span class="lineNum">    1111 </span>                :            : //                  for (std::size_t i=0; i&lt;m_ncomp; ++i)
+<span class="lineNum">    1112 </span>                :            : //                    if (n.second[i].first)
+<span class="lineNum">    1113 </span>                :            : //                      a-&gt;second[i] -= n.second[i].second * c.second[i];
+<span class="lineNum">    1114 </span>                :            : //              }
+<span class="lineNum">    1115 </span>                :            : //        }
+<span class="lineNum">    1116 </span>                :            : 
+<span class="lineNum">    1117 </span>                :<span class="lineNoCov">          0 :       for (const auto&amp; n : m_bc) {</span>
+<span class="lineNum">    1118 </span>                :<span class="lineNoCov">          0 :         if (n.first &gt;= m_lower &amp;&amp; n.first &lt; m_upper) {</span>
+<span class="lineNum">    1119 </span>                :<span class="lineNoCov">          0 :           auto&amp; r = tk::ref_find( m_rhs, n.first );</span>
+<span class="lineNum">    1120 </span>                :<span class="lineNoCov">          0 :           for (std::size_t i=0; i&lt;m_ncomp; ++i)</span>
+<span class="lineNum">    1121 </span>                :<span class="lineNoCov">          0 :             if (n.second[i].first)</span>
+<span class="lineNum">    1122 </span>                :<span class="lineNoCov">          0 :               r[i] = n.second[i].second;</span>
+<span class="lineNum">    1123 </span>                :            :         }
+<span class="lineNum">    1124 </span>                :            :       }
+<span class="lineNum">    1125 </span>                :            : 
+<span class="lineNum">    1126 </span>                :<span class="lineNoCov">          0 :       rhsbc_complete(); rhsbc_complete();</span>
+<span class="lineNum">    1127 </span>                :<span class="lineNoCov">          0 :     }</span>
+<a name="1128"><span class="lineNum">    1128 </span>                :            : </a>
+<span class="lineNum">    1129 </span>                :            :     //! Build Hypre data for our portion of the solution vector
+<span class="lineNum">    1130 </span>                :<span class="lineNoCov">          0 :     void hypresol() {</span>
+<span class="lineNum">    1131 </span>                :<span class="lineNoCov">          0 :       Assert( solcomplete(),</span>
+<span class="lineNum">    1132 </span>                :            :               &quot;Values of distributed solution vector on PE &quot; +
+<span class="lineNum">    1133 </span>                :            :               std::to_string( CkMyPe() ) + &quot; is incomplete&quot; );
+<span class="lineNum">    1134 </span>                :<span class="lineNoCov">          0 :       std::size_t i = 0;</span>
+<span class="lineNum">    1135 </span>                :<span class="lineNoCov">          0 :       for (const auto&amp; r : m_sol) {</span>
+<span class="lineNum">    1136 </span>                :<span class="lineNoCov">          0 :         m_lid[ r.first ] = i++;</span>
+<span class="lineNum">    1137 </span>                :<span class="lineNoCov">          0 :         m_hypreSol.insert( end(m_hypreSol), begin(r.second), end(r.second) );</span>
+<span class="lineNum">    1138 </span>                :            :       }
+<span class="lineNum">    1139 </span>                :<span class="lineNoCov">          0 :       hypresol_complete();</span>
+<span class="lineNum">    1140 </span>                :<span class="lineNoCov">          0 :     }</span>
+<span class="lineNum">    1141 </span>                :            :     //! Build Hypre data for our portion of the matrix
+<a name="1142"><span class="lineNum">    1142 </span>                :            :     //! \note Hypre only likes one-based indexing. Zero-based row indexing fails</a>
+<span class="lineNum">    1143 </span>                :            :     //!   to update the vector with HYPRE_IJVectorGetValues().
+<span class="lineNum">    1144 </span>                :<span class="lineNoCov">          0 :     void hyprelhs() {</span>
+<span class="lineNum">    1145 </span>                :<span class="lineNoCov">          0 :       Assert( lhscomplete(),</span>
+<span class="lineNum">    1146 </span>                :            :               &quot;Nonzero values of distributed matrix on PE &quot; +
+<span class="lineNum">    1147 </span>                :            :               std::to_string( CkMyPe() ) + &quot; is incomplete: cannot convert&quot; );
+<span class="lineNum">    1148 </span>                :<span class="lineNoCov">          0 :       for (const auto&amp; r : m_lhs) {</span>
+<span class="lineNum">    1149 </span>                :<span class="lineNoCov">          0 :         for (std::size_t i=0; i&lt;m_ncomp; ++i) {</span>
+<span class="lineNum">    1150 </span>                :<span class="lineNoCov">          0 :           m_hypreNcols.push_back( static_cast&lt; int &gt;( r.second.size() ) );</span>
+<span class="lineNum">    1151 </span>                :<span class="lineNoCov">          0 :           for (const auto&amp; c : r.second) {</span>
+<span class="lineNum">    1152 </span>                :<span class="lineNoCov">          0 :             m_hypreCols.push_back( static_cast&lt; int &gt;( c.first*m_ncomp+i+1 ) );</span>
+<span class="lineNum">    1153 </span>                :<span class="lineNoCov">          0 :             m_hypreMat.push_back( c.second[i] );</span>
+<span class="lineNum">    1154 </span>                :            :           }
+<span class="lineNum">    1155 </span>                :            :         }
+<span class="lineNum">    1156 </span>                :            :       }
+<span class="lineNum">    1157 </span>                :<span class="lineNoCov">          0 :       hyprelhs_complete();</span>
+<a name="1158"><span class="lineNum">    1158 </span>                :<span class="lineNoCov">          0 :     }</span></a>
+<span class="lineNum">    1159 </span>                :            :     //! Build Hypre data for our portion of the right-hand side vector
+<span class="lineNum">    1160 </span>                :<span class="lineNoCov">          0 :     void hyprerhs() {</span>
+<span class="lineNum">    1161 </span>                :<span class="lineNoCov">          0 :       Assert( rhscomplete(),</span>
+<span class="lineNum">    1162 </span>                :            :               &quot;Values of distributed right-hand-side vector on PE &quot; +
+<span class="lineNum">    1163 </span>                :            :               std::to_string( CkMyPe() ) + &quot; is incomplete: cannot convert&quot; );
+<span class="lineNum">    1164 </span>                :<span class="lineNoCov">          0 :       for (const auto&amp; r : m_rhs)</span>
+<span class="lineNum">    1165 </span>                :<span class="lineNoCov">          0 :         m_hypreRhs.insert( end(m_hypreRhs), begin(r.second), end(r.second) );</span>
+<span class="lineNum">    1166 </span>                :<span class="lineNoCov">          0 :       hyprerhs_complete();</span>
+<span class="lineNum">    1167 </span>                :<span class="lineNoCov">          0 :     }</span>
+<a name="1168"><span class="lineNum">    1168 </span>                :            : </a>
+<span class="lineNum">    1169 </span>                :            :     //! Set our portion of values of the distributed solution vector
+<span class="lineNum">    1170 </span>                :<span class="lineNoCov">          0 :     void sol() {</span>
+<span class="lineNum">    1171 </span>                :<span class="lineNoCov">          0 :       Assert( m_hypreSol.size() == m_hypreRows.size(), &quot;Solution vector values &quot;</span>
+<span class="lineNum">    1172 </span>                :            :               &quot;incomplete on PE &quot; + std::to_string(CkMyPe()) );
+<span class="lineNum">    1173 </span>                :            :       // Set our portion of the vector values
+<span class="lineNum">    1174 </span>                :<span class="lineNoCov">          0 :       m_x.set( static_cast&lt; int &gt;( (m_upper - m_lower)*m_ncomp ),</span>
+<span class="lineNum">    1175 </span>                :<span class="lineNoCov">          0 :                m_hypreRows.data(),</span>
+<span class="lineNum">    1176 </span>                :<span class="lineNoCov">          0 :                m_hypreSol.data() );</span>
+<span class="lineNum">    1177 </span>                :<span class="lineNoCov">          0 :       fillsol_complete();</span>
+<a name="1178"><span class="lineNum">    1178 </span>                :<span class="lineNoCov">          0 :     }</span></a>
+<span class="lineNum">    1179 </span>                :            :     //! Set our portion of values of the distributed matrix
+<span class="lineNum">    1180 </span>                :<span class="lineNoCov">          0 :     void lhs() {</span>
+<span class="lineNum">    1181 </span>                :<span class="lineNoCov">          0 :       Assert( m_hypreMat.size() == m_hypreCols.size(), &quot;Matrix values &quot;</span>
+<span class="lineNum">    1182 </span>                :            :               &quot;incomplete on PE &quot; + std::to_string(CkMyPe()) );
+<span class="lineNum">    1183 </span>                :            :       // Set our portion of the matrix values
+<span class="lineNum">    1184 </span>                :<span class="lineNoCov">          0 :       m_A.set( static_cast&lt; int &gt;( (m_upper - m_lower)*m_ncomp ),</span>
+<span class="lineNum">    1185 </span>                :            :                m_hypreNcols.data(),
+<span class="lineNum">    1186 </span>                :<span class="lineNoCov">          0 :                m_hypreRows.data(),</span>
+<span class="lineNum">    1187 </span>                :<span class="lineNoCov">          0 :                m_hypreCols.data(),</span>
+<span class="lineNum">    1188 </span>                :<span class="lineNoCov">          0 :                m_hypreMat.data() );</span>
+<span class="lineNum">    1189 </span>                :<span class="lineNoCov">          0 :       filllhs_complete();</span>
+<a name="1190"><span class="lineNum">    1190 </span>                :<span class="lineNoCov">          0 :     }</span></a>
+<span class="lineNum">    1191 </span>                :            :     //! Set our portion of values of the distributed right-hand side vector
+<span class="lineNum">    1192 </span>                :<span class="lineNoCov">          0 :     void rhs() {</span>
+<span class="lineNum">    1193 </span>                :<span class="lineNoCov">          0 :       Assert( m_hypreRhs.size() == m_hypreRows.size(), &quot;RHS vector values &quot;</span>
+<span class="lineNum">    1194 </span>                :            :               &quot;incomplete on PE &quot; + std::to_string(CkMyPe()) );
+<span class="lineNum">    1195 </span>                :            :       // Set our portion of the vector values
+<span class="lineNum">    1196 </span>                :<span class="lineNoCov">          0 :       m_b.set( static_cast&lt; int &gt;( (m_upper - m_lower)*m_ncomp ),</span>
+<span class="lineNum">    1197 </span>                :<span class="lineNoCov">          0 :                m_hypreRows.data(),</span>
+<span class="lineNum">    1198 </span>                :<span class="lineNoCov">          0 :                m_hypreRhs.data() );</span>
+<span class="lineNum">    1199 </span>                :<span class="lineNoCov">          0 :       fillrhs_complete();</span>
+<span class="lineNum">    1200 </span>                :<span class="lineNoCov">          0 :     }</span>
+<a name="1201"><span class="lineNum">    1201 </span>                :            : </a>
+<span class="lineNum">    1202 </span>                :            :     //! Assemble distributed solution vector
+<span class="lineNum">    1203 </span>                :<span class="lineNoCov">          0 :     void assemblesol() {</span>
+<span class="lineNum">    1204 </span>                :<span class="lineNoCov">          0 :       m_x.assemble();</span>
+<span class="lineNum">    1205 </span>                :<span class="lineNoCov">          0 :       asmsol_complete();</span>
+<a name="1206"><span class="lineNum">    1206 </span>                :<span class="lineNoCov">          0 :     }</span></a>
+<span class="lineNum">    1207 </span>                :            :     //! Assemble distributed matrix
+<span class="lineNum">    1208 </span>                :<span class="lineNoCov">          0 :     void assemblelhs() {</span>
+<span class="lineNum">    1209 </span>                :<span class="lineNoCov">          0 :       m_A.assemble();</span>
+<span class="lineNum">    1210 </span>                :<span class="lineNoCov">          0 :       asmlhs_complete();</span>
+<a name="1211"><span class="lineNum">    1211 </span>                :<span class="lineNoCov">          0 :     }</span></a>
+<span class="lineNum">    1212 </span>                :            :     //! Assemble distributed right-hand side vector
+<span class="lineNum">    1213 </span>                :<span class="lineNoCov">          0 :     void assemblerhs() {</span>
+<span class="lineNum">    1214 </span>                :<span class="lineNoCov">          0 :       m_b.assemble();</span>
+<span class="lineNum">    1215 </span>                :<span class="lineNoCov">          0 :       asmrhs_complete();</span>
+<span class="lineNum">    1216 </span>                :<span class="lineNoCov">          0 :     }</span>
+<a name="1217"><span class="lineNum">    1217 </span>                :            : </a>
+<span class="lineNum">    1218 </span>                :            :     //! Update solution vector in our PE's workers
+<span class="lineNum">    1219 </span>                :<span class="lineNoCov">          0 :     void updateSol() {</span>
+<span class="lineNum">    1220 </span>                :            :       // Get solution vector values for our PE
+<span class="lineNum">    1221 </span>                :<span class="lineNoCov">          0 :       m_x.get( static_cast&lt; int &gt;( (m_upper - m_lower)*m_ncomp ),</span>
+<span class="lineNum">    1222 </span>                :<span class="lineNoCov">          0 :                m_hypreRows.data(),</span>
+<span class="lineNum">    1223 </span>                :<span class="lineNoCov">          0 :                m_hypreSol.data() );</span>
+<span class="lineNum">    1224 </span>                :            :       // Group solution vector by workers and send each the parts back to
+<span class="lineNum">    1225 </span>                :            :       // workers that own them
+<span class="lineNum">    1226 </span>                :<span class="lineNoCov">          0 :       for (const auto&amp; w : m_solimport) {</span>
+<span class="lineNum">    1227 </span>                :<span class="lineNoCov">          0 :         std::vector&lt; std::size_t &gt; gid;</span>
+<span class="lineNum">    1228 </span>                :<span class="lineNoCov">          0 :         std::vector&lt; tk::real &gt; solution;</span>
+<span class="lineNum">    1229 </span>                :<span class="lineNoCov">          0 :         for (auto r : w.second) {</span>
+<span class="lineNum">    1230 </span>                :<span class="lineNoCov">          0 :           const auto it = m_sol.find( r );</span>
+<span class="lineNum">    1231 </span>                :<span class="lineNoCov">          0 :           if (it != end(m_sol)) {</span>
+<span class="lineNum">    1232 </span>                :<span class="lineNoCov">          0 :             gid.push_back( it-&gt;first );</span>
+<span class="lineNum">    1233 </span>                :<span class="lineNoCov">          0 :             auto i = tk::cref_find( m_lid, it-&gt;first );</span>
+<span class="lineNum">    1234 </span>                :            :             using diff_type = typename decltype(m_hypreSol)::difference_type;
+<span class="lineNum">    1235 </span>                :<span class="lineNoCov">          0 :             auto b = static_cast&lt; diff_type &gt;( i*m_ncomp );</span>
+<span class="lineNum">    1236 </span>                :<span class="lineNoCov">          0 :             auto e = static_cast&lt; diff_type &gt;( (i+1)*m_ncomp );</span>
+<span class="lineNum">    1237 </span>                :<span class="lineNoCov">          0 :             solution.insert( end(solution),</span>
+<span class="lineNum">    1238 </span>                :            :                              std::next( begin(m_hypreSol), b ),
+<span class="lineNum">    1239 </span>                :            :                              std::next( begin(m_hypreSol), e ) );
+<span class="lineNum">    1240 </span>                :            :           } else
+<span class="lineNum">    1241 </span>                :<span class="lineNoCov">          0 :             Throw( &quot;Can't find global row id &quot; + std::to_string(r) +</span>
+<span class="lineNum">    1242 </span>                :            :                    &quot; to export in solution vector&quot; );
+<span class="lineNum">    1243 </span>                :            :         }
+<span class="lineNum">    1244 </span>                :<span class="lineNoCov">          0 :         m_worker[ w.first ].updateSol( gid, solution );</span>
+<span class="lineNum">    1245 </span>                :            :       }
+<span class="lineNum">    1246 </span>                :<span class="lineNoCov">          0 :     }</span>
+<a name="1247"><span class="lineNum">    1247 </span>                :            : </a>
+<span class="lineNum">    1248 </span>                :            :     //! Solve hyigh-order linear system
+<span class="lineNum">    1249 </span>                :<span class="lineNoCov">          0 :     void solve() {</span>
+<span class="lineNum">    1250 </span>                :<span class="lineNoCov">          0 :       m_solver.solve( m_A, m_b, m_x );</span>
+<span class="lineNum">    1251 </span>                :            :       // send progress report to host
+<span class="lineNum">    1252 </span>                :            :       //if (m_feedback) m_host.pesolve();
+<span class="lineNum">    1253 </span>                :<span class="lineNoCov">          0 :       solve_complete();</span>
+<span class="lineNum">    1254 </span>                :<span class="lineNoCov">          0 :     }</span>
+<a name="1255"><span class="lineNum">    1255 </span>                :            : </a>
+<span class="lineNum">    1256 </span>                :            :     //! Update low-order solution vector in our PE's workers
+<span class="lineNum">    1257 </span>                :<span class="lineNoCov">          0 :     void updateLowSol() {</span>
+<span class="lineNum">    1258 </span>                :<span class="lineNoCov">          0 :       for (const auto&amp; w : m_solimport) {</span>
+<span class="lineNum">    1259 </span>                :<span class="lineNoCov">          0 :         std::vector&lt; std::size_t &gt; gid;</span>
+<span class="lineNum">    1260 </span>                :<span class="lineNoCov">          0 :         std::vector&lt; tk::real &gt; solution;</span>
+<span class="lineNum">    1261 </span>                :<span class="lineNoCov">          0 :         for (auto r : w.second) {</span>
+<span class="lineNum">    1262 </span>                :<span class="lineNoCov">          0 :           const auto it = m_lowrhs.find( r );</span>
+<span class="lineNum">    1263 </span>                :<span class="lineNoCov">          0 :           if (it != end(m_lowrhs)) {</span>
+<span class="lineNum">    1264 </span>                :<span class="lineNoCov">          0 :             gid.push_back( it-&gt;first );</span>
+<span class="lineNum">    1265 </span>                :<span class="lineNoCov">          0 :             solution.insert(end(solution), begin(it-&gt;second), end(it-&gt;second));</span>
+<span class="lineNum">    1266 </span>                :            :           } else
+<span class="lineNum">    1267 </span>                :<span class="lineNoCov">          0 :             Throw( &quot;Can't find global row id &quot; + std::to_string(r) +</span>
+<span class="lineNum">    1268 </span>                :            :                    &quot; to export in low order solution vector&quot; );
+<span class="lineNum">    1269 </span>                :            :         }
+<span class="lineNum">    1270 </span>                :<span class="lineNoCov">          0 :         m_worker[ w.first ].updateLowSol( gid, solution );</span>
+<span class="lineNum">    1271 </span>                :            :       }
+<span class="lineNum">    1272 </span>                :<span class="lineNoCov">          0 :     }</span>
+<a name="1273"><span class="lineNum">    1273 </span>                :            : </a>
+<span class="lineNum">    1274 </span>                :            :     //! Solve low-order linear system
+<span class="lineNum">    1275 </span>                :<span class="lineNoCov">          0 :     void lowsolve() {</span>
+<span class="lineNum">    1276 </span>                :            :       // Set boundary conditions on the low-order system
+<span class="lineNum">    1277 </span>                :<span class="lineNoCov">          0 :       for (const auto&amp; n : m_bc)</span>
+<span class="lineNum">    1278 </span>                :<span class="lineNoCov">          0 :         if (n.first &gt;= m_lower &amp;&amp; n.first &lt; m_upper) {</span>
+<span class="lineNum">    1279 </span>                :            :           // lhs
+<span class="lineNum">    1280 </span>                :<span class="lineNoCov">          0 :           auto&amp; l = tk::ref_find( m_lowlhs, n.first );</span>
+<span class="lineNum">    1281 </span>                :<span class="lineNoCov">          0 :           for (std::size_t i=0; i&lt;m_ncomp; ++i)</span>
+<span class="lineNum">    1282 </span>                :<span class="lineNoCov">          0 :             if (n.second[i].first) l[i] = 1.0;</span>
+<span class="lineNum">    1283 </span>                :            :           // rhs (set to zero instead of the solution increment at Dirichlet
+<span class="lineNum">    1284 </span>                :            :           // BCs, because for the low order solution we solve for L = R + D,
+<span class="lineNum">    1285 </span>                :            :           // where L is the lumped mass matrix, R is the high order RHS, and D
+<span class="lineNum">    1286 </span>                :            :           // is mass diffusion, and R already has the Dirichlet BC set)
+<span class="lineNum">    1287 </span>                :<span class="lineNoCov">          0 :           auto&amp; r = tk::ref_find( m_lowrhs, n.first );</span>
+<span class="lineNum">    1288 </span>                :<span class="lineNoCov">          0 :           for (std::size_t i=0; i&lt;m_ncomp; ++i)</span>
+<span class="lineNum">    1289 </span>                :<span class="lineNoCov">          0 :             if (n.second[i].first) r[i] = 0.0;</span>
+<span class="lineNum">    1290 </span>                :            :         }
+<span class="lineNum">    1291 </span>                :            :       // Solve low-order system
+<span class="lineNum">    1292 </span>                :<span class="lineNoCov">          0 :       Assert( rhscomplete(),</span>
+<span class="lineNum">    1293 </span>                :            :               &quot;Values of distributed right-hand-side vector on PE &quot; +
+<span class="lineNum">    1294 </span>                :            :               std::to_string( CkMyPe() ) + &quot; is incomplete: cannot solve low &quot;
+<span class="lineNum">    1295 </span>                :            :               &quot;order system&quot; );
+<span class="lineNum">    1296 </span>                :<span class="lineNoCov">          0 :       Assert( lowrhscomplete(),</span>
+<span class="lineNum">    1297 </span>                :            :               &quot;Values of distributed mass diffusion rhs vector on PE &quot; +
+<span class="lineNum">    1298 </span>                :            :               std::to_string( CkMyPe() ) + &quot; is incomplete: cannot solve low &quot;
+<span class="lineNum">    1299 </span>                :            :               &quot;order system&quot; );
+<span class="lineNum">    1300 </span>                :<span class="lineNoCov">          0 :       Assert( lowlhscomplete(),</span>
+<span class="lineNum">    1301 </span>                :            :               &quot;Values of distributed lumped mass lhs vector on PE &quot; +
+<span class="lineNum">    1302 </span>                :            :               std::to_string( CkMyPe() ) + &quot; is incomplete: cannot solve low &quot;
+<span class="lineNum">    1303 </span>                :            :               &quot;order system&quot; );
+<span class="lineNum">    1304 </span>                :<span class="lineNoCov">          0 :       Assert( tk::keyEqual( m_rhs, m_lowrhs ), &quot;Row IDs of rhs and mass &quot;</span>
+<span class="lineNum">    1305 </span>                :            :               &quot;diffusion rhs vector unequal on PE &quot; + std::to_string( CkMyPe() )
+<span class="lineNum">    1306 </span>                :            :               + &quot;: cannot solve low order system&quot; );
+<span class="lineNum">    1307 </span>                :<span class="lineNoCov">          0 :       Assert( tk::keyEqual( m_rhs, m_lowlhs ), &quot;Row IDs of rhs and lumped mass &quot;</span>
+<span class="lineNum">    1308 </span>                :            :               &quot;lhs vector unequal on PE &quot; + std::to_string( CkMyPe() ) + &quot;: &quot;
+<span class="lineNum">    1309 </span>                :            :               &quot;cannot solve low order system&quot; );
+<span class="lineNum">    1310 </span>                :<span class="lineNoCov">          0 :       auto ir = m_rhs.cbegin();</span>
+<span class="lineNum">    1311 </span>                :<span class="lineNoCov">          0 :       auto id = m_lowrhs.begin();</span>
+<span class="lineNum">    1312 </span>                :<span class="lineNoCov">          0 :       auto im = m_lowlhs.cbegin();</span>
+<span class="lineNum">    1313 </span>                :<span class="lineNoCov">          0 :       while (ir != m_rhs.cend()) {</span>
+<span class="lineNum">    1314 </span>                :<span class="lineNoCov">          0 :         const auto&amp; r = ir-&gt;second;</span>
+<span class="lineNum">    1315 </span>                :<span class="lineNoCov">          0 :         const auto&amp; m = im-&gt;second;</span>
+<span class="lineNum">    1316 </span>                :<span class="lineNoCov">          0 :         auto&amp; d = id-&gt;second;</span>
+<span class="lineNum">    1317 </span>                :<span class="lineNoCov">          0 :         Assert( r.size()==m_ncomp &amp;&amp; m.size()==m_ncomp &amp;&amp; d.size()==m_ncomp,</span>
+<span class="lineNum">    1318 </span>                :            :                 &quot;Wrong number of components in solving the low order system&quot; );
+<span class="lineNum">    1319 </span>                :<span class="lineNoCov">          0 :         for (std::size_t i=0; i&lt;m_ncomp; ++i) d[i] = (r[i]+d[i])/m[i];</span>
+<span class="lineNum">    1320 </span>                :<span class="lineNoCov">          0 :         ++ir; ++id; ++im;</span>
+<span class="lineNum">    1321 </span>                :            :       }
+<span class="lineNum">    1322 </span>                :<span class="lineNoCov">          0 :       lowsolve_complete();</span>
+<span class="lineNum">    1323 </span>                :<span class="lineNoCov">          0 :     }</span>
+<span class="lineNum">    1324 </span>                :            : 
+<span class="lineNum">    1325 </span>                :            :     //! Update diagnostics vector
+<span class="lineNum">    1326 </span>                :            :     //! \param[in] row Global row index of the diagnostics vector to update
+<span class="lineNum">    1327 </span>                :            :     //! \param[in] u Numerical solution vector for all components
+<span class="lineNum">    1328 </span>                :            :     //! \param[in] a Analytical solution vector for all components
+<span class="lineNum">    1329 </span>                :            :     //! \param[in] v Nodal volume
+<span class="lineNum">    1330 </span>                :            :     //! \details This function is used to update the vector of diagnostics that
+<span class="lineNum">    1331 </span>                :            :     //!   collects (across PEs) the numerical solution, the analytical solution,
+<span class="lineNum">    1332 </span>                :            :     //!   and the nodal volumes at nodes. This involves communication across PEs
+<span class="lineNum">    1333 </span>                :            :     //!   and can be called for rows with first contributions or subsequent
+<span class="lineNum">    1334 </span>                :            :     //!   contributions to rows which already hold partial data. The correct
+<span class="lineNum">    1335 </span>                :            :     //!   policy for updates across PEs (i.e., at nodes that are shared across
+<a name="1336"><span class="lineNum">    1336 </span>                :            :     //!   PEs) is: overwrite the numerical and analytical solutions and summing</a>
+<span class="lineNum">    1337 </span>                :            :     //!   nodal volumes.
+<span class="lineNum">    1338 </span>                :<span class="lineNoCov">          0 :     void updateDiag( std::size_t row,</span>
+<span class="lineNum">    1339 </span>                :            :                      std::vector&lt; tk::real &gt;&amp;&amp; u,
+<span class="lineNum">    1340 </span>                :            :                      std::vector&lt; tk::real &gt;&amp;&amp; a,
+<span class="lineNum">    1341 </span>                :            :                      tk::real v )
+<span class="lineNum">    1342 </span>                :            :     {
+<span class="lineNum">    1343 </span>                :<span class="lineNoCov">          0 :       auto&amp; d = m_diag[ row ];</span>
+<span class="lineNum">    1344 </span>                :<span class="lineNoCov">          0 :       if (d.size() != 3) {</span>
+<span class="lineNum">    1345 </span>                :<span class="lineNoCov">          0 :         d.resize( 2, std::vector&lt;tk::real&gt;(m_ncomp,0.0) );</span>
+<span class="lineNum">    1346 </span>                :<span class="lineNoCov">          0 :         d.resize( 3, std::vector&lt;tk::real&gt;(1,0.0) );</span>
+<span class="lineNum">    1347 </span>                :            :       }
+<span class="lineNum">    1348 </span>                :<span class="lineNoCov">          0 :       d[0] = std::move( u );    // overwrite numerical solution</span>
+<span class="lineNum">    1349 </span>                :<span class="lineNoCov">          0 :       d[1] = std::move( a );    // overwrite analytical solution</span>
+<span class="lineNum">    1350 </span>                :<span class="lineNoCov">          0 :       d[2][0] += v;             // sum nodal volume</span>
+<span class="lineNum">    1351 </span>                :<span class="lineNoCov">          0 :     }</span>
+<span class="lineNum">    1352 </span>                :            : 
+<span class="lineNum">    1353 </span>                :            :     //! Compute diagnostics (residuals) and contribute them back to host
+<a name="1354"><span class="lineNum">    1354 </span>                :            :     //! \details Diagnostics: L2 norm for all components.</a>
+<span class="lineNum">    1355 </span>                :            :     //! \see For info, see e.g., inciter::CG::diagnostics().
+<span class="lineNum">    1356 </span>                :<span class="lineNoCov">          0 :     void diagnostics() {</span>
+<span class="lineNum">    1357 </span>                :<span class="lineNoCov">          0 :       Assert( diagcomplete(),</span>
+<span class="lineNum">    1358 </span>                :            :               &quot;Values of distributed solution vector (for diagnostics) on PE &quot; +
+<span class="lineNum">    1359 </span>                :            :               std::to_string( CkMyPe() ) + &quot; is incomplete&quot; );
+<span class="lineNum">    1360 </span>                :            :       std::vector&lt; std::vector&lt; tk::real &gt; &gt;
+<span class="lineNum">    1361 </span>                :<span class="lineNoCov">          0 :         diag( 3, std::vector&lt; tk::real &gt;( m_ncomp, 0.0 ) );</span>
+<span class="lineNum">    1362 </span>                :<span class="lineNoCov">          0 :       for (const auto&amp; s : m_diag) {</span>
+<span class="lineNum">    1363 </span>                :<span class="lineNoCov">          0 :         Assert( s.second.size() == 3, &quot;Size of diagnostics vector must be 3&quot; );</span>
+<span class="lineNum">    1364 </span>                :<span class="lineNoCov">          0 :         auto row = s.first;</span>
+<span class="lineNum">    1365 </span>                :<span class="lineNoCov">          0 :         if (row &gt;= m_lower &amp;&amp; row &lt; m_upper) {    // only if own</span>
+<span class="lineNum">    1366 </span>                :<span class="lineNoCov">          0 :           const auto&amp; u = s.second[0];    // numerical solution (all components)</span>
+<span class="lineNum">    1367 </span>                :<span class="lineNoCov">          0 :           const auto&amp; a = s.second[1];    // analytical solution (all components)</span>
+<span class="lineNum">    1368 </span>                :<span class="lineNoCov">          0 :           auto v = s.second[2][0];        // nodal volume</span>
+<span class="lineNum">    1369 </span>                :            :           // Compute L2 norm of the numerical solution
+<span class="lineNum">    1370 </span>                :<span class="lineNoCov">          0 :           for (std::size_t c=0; c&lt;m_ncomp; ++c)</span>
+<span class="lineNum">    1371 </span>                :<span class="lineNoCov">          0 :             diag[0][c] += u[c] * u[c] * v;</span>
+<span class="lineNum">    1372 </span>                :            :           // Compute L2 norm of the numerical - analytical solution
+<span class="lineNum">    1373 </span>                :<span class="lineNoCov">          0 :           for (std::size_t c=0; c&lt;m_ncomp; ++c)</span>
+<span class="lineNum">    1374 </span>                :<span class="lineNoCov">          0 :             diag[1][c] += (u[c]-a[c]) * (u[c]-a[c]) * v;</span>
+<span class="lineNum">    1375 </span>                :            :           // Compute Linf norm of the numerical - analytical solution
+<span class="lineNum">    1376 </span>                :<span class="lineNoCov">          0 :           for (std::size_t c=0; c&lt;m_ncomp; ++c) {</span>
+<span class="lineNum">    1377 </span>                :<span class="lineNoCov">          0 :             auto err = std::abs( u[c] - a[c] );</span>
+<span class="lineNum">    1378 </span>                :<span class="lineNoCov">          0 :             if (err &gt; diag[2][c]) diag[2][c] = err;</span>
+<span class="lineNum">    1379 </span>                :            :           }
+<span class="lineNum">    1380 </span>                :            :         }
+<span class="lineNum">    1381 </span>                :            :       }
+<span class="lineNum">    1382 </span>                :            :       // Contribute to diagnostics across all PEs
+<span class="lineNum">    1383 </span>                :<span class="lineNoCov">          0 :       auto stream = tk::serialize( diag );</span>
+<span class="lineNum">    1384 </span>                :<span class="lineNoCov">          0 :       Group::contribute( stream.first, stream.second.get(), DiagMerger,</span>
+<span class="lineNum">    1385 </span>                :<span class="lineNoCov">          0 :                          m_cb.get&lt; tag::diag &gt;() );</span>
+<span class="lineNum">    1386 </span>                :<span class="lineNoCov">          0 :     }</span>
+<span class="lineNum">    1387 </span>                :            : };
+<span class="lineNum">    1388 </span>                :            : 
+<span class="lineNum">    1389 </span>                :            : #if defined(__clang__)
+<span class="lineNum">    1390 </span>                :            :   #pragma clang diagnostic pop
+<span class="lineNum">    1391 </span>                :            : #endif
+<span class="lineNum">    1392 </span>                :            : 
+<span class="lineNum">    1393 </span>                :            : } // tk::
+<span class="lineNum">    1394 </span>                :            : 
+<span class="lineNum">    1395 </span>                :            : #if defined(__clang__)
+<span class="lineNum">    1396 </span>                :            :   #pragma clang diagnostic push
+<span class="lineNum">    1397 </span>                :            :   #pragma clang diagnostic ignored &quot;-Wextra-semi&quot;
+<span class="lineNum">    1398 </span>                :            :   #pragma clang diagnostic ignored &quot;-Wold-style-cast&quot;
+<span class="lineNum">    1399 </span>                :            :   #pragma clang diagnostic ignored &quot;-Wsign-conversion&quot;
+<span class="lineNum">    1400 </span>                :            :   #pragma clang diagnostic ignored &quot;-Wunused-parameter&quot;
+<span class="lineNum">    1401 </span>                :            :   #pragma clang diagnostic ignored &quot;-Wshorten-64-to-32&quot;
+<span class="lineNum">    1402 </span>                :            :   #pragma clang diagnostic ignored &quot;-Wreorder&quot;
+<span class="lineNum">    1403 </span>                :            :   #pragma clang diagnostic ignored &quot;-Wunused-variable&quot;
+<span class="lineNum">    1404 </span>                :            : #elif defined(STRICT_GNUC)
+<span class="lineNum">    1405 </span>                :            :   #pragma GCC diagnostic push
+<span class="lineNum">    1406 </span>                :            :   #pragma GCC diagnostic ignored &quot;-Wnon-virtual-dtor&quot;
+<span class="lineNum">    1407 </span>                :            :   #pragma GCC diagnostic ignored &quot;-Wreorder&quot;
+<span class="lineNum">    1408 </span>                :            :   #pragma GCC diagnostic ignored &quot;-Wcast-qual&quot;
+<span class="lineNum">    1409 </span>                :            :   #pragma GCC diagnostic ignored &quot;-Wunused-parameter&quot;
+<span class="lineNum">    1410 </span>                :            :   #pragma GCC diagnostic ignored &quot;-Wunused-variable&quot;
+<span class="lineNum">    1411 </span>                :            : #endif
+<span class="lineNum">    1412 </span>                :            : 
+<span class="lineNum">    1413 </span>                :            : #define CK_TEMPLATES_ONLY
+<span class="lineNum">    1414 </span>                :            : #include &quot;solver.def.h&quot;
+<span class="lineNum">    1415 </span>                :            : #undef CK_TEMPLATES_ONLY
+<span class="lineNum">    1416 </span>                :            : 
+<span class="lineNum">    1417 </span>                :            : #if defined(__clang__)
+<span class="lineNum">    1418 </span>                :            :   #pragma clang diagnostic pop
+<span class="lineNum">    1419 </span>                :            : #elif defined(STRICT_GNUC)
+<span class="lineNum">    1420 </span>                :            :   #pragma GCC diagnostic pop
+<span class="lineNum">    1421 </span>                :            : #endif
+<span class="lineNum">    1422 </span>                :            : 
+<span class="lineNum">    1423 </span>                :            : #endif // Solver_h
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.12</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>
