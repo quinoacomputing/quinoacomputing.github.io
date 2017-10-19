@@ -24,20 +24,20 @@
           </tr>
           <tr>
             <td class="headerItem">Commit:</td>
-            <td class="headerValue"><a href="https://github.com/quinoacomputing/quinoa/commit/3af442c">Quinoa_v0.2-130-g3af442c</a></td>
+            <td class="headerValue"><a href="https://github.com/quinoacomputing/quinoa/commit/cfa3f59">Quinoa_v0.2-145-gcfa3f59</a></td>
             <td></td>
             <td class="headerItem">Lines:</td>
             <td class="headerCovTableEntry">0</td>
-            <td class="headerCovTableEntry">54</td>
+            <td class="headerCovTableEntry">28</td>
             <td class="headerCovTableEntryLo">0.0 %</td>
           </tr>
           <tr>
             <td class="headerItem">Date:</td>
-            <td class="headerValue">2017-10-05 12:29:56</td>
+            <td class="headerValue">2017-10-18 15:14:46</td>
             <td></td>
             <td class="headerItem">Functions:</td>
             <td class="headerCovTableEntry">0</td>
-            <td class="headerCovTableEntry">5</td>
+            <td class="headerCovTableEntry">4</td>
             <td class="headerCovTableEntryLo">0.0 %</td>
           </tr>
           <tr>
@@ -76,16 +76,16 @@
 <span class="lineNum">       2 </span>                :            : /*!
 <span class="lineNum">       3 </span>                :            :   \file      src/Inciter/CG.h
 <span class="lineNum">       4 </span>                :            :   \copyright 2012-2015, J. Bakosi, 2016-2017, Los Alamos National Security, LLC.
-<span class="lineNum">       5 </span>                :            :   \brief     CG advances a system of transport equations using CG+LW+FCT
-<span class="lineNum">       6 </span>                :            :   \details   CG advances a system of transport equations using continuous
-<span class="lineNum">       7 </span>                :            :     Galerkin (CG) finite elements with linear shapefunctions for spatial
-<span class="lineNum">       8 </span>                :            :     discretization combined with a time stepping discretization that is
-<span class="lineNum">       9 </span>                :            :     equivalent to the Lax-Wendroff (LW) scheme within the unstructured-mesh
-<span class="lineNum">      10 </span>                :            :     finite element context and treats discontinuities with flux-corrected
+<span class="lineNum">       5 </span>                :            :   \brief     CG advances a system of PDEs with the continuous Galerkin scheme
+<span class="lineNum">       6 </span>                :            :   \details   CG advances a system of partial differential equations (PDEs) using
+<span class="lineNum">       7 </span>                :            :     continuous Galerkin (CG) finite element (FE) spatial discretization (using
+<span class="lineNum">       8 </span>                :            :     linear shapefunctions on tetrahedron elements) combined with a time stepping
+<span class="lineNum">       9 </span>                :            :     scheme that is equivalent to the Lax-Wendroff (LW) scheme within the
+<span class="lineNum">      10 </span>                :            :     unstructured-mesh FE context and treats discontinuities with flux-corrected
 <span class="lineNum">      11 </span>                :            :     transport (FCT).
 <span class="lineNum">      12 </span>                :            : 
 <span class="lineNum">      13 </span>                :            :     There are a potentially large number of CG Charm++ chares created by
-<span class="lineNum">      14 </span>                :            :     Transporter.  Each CG gets a chunk of the full load (part of the mesh)
+<span class="lineNum">      14 </span>                :            :     Transporter. Each CG gets a chunk of the full load (part of the mesh)
 <span class="lineNum">      15 </span>                :            :     and does the same: initializes and advances a number of PDE systems in time.
 <span class="lineNum">      16 </span>                :            : 
 <span class="lineNum">      17 </span>                :            :     The implementation uses the Charm++ runtime system and is fully
@@ -171,381 +171,229 @@
 <span class="lineNum">      97 </span>                :            : #include &quot;Fields.h&quot;
 <span class="lineNum">      98 </span>                :            : #include &quot;DerivedData.h&quot;
 <span class="lineNum">      99 </span>                :            : #include &quot;VectorReducer.h&quot;
-<span class="lineNum">     100 </span>                :            : #include &quot;PDFReducer.h&quot;
-<span class="lineNum">     101 </span>                :            : #include &quot;FluxCorrector.h&quot;
-<span class="lineNum">     102 </span>                :            : #include &quot;Inciter/InputDeck/InputDeck.h&quot;
-<span class="lineNum">     103 </span>                :            : 
-<span class="lineNum">     104 </span>                :            : #include &quot;NoWarning/transporter.decl.h&quot;
-<span class="lineNum">     105 </span>                :            : #include &quot;NoWarning/cg.decl.h&quot;
-<span class="lineNum">     106 </span>                :            : 
-<span class="lineNum">     107 </span>                :            : namespace tk {
-<span class="lineNum">     108 </span>                :            :   class ExodusIIMeshWriter;
-<span class="lineNum">     109 </span>                :            :   class RootMeshWriter;
-<span class="lineNum">     110 </span>                :            : }
+<span class="lineNum">     100 </span>                :            : #include &quot;FluxCorrector.h&quot;
+<span class="lineNum">     101 </span>                :            : #include &quot;Inciter/InputDeck/InputDeck.h&quot;
+<span class="lineNum">     102 </span>                :            : 
+<span class="lineNum">     103 </span>                :            : #include &quot;NoWarning/cg.decl.h&quot;
+<span class="lineNum">     104 </span>                :            : 
+<span class="lineNum">     105 </span>                :            : namespace tk {
+<span class="lineNum">     106 </span>                :            :   class ExodusIIMeshWriter;
+<span class="lineNum">     107 </span>                :            :   class RootMeshWriter;
+<span class="lineNum">     108 </span>                :            : }
+<span class="lineNum">     109 </span>                :            : 
+<span class="lineNum">     110 </span>                :            : namespace inciter {
 <span class="lineNum">     111 </span>                :            : 
-<span class="lineNum">     112 </span>                :            : namespace inciter {
-<span class="lineNum">     113 </span>                :            : 
-<span class="lineNum">     114 </span>                :            : extern ctr::InputDeck g_inputdeck;
-<span class="lineNum">     115 </span>                :            : extern CkReduction::reducerType PDFMerger;
-<a name="116"><span class="lineNum">     116 </span>                :            : </a>
-<span class="lineNum">     117 </span>                :            : //! CG Charm++ chare array used to advance PDEs in time with CG+LW+FCT
-<span class="lineNum">     118 </span>                :<span class="lineNoCov">          0 : class CG : public CBase_CG {</span>
-<span class="lineNum">     119 </span>                :            : 
-<span class="lineNum">     120 </span>                :            :   private:
-<span class="lineNum">     121 </span>                :            :     using TransporterProxy = CProxy_Transporter;
-<span class="lineNum">     122 </span>                :            :     using SolverProxy = tk::CProxy_Solver&lt; CProxy_CG &gt;;
-<span class="lineNum">     123 </span>                :            : 
-<span class="lineNum">     124 </span>                :            :   public:
-<span class="lineNum">     125 </span>                :            :     #if defined(__clang__)
-<span class="lineNum">     126 </span>                :            :       #pragma clang diagnostic push
-<span class="lineNum">     127 </span>                :            :       #pragma clang diagnostic ignored &quot;-Wunused-parameter&quot;
-<span class="lineNum">     128 </span>                :            :     #elif defined(STRICT_GNUC)
-<span class="lineNum">     129 </span>                :            :       #pragma GCC diagnostic push
-<span class="lineNum">     130 </span>                :            :       #pragma GCC diagnostic ignored &quot;-Wunused-parameter&quot;
-<span class="lineNum">     131 </span>                :            :       #pragma GCC diagnostic ignored &quot;-Wdeprecated-declarations&quot;
-<span class="lineNum">     132 </span>                :            :     #elif defined(__INTEL_COMPILER)
-<span class="lineNum">     133 </span>                :            :       #pragma warning( push )
-<span class="lineNum">     134 </span>                :            :       #pragma warning( disable: 1478 )
-<span class="lineNum">     135 </span>                :            :     #endif
-<span class="lineNum">     136 </span>                :            :     // Include Charm++ SDAG code. See http://charm.cs.illinois.edu/manuals/html/
-<span class="lineNum">     137 </span>                :            :     // charm++/manual.html, Sec. &quot;Structured Control Flow: Structured Dagger&quot;.
-<span class="lineNum">     138 </span>                :            :     CG_SDAG_CODE
-<span class="lineNum">     139 </span>                :            :     #if defined(__clang__)
-<span class="lineNum">     140 </span>                :            :       #pragma clang diagnostic pop
-<span class="lineNum">     141 </span>                :            :     #elif defined(STRICT_GNUC)
-<span class="lineNum">     142 </span>                :            :       #pragma GCC diagnostic pop
-<span class="lineNum">     143 </span>                :            :     #elif defined(__INTEL_COMPILER)
-<span class="lineNum">     144 </span>                :            :       #pragma warning( pop )
-<span class="lineNum">     145 </span>                :            :     #endif
-<span class="lineNum">     146 </span>                :            : 
-<span class="lineNum">     147 </span>                :            :     //! Constructor
-<span class="lineNum">     148 </span>                :            :     explicit
-<span class="lineNum">     149 </span>                :            :       CG( const TransporterProxy&amp; transporter,
-<span class="lineNum">     150 </span>                :            :           const SolverProxy&amp; solver,
-<span class="lineNum">     151 </span>                :            :           const std::vector&lt; std::size_t &gt;&amp; conn,
-<span class="lineNum">     152 </span>                :            :           const std::unordered_map&lt; int,
-<span class="lineNum">     153 </span>                :            :                   std::unordered_set&lt; std::size_t &gt; &gt;&amp; msum,
-<span class="lineNum">     154 </span>                :            :           const std::unordered_map&lt; std::size_t, std::size_t &gt;&amp; filenodes,
-<span class="lineNum">     155 </span>                :            :           const tk::UnsMesh::EdgeNodes&amp; edgenodes,
-<span class="lineNum">     156 </span>                :            :           int nchare );
-<a name="157"><span class="lineNum">     157 </span>                :            : </a>
-<span class="lineNum">     158 </span>                :            :     //! Migrate constructor
-<span class="lineNum">     159 </span>                :<span class="lineNoCov">          0 :     explicit CG( CkMigrateMessage* ) {}</span>
-<span class="lineNum">     160 </span>                :            : 
-<span class="lineNum">     161 </span>                :            :     //! \brief Configure Charm++ reduction types
-<span class="lineNum">     162 </span>                :            :     //! \details Since this is a [nodeinit] routine, see cg.ci, the
-<span class="lineNum">     163 </span>                :            :     //!   Charm++ runtime system executes the routine exactly once on every
-<span class="lineNum">     164 </span>                :            :     //!   logical node early on in the Charm++ init sequence. Must be static as
-<span class="lineNum">     165 </span>                :            :     //!   it is called without an object. See also: Section &quot;Initializations at
-<a name="166"><span class="lineNum">     166 </span>                :            :     //!   Program Startup&quot; at in the Charm++ manual</a>
-<span class="lineNum">     167 </span>                :            :     //!   http://charm.cs.illinois.edu/manuals/html/charm++/manual.html.
-<span class="lineNum">     168 </span>                :<span class="lineNoCov">          0 :     static void registerReducers() {</span>
-<span class="lineNum">     169 </span>                :<span class="lineNoCov">          0 :       PDFMerger = CkReduction::addReducer( tk::mergeUniPDFs );</span>
-<span class="lineNum">     170 </span>                :<span class="lineNoCov">          0 :     }</span>
-<span class="lineNum">     171 </span>                :            : 
-<span class="lineNum">     172 </span>                :            :     //! \brief Read mesh node coordinates and optionally add new edge-nodes in
-<span class="lineNum">     173 </span>                :            :     //!   case of initial uniform refinement
-<span class="lineNum">     174 </span>                :            :     void coord();
-<span class="lineNum">     175 </span>                :            : 
-<span class="lineNum">     176 </span>                :            :     //! \brief Setup rows, query boundary conditions, output
-<span class="lineNum">     177 </span>                :            :     //!    mesh, etc.
-<span class="lineNum">     178 </span>                :            :     void setup( tk::real v );
-<span class="lineNum">     179 </span>                :            : 
-<span class="lineNum">     180 </span>                :            :     //! Collect nodal volumes across chare boundaries
-<span class="lineNum">     181 </span>                :            :     void comvol( const std::vector&lt; std::size_t &gt;&amp; gid,
-<span class="lineNum">     182 </span>                :            :                  const std::vector&lt; tk::real &gt;&amp; V );
-<span class="lineNum">     183 </span>                :            : 
-<span class="lineNum">     184 </span>                :            :     //! Sum mesh volumes and contribute own mesh volume to total volume
-<span class="lineNum">     185 </span>                :            :     void totalvol();
-<span class="lineNum">     186 </span>                :            : 
-<span class="lineNum">     187 </span>                :            :     //! Compute mesh cell statistics
-<span class="lineNum">     188 </span>                :            :     void stat();
-<span class="lineNum">     189 </span>                :            : 
-<span class="lineNum">     190 </span>                :            :     //! Request owned node IDs on which a Dirichlet BC is set by the user
-<span class="lineNum">     191 </span>                :            :     void requestBCs();
-<span class="lineNum">     192 </span>                :            : 
-<span class="lineNum">     193 </span>                :            :     //! Look up and return old node ID for new one
-<span class="lineNum">     194 </span>                :            :     void oldID( int frompe, const std::vector&lt; std::size_t &gt;&amp; newids );
+<span class="lineNum">     112 </span>                :            : extern ctr::InputDeck g_inputdeck;
+<a name="113"><span class="lineNum">     113 </span>                :            : </a>
+<span class="lineNum">     114 </span>                :            : //! CG Charm++ chare array used to advance PDEs in time with CG+LW+FCT
+<span class="lineNum">     115 </span>                :<span class="lineNoCov">          0 : class CG : public CBase_CG {</span>
+<span class="lineNum">     116 </span>                :            : 
+<span class="lineNum">     117 </span>                :            :   public:
+<span class="lineNum">     118 </span>                :            :     #if defined(__clang__)
+<span class="lineNum">     119 </span>                :            :       #pragma clang diagnostic push
+<span class="lineNum">     120 </span>                :            :       #pragma clang diagnostic ignored &quot;-Wunused-parameter&quot;
+<span class="lineNum">     121 </span>                :            :     #elif defined(STRICT_GNUC)
+<span class="lineNum">     122 </span>                :            :       #pragma GCC diagnostic push
+<span class="lineNum">     123 </span>                :            :       #pragma GCC diagnostic ignored &quot;-Wunused-parameter&quot;
+<span class="lineNum">     124 </span>                :            :       #pragma GCC diagnostic ignored &quot;-Wdeprecated-declarations&quot;
+<span class="lineNum">     125 </span>                :            :     #elif defined(__INTEL_COMPILER)
+<span class="lineNum">     126 </span>                :            :       #pragma warning( push )
+<span class="lineNum">     127 </span>                :            :       #pragma warning( disable: 1478 )
+<span class="lineNum">     128 </span>                :            :     #endif
+<span class="lineNum">     129 </span>                :            :     // Include Charm++ SDAG code. See http://charm.cs.illinois.edu/manuals/html/
+<span class="lineNum">     130 </span>                :            :     // charm++/manual.html, Sec. &quot;Structured Control Flow: Structured Dagger&quot;.
+<span class="lineNum">     131 </span>                :            :     CG_SDAG_CODE
+<span class="lineNum">     132 </span>                :            :     #if defined(__clang__)
+<span class="lineNum">     133 </span>                :            :       #pragma clang diagnostic pop
+<span class="lineNum">     134 </span>                :            :     #elif defined(STRICT_GNUC)
+<span class="lineNum">     135 </span>                :            :       #pragma GCC diagnostic pop
+<span class="lineNum">     136 </span>                :            :     #elif defined(__INTEL_COMPILER)
+<span class="lineNum">     137 </span>                :            :       #pragma warning( pop )
+<span class="lineNum">     138 </span>                :            :     #endif
+<span class="lineNum">     139 </span>                :            : 
+<span class="lineNum">     140 </span>                :            :     //! Constructor
+<span class="lineNum">     141 </span>                :            :     explicit
+<span class="lineNum">     142 </span>                :            :       CG( const CProxy_Discretization&amp; disc,
+<span class="lineNum">     143 </span>                :            :           const tk::CProxy_Solver&amp; solver );
+<a name="144"><span class="lineNum">     144 </span>                :            : </a>
+<span class="lineNum">     145 </span>                :            :     //! Migrate constructor
+<span class="lineNum">     146 </span>                :<span class="lineNoCov">          0 :     explicit CG( CkMigrateMessage* ) {}</span>
+<span class="lineNum">     147 </span>                :            : 
+<span class="lineNum">     148 </span>                :            :     //! \brief Read mesh node coordinates and optionally add new edge-nodes in
+<span class="lineNum">     149 </span>                :            :     //!   case of initial uniform refinement
+<span class="lineNum">     150 </span>                :            :     void coord();
+<span class="lineNum">     151 </span>                :            : 
+<span class="lineNum">     152 </span>                :            :     //! \brief Setup rows, query boundary conditions, output
+<span class="lineNum">     153 </span>                :            :     //!    mesh, etc.
+<span class="lineNum">     154 </span>                :            :     void setup( tk::real v );
+<span class="lineNum">     155 </span>                :            : 
+<span class="lineNum">     156 </span>                :            :     //! Request owned node IDs on which a Dirichlet BC is set by the user
+<span class="lineNum">     157 </span>                :            :     void requestBCs();
+<span class="lineNum">     158 </span>                :            : 
+<span class="lineNum">     159 </span>                :            :     //! Look up and return old node ID for new one
+<span class="lineNum">     160 </span>                :            :     void oldID( int frompe, const std::vector&lt; std::size_t &gt;&amp; newids );
+<span class="lineNum">     161 </span>                :            : 
+<span class="lineNum">     162 </span>                :            :     //! Compute time step size
+<span class="lineNum">     163 </span>                :            :     void dt();
+<span class="lineNum">     164 </span>                :            : 
+<span class="lineNum">     165 </span>                :            :     //! \brief Set ICs, compute initial time step size, output initial field
+<span class="lineNum">     166 </span>                :            :     //!   data, compute left-hand-side matrix
+<span class="lineNum">     167 </span>                :            :     void init();
+<span class="lineNum">     168 </span>                :            : 
+<span class="lineNum">     169 </span>                :            :     //! Update high order solution vector
+<span class="lineNum">     170 </span>                :            :     void updateSol( //solMsg* m );
+<span class="lineNum">     171 </span>                :            :                     const std::vector&lt; std::size_t &gt;&amp; gid,
+<span class="lineNum">     172 </span>                :            :                     const std::vector&lt; tk::real &gt;&amp; sol );
+<span class="lineNum">     173 </span>                :            : 
+<span class="lineNum">     174 </span>                :            :     //! Update low order solution vector
+<span class="lineNum">     175 </span>                :            :     void updateLowSol( //solMsg* m );
+<span class="lineNum">     176 </span>                :            :                        const std::vector&lt; std::size_t &gt;&amp; gid,
+<span class="lineNum">     177 </span>                :            :                        const std::vector&lt; tk::real &gt;&amp; sol );
+<span class="lineNum">     178 </span>                :            : 
+<span class="lineNum">     179 </span>                :            :     //! Advance equations to next time step
+<span class="lineNum">     180 </span>                :            :     void advance( uint64_t it, tk::real t, tk::real newdt );
+<span class="lineNum">     181 </span>                :            : 
+<span class="lineNum">     182 </span>                :            :     //! Receive sums of antidiffusive element contributions on chare-boundaries
+<span class="lineNum">     183 </span>                :            :     void comaec( const std::vector&lt; std::size_t &gt;&amp; gid,
+<span class="lineNum">     184 </span>                :            :                  const std::vector&lt; std::vector&lt; tk::real &gt; &gt;&amp; P );
+<span class="lineNum">     185 </span>                :            : 
+<span class="lineNum">     186 </span>                :            :     //! \brief Receive contributions to the maxima and minima of unknowns of all
+<span class="lineNum">     187 </span>                :            :     //!   elements surrounding mesh nodes on chare-boundaries
+<span class="lineNum">     188 </span>                :            :     void comalw( const std::vector&lt; std::size_t &gt;&amp; gid,
+<span class="lineNum">     189 </span>                :            :                     const std::vector&lt; std::vector&lt; tk::real &gt; &gt;&amp; Q );
+<span class="lineNum">     190 </span>                :            : 
+<span class="lineNum">     191 </span>                :            :     //! \brief Receive contributions of limited antidiffusive element
+<span class="lineNum">     192 </span>                :            :     //!   contributions on chare-boundaries
+<span class="lineNum">     193 </span>                :            :     void comlim( const std::vector&lt; std::size_t &gt;&amp; gid,
+<span class="lineNum">     194 </span>                :            :                     const std::vector&lt; std::vector&lt; tk::real &gt; &gt;&amp; A );
 <span class="lineNum">     195 </span>                :            : 
-<span class="lineNum">     196 </span>                :            :     //! \brief Set ICs, compute initial time step size, output initial field
-<span class="lineNum">     197 </span>                :            :     //!   data, compute left-hand-side matrix
-<span class="lineNum">     198 </span>                :            :     void init();
-<span class="lineNum">     199 </span>                :            : 
-<span class="lineNum">     200 </span>                :            :     //! Update high order solution vector
-<span class="lineNum">     201 </span>                :            :     void updateSol( const std::vector&lt; std::size_t &gt;&amp; gid,
-<span class="lineNum">     202 </span>                :            :                     const std::vector&lt; tk::real &gt;&amp; sol );
-<span class="lineNum">     203 </span>                :            : 
-<span class="lineNum">     204 </span>                :            :     //! Update low order solution vector
-<span class="lineNum">     205 </span>                :            :     void updateLowSol( const std::vector&lt; std::size_t &gt;&amp; gid,
-<span class="lineNum">     206 </span>                :            :                        const std::vector&lt; tk::real &gt;&amp; sol );
-<span class="lineNum">     207 </span>                :            : 
-<span class="lineNum">     208 </span>                :            :     //! Advance equations to next time step
-<span class="lineNum">     209 </span>                :            :     void advance( uint64_t it, tk::real t, tk::real newdt );
-<span class="lineNum">     210 </span>                :            : 
-<span class="lineNum">     211 </span>                :            :     //! Compute time step size
-<span class="lineNum">     212 </span>                :            :     void dt();
-<span class="lineNum">     213 </span>                :            : 
-<span class="lineNum">     214 </span>                :            :     //! Extract the velocity at cell nodes
-<span class="lineNum">     215 </span>                :            :     std::array&lt; std::array&lt; tk::real, 4 &gt;, 3 &gt; velocity( std::size_t e );
-<span class="lineNum">     216 </span>                :            : 
-<span class="lineNum">     217 </span>                :            :     //! Output mesh and particle fields to files
-<span class="lineNum">     218 </span>                :            :     void out();
-<span class="lineNum">     219 </span>                :            : 
-<span class="lineNum">     220 </span>                :            :     //! Receive sums of antidiffusive element contributions on chare-boundaries
-<span class="lineNum">     221 </span>                :            :     void comaec( const std::vector&lt; std::size_t &gt;&amp; gid,
-<span class="lineNum">     222 </span>                :            :                  const std::vector&lt; std::vector&lt; tk::real &gt; &gt;&amp; P );
-<span class="lineNum">     223 </span>                :            : 
-<span class="lineNum">     224 </span>                :            :     //! \brief Receive contributions to the maxima and minima of unknowns of all
-<span class="lineNum">     225 </span>                :            :     //!   elements surrounding mesh nodes on chare-boundaries
-<span class="lineNum">     226 </span>                :            :     void comalw( const std::vector&lt; std::size_t &gt;&amp; gid,
-<span class="lineNum">     227 </span>                :            :                     const std::vector&lt; std::vector&lt; tk::real &gt; &gt;&amp; Q );
-<span class="lineNum">     228 </span>                :            : 
-<span class="lineNum">     229 </span>                :            :     //! \brief Receive contributions of limited antidiffusive element
-<span class="lineNum">     230 </span>                :            :     //!   contributions on chare-boundaries
-<span class="lineNum">     231 </span>                :            :     void comlim( const std::vector&lt; std::size_t &gt;&amp; gid,
-<span class="lineNum">     232 </span>                :            :                     const std::vector&lt; std::vector&lt; tk::real &gt; &gt;&amp; A );
+<span class="lineNum">     196 </span>                :            :     ///@{
+<a name="197"><span class="lineNum">     197 </span>                :            :     //! \brief Pack/Unpack serialize member function</a>
+<span class="lineNum">     198 </span>                :            :     //! \param[in,out] p Charm++'s PUP::er serializer object reference
+<span class="lineNum">     199 </span>                :<span class="lineNoCov">          0 :     void pup( PUP::er &amp;p ) {</span>
+<span class="lineNum">     200 </span>                :<span class="lineNoCov">          0 :       CBase_CG::pup(p);</span>
+<span class="lineNum">     201 </span>                :<span class="lineNoCov">          0 :       p | m_itf;</span>
+<span class="lineNum">     202 </span>                :<span class="lineNoCov">          0 :       p | m_nhsol;</span>
+<span class="lineNum">     203 </span>                :<span class="lineNoCov">          0 :       p | m_nlsol;</span>
+<span class="lineNum">     204 </span>                :<span class="lineNoCov">          0 :       p | m_naec;</span>
+<span class="lineNum">     205 </span>                :<span class="lineNoCov">          0 :       p | m_nalw;</span>
+<span class="lineNum">     206 </span>                :<span class="lineNoCov">          0 :       p | m_nlim;</span>
+<span class="lineNum">     207 </span>                :<span class="lineNoCov">          0 :       p | m_disc;</span>
+<span class="lineNum">     208 </span>                :<span class="lineNoCov">          0 :       p | m_solver;</span>
+<span class="lineNum">     209 </span>                :<span class="lineNoCov">          0 :       p | m_fluxcorrector;</span>
+<span class="lineNum">     210 </span>                :<span class="lineNoCov">          0 :       p | m_u;</span>
+<span class="lineNum">     211 </span>                :<span class="lineNoCov">          0 :       p | m_ul;</span>
+<span class="lineNum">     212 </span>                :<span class="lineNoCov">          0 :       p | m_du;</span>
+<span class="lineNum">     213 </span>                :<span class="lineNoCov">          0 :       p | m_dul;</span>
+<span class="lineNum">     214 </span>                :<span class="lineNoCov">          0 :       p | m_ue;</span>
+<span class="lineNum">     215 </span>                :<span class="lineNoCov">          0 :       p | m_p;</span>
+<span class="lineNum">     216 </span>                :<span class="lineNoCov">          0 :       p | m_q;</span>
+<span class="lineNum">     217 </span>                :<span class="lineNoCov">          0 :       p | m_a;</span>
+<span class="lineNum">     218 </span>                :<span class="lineNoCov">          0 :       p | m_lhsd;</span>
+<span class="lineNum">     219 </span>                :<span class="lineNoCov">          0 :       p | m_lhso;</span>
+<span class="lineNum">     220 </span>                :<span class="lineNoCov">          0 :       p | m_pc;</span>
+<span class="lineNum">     221 </span>                :<span class="lineNoCov">          0 :       p | m_qc;</span>
+<span class="lineNum">     222 </span>                :<span class="lineNoCov">          0 :       p | m_ac;</span>
+<span class="lineNum">     223 </span>                :<span class="lineNoCov">          0 :       p | m_vol;</span>
+<span class="lineNum">     224 </span>                :<span class="lineNoCov">          0 :     }</span>
+<span class="lineNum">     225 </span>                :            :     //! \brief Pack/Unpack serialize operator|
+<span class="lineNum">     226 </span>                :            :     //! \param[in,out] p Charm++'s PUP::er serializer object reference
+<span class="lineNum">     227 </span>                :            :     //! \param[in,out] i CG object reference
+<span class="lineNum">     228 </span>                :            :     friend void operator|( PUP::er&amp; p, CG&amp; i ) { i.pup(p); }
+<span class="lineNum">     229 </span>                :            :     //@}
+<span class="lineNum">     230 </span>                :            : 
+<span class="lineNum">     231 </span>                :            :   private:
+<span class="lineNum">     232 </span>                :            :     using ncomp_t = kw::ncomp::info::expect::type;
 <span class="lineNum">     233 </span>                :            : 
-<span class="lineNum">     234 </span>                :            :     ///@{
-<a name="235"><span class="lineNum">     235 </span>                :            :     //! \brief Pack/Unpack serialize member function</a>
-<span class="lineNum">     236 </span>                :            :     //! \param[in,out] p Charm++'s PUP::er serializer object reference
-<span class="lineNum">     237 </span>                :<span class="lineNoCov">          0 :     void pup( PUP::er &amp;p ) {</span>
-<span class="lineNum">     238 </span>                :<span class="lineNoCov">          0 :       CBase_CG::pup(p);</span>
-<span class="lineNum">     239 </span>                :<span class="lineNoCov">          0 :       p | m_it;</span>
-<span class="lineNum">     240 </span>                :<span class="lineNoCov">          0 :       p | m_itf;</span>
-<span class="lineNum">     241 </span>                :<span class="lineNoCov">          0 :       p | m_t;</span>
-<span class="lineNum">     242 </span>                :<span class="lineNoCov">          0 :       p | m_dt;</span>
-<span class="lineNum">     243 </span>                :<span class="lineNoCov">          0 :       p | m_nvol;</span>
-<span class="lineNum">     244 </span>                :<span class="lineNoCov">          0 :       p | m_nhsol;</span>
-<span class="lineNum">     245 </span>                :<span class="lineNoCov">          0 :       p | m_nlsol;</span>
-<span class="lineNum">     246 </span>                :<span class="lineNoCov">          0 :       p | m_naec;</span>
-<span class="lineNum">     247 </span>                :<span class="lineNoCov">          0 :       p | m_nalw;</span>
-<span class="lineNum">     248 </span>                :<span class="lineNoCov">          0 :       p | m_nlim;</span>
-<span class="lineNum">     249 </span>                :<span class="lineNoCov">          0 :       p | m_V;</span>
-<span class="lineNum">     250 </span>                :<span class="lineNoCov">          0 :       p | m_nchare;</span>
-<span class="lineNum">     251 </span>                :<span class="lineNoCov">          0 :       p | m_outFilename;</span>
-<span class="lineNum">     252 </span>                :<span class="lineNoCov">          0 :       p | m_transporter;</span>
-<span class="lineNum">     253 </span>                :<span class="lineNoCov">          0 :       p | m_solver;</span>
-<span class="lineNum">     254 </span>                :<span class="lineNoCov">          0 :       p | m_fluxcorrector;</span>
-<span class="lineNum">     255 </span>                :<span class="lineNoCov">          0 :       p | m_filenodes;</span>
-<span class="lineNum">     256 </span>                :<span class="lineNoCov">          0 :       p | m_edgenodes;</span>
-<span class="lineNum">     257 </span>                :<span class="lineNoCov">          0 :       p | m_el;</span>
-<span class="lineNum">     258 </span>                :<span class="lineNoCov">          0 :       if (p.isUnpacking()) {</span>
-<span class="lineNum">     259 </span>                :<span class="lineNoCov">          0 :         m_inpoel = std::get&lt; 0 &gt;( m_el );</span>
-<span class="lineNum">     260 </span>                :<span class="lineNoCov">          0 :         m_gid = std::get&lt; 1 &gt;( m_el );</span>
-<span class="lineNum">     261 </span>                :<span class="lineNoCov">          0 :         m_lid = std::get&lt; 2 &gt;( m_el );</span>
-<span class="lineNum">     262 </span>                :            :       }
-<span class="lineNum">     263 </span>                :<span class="lineNoCov">          0 :       p | m_coord;</span>
-<span class="lineNum">     264 </span>                :<span class="lineNoCov">          0 :       p | m_psup;</span>
-<span class="lineNum">     265 </span>                :<span class="lineNoCov">          0 :       p | m_u;</span>
-<span class="lineNum">     266 </span>                :<span class="lineNoCov">          0 :       p | m_ul;</span>
-<span class="lineNum">     267 </span>                :<span class="lineNoCov">          0 :       p | m_du;</span>
-<span class="lineNum">     268 </span>                :<span class="lineNoCov">          0 :       p | m_dul;</span>
-<span class="lineNum">     269 </span>                :<span class="lineNoCov">          0 :       p | m_ue;</span>
-<span class="lineNum">     270 </span>                :<span class="lineNoCov">          0 :       p | m_p;</span>
-<span class="lineNum">     271 </span>                :<span class="lineNoCov">          0 :       p | m_q;</span>
-<span class="lineNum">     272 </span>                :<span class="lineNoCov">          0 :       p | m_a;</span>
-<span class="lineNum">     273 </span>                :<span class="lineNoCov">          0 :       p | m_lhsd;</span>
-<span class="lineNum">     274 </span>                :<span class="lineNoCov">          0 :       p | m_lhso;</span>
-<span class="lineNum">     275 </span>                :<span class="lineNoCov">          0 :       p | m_msum;</span>
-<span class="lineNum">     276 </span>                :<span class="lineNoCov">          0 :       p | m_v;</span>
-<span class="lineNum">     277 </span>                :<span class="lineNoCov">          0 :       p | m_vol;</span>
-<span class="lineNum">     278 </span>                :<span class="lineNoCov">          0 :       p | m_volc;</span>
-<span class="lineNum">     279 </span>                :<span class="lineNoCov">          0 :       p | m_bid;</span>
-<span class="lineNum">     280 </span>                :<span class="lineNoCov">          0 :       p | m_pc;</span>
-<span class="lineNum">     281 </span>                :<span class="lineNoCov">          0 :       p | m_qc;</span>
-<span class="lineNum">     282 </span>                :<span class="lineNoCov">          0 :       p | m_ac;</span>
-<span class="lineNum">     283 </span>                :<span class="lineNoCov">          0 :     }</span>
-<span class="lineNum">     284 </span>                :            :     //! \brief Pack/Unpack serialize operator|
-<span class="lineNum">     285 </span>                :            :     //! \param[in,out] p Charm++'s PUP::er serializer object reference
-<span class="lineNum">     286 </span>                :            :     //! \param[in,out] i CG object reference
-<span class="lineNum">     287 </span>                :            :     friend void operator|( PUP::er&amp; p, CG&amp; i ) { i.pup(p); }
-<span class="lineNum">     288 </span>                :            :     //@}
+<span class="lineNum">     234 </span>                :            :     //! Field output iteration count
+<span class="lineNum">     235 </span>                :            :     uint64_t m_itf;
+<span class="lineNum">     236 </span>                :            :     //! Counter for high order solution nodes updated
+<span class="lineNum">     237 </span>                :            :     std::size_t m_nhsol;
+<span class="lineNum">     238 </span>                :            :     //! Counter for low order solution nodes updated
+<span class="lineNum">     239 </span>                :            :     std::size_t m_nlsol;
+<span class="lineNum">     240 </span>                :            :     //! \brief Number of chares from which we received antidiffusive element
+<span class="lineNum">     241 </span>                :            :     //!   contributions on chare boundaries
+<span class="lineNum">     242 </span>                :            :     std::size_t m_naec;
+<span class="lineNum">     243 </span>                :            :     //! \brief Number of chares from which we received maximum and minimum
+<span class="lineNum">     244 </span>                :            :     //!   unknowns of elements surrounding nodes on chare boundaries
+<span class="lineNum">     245 </span>                :            :     std::size_t m_nalw;
+<span class="lineNum">     246 </span>                :            :     //! \brief Number of chares from which we received limited antidiffusion
+<span class="lineNum">     247 </span>                :            :     //!   element contributiones on chare boundaries
+<span class="lineNum">     248 </span>                :            :     std::size_t m_nlim;
+<span class="lineNum">     249 </span>                :            :     //! Discretization proxy
+<span class="lineNum">     250 </span>                :            :     CProxy_Discretization m_disc;
+<span class="lineNum">     251 </span>                :            :     //! Linear system merger and solver proxy
+<span class="lineNum">     252 </span>                :            :     tk::CProxy_Solver m_solver;
+<span class="lineNum">     253 </span>                :            :     //! \brief Map associating local node IDs to side set IDs for all side sets
+<span class="lineNum">     254 </span>                :            :     //!   read from mesh file (not only those the user sets BCs on)
+<span class="lineNum">     255 </span>                :            :     std::map&lt; int, std::vector&lt; std::size_t &gt; &gt; m_side;
+<span class="lineNum">     256 </span>                :            :     //! Flux corrector performing FCT
+<span class="lineNum">     257 </span>                :            :     FluxCorrector m_fluxcorrector;
+<span class="lineNum">     258 </span>                :            :     //! Unknown/solution vector at mesh nodes
+<span class="lineNum">     259 </span>                :            :     tk::Fields m_u;
+<span class="lineNum">     260 </span>                :            :     //! Unknown/solution vector at mesh nodes (low orderd)
+<span class="lineNum">     261 </span>                :            :     tk::Fields m_ul;
+<span class="lineNum">     262 </span>                :            :     //! Unknown/solution vector increment (high order)
+<span class="lineNum">     263 </span>                :            :     tk::Fields m_du;
+<span class="lineNum">     264 </span>                :            :     //! Unknown/solution vector increment (low order)
+<span class="lineNum">     265 </span>                :            :     tk::Fields m_dul;
+<span class="lineNum">     266 </span>                :            :     //! Unknown/solution vector at mesh cells
+<span class="lineNum">     267 </span>                :            :     tk::Fields m_ue;
+<span class="lineNum">     268 </span>                :            :     //! Flux-corrected transport data structures
+<span class="lineNum">     269 </span>                :            :     tk::Fields m_p, m_q, m_a;
+<span class="lineNum">     270 </span>                :            :     //! Sparse matrix sotring the diagonals and off-diagonals of nonzeros
+<span class="lineNum">     271 </span>                :            :     tk::Fields m_lhsd, m_lhso;
+<span class="lineNum">     272 </span>                :            :     //! Receive buffers for FCT
+<span class="lineNum">     273 </span>                :            :     std::vector&lt; std::vector&lt; tk::real &gt; &gt; m_pc, m_qc, m_ac;
+<span class="lineNum">     274 </span>                :            :     //! Total mesh volume
+<span class="lineNum">     275 </span>                :            :     tk::real m_vol;
+<span class="lineNum">     276 </span>                :            : 
+<span class="lineNum">     277 </span>                :            :     //! Output mesh and particle fields to files
+<span class="lineNum">     278 </span>                :            :     void out();
+<span class="lineNum">     279 </span>                :            : 
+<span class="lineNum">     280 </span>                :            :     //! Output mesh-based fields to file
+<span class="lineNum">     281 </span>                :            :     void writeFields( tk::real time );
+<span class="lineNum">     282 </span>                :            : 
+<span class="lineNum">     283 </span>                :            :     //! \brief Extract node IDs from side set node lists and match to
+<span class="lineNum">     284 </span>                :            :     //    user-specified boundary conditions
+<span class="lineNum">     285 </span>                :            :     void bc();
+<span class="lineNum">     286 </span>                :            : 
+<span class="lineNum">     287 </span>                :            :     //! Compute left-hand side of transport equations
+<span class="lineNum">     288 </span>                :            :     void lhs();
 <span class="lineNum">     289 </span>                :            : 
-<span class="lineNum">     290 </span>                :            :   private:
-<span class="lineNum">     291 </span>                :            :     using ncomp_t = kw::ncomp::info::expect::type;
-<span class="lineNum">     292 </span>                :            :     using NodeBC = std::vector&lt; std::pair&lt; bool, tk::real &gt; &gt;;
-<span class="lineNum">     293 </span>                :            : 
-<span class="lineNum">     294 </span>                :            :     //! Iteration count
-<span class="lineNum">     295 </span>                :            :     uint64_t m_it;
-<span class="lineNum">     296 </span>                :            :     //! Field output iteration count
-<span class="lineNum">     297 </span>                :            :     uint64_t m_itf;
-<span class="lineNum">     298 </span>                :            :     //! Physical time
-<span class="lineNum">     299 </span>                :            :     tk::real m_t;
-<span class="lineNum">     300 </span>                :            :     //! Physical time step size
-<span class="lineNum">     301 </span>                :            :     tk::real m_dt;
-<span class="lineNum">     302 </span>                :            :     //! Physical time at which the last field output was written
-<span class="lineNum">     303 </span>                :            :     tk::real m_lastFieldWriteTime;
-<span class="lineNum">     304 </span>                :            :     //! \brief Number of chares from which we received nodal volume
-<span class="lineNum">     305 </span>                :            :     //!   contributions on chare boundaries
-<span class="lineNum">     306 </span>                :            :     std::size_t m_nvol;
-<span class="lineNum">     307 </span>                :            :     //! Counter for high order solution nodes updated
-<span class="lineNum">     308 </span>                :            :     std::size_t m_nhsol;
-<span class="lineNum">     309 </span>                :            :     //! Counter for low order solution nodes updated
-<span class="lineNum">     310 </span>                :            :     std::size_t m_nlsol;
-<span class="lineNum">     311 </span>                :            :     //! \brief Number of chares from which we received antidiffusive element
-<span class="lineNum">     312 </span>                :            :     //!   contributions on chare boundaries
-<span class="lineNum">     313 </span>                :            :     std::size_t m_naec;
-<span class="lineNum">     314 </span>                :            :     //! \brief Number of chares from which we received maximum and minimum
-<span class="lineNum">     315 </span>                :            :     //!   unknowns of elements surrounding nodes on chare boundaries
-<span class="lineNum">     316 </span>                :            :     std::size_t m_nalw;
-<span class="lineNum">     317 </span>                :            :     //! \brief Number of chares from which we received limited antidiffusion
-<span class="lineNum">     318 </span>                :            :     //!   element contributiones on chare boundaries
-<span class="lineNum">     319 </span>                :            :     std::size_t m_nlim;
-<span class="lineNum">     320 </span>                :            :     //! Total mesh volume
-<span class="lineNum">     321 </span>                :            :     tk::real m_V;
-<span class="lineNum">     322 </span>                :            :     //! Total number of CG chares
-<span class="lineNum">     323 </span>                :            :     std::size_t m_nchare;
-<span class="lineNum">     324 </span>                :            :     //! Output filename
-<span class="lineNum">     325 </span>                :            :     std::string m_outFilename;
-<span class="lineNum">     326 </span>                :            :     //! Transporter proxy
-<span class="lineNum">     327 </span>                :            :     TransporterProxy m_transporter;
-<span class="lineNum">     328 </span>                :            :     //! Linear system merger and solver proxy
-<span class="lineNum">     329 </span>                :            :     SolverProxy m_solver;
-<span class="lineNum">     330 </span>                :            :     //! \brief Map associating old node IDs (as in file) to new node IDs (as in
-<span class="lineNum">     331 </span>                :            :     //!   producing contiguous-row-id linear system contributions)
-<span class="lineNum">     332 </span>                :            :     std::unordered_map&lt; std::size_t, std::size_t &gt; m_filenodes;
-<span class="lineNum">     333 </span>                :            :     //! \brief Map associating local node IDs to side set IDs for all side sets
-<span class="lineNum">     334 </span>                :            :     //!   read from mesh file (not only those the user sets BCs on)
-<span class="lineNum">     335 </span>                :            :     std::map&lt; int, std::vector&lt; std::size_t &gt; &gt; m_side;
-<span class="lineNum">     336 </span>                :            :     //! \brief Maps associating node node IDs to edges (a pair of old node IDs)
-<span class="lineNum">     337 </span>                :            :     //!   for only the nodes newly added as a result of initial uniform
-<span class="lineNum">     338 </span>                :            :     //!   refinement.
-<span class="lineNum">     339 </span>                :            :     tk::UnsMesh::EdgeNodes m_edgenodes;
-<span class="lineNum">     340 </span>                :            :     //! \brief Elements of the mesh chunk we operate on
-<span class="lineNum">     341 </span>                :            :     //! \details Initialized by the constructor. The first vector is the element
-<span class="lineNum">     342 </span>                :            :     //!   connectivity (local IDs), the second vector is the global node IDs of
-<span class="lineNum">     343 </span>                :            :     //!   owned elements, while the third one is a map of global-&gt;local node
-<span class="lineNum">     344 </span>                :            :     //!   IDs.
-<span class="lineNum">     345 </span>                :            :     std::tuple&lt; std::vector&lt; std::size_t &gt;,
-<span class="lineNum">     346 </span>                :            :                 std::vector&lt; std::size_t &gt;,
-<span class="lineNum">     347 </span>                :            :                 std::unordered_map&lt; std::size_t, std::size_t &gt; &gt; m_el;
-<span class="lineNum">     348 </span>                :            :     //! Alias to element connectivity in m_el
-<span class="lineNum">     349 </span>                :<span class="lineNoCov">          0 :     std::vector&lt; std::size_t &gt; m_inpoel = std::get&lt; 0 &gt;( m_el );</span>
-<span class="lineNum">     350 </span>                :            :     //! Alias to global node IDs of owned elements in m_el
-<span class="lineNum">     351 </span>                :<span class="lineNoCov">          0 :     std::vector&lt; std::size_t &gt; m_gid = std::get&lt; 1 &gt;( m_el );</span>
-<span class="lineNum">     352 </span>                :            :     //! \brief Alias to local node ids associated to the global ones of owned
-<span class="lineNum">     353 </span>                :            :     //!    elements in m_el
-<span class="lineNum">     354 </span>                :<span class="lineNoCov">          0 :     std::unordered_map&lt; std::size_t, std::size_t &gt; m_lid = std::get&lt; 2 &gt;( m_el );</span>
-<span class="lineNum">     355 </span>                :            :     //! Mesh point coordinates
-<span class="lineNum">     356 </span>                :            :     std::array&lt; std::vector&lt; tk::real &gt;, 3 &gt; m_coord;
-<span class="lineNum">     357 </span>                :            :     //! Flux corrector performing FCT
-<span class="lineNum">     358 </span>                :            :     FluxCorrector m_fluxcorrector;
-<span class="lineNum">     359 </span>                :            :     //! Points surrounding points of our chunk of the mesh
-<span class="lineNum">     360 </span>                :            :     std::pair&lt; std::vector&lt; std::size_t &gt;, std::vector&lt; std::size_t &gt; &gt; m_psup;
-<span class="lineNum">     361 </span>                :            :     //! Unknown/solution vector at mesh nodes
-<span class="lineNum">     362 </span>                :            :     tk::Fields m_u;
-<span class="lineNum">     363 </span>                :            :     //! Unknown/solution vector at mesh nodes (low orderd)
-<span class="lineNum">     364 </span>                :            :     tk::Fields m_ul;
-<span class="lineNum">     365 </span>                :            :     //! Unknown/solution vector increment (high order)
-<span class="lineNum">     366 </span>                :            :     tk::Fields m_du;
-<span class="lineNum">     367 </span>                :            :     //! Unknown/solution vector increment (low order)
-<span class="lineNum">     368 </span>                :            :     tk::Fields m_dul;
-<span class="lineNum">     369 </span>                :            :     //! Unknown/solution vector at mesh cells
-<span class="lineNum">     370 </span>                :            :     tk::Fields m_ue;
-<span class="lineNum">     371 </span>                :            :     //! Flux-corrected transport data structures
-<span class="lineNum">     372 </span>                :            :     tk::Fields m_p, m_q, m_a;
-<span class="lineNum">     373 </span>                :            :     //! Sparse matrix sotring the diagonals and off-diagonals of nonzeros
-<span class="lineNum">     374 </span>                :            :     tk::Fields m_lhsd, m_lhso;
-<span class="lineNum">     375 </span>                :            :     //! \brief Global mesh node IDs bordering the mesh chunk held by fellow
-<span class="lineNum">     376 </span>                :            :     //!   CG chares associated to their chare IDs
-<span class="lineNum">     377 </span>                :            :     //! \details msum: mesh chunks surrounding mesh chunks and their neighbor
-<span class="lineNum">     378 </span>                :            :     //!   points
-<span class="lineNum">     379 </span>                :            :     std::unordered_map&lt; int, std::vector&lt; std::size_t &gt; &gt; m_msum;
-<span class="lineNum">     380 </span>                :            :     //! Nodal mesh volumes
-<span class="lineNum">     381 </span>                :            :     //! \details This is the volume of the mesh associated to nodes of owned
-<span class="lineNum">     382 </span>                :            :     //!   elements (sum of surrounding cell volumes / 4) without contributions
-<span class="lineNum">     383 </span>                :            :     //!   from other chares on chare-boundaries
-<span class="lineNum">     384 </span>                :            :     std::vector&lt; tk::real &gt; m_v;
-<span class="lineNum">     385 </span>                :            :     //! Volume of nodes
-<span class="lineNum">     386 </span>                :            :     //! \details This is the volume of the mesh associated to nodes of owned
-<span class="lineNum">     387 </span>                :            :     //!   elements (sum of surrounding cell volumes / 4) with contributions from
-<span class="lineNum">     388 </span>                :            :     //!   other chares on chare-boundaries
-<span class="lineNum">     389 </span>                :            :     std::vector&lt; tk::real &gt; m_vol;
-<span class="lineNum">     390 </span>                :            :     //! Receive buffer for volume of nodes
-<span class="lineNum">     391 </span>                :            :     //! \details This is a communication buffer used to compute the volume of
-<span class="lineNum">     392 </span>                :            :     //!   the mesh associated to nodes of owned elements (sum of surrounding
-<span class="lineNum">     393 </span>                :            :     //!   cell volumes / 4) with contributions from other chares on
-<span class="lineNum">     394 </span>                :            :     //!   chare-boundaries.
-<span class="lineNum">     395 </span>                :            :     std::vector&lt; tk::real &gt; m_volc;
-<span class="lineNum">     396 </span>                :            :     //! \brief Local chare-boundary mesh node IDs at which we receive
-<span class="lineNum">     397 </span>                :            :     //!   contributions associated to global mesh node IDs of mesh elements we
-<span class="lineNum">     398 </span>                :            :     //!   contribute to
-<span class="lineNum">     399 </span>                :            :     std::unordered_map&lt; std::size_t, std::size_t &gt; m_bid;
-<span class="lineNum">     400 </span>                :            :     //! Receive buffers for FCT
-<span class="lineNum">     401 </span>                :            :     std::vector&lt; std::vector&lt; tk::real &gt; &gt; m_pc, m_qc, m_ac;
-<span class="lineNum">     402 </span>                :            : 
-<span class="lineNum">     403 </span>                :            :     //! Query old node IDs for a list of new node IDs
-<span class="lineNum">     404 </span>                :            :     std::vector&lt; std::size_t &gt; old( const std::vector&lt; std::size_t &gt;&amp; newids );
-<span class="lineNum">     405 </span>                :            : 
-<span class="lineNum">     406 </span>                :            :     //! Sum mesh volumes to nodes, start communicating them on chare-boundaries
-<span class="lineNum">     407 </span>                :            :     void vol();
-<span class="lineNum">     408 </span>                :            : 
-<span class="lineNum">     409 </span>                :            :     //! \brief Extract node IDs from side set node lists and match to
-<span class="lineNum">     410 </span>                :            :     //    user-specified boundary conditions
-<span class="lineNum">     411 </span>                :            :     void bc();
-<span class="lineNum">     412 </span>                :            : 
-<span class="lineNum">     413 </span>                :            :     //! Read coordinates of mesh nodes given
-<span class="lineNum">     414 </span>                :            :     void readCoords();
-<span class="lineNum">     415 </span>                :            : 
-<span class="lineNum">     416 </span>                :            :     //! \brief Add coordinates of mesh nodes newly generated to edge-mid points
-<span class="lineNum">     417 </span>                :            :     //!    during initial refinement
-<span class="lineNum">     418 </span>                :            :     void addEdgeNodeCoords();
-<span class="lineNum">     419 </span>                :            : 
-<span class="lineNum">     420 </span>                :            :     //! Compute left-hand side of transport equations
-<span class="lineNum">     421 </span>                :            :     void lhs();
-<span class="lineNum">     422 </span>                :            : 
-<span class="lineNum">     423 </span>                :            :     //! Compute righ-hand side vector of transport equations
-<span class="lineNum">     424 </span>                :            :     void rhs();
-<span class="lineNum">     425 </span>                :            : 
-<span class="lineNum">     426 </span>                :            :     //! Output chare element blocks to output file
-<span class="lineNum">     427 </span>                :            :     void writeMesh();
-<span class="lineNum">     428 </span>                :            : 
-<span class="lineNum">     429 </span>                :            :     //! Output solution to file
-<span class="lineNum">     430 </span>                :            :     void writeSolution( const tk::ExodusIIMeshWriter&amp; ew,
-<span class="lineNum">     431 </span>                :            :                         uint64_t it,
-<span class="lineNum">     432 </span>                :            :                         const std::vector&lt; std::vector&lt; tk::real &gt; &gt;&amp; u ) const;
-<span class="lineNum">     433 </span>                :            :     #ifdef HAS_ROOT
-<span class="lineNum">     434 </span>                :            :     void writeSolution( const tk::RootMeshWriter&amp; rmw,
-<span class="lineNum">     435 </span>                :            :                         uint64_t it,
-<span class="lineNum">     436 </span>                :            :                         const std::vector&lt; std::vector&lt; tk::real &gt; &gt;&amp; u ) const;
-<span class="lineNum">     437 </span>                :            :     #endif
-<span class="lineNum">     438 </span>                :            : 
-<span class="lineNum">     439 </span>                :            :     //! Output mesh-based fields metadata to file
-<span class="lineNum">     440 </span>                :            :     void writeMeta() const;
-<span class="lineNum">     441 </span>                :            : 
-<span class="lineNum">     442 </span>                :            :     //! Output mesh-based fields to file
-<span class="lineNum">     443 </span>                :            :     void writeFields( tk::real time );
-<span class="lineNum">     444 </span>                :            : 
-<span class="lineNum">     445 </span>                :            :     //! Search particle ina single mesh cell
-<span class="lineNum">     446 </span>                :            :     bool parinel( std::size_t p, std::size_t e, std::array&lt; tk::real, 4 &gt;&amp; N );
-<span class="lineNum">     447 </span>                :            : 
-<span class="lineNum">     448 </span>                :            :     //! Compute and sum antidiffusive element contributions (AEC) to mesh nodes
-<span class="lineNum">     449 </span>                :            :     void aec();
-<span class="lineNum">     450 </span>                :            : 
-<span class="lineNum">     451 </span>                :            :     //! \brief Compute the maximum and minimum unknowns of all elements
-<span class="lineNum">     452 </span>                :            :     //!   surrounding nodes
-<span class="lineNum">     453 </span>                :            :     void alw();
-<span class="lineNum">     454 </span>                :            : 
-<span class="lineNum">     455 </span>                :            :     //! \brief Verify antidiffusive element contributions up to linear solver
-<span class="lineNum">     456 </span>                :            :     //!   convergence
-<span class="lineNum">     457 </span>                :            :     void verify();
-<span class="lineNum">     458 </span>                :            : 
-<span class="lineNum">     459 </span>                :            :     //! Compute the limited antidiffusive element contributions
-<span class="lineNum">     460 </span>                :            :     void lim();
-<span class="lineNum">     461 </span>                :            : 
-<span class="lineNum">     462 </span>                :            :     //! Apply limited antidiffusive element contributions
-<span class="lineNum">     463 </span>                :            :     void apply();
-<span class="lineNum">     464 </span>                :            : 
-<span class="lineNum">     465 </span>                :            :     //! Compute diagnostics, e.g., residuals
-<span class="lineNum">     466 </span>                :            :     void diagnostics();
-<span class="lineNum">     467 </span>                :            : 
-<span class="lineNum">     468 </span>                :            :     //! Verify that solution does not change at Dirichlet boundary conditions
-<span class="lineNum">     469 </span>                :            :     bool correctBC();
-<span class="lineNum">     470 </span>                :            : };
-<span class="lineNum">     471 </span>                :            : 
-<span class="lineNum">     472 </span>                :            : } // inciter::
-<span class="lineNum">     473 </span>                :            : 
-<span class="lineNum">     474 </span>                :            : #endif // CG_h
+<span class="lineNum">     290 </span>                :            :     //! Compute righ-hand side vector of transport equations
+<span class="lineNum">     291 </span>                :            :     void rhs();
+<span class="lineNum">     292 </span>                :            : 
+<span class="lineNum">     293 </span>                :            :     //! Search particle ina single mesh cell
+<span class="lineNum">     294 </span>                :            :     bool parinel( std::size_t p, std::size_t e, std::array&lt; tk::real, 4 &gt;&amp; N );
+<span class="lineNum">     295 </span>                :            : 
+<span class="lineNum">     296 </span>                :            :     //! Compute and sum antidiffusive element contributions (AEC) to mesh nodes
+<span class="lineNum">     297 </span>                :            :     void aec();
+<span class="lineNum">     298 </span>                :            : 
+<span class="lineNum">     299 </span>                :            :     //! \brief Compute the maximum and minimum unknowns of all elements
+<span class="lineNum">     300 </span>                :            :     //!   surrounding nodes
+<span class="lineNum">     301 </span>                :            :     void alw();
+<span class="lineNum">     302 </span>                :            : 
+<span class="lineNum">     303 </span>                :            :     //! \brief Verify antidiffusive element contributions up to linear solver
+<span class="lineNum">     304 </span>                :            :     //!   convergence
+<span class="lineNum">     305 </span>                :            :     void verify();
+<span class="lineNum">     306 </span>                :            : 
+<span class="lineNum">     307 </span>                :            :     //! Compute the limited antidiffusive element contributions
+<span class="lineNum">     308 </span>                :            :     void lim();
+<span class="lineNum">     309 </span>                :            : 
+<span class="lineNum">     310 </span>                :            :     //! Apply limited antidiffusive element contributions
+<span class="lineNum">     311 </span>                :            :     void apply();
+<span class="lineNum">     312 </span>                :            : 
+<span class="lineNum">     313 </span>                :            :     //! Compute diagnostics, e.g., residuals
+<span class="lineNum">     314 </span>                :            :     void diagnostics();
+<span class="lineNum">     315 </span>                :            : 
+<span class="lineNum">     316 </span>                :            :     //! Verify that solution does not change at Dirichlet boundary conditions
+<span class="lineNum">     317 </span>                :            :     bool correctBC();
+<span class="lineNum">     318 </span>                :            : };
+<span class="lineNum">     319 </span>                :            : 
+<span class="lineNum">     320 </span>                :            : } // inciter::
+<span class="lineNum">     321 </span>                :            : 
+<span class="lineNum">     322 </span>                :            : #endif // CG_h
 </pre>
       </td>
     </tr>
