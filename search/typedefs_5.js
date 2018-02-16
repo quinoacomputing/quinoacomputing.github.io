@@ -1,5 +1,7 @@
 var searchData=
 [
+  ['face_5fids_5ft',['face_ids_t',['../_a_m_r__types_8h.html#af9706cbab0817d6993709d2f2392c87c',1,'AMR_types.h']]],
+  ['face_5flist_5ft',['face_list_t',['../_a_m_r__types_8h.html#a857704a54a2d14618d343fdb87b54ae6',1,'AMR_types.h']]],
   ['factory',['Factory',['../structtut_1_1_factory__common.html#aab13d1e00c3c7eb85823cb3a7c19ddfa',1,'tut::Factory_common']]],
   ['factory_5fgroup',['Factory_group',['../namespacetut.html#ad2f5e3640b11a3a697489d61920cf463',1,'tut']]],
   ['factory_5fobject',['Factory_object',['../namespacetut.html#a4e4a76be444a4476cacd20894829bb9f',1,'tut']]],

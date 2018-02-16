@@ -1,7 +1,11 @@
 var searchData=
 [
+  ['edge_2ec',['edge.C',['../edge_8_c.html',1,'']]],
+  ['edge_2eh',['edge.h',['../edge_8h.html',1,'']]],
+  ['edge_5fstore_2eh',['edge_store.h',['../edge__store_8h.html',1,'']]],
   ['error_2eh',['Error.h',['../_error_8h.html',1,'']]],
   ['escaper_2eh',['Escaper.h',['../_escaper_8h.html',1,'']]],
+  ['euler_2eh',['Euler.h',['../_euler_8h.html',1,'']]],
   ['examples_2edox',['examples.dox',['../examples_8dox.html',1,'']]],
   ['exception_2ec',['Exception.C',['../_exception_8_c.html',1,'']]],
   ['exception_2eh',['Exception.h',['../_exception_8h.html',1,'']]],

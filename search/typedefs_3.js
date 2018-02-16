@@ -11,6 +11,6 @@ var searchData=
   ['diffeqkey',['DiffEqKey',['../namespacewalker_1_1ctr.html#ab452f8fe7a986b01b99b58d2c16554d0',1,'walker::ctr']]],
   ['dirichletcoeffpolicies',['DirichletCoeffPolicies',['../namespacewalker.html#affe17f2d7f33918861c5a982d2097bf4',1,'walker']]],
   ['dirichletparameters',['DirichletParameters',['../namespacewalker_1_1ctr.html#a3318d5f74a1f5879014390868d3692fa',1,'walker::ctr']]],
-  ['discretization',['discretization',['../namespaceinciter_1_1ctr.html#ab821c9b614e541e20d53a80f5ea8eaba',1,'inciter::ctr::discretization()'],['../namespacewalker_1_1ctr.html#a2dec00532bc48e95d36a806b3eae1495',1,'walker::ctr::discretization()']]],
+  ['discretization',['discretization',['../namespaceinciter_1_1ctr.html#a48ba737e8be9c91812d24b27f529644a',1,'inciter::ctr::discretization()'],['../namespacewalker_1_1ctr.html#a2dec00532bc48e95d36a806b3eae1495',1,'walker::ctr::discretization()']]],
   ['dsec',['Dsec',['../classtk_1_1_timer.html#ac1e4b53f806eeb46879f9d0acec4c68b',1,'tk::Timer']]]
 ];

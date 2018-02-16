@@ -2,8 +2,9 @@ var searchData=
 [
   ['b',['b',['../structtag_1_1b.html',1,'tag']]],
   ['base',['Base',['../structtut_1_1_factory__common_1_1_base.html',1,'tut::Factory_common']]],
-  ['battery',['battery',['../structtag_1_1battery.html',1,'tag::battery'],['../classrngtest_1_1_battery.html',1,'rngtest::Battery'],['../structrngtest_1_1deck_1_1battery.html',1,'rngtest::deck::battery'],['../classrngtest_1_1ctr_1_1_battery.html',1,'rngtest::ctr::Battery']]],
+  ['battery',['battery',['../structtag_1_1battery.html',1,'tag::battery'],['../structrngtest_1_1deck_1_1battery.html',1,'rngtest::deck::battery'],['../classrngtest_1_1_battery.html',1,'rngtest::Battery'],['../classrngtest_1_1ctr_1_1_battery.html',1,'rngtest::ctr::Battery']]],
   ['bc_5fdirichlet',['bc_dirichlet',['../structinciter_1_1deck_1_1bc__dirichlet.html',1,'inciter::deck']]],
+  ['bcast',['bcast',['../structtag_1_1bcast.html',1,'tag']]],
   ['bcdir',['bcdir',['../structtag_1_1bcdir.html',1,'tag']]],
   ['benchmark',['benchmark',['../structinciter_1_1cmd_1_1benchmark.html',1,'inciter::cmd::benchmark'],['../structtag_1_1benchmark.html',1,'tag::benchmark']]],
   ['beta',['beta',['../structwalker_1_1deck_1_1beta.html',1,'walker::deck::beta'],['../classwalker_1_1_beta.html',1,'walker::Beta&lt; Init, Coefficients &gt;'],['../structtag_1_1beta.html',1,'tag::beta']]],
@@ -18,5 +19,6 @@ var searchData=
   ['bipdf',['BiPDF',['../classtk_1_1_bi_p_d_f.html',1,'tk']]],
   ['birthdayspacings',['BirthdaySpacings',['../structtag_1_1_birthday_spacings.html',1,'tag']]],
   ['block',['block',['../structtk_1_1grm_1_1block.html',1,'tk::grm']]],
+  ['boundaryconditions',['BoundaryConditions',['../classinciter_1_1_boundary_conditions.html',1,'inciter']]],
   ['bprime',['bprime',['../structtag_1_1bprime.html',1,'tag']]]
 ];

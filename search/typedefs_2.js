@@ -1,11 +1,11 @@
 var searchData=
 [
-  ['carrierproxy',['CarrierProxy',['../classinciter_1_1_transporter.html#a1562ef0cc9f65540456239d2e6cc835e',1,'inciter::Transporter']]],
   ['charmutil_5fgroup',['CharmUtil_group',['../namespacetut.html#a42c61e17739df8995c7b35edabc08bce',1,'tut']]],
   ['charmutil_5fobject',['CharmUtil_object',['../namespacetut.html#a7e3702639262b1ed0bab40300cd54261',1,'tut']]],
+  ['child_5fid_5flist_5ft',['child_id_list_t',['../_a_m_r__types_8h.html#ab3ec9bebb0d5f9982ae67134070b6351',1,'AMR_types.h']]],
   ['clock',['clock',['../classtk_1_1_timer.html#ae2820e459eee7cd63045a42f6bb9ec76',1,'tk::Timer']]],
   ['code',['code',['../structtut_1_1_has__common_1_1yes_code.html#a42faa414927fbd6c8f34b2cb1326c329',1,'tut::Has_common::yesCode']]],
-  ['compflowpdeparameters',['CompFlowPDEParameters',['../namespaceinciter_1_1ctr.html#aa2d837dfab7522c28a6ddd05e36a7555',1,'inciter::ctr']]],
+  ['compflowpdeparameters',['CompFlowPDEParameters',['../namespaceinciter_1_1ctr.html#a65450af21232c6859f4338723ddb5a36',1,'inciter::ctr']]],
   ['compflowphysics',['CompFlowPhysics',['../namespaceinciter.html#a50705b0aa2ce3395b2dad97dd13f9e08',1,'inciter']]],
   ['compflowproblems',['CompFlowProblems',['../namespaceinciter.html#ade5f0cbeda07924e22b71b3e39c61383',1,'inciter']]],
   ['connect_5fstore',['connect_store',['../classtk_1_1_root_mesh_writer.html#ac1cc4fab579d44cba37e50b93c33bbb3',1,'tk::RootMeshWriter']]],
@@ -14,6 +14,8 @@ var searchData=
   ['control',['control',['../structtut_1_1_control__common.html#af76d59428969d1bca7eb726cb68f1a29',1,'tut::Control_common']]],
   ['control_5fgroup',['Control_group',['../namespacetut.html#acd72be9d49d9df1d06c5e43eca9386d7',1,'tut']]],
   ['control_5fobject',['Control_object',['../namespacetut.html#acce6a2e0dbb5b456f55a2749c4ed7793',1,'tut']]],
+  ['coord_5ftype',['coord_type',['../_a_m_r__types_8h.html#a7d5b7b847561bf2f2b5ee1ad556f9152',1,'AMR_types.h']]],
+  ['coordinate_5ft',['coordinate_t',['../_a_m_r__types_8h.html#adaf4328b496fc80cbb747ba8a81576c5',1,'AMR_types.h']]],
   ['coords',['Coords',['../classtk_1_1_uns_mesh.html#a2ed8d512b099636a98ba6b35b1118d6f',1,'tk::UnsMesh']]],
   ['ctr_5ftype',['ctr_type',['../classtk_1_1_random123.html#a2f4454ff4e319b869406384125593618',1,'tk::Random123']]]
 ];

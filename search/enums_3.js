@@ -1,5 +1,6 @@
 var searchData=
 [
+  ['edge_5flock_5fcase',['Edge_Lock_Case',['../namespace_a_m_r.html#accdcad50d780ce8fdf10044a7c11045c',1,'AMR']]],
   ['enum',['Enum',['../structtut_1_1_toggle__common.html#a2dbd4b9dda965c5ac693eb51fc69e4b8',1,'tut::Toggle_common']]],
   ['enum_5fcstyle',['Enum_cstyle',['../namespacetut_1_1charm.html#a5ea44be76b31372ed4771cb7016cdb70',1,'tut::charm']]],
   ['enum_5fdefault',['Enum_default',['../namespacetut_1_1charm.html#a92b94feeefb4419442b00dc6704c3386',1,'tut::charm']]],

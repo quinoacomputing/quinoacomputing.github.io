@@ -1,8 +1,11 @@
 var searchData=
 [
   ['scalar_5ft',['scalar_t',['../classtk_1_1zoltan_1_1_geometric_mesh_elem_adapter.html#ae8df7562f31c48a682a249aa91ab0e41',1,'tk::zoltan::GeometricMeshElemAdapter']]],
+  ['scheme_5fgroup',['Scheme_group',['../namespacetut.html#a18a7e72d787e48d870ea8058466a1a9c',1,'tut']]],
+  ['scheme_5fobject',['Scheme_object',['../namespacetut.html#a36442fbdcd8f110857379e288fab693b',1,'tut']]],
+  ['schemeproxy',['SchemeProxy',['../classinciter_1_1_dist_f_c_t.html#a9d574e71e570a69ce59742271c5ed867',1,'inciter::DistFCT']]],
   ['seconds',['seconds',['../classtk_1_1_timer.html#a145a8a0c1287ad2eb5347c22c08860a4',1,'tk::Timer']]],
-  ['selects',['selects',['../namespaceinciter_1_1ctr.html#afa482c7c1860b51f47735e4b45491f45',1,'inciter::ctr::selects()'],['../namespacerngtest_1_1ctr.html#a6ea2dcabba811ebb1af9a318753d6b3b',1,'rngtest::ctr::selects()'],['../namespacewalker_1_1ctr.html#ab92b4dfff21d7034e148076c43758f45',1,'walker::ctr::selects()']]],
+  ['selects',['selects',['../namespaceinciter_1_1ctr.html#a2e4f9e9a81d976a716154889842d22e1',1,'inciter::ctr::selects()'],['../namespacerngtest_1_1ctr.html#a6ea2dcabba811ebb1af9a318753d6b3b',1,'rngtest::ctr::selects()'],['../namespacewalker_1_1ctr.html#ab92b4dfff21d7034e148076c43758f45',1,'walker::ctr::selects()']]],
   ['siloerrorhandler',['SiloErrorHandler',['../namespacetk.html#a40ff0a76887b93164712b9ce9192fdd2',1,'tk']]],
   ['skewnormalcoeffpolicies',['SkewNormalCoeffPolicies',['../namespacewalker.html#a05fd510a5493bf8e33ca138f4334e39e',1,'walker']]],
   ['skewnormalparameters',['SkewNormalParameters',['../namespacewalker_1_1ctr.html#a1b5039f6a7ee8944dabfcb3c9c525ee4',1,'walker::ctr']]],

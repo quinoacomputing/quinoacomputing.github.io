@@ -2,6 +2,7 @@ var searchData=
 [
   ['malformedsample',['MALFORMEDSAMPLE',['../namespacetk_1_1grm.html#a86dbe384e8ce31796b7eb5f6ac87e1a3a239ba5e1bef64feb105c9ee30345840c',1,'tk::grm']]],
   ['massfracbeta',['MASSFRACBETA',['../namespacewalker_1_1ctr.html#a4592cfa71c6e4c64a71c5691df56c79fa2f8f21bc669643757d9e37ab01c6c079',1,'walker::ctr']]],
+  ['matcg',['MatCG',['../namespaceinciter_1_1ctr.html#aba4e861eef4516f2b2b8f78e99b5af5ea353e47fe83cde0cbcddf72ac555dd1e4',1,'inciter::ctr']]],
   ['maxbinsizes',['MAXBINSIZES',['../namespacetk_1_1grm.html#a86dbe384e8ce31796b7eb5f6ac87e1a3a8875772cb6fcaf5acb12ce4ac3d128bd',1,'tk::grm']]],
   ['maxextents',['MAXEXTENTS',['../namespacetk_1_1grm.html#a86dbe384e8ce31796b7eb5f6ac87e1a3a6ab6feaff45e56dba9245e62bc3186bc',1,'tk::grm']]],
   ['maxsamples',['MAXSAMPLES',['../namespacetk_1_1grm.html#a86dbe384e8ce31796b7eb5f6ac87e1a3acc0518b6a28d1ce620a734193c7fbddb',1,'tk::grm']]],

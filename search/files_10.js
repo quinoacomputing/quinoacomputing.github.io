@@ -7,6 +7,8 @@ var searchData=
   ['reader_2ec',['Reader.C',['../_reader_8_c.html',1,'']]],
   ['reader_2eh',['Reader.h',['../_reader_8h.html',1,'']]],
   ['readme_2emd',['README.md',['../_r_e_a_d_m_e_8md.html',1,'']]],
+  ['refinement_2eh',['refinement.h',['../refinement_8h.html',1,'']]],
+  ['refinement_5fstate_2eh',['Refinement_State.h',['../_refinement___state_8h.html',1,'']]],
   ['reorder_2ec',['Reorder.C',['../_reorder_8_c.html',1,'']]],
   ['reorder_2eh',['Reorder.h',['../_reorder_8h.html',1,'']]],
   ['replace_2eh',['replace.h',['../replace_8h.html',1,'']]],
