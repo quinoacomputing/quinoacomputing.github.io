@@ -1,0 +1,766 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html lang="en">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>Quinoa unit test code coverage report</title>
+  <link rel="stylesheet" type="text/css" href="../gcov.css">
+</head>
+<body>
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title">Quinoa regression test code coverage report</td></tr>
+    <tr><td class="ruler"><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../index.html">top level</a> - <a href="index.html">IO</a> - ExodusIIMeshReader.C<span style="font-size: 80%;"> (source / <a href="ExodusIIMeshReader.C.func-sort-c.html">functions</a>)</span></td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Commit:</td>
+            <td class="headerValue"><a href="https://github.com/quinoacomputing/quinoa/commit/b349737">Quinoa_v0.2-354-gb349737</a></td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">208</td>
+            <td class="headerCovTableEntry">215</td>
+            <td class="headerCovTableEntryHi">96.7 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2018-02-16 03:18:09</td>
+            <td></td>
+            <td class="headerItem">Functions:</td>
+            <td class="headerCovTableEntry">17</td>
+            <td class="headerCovTableEntry">19</td>
+            <td class="headerCovTableEntryMed">89.5 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Legend:</td>
+            <td class="headerValueLeg">            Lines:
+            <span class="coverLegendCov">hit</span>
+            <span class="coverLegendNoCov">not hit</span>
+            | Branches:
+            <span class="coverLegendCov">+</span> taken
+            <span class="coverLegendNoCov">-</span> not taken
+            <span class="coverLegendNoCov">#</span> not executed
+</td>
+            <td></td>
+            <td class="headerItem">Branches:</td>
+            <td class="headerCovTableEntry">244</td>
+            <td class="headerCovTableEntry">766</td>
+            <td class="headerCovTableEntryLo">31.9 %</td>
+          </tr>
+          <tr><td><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">           Branch data     Line data    Source code</pre>
+<pre class="source">
+<a name="1"><span class="lineNum">       1 </span>                :            : // *****************************************************************************</a>
+<span class="lineNum">       2 </span>                :            : /*!
+<span class="lineNum">       3 </span>                :            :   \file      src/IO/ExodusIIMeshReader.C
+<span class="lineNum">       4 </span>                :            :   \copyright 2012-2015, J. Bakosi, 2016-2018, Los Alamos National Security, LLC.
+<span class="lineNum">       5 </span>                :            :   \brief     ExodusII mesh reader
+<span class="lineNum">       6 </span>                :            :   \details   ExodusII mesh reader class definition. Currently, this is a bare
+<span class="lineNum">       7 </span>                :            :      minimum functionality to interface with the ExodusII reader. It only reads
+<span class="lineNum">       8 </span>                :            :      3D meshes and only triangle and tetrahedron elements.
+<span class="lineNum">       9 </span>                :            : */
+<span class="lineNum">      10 </span>                :            : // *****************************************************************************
+<span class="lineNum">      11 </span>                :            : 
+<span class="lineNum">      12 </span>                :            : #include &lt;cstdint&gt;
+<span class="lineNum">      13 </span>                :            : #include &lt;cstdio&gt;
+<span class="lineNum">      14 </span>                :            : #include &lt;string&gt;
+<span class="lineNum">      15 </span>                :            : #include &lt;numeric&gt;
+<span class="lineNum">      16 </span>                :            : #include &lt;unordered_map&gt;
+<span class="lineNum">      17 </span>                :            : 
+<span class="lineNum">      18 </span>                :            : #include &quot;NoWarning/exodusII.h&quot;
+<span class="lineNum">      19 </span>                :            : 
+<span class="lineNum">      20 </span>                :            : #include &quot;ExodusIIMeshReader.h&quot;
+<span class="lineNum">      21 </span>                :            : #include &quot;ContainerUtil.h&quot;
+<span class="lineNum">      22 </span>                :            : #include &quot;Exception.h&quot;
+<span class="lineNum">      23 </span>                :            : #include &quot;UnsMesh.h&quot;
+<span class="lineNum">      24 </span>                :            : #include &quot;Reorder.h&quot;
+<span class="lineNum">      25 </span>                :            : 
+<a name="26"><span class="lineNum">      26 </span>                :            : using tk::ExodusIIMeshReader;</a>
+<span class="lineNum">      27 </span>                :            : 
+<span class="lineNum">      28 </span>                :<span class="lineCov">       1500 : ExodusIIMeshReader::ExodusIIMeshReader( const std::string&amp; filename,</span>
+<span class="lineNum">      29 </span>                :            :                                         int cpuwordsize,
+<span class="lineNum">      30 </span>                :            :                                         int iowordsize ) :
+<span class="lineNum">      31 </span>                :            :   m_filename( filename ),
+<span class="lineNum">      32 </span>                :            :   m_inFile( 0 ),
+<span class="lineNum">      33 </span>                :            :   m_nnode( 0 ),
+<span class="lineNum">      34 </span>                :            :   m_neblk( 0 ),
+<span class="lineNum">      35 </span>                :            :   m_neset( 0 ),
+<span class="lineNum">      36 </span>                :            :   m_eid(),
+<span class="lineNum">      37 </span>                :            :   m_eidt( m_nnpe.size() ),
+<span class="lineNum">      38 </span>[<span class="branchCov" title="Branch 2 was taken 1500 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>][<span class="branchCov" title="Branch 7 was taken 1500 times"> + </span><span class="branchNoCov" title="Branch 8 was not taken"> - </span>]:<span class="lineCov">       1500 :   m_nel( m_nnpe.size() )</span>
+<span class="lineNum">         </span>        [<span class="branchCov" title="Branch 13 was taken 1500 times"> + </span><span class="branchNoCov" title="Branch 14 was not taken"> - </span>]
+<span class="lineNum">      39 </span>                :            : // *****************************************************************************
+<span class="lineNum">      40 </span>                :            : //  Constructor: open Exodus II file
+<span class="lineNum">      41 </span>                :            : //! \param[in] filename File to open as ExodusII file
+<span class="lineNum">      42 </span>                :            : //! \param[in] cpuwordsize Set CPU word size, see ExodusII documentation
+<span class="lineNum">      43 </span>                :            : //! \param[in] iowordsize Set I/O word size, see ExodusII documentation
+<span class="lineNum">      44 </span>                :            : // *****************************************************************************
+<span class="lineNum">      45 </span>                :            : {
+<span class="lineNum">      46 </span>                :            :   float version;
+<span class="lineNum">      47 </span>                :            : 
+<span class="lineNum">      48 </span>        [<span class="branchCov" title="Branch 2 was taken 1500 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineCov">       1500 :   m_inFile = ex_open( filename.c_str(), EX_READ, &amp;cpuwordsize, &amp;iowordsize,</span>
+<span class="lineNum">      49 </span>                :<span class="lineCov">       1500 :                       &amp;version );</span>
+<span class="lineNum">      50 </span>                :            : 
+<span class="lineNum">      51 </span>[<span class="branchNoCov" title="Branch 0 was not taken"> - </span><span class="branchCov" title="Branch 1 was taken 1500 times"> + </span>][<span class="branchNoExec" title="Branch 5 was not executed"> # </span><span class="branchNoExec" title="Branch 6 was not executed"> # </span>]:<span class="lineCov">       1500 :   ErrChk( m_inFile &gt; 0, &quot;Failed to open ExodusII file: &quot; + filename );</span>
+<span class="lineNum">         </span>[<span class="branchNoExec" title="Branch 9 was not executed"> # </span><span class="branchNoExec" title="Branch 10 was not executed"> # </span>][<span class="branchNoExec" title="Branch 12 was not executed"> # </span><span class="branchNoExec" title="Branch 13 was not executed"> # </span>]
+<a name="52"><span class="lineNum">      52 </span>                :<span class="lineCov">       1500 : }</span></a>
+<span class="lineNum">      53 </span>                :            : 
+<span class="lineNum">      54 </span>                :<span class="lineCov">       3000 : ExodusIIMeshReader::~ExodusIIMeshReader() noexcept</span>
+<span class="lineNum">      55 </span>                :            : // *****************************************************************************
+<span class="lineNum">      56 </span>                :            : //  Destructor
+<span class="lineNum">      57 </span>                :            : // *****************************************************************************
+<span class="lineNum">      58 </span>                :            : {
+<span class="lineNum">      59 </span>        [<span class="branchNoCov" title="Branch 1 was not taken"> - </span><span class="branchCov" title="Branch 2 was taken 1500 times"> + </span>]:<span class="lineCov">       1500 :   if ( ex_close(m_inFile) &lt; 0 )</span>
+<span class="lineNum">      60 </span>                :            :     printf( &quot;&gt;&gt;&gt; WARNING: Failed to close ExodusII file: %s\n&quot;,
+<span class="lineNum">      61 </span>                :<span class="lineNoCov">          0 :             m_filename.c_str() );</span>
+<span class="lineNum">      62 </span>                :<span class="lineCov">       1500 : }</span>
+<a name="63"><span class="lineNum">      63 </span>                :            : </a>
+<span class="lineNum">      64 </span>                :            : void
+<span class="lineNum">      65 </span>                :<span class="lineCov">          3 : ExodusIIMeshReader::readMesh( UnsMesh&amp; mesh )</span>
+<span class="lineNum">      66 </span>                :            : // *****************************************************************************
+<span class="lineNum">      67 </span>                :            : //  Read ExodusII mesh file
+<span class="lineNum">      68 </span>                :            : //! \param[in] mesh Unstructured mesh object
+<span class="lineNum">      69 </span>                :            : // *****************************************************************************
+<span class="lineNum">      70 </span>                :            : {
+<span class="lineNum">      71 </span>                :<span class="lineCov">          3 :   readHeader( mesh );</span>
+<span class="lineNum">      72 </span>                :<span class="lineCov">          3 :   readAllElements( mesh );</span>
+<span class="lineNum">      73 </span>                :<span class="lineCov">          3 :   readAllNodes( mesh );</span>
+<span class="lineNum">      74 </span>                :<span class="lineCov">          3 : }</span>
+<a name="75"><span class="lineNum">      75 </span>                :            : </a>
+<span class="lineNum">      76 </span>                :            : void
+<span class="lineNum">      77 </span>                :<span class="lineNoCov">          0 : ExodusIIMeshReader::readGraph( UnsMesh&amp; mesh )</span>
+<span class="lineNum">      78 </span>                :            : // *****************************************************************************
+<span class="lineNum">      79 </span>                :            : //  Read only connectivity graph from file
+<span class="lineNum">      80 </span>                :            : //! \param[in] mesh Unstructured mesh object
+<span class="lineNum">      81 </span>                :            : // *****************************************************************************
+<span class="lineNum">      82 </span>                :            : {
+<span class="lineNum">      83 </span>                :<span class="lineNoCov">          0 :   readHeader( mesh );</span>
+<span class="lineNum">      84 </span>                :<span class="lineNoCov">          0 :   readAllElements( mesh );</span>
+<span class="lineNum">      85 </span>                :<span class="lineNoCov">          0 : }</span>
+<a name="86"><span class="lineNum">      86 </span>                :            : </a>
+<span class="lineNum">      87 </span>                :            : std::size_t
+<span class="lineNum">      88 </span>                :<span class="lineCov">       1609 : ExodusIIMeshReader::readHeader()</span>
+<span class="lineNum">      89 </span>                :            : // *****************************************************************************
+<span class="lineNum">      90 </span>                :            : //  Read ExodusII header without setting mesh size
+<span class="lineNum">      91 </span>                :            : //! \return Number of nodes in mesh
+<span class="lineNum">      92 </span>                :            : // *****************************************************************************
+<span class="lineNum">      93 </span>                :            : {
+<span class="lineNum">      94 </span>                :            :   char title[MAX_LINE_LENGTH+1];
+<span class="lineNum">      95 </span>                :            :   int ndim, n, nnodeset, nelemset, nnode, neblk;
+<span class="lineNum">      96 </span>                :            : 
+<span class="lineNum">      97 </span>[<span class="branchCov" title="Branch 1 was taken 1609 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchNoExec" title="Branch 6 was not executed"> # </span><span class="branchNoExec" title="Branch 7 was not executed"> # </span>]:<span class="lineCov">       1609 :   ErrChk(</span>
+<span class="lineNum">         </span>[<span class="branchNoExec" title="Branch 10 was not executed"> # </span><span class="branchNoExec" title="Branch 11 was not executed"> # </span>][<span class="branchNoExec" title="Branch 13 was not executed"> # </span><span class="branchNoExec" title="Branch 14 was not executed"> # </span>]
+<span class="lineNum">      98 </span>                :            :     ex_get_init( m_inFile, title, &amp;ndim, &amp;nnode, &amp;n, &amp;neblk, &amp;nnodeset,
+<span class="lineNum">      99 </span>                :            :                  &amp;nelemset ) == 0,
+<span class="lineNum">     100 </span>        [<span class="branchNoCov" title="Branch 0 was not taken"> - </span><span class="branchCov" title="Branch 1 was taken 1609 times"> + </span>]:<span class="lineCov">       1609 :     &quot;Failed to read header from ExodusII file: &quot; + m_filename );</span>
+<span class="lineNum">     101 </span>                :            : 
+<span class="lineNum">     102 </span>[<span class="branchNoExec" title="Branch 3 was not executed"> # </span><span class="branchNoExec" title="Branch 4 was not executed"> # </span>][<span class="branchNoExec" title="Branch 7 was not executed"> # </span><span class="branchNoExec" title="Branch 8 was not executed"> # </span>]:<span class="lineNoCov">          0 :   ErrChk( nnode &gt; 0,</span>
+<span class="lineNum">         </span>        [<span class="branchNoExec" title="Branch 11 was not executed"> # </span><span class="branchNoExec" title="Branch 12 was not executed"> # </span>]
+<span class="lineNum">     103 </span>        [<span class="branchNoCov" title="Branch 0 was not taken"> - </span><span class="branchCov" title="Branch 1 was taken 1609 times"> + </span>]:<span class="lineCov">       1609 :           &quot;Number of nodes read from ExodusII file must be larger than zero&quot; );</span>
+<span class="lineNum">     104 </span>[<span class="branchNoExec" title="Branch 3 was not executed"> # </span><span class="branchNoExec" title="Branch 4 was not executed"> # </span>][<span class="branchNoExec" title="Branch 7 was not executed"> # </span><span class="branchNoExec" title="Branch 8 was not executed"> # </span>]:<span class="lineNoCov">          0 :   ErrChk( neblk &gt; 0,</span>
+<span class="lineNum">         </span>        [<span class="branchNoExec" title="Branch 11 was not executed"> # </span><span class="branchNoExec" title="Branch 12 was not executed"> # </span>]
+<span class="lineNum">     105 </span>                :            :           &quot;Number of element blocks read from ExodusII file must be larger &quot;
+<span class="lineNum">     106 </span>        [<span class="branchNoCov" title="Branch 0 was not taken"> - </span><span class="branchCov" title="Branch 1 was taken 1609 times"> + </span>]:<span class="lineCov">       1609 :           &quot;than zero&quot; );</span>
+<span class="lineNum">     107 </span>[<span class="branchNoCov" title="Branch 0 was not taken"> - </span><span class="branchCov" title="Branch 1 was taken 1609 times"> + </span>][<span class="branchNoExec" title="Branch 5 was not executed"> # </span><span class="branchNoExec" title="Branch 6 was not executed"> # </span>]:<span class="lineCov">       1609 :   ErrChk( ndim == 3, &quot;Need a 3D mesh from ExodusII file &quot; + m_filename);</span>
+<span class="lineNum">         </span>[<span class="branchNoExec" title="Branch 9 was not executed"> # </span><span class="branchNoExec" title="Branch 10 was not executed"> # </span>][<span class="branchNoExec" title="Branch 12 was not executed"> # </span><span class="branchNoExec" title="Branch 13 was not executed"> # </span>]
+<span class="lineNum">     108 </span>                :            : 
+<span class="lineNum">     109 </span>                :<span class="lineCov">       1609 :   m_neblk = static_cast&lt; std::size_t &gt;( neblk );</span>
+<span class="lineNum">     110 </span>                :<span class="lineCov">       1609 :   m_neset = static_cast&lt; std::size_t &gt;( nelemset );</span>
+<span class="lineNum">     111 </span>                :            : 
+<span class="lineNum">     112 </span>                :<span class="lineCov">       1609 :   return static_cast&lt; std::size_t &gt;( nnode );</span>
+<span class="lineNum">     113 </span>                :            : }
+<a name="114"><span class="lineNum">     114 </span>                :            : </a>
+<span class="lineNum">     115 </span>                :            : void
+<span class="lineNum">     116 </span>                :<span class="lineCov">          3 : ExodusIIMeshReader::readHeader( UnsMesh&amp; mesh )</span>
+<span class="lineNum">     117 </span>                :            : // *****************************************************************************
+<span class="lineNum">     118 </span>                :            : //  Read ExodusII header with setting mesh size
+<span class="lineNum">     119 </span>                :            : //! \param[in] mesh Unstructured mesh object
+<span class="lineNum">     120 </span>                :            : // *****************************************************************************
+<span class="lineNum">     121 </span>                :            : {
+<span class="lineNum">     122 </span>                :            :   // Read ExodusII file header and set mesh graph size
+<span class="lineNum">     123 </span>                :<span class="lineCov">          3 :   mesh.size() = m_nnode = static_cast&lt; std::size_t &gt;( readHeader() );</span>
+<span class="lineNum">     124 </span>                :<span class="lineCov">          3 : }</span>
+<a name="125"><span class="lineNum">     125 </span>                :            : </a>
+<span class="lineNum">     126 </span>                :            : void
+<span class="lineNum">     127 </span>                :<span class="lineCov">          3 : ExodusIIMeshReader::readAllNodes( UnsMesh&amp; mesh ) const</span>
+<span class="lineNum">     128 </span>                :            : // *****************************************************************************
+<span class="lineNum">     129 </span>                :            : //  Read all node coordinates from ExodusII file
+<span class="lineNum">     130 </span>                :            : //! \param[in] mesh Unstructured mesh object
+<span class="lineNum">     131 </span>                :            : // *****************************************************************************
+<span class="lineNum">     132 </span>                :            : {
+<span class="lineNum">     133 </span>                :<span class="lineCov">          3 :   mesh.x().resize( m_nnode );</span>
+<span class="lineNum">     134 </span>                :<span class="lineCov">          3 :   mesh.y().resize( m_nnode );</span>
+<span class="lineNum">     135 </span>                :<span class="lineCov">          3 :   mesh.z().resize( m_nnode );</span>
+<span class="lineNum">     136 </span>                :            : 
+<span class="lineNum">     137 </span>[<span class="branchNoExec" title="Branch 10 was not executed"> # </span><span class="branchNoExec" title="Branch 11 was not executed"> # </span>][<span class="branchNoExec" title="Branch 14 was not executed"> # </span><span class="branchNoExec" title="Branch 15 was not executed"> # </span>]:<span class="lineCov">          3 :   ErrChk( ex_get_coord( m_inFile, mesh.x().data(), mesh.y().data(),</span>
+<span class="lineNum">         </span>        [<span class="branchNoExec" title="Branch 17 was not executed"> # </span><span class="branchNoExec" title="Branch 18 was not executed"> # </span>]
+<span class="lineNum">     138 </span>                :            :                         mesh.z().data() ) == 0,
+<span class="lineNum">     139 </span>        [<span class="branchNoCov" title="Branch 0 was not taken"> - </span><span class="branchCov" title="Branch 1 was taken 3 times"> + </span>]:<span class="lineCov">          3 :           &quot;Failed to read coordinates from ExodusII file: &quot; + m_filename );</span>
+<span class="lineNum">     140 </span>                :<span class="lineCov">          3 : }</span>
+<a name="141"><span class="lineNum">     141 </span>                :            : </a>
+<span class="lineNum">     142 </span>                :            : std::array&lt; std::vector&lt; tk::real &gt;, 3 &gt;
+<span class="lineNum">     143 </span>                :<span class="lineCov">        298 : ExodusIIMeshReader::readNodes( const std::array&lt; std::size_t, 2 &gt;&amp; ext ) const</span>
+<span class="lineNum">     144 </span>                :            : // *****************************************************************************
+<span class="lineNum">     145 </span>                :            : //  Read coordinates of a number of mesh nodes from ExodusII file
+<span class="lineNum">     146 </span>                :            : //! \param[in] ext Extents of element ids whose connectivity to read, both
+<span class="lineNum">     147 </span>                :            : //!   inclusive
+<span class="lineNum">     148 </span>                :            : //! \return Mesh node coordinates
+<span class="lineNum">     149 </span>                :            : // *****************************************************************************
+<span class="lineNum">     150 </span>                :            : {
+<span class="lineNum">     151 </span>                :<span class="lineCov">        298 :   auto num = ext[1] - ext[0] + 1;</span>
+<span class="lineNum">     152 </span>[<span class="branchCov" title="Branch 2 was taken 298 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>][<span class="branchCov" title="Branch 7 was taken 298 times"> + </span><span class="branchNoCov" title="Branch 8 was not taken"> - </span>]:<span class="lineCov">        596 :   std::vector&lt; tk::real &gt; px( num ), py( num ), pz( num );</span>
+<span class="lineNum">         </span>        [<span class="branchCov" title="Branch 12 was taken 298 times"> + </span><span class="branchNoCov" title="Branch 13 was not taken"> - </span>]
+<span class="lineNum">     153 </span>                :            : 
+<span class="lineNum">     154 </span>[<span class="branchCov" title="Branch 5 was taken 298 times"> + </span><span class="branchNoCov" title="Branch 6 was not taken"> - </span>][<span class="branchNoExec" title="Branch 10 was not executed"> # </span><span class="branchNoExec" title="Branch 11 was not executed"> # </span>]:<span class="lineCov">        298 :   ErrChk(</span>
+<span class="lineNum">         </span>[<span class="branchNoExec" title="Branch 14 was not executed"> # </span><span class="branchNoExec" title="Branch 15 was not executed"> # </span>][<span class="branchNoExec" title="Branch 18 was not executed"> # </span><span class="branchNoExec" title="Branch 19 was not executed"> # </span>]
+<span class="lineNum">         </span>[<span class="branchNoExec" title="Branch 22 was not executed"> # </span><span class="branchNoExec" title="Branch 23 was not executed"> # </span>][<span class="branchNoExec" title="Branch 25 was not executed"> # </span><span class="branchNoExec" title="Branch 26 was not executed"> # </span>]
+<span class="lineNum">         </span>[<span class="branchNoExec" title="Branch 28 was not executed"> # </span><span class="branchNoExec" title="Branch 29 was not executed"> # </span>][<span class="branchNoExec" title="Branch 31 was not executed"> # </span><span class="branchNoExec" title="Branch 32 was not executed"> # </span>]
+<span class="lineNum">         </span>[<span class="branchNoExec" title="Branch 34 was not executed"> # </span><span class="branchNoExec" title="Branch 35 was not executed"> # </span>][<span class="branchNoExec" title="Branch 37 was not executed"> # </span><span class="branchNoExec" title="Branch 38 was not executed"> # </span>]
+<span class="lineNum">     155 </span>                :            :     ex_get_partial_coord(
+<span class="lineNum">     156 </span>                :            :       m_inFile, static_cast&lt;int64_t&gt;(ext[0])+1, static_cast&lt;int64_t&gt;(num),
+<span class="lineNum">     157 </span>                :            :       px.data(), py.data(), pz.data() ) == 0,
+<span class="lineNum">     158 </span>                :            :       &quot;Failed to read coordinates of nodes [&quot; + std::to_string(ext[0]) +
+<span class="lineNum">     159 </span>                :            :       &quot;...&quot; + std::to_string(ext[1]) + &quot;] from ExodusII file: &quot; +
+<span class="lineNum">     160 </span>        [<span class="branchNoCov" title="Branch 0 was not taken"> - </span><span class="branchCov" title="Branch 1 was taken 298 times"> + </span>]:<span class="lineCov">        298 :       m_filename );</span>
+<span class="lineNum">     161 </span>                :            : 
+<span class="lineNum">     162 </span>                :<span class="lineCov">        596 :   return {{ std::move(px), std::move(py), std::move(pz) }};</span>
+<span class="lineNum">     163 </span>                :            : }
+<a name="164"><span class="lineNum">     164 </span>                :            : </a>
+<span class="lineNum">     165 </span>                :            : std::size_t
+<span class="lineNum">     166 </span>                :<span class="lineCov">        407 : ExodusIIMeshReader::readElemBlockIDs()</span>
+<span class="lineNum">     167 </span>                :            : // *****************************************************************************
+<span class="lineNum">     168 </span>                :            : //  Read element block IDs from ExodusII file
+<span class="lineNum">     169 </span>                :            : //! \return Total number of nodes in mesh
+<span class="lineNum">     170 </span>                :            : // *****************************************************************************
+<span class="lineNum">     171 </span>                :            : {
+<span class="lineNum">     172 </span>                :            :   // Read ExodusII file header
+<span class="lineNum">     173 </span>        [<span class="branchCov" title="Branch 1 was taken 407 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">        407 :   auto nnode = readHeader();</span>
+<span class="lineNum">     174 </span>                :            : 
+<span class="lineNum">     175 </span>        [<span class="branchCov" title="Branch 2 was taken 407 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineCov">        407 :   std::vector&lt; int &gt; eid( m_neblk );</span>
+<span class="lineNum">     176 </span>                :            : 
+<span class="lineNum">     177 </span>                :            :   // Read element block ids
+<span class="lineNum">     178 </span>[<span class="branchCov" title="Branch 2 was taken 407 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>][<span class="branchNoExec" title="Branch 7 was not executed"> # </span><span class="branchNoExec" title="Branch 8 was not executed"> # </span>]:<span class="lineCov">        407 :   ErrChk( ex_get_ids( m_inFile, EX_ELEM_BLOCK, eid.data()) == 0,</span>
+<span class="lineNum">         </span>[<span class="branchNoExec" title="Branch 11 was not executed"> # </span><span class="branchNoExec" title="Branch 12 was not executed"> # </span>][<span class="branchNoExec" title="Branch 14 was not executed"> # </span><span class="branchNoExec" title="Branch 15 was not executed"> # </span>]
+<span class="lineNum">     179 </span>                :            :           &quot;Failed to read element block ids from ExodusII file: &quot; +
+<span class="lineNum">     180 </span>        [<span class="branchNoCov" title="Branch 0 was not taken"> - </span><span class="branchCov" title="Branch 1 was taken 407 times"> + </span>]:<span class="lineCov">        407 :           m_filename );</span>
+<span class="lineNum">     181 </span>                :            : 
+<span class="lineNum">     182 </span>                :            :   // Fill element block ID vector
+<span class="lineNum">     183 </span>[<span class="branchCov" title="Branch 3 was taken 819 times"> + </span><span class="branchNoCov" title="Branch 4 was not taken"> - </span>][<span class="branchCov" title="Branch 6 was taken 819 times"> + </span><span class="branchNoCov" title="Branch 7 was not taken"> - </span>]:<span class="lineCov">       1226 :   for (auto id : eid) {</span>
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 9 was taken 1226 times"> + </span><span class="branchNoCov" title="Branch 10 was not taken"> - </span>][<span class="branchCov" title="Branch 11 was taken 819 times"> + </span><span class="branchCov" title="Branch 12 was taken 407 times"> + </span>]
+<span class="lineNum">     184 </span>                :            :     char eltype[MAX_STR_LENGTH+1];
+<span class="lineNum">     185 </span>                :            :     int n, nnpe, nattr;
+<span class="lineNum">     186 </span>                :            : 
+<span class="lineNum">     187 </span>                :            :     // Read element block information
+<span class="lineNum">     188 </span>[<span class="branchCov" title="Branch 1 was taken 819 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchNoExec" title="Branch 6 was not executed"> # </span><span class="branchNoExec" title="Branch 7 was not executed"> # </span>]:<span class="lineCov">        819 :     ErrChk( ex_get_block( m_inFile, EX_ELEM_BLOCK, id, eltype, &amp;n, &amp;nnpe,</span>
+<span class="lineNum">         </span>[<span class="branchNoExec" title="Branch 10 was not executed"> # </span><span class="branchNoExec" title="Branch 11 was not executed"> # </span>][<span class="branchNoExec" title="Branch 13 was not executed"> # </span><span class="branchNoExec" title="Branch 14 was not executed"> # </span>]
+<span class="lineNum">     189 </span>                :            :                           &amp;nattr, nullptr, nullptr ) == 0,
+<span class="lineNum">     190 </span>                :            :       &quot;Failed to read element block information from ExodusII file: &quot; +
+<span class="lineNum">     191 </span>        [<span class="branchNoCov" title="Branch 0 was not taken"> - </span><span class="branchCov" title="Branch 1 was taken 819 times"> + </span>]:<span class="lineCov">        819 :       m_filename );</span>
+<span class="lineNum">     192 </span>                :            : 
+<span class="lineNum">     193 </span>                :            :     // Store ExodusII element block ID
+<span class="lineNum">     194 </span>        [<span class="branchCov" title="Branch 1 was taken 819 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">        819 :     m_eid.push_back( id );</span>
+<span class="lineNum">     195 </span>                :            : 
+<span class="lineNum">     196 </span>                :            :     // Store ExodusII element block IDs mapped to elem type, and add up the
+<span class="lineNum">     197 </span>                :            :     // number of elements per for each elem type
+<span class="lineNum">     198 </span>        [<span class="branchCov" title="Branch 0 was taken 411 times"> + </span><span class="branchCov" title="Branch 1 was taken 408 times"> + </span>]:<span class="lineCov">        819 :     if (nnpe == 4) {        // tetrahedra</span>
+<span class="lineNum">     199 </span>                :<span class="lineCov">        411 :       auto e = static_cast&lt; std::size_t &gt;( ExoElemType::TET );</span>
+<span class="lineNum">     200 </span>[<span class="branchCov" title="Branch 1 was taken 411 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 4 was taken 411 times"> + </span><span class="branchNoCov" title="Branch 5 was not taken"> - </span>]:<span class="lineCov">        411 :       m_eidt[ e ].push_back( id );</span>
+<span class="lineNum">     201 </span>[<span class="branchCov" title="Branch 1 was taken 411 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 4 was taken 411 times"> + </span><span class="branchNoCov" title="Branch 5 was not taken"> - </span>]:<span class="lineCov">        411 :       m_nel[ e ].push_back( static_cast&lt; std::size_t &gt;( n ) );</span>
+<span class="lineNum">     202 </span>[<span class="branchCov" title="Branch 1 was taken 411 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 5 was taken 411 times"> + </span><span class="branchNoCov" title="Branch 6 was not taken"> - </span>]:<span class="lineCov">        411 :       Assert( m_eidt[e].size() == m_nel[e].size(), &quot;Size mismatch&quot; );</span>
+<span class="lineNum">         </span>[<span class="branchNoCov" title="Branch 8 was not taken"> - </span><span class="branchCov" title="Branch 9 was taken 411 times"> + </span>][<span class="branchNoExec" title="Branch 13 was not executed"> # </span><span class="branchNoExec" title="Branch 14 was not executed"> # </span>]
+<span class="lineNum">         </span>[<span class="branchNoExec" title="Branch 17 was not executed"> # </span><span class="branchNoExec" title="Branch 18 was not executed"> # </span>][<span class="branchNoExec" title="Branch 21 was not executed"> # </span><span class="branchNoExec" title="Branch 22 was not executed"> # </span>]
+<span class="lineNum">     203 </span>        [<span class="branchCov" title="Branch 0 was taken 406 times"> + </span><span class="branchCov" title="Branch 1 was taken 2 times"> + </span>]:<span class="lineCov">        408 :     } else if (nnpe == 3) { // triangles</span>
+<span class="lineNum">     204 </span>                :<span class="lineCov">        406 :       auto e = static_cast&lt; std::size_t &gt;( ExoElemType::TRI );</span>
+<span class="lineNum">     205 </span>[<span class="branchCov" title="Branch 1 was taken 406 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 4 was taken 406 times"> + </span><span class="branchNoCov" title="Branch 5 was not taken"> - </span>]:<span class="lineCov">        406 :       m_eidt[ e ].push_back( id );</span>
+<span class="lineNum">     206 </span>[<span class="branchCov" title="Branch 1 was taken 406 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 4 was taken 406 times"> + </span><span class="branchNoCov" title="Branch 5 was not taken"> - </span>]:<span class="lineCov">        406 :       m_nel[ e ].push_back( static_cast&lt; std::size_t &gt;( n ) );</span>
+<span class="lineNum">     207 </span>[<span class="branchCov" title="Branch 1 was taken 406 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 5 was taken 406 times"> + </span><span class="branchNoCov" title="Branch 6 was not taken"> - </span>]:<span class="lineCov">        406 :       Assert( m_eidt[e].size() == m_nel[e].size(), &quot;Size mismatch&quot; );</span>
+<span class="lineNum">         </span>[<span class="branchNoCov" title="Branch 8 was not taken"> - </span><span class="branchCov" title="Branch 9 was taken 406 times"> + </span>][<span class="branchNoExec" title="Branch 13 was not executed"> # </span><span class="branchNoExec" title="Branch 14 was not executed"> # </span>]
+<span class="lineNum">         </span>[<span class="branchNoExec" title="Branch 17 was not executed"> # </span><span class="branchNoExec" title="Branch 18 was not executed"> # </span>][<span class="branchNoExec" title="Branch 21 was not executed"> # </span><span class="branchNoExec" title="Branch 22 was not executed"> # </span>]
+<span class="lineNum">     208 </span>                :            :     }
+<span class="lineNum">     209 </span>                :            :   }
+<span class="lineNum">     210 </span>                :            : 
+<span class="lineNum">     211 </span>                :<span class="lineCov">        407 :   return nnode;</span>
+<span class="lineNum">     212 </span>                :            : }
+<span class="lineNum">     213 </span>                :            : 
+<a name="214"><span class="lineNum">     214 </span>                :            : </a>
+<span class="lineNum">     215 </span>                :            : void
+<span class="lineNum">     216 </span>                :<span class="lineCov">          3 : ExodusIIMeshReader::readAllElements( UnsMesh&amp; mesh )</span>
+<span class="lineNum">     217 </span>                :            : // *****************************************************************************
+<span class="lineNum">     218 </span>                :            : //  Read all element blocks and mesh connectivity from ExodusII file
+<span class="lineNum">     219 </span>                :            : //! \param[inout] mesh Unstructured mesh object to store mesh in
+<span class="lineNum">     220 </span>                :            : // *****************************************************************************
+<span class="lineNum">     221 </span>                :            : {
+<span class="lineNum">     222 </span>                :            :   // Read element block ids
+<span class="lineNum">     223 </span>                :<span class="lineCov">          3 :   readElemBlockIDs();</span>
+<span class="lineNum">     224 </span>                :            : 
+<span class="lineNum">     225 </span>[<span class="branchCov" title="Branch 3 was taken 11 times"> + </span><span class="branchNoCov" title="Branch 4 was not taken"> - </span>][<span class="branchCov" title="Branch 6 was taken 11 times"> + </span><span class="branchNoCov" title="Branch 7 was not taken"> - </span>]:<span class="lineCov">         14 :   for (auto id : m_eid) {</span>
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 9 was taken 14 times"> + </span><span class="branchNoCov" title="Branch 10 was not taken"> - </span>][<span class="branchCov" title="Branch 11 was taken 11 times"> + </span><span class="branchCov" title="Branch 12 was taken 3 times"> + </span>]
+<span class="lineNum">     226 </span>                :            :     char eltype[MAX_STR_LENGTH+1];
+<span class="lineNum">     227 </span>                :            :     int nel, nnpe, nattr;
+<span class="lineNum">     228 </span>                :            : 
+<span class="lineNum">     229 </span>                :            :     // Read element block information
+<span class="lineNum">     230 </span>[<span class="branchCov" title="Branch 1 was taken 11 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchNoExec" title="Branch 6 was not executed"> # </span><span class="branchNoExec" title="Branch 7 was not executed"> # </span>]:<span class="lineCov">         11 :     ErrChk( ex_get_block( m_inFile, EX_ELEM_BLOCK, id, eltype, &amp;nel, &amp;nnpe,</span>
+<span class="lineNum">         </span>[<span class="branchNoExec" title="Branch 10 was not executed"> # </span><span class="branchNoExec" title="Branch 11 was not executed"> # </span>][<span class="branchNoExec" title="Branch 13 was not executed"> # </span><span class="branchNoExec" title="Branch 14 was not executed"> # </span>]
+<span class="lineNum">     231 </span>                :            :                           &amp;nattr, nullptr, nullptr ) == 0,
+<span class="lineNum">     232 </span>                :            :       &quot;Failed to read element block information from ExodusII file: &quot; +
+<span class="lineNum">     233 </span>        [<span class="branchNoCov" title="Branch 0 was not taken"> - </span><span class="branchCov" title="Branch 1 was taken 11 times"> + </span>]:<span class="lineCov">         11 :       m_filename );</span>
+<span class="lineNum">     234 </span>                :            : 
+<span class="lineNum">     235 </span>                :            :     // Read element connectivity
+<span class="lineNum">     236 </span>                :<span class="lineCov">         11 :     auto connectsize = static_cast&lt; std::size_t &gt;( nel*nnpe );</span>
+<span class="lineNum">     237 </span>        [<span class="branchCov" title="Branch 0 was taken 7 times"> + </span><span class="branchCov" title="Branch 1 was taken 4 times"> + </span>]:<span class="lineCov">         11 :     if (nnpe == 4) {    // tetrahedra</span>
+<span class="lineNum">     238 </span>                :            : 
+<span class="lineNum">     239 </span>        [<span class="branchCov" title="Branch 2 was taken 7 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineCov">          7 :       std::vector&lt; int &gt; inpoel( connectsize );</span>
+<span class="lineNum">     240 </span>[<span class="branchCov" title="Branch 2 was taken 7 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>][<span class="branchNoExec" title="Branch 7 was not executed"> # </span><span class="branchNoExec" title="Branch 8 was not executed"> # </span>]:<span class="lineCov">          7 :       ErrChk( ex_get_conn( m_inFile, EX_ELEM_BLOCK, id, inpoel.data(),</span>
+<span class="lineNum">         </span>[<span class="branchNoExec" title="Branch 11 was not executed"> # </span><span class="branchNoExec" title="Branch 12 was not executed"> # </span>][<span class="branchNoExec" title="Branch 15 was not executed"> # </span><span class="branchNoExec" title="Branch 16 was not executed"> # </span>]
+<span class="lineNum">         </span>[<span class="branchNoExec" title="Branch 18 was not executed"> # </span><span class="branchNoExec" title="Branch 19 was not executed"> # </span>][<span class="branchNoExec" title="Branch 21 was not executed"> # </span><span class="branchNoExec" title="Branch 22 was not executed"> # </span>]
+<span class="lineNum">         </span>        [<span class="branchNoExec" title="Branch 24 was not executed"> # </span><span class="branchNoExec" title="Branch 25 was not executed"> # </span>]
+<span class="lineNum">     241 </span>                :            :                            nullptr, nullptr ) == 0,
+<span class="lineNum">     242 </span>                :            :         &quot;Failed to read &quot; + std::string(eltype) + &quot; element connectivity from &quot;
+<span class="lineNum">     243 </span>        [<span class="branchNoCov" title="Branch 0 was not taken"> - </span><span class="branchCov" title="Branch 1 was taken 7 times"> + </span>]:<span class="lineCov">          7 :         &quot;ExodusII file: &quot; + m_filename );</span>
+<span class="lineNum">     244 </span>[<span class="branchCov" title="Branch 3 was taken 196472 times"> + </span><span class="branchNoCov" title="Branch 4 was not taken"> - </span>][<span class="branchCov" title="Branch 6 was taken 196472 times"> + </span><span class="branchNoCov" title="Branch 7 was not taken"> - </span>]:<span class="lineCov">     196479 :       for (auto n : inpoel)</span>
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 9 was taken 196479 times"> + </span><span class="branchNoCov" title="Branch 10 was not taken"> - </span>][<span class="branchCov" title="Branch 11 was taken 196472 times"> + </span><span class="branchCov" title="Branch 12 was taken 7 times"> + </span>]
+<span class="lineNum">     245 </span>        [<span class="branchCov" title="Branch 2 was taken 196472 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineCov">     196479 :         mesh.tetinpoel().push_back( static_cast&lt; std::size_t &gt;( n ) );</span>
+<span class="lineNum">     246 </span>                :            : 
+<span class="lineNum">     247 </span>        [<span class="branchCov" title="Branch 0 was taken 2 times"> + </span><span class="branchCov" title="Branch 1 was taken 2 times"> + </span>]:<span class="lineCov">          4 :     } else if (nnpe == 3) {    // triangles</span>
+<span class="lineNum">     248 </span>                :            : 
+<span class="lineNum">     249 </span>        [<span class="branchCov" title="Branch 2 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineCov">          2 :       std::vector&lt; int &gt; inpoel( connectsize );</span>
+<span class="lineNum">     250 </span>[<span class="branchCov" title="Branch 2 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>][<span class="branchNoExec" title="Branch 7 was not executed"> # </span><span class="branchNoExec" title="Branch 8 was not executed"> # </span>]:<span class="lineCov">          2 :       ErrChk( ex_get_conn( m_inFile, EX_ELEM_BLOCK, id, inpoel.data(),</span>
+<span class="lineNum">         </span>[<span class="branchNoExec" title="Branch 11 was not executed"> # </span><span class="branchNoExec" title="Branch 12 was not executed"> # </span>][<span class="branchNoExec" title="Branch 15 was not executed"> # </span><span class="branchNoExec" title="Branch 16 was not executed"> # </span>]
+<span class="lineNum">         </span>[<span class="branchNoExec" title="Branch 18 was not executed"> # </span><span class="branchNoExec" title="Branch 19 was not executed"> # </span>][<span class="branchNoExec" title="Branch 21 was not executed"> # </span><span class="branchNoExec" title="Branch 22 was not executed"> # </span>]
+<span class="lineNum">         </span>        [<span class="branchNoExec" title="Branch 24 was not executed"> # </span><span class="branchNoExec" title="Branch 25 was not executed"> # </span>]
+<span class="lineNum">     251 </span>                :            :                            nullptr, nullptr ) == 0,
+<span class="lineNum">     252 </span>                :            :         &quot;Failed to read &quot; + std::string(eltype) + &quot; element connectivity from &quot;
+<span class="lineNum">     253 </span>        [<span class="branchNoCov" title="Branch 0 was not taken"> - </span><span class="branchCov" title="Branch 1 was taken 2 times"> + </span>]:<span class="lineCov">          2 :         &quot;ExodusII file: &quot; + m_filename );</span>
+<span class="lineNum">     254 </span>[<span class="branchCov" title="Branch 3 was taken 144 times"> + </span><span class="branchNoCov" title="Branch 4 was not taken"> - </span>][<span class="branchCov" title="Branch 6 was taken 144 times"> + </span><span class="branchNoCov" title="Branch 7 was not taken"> - </span>]:<span class="lineCov">        146 :       for (auto n : inpoel)</span>
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 9 was taken 146 times"> + </span><span class="branchNoCov" title="Branch 10 was not taken"> - </span>][<span class="branchCov" title="Branch 11 was taken 144 times"> + </span><span class="branchCov" title="Branch 12 was taken 2 times"> + </span>]
+<span class="lineNum">     255 </span>        [<span class="branchCov" title="Branch 2 was taken 144 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineCov">        146 :         mesh.triinpoel().push_back( static_cast&lt; std::size_t &gt;( n ) );</span>
+<span class="lineNum">     256 </span>                :            : 
+<span class="lineNum">     257 </span>                :            :     }
+<span class="lineNum">     258 </span>                :            :   }
+<span class="lineNum">     259 </span>                :            : 
+<span class="lineNum">     260 </span>                :            :   // Shift node IDs to start from zero
+<span class="lineNum">     261 </span>                :<span class="lineCov">          3 :   shiftToZero( mesh.triinpoel() );</span>
+<span class="lineNum">     262 </span>                :<span class="lineCov">          3 :   shiftToZero( mesh.tetinpoel() );</span>
+<span class="lineNum">     263 </span>                :<span class="lineCov">          3 : }</span>
+<a name="264"><span class="lineNum">     264 </span>                :            : </a>
+<span class="lineNum">     265 </span>                :            : void
+<span class="lineNum">     266 </span>                :<span class="lineCov">        322 : ExodusIIMeshReader::readElements( const std::array&lt; std::size_t, 2 &gt;&amp; ext,</span>
+<span class="lineNum">     267 </span>                :            :                                   tk::ExoElemType elemtype,
+<span class="lineNum">     268 </span>                :            :                                   std::vector&lt; std::size_t &gt;&amp; conn ) const
+<span class="lineNum">     269 </span>                :            : // *****************************************************************************
+<span class="lineNum">     270 </span>                :            : //  Read element connectivity of a number of mesh cells from ExodusII file
+<span class="lineNum">     271 </span>                :            : //! \param[in] ext Extents of element IDs whose connectivity to read:
+<span class="lineNum">     272 </span>                :            : //!   [from...till), using zero-based element IDs, where 'from' &gt;=0, inclusive
+<span class="lineNum">     273 </span>                :            : //!   and 'till &lt; 'maxelements', where 'maxelements' is the total number of
+<span class="lineNum">     274 </span>                :            : //!   elements of all element blocks in the file of the requested cell type.
+<span class="lineNum">     275 </span>                :            : //!   Note that 'maxelements' can be queried by nelem().
+<span class="lineNum">     276 </span>                :            : //! \param[in] elemtype Element type
+<span class="lineNum">     277 </span>                :            : //! \param[inout] conn Connectivity vector to push to
+<span class="lineNum">     278 </span>                :            : //! \note Must be preceded by a call to readElemBlockIDs()
+<span class="lineNum">     279 </span>                :            : //! \details This function takes the extents of element IDs in a zero-based
+<span class="lineNum">     280 </span>                :            : //!   fashion. These input extents can be thought of &quot;absolute&quot; extents that
+<span class="lineNum">     281 </span>                :            : //!   denote lowest and the largest-1 element IDs to be read from file.
+<span class="lineNum">     282 </span>                :            : // *****************************************************************************
+<span class="lineNum">     283 </span>                :            : {
+<span class="lineNum">     284 </span>[<span class="branchCov" title="Branch 1 was taken 322 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchNoExec" title="Branch 6 was not executed"> # </span><span class="branchNoExec" title="Branch 7 was not executed"> # </span>]:<span class="lineCov">        322 :   Assert( tk::sumsize(m_eidt) &gt; 0,</span>
+<span class="lineNum">         </span>[<span class="branchNoExec" title="Branch 10 was not executed"> # </span><span class="branchNoExec" title="Branch 11 was not executed"> # </span>][<span class="branchNoExec" title="Branch 14 was not executed"> # </span><span class="branchNoExec" title="Branch 15 was not executed"> # </span>]
+<span class="lineNum">     285 </span>                :            :           &quot;A call to this function must be preceded by a call to &quot;
+<span class="lineNum">     286 </span>        [<span class="branchNoCov" title="Branch 0 was not taken"> - </span><span class="branchCov" title="Branch 1 was taken 322 times"> + </span>]:<span class="lineCov">        322 :           &quot;ExodusIIMeshReader::readElemBlockIDs()&quot; );</span>
+<span class="lineNum">     287 </span>[<span class="branchCov" title="Branch 4 was taken 322 times"> + </span><span class="branchNoCov" title="Branch 5 was not taken"> - </span>][<span class="branchCov" title="Branch 6 was taken 322 times"> + </span><span class="branchNoCov" title="Branch 7 was not taken"> - </span>]:<span class="lineCov">        644 :   Assert( ext[0] &lt;= ext[1] &amp;&amp;</span>
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 10 was taken 322 times"> + </span><span class="branchNoCov" title="Branch 11 was not taken"> - </span>][<span class="branchNoCov" title="Branch 12 was not taken"> - </span><span class="branchCov" title="Branch 13 was taken 322 times"> + </span>]
+<span class="lineNum">         </span>[<span class="branchNoExec" title="Branch 17 was not executed"> # </span><span class="branchNoExec" title="Branch 18 was not executed"> # </span>][<span class="branchNoExec" title="Branch 21 was not executed"> # </span><span class="branchNoExec" title="Branch 22 was not executed"> # </span>]
+<span class="lineNum">         </span>[<span class="branchNoExec" title="Branch 24 was not executed"> # </span><span class="branchNoExec" title="Branch 25 was not executed"> # </span>][<span class="branchNoExec" title="Branch 27 was not executed"> # </span><span class="branchNoExec" title="Branch 28 was not executed"> # </span>]
+<span class="lineNum">         </span>[<span class="branchNoExec" title="Branch 31 was not executed"> # </span><span class="branchNoExec" title="Branch 32 was not executed"> # </span>][<span class="branchNoExec" title="Branch 35 was not executed"> # </span><span class="branchNoExec" title="Branch 36 was not executed"> # </span>]
+<span class="lineNum">         </span>[<span class="branchNoExec" title="Branch 39 was not executed"> # </span><span class="branchNoExec" title="Branch 40 was not executed"> # </span>][<span class="branchNoExec" title="Branch 42 was not executed"> # </span><span class="branchNoExec" title="Branch 43 was not executed"> # </span>]
+<span class="lineNum">         </span>[<span class="branchNoExec" title="Branch 45 was not executed"> # </span><span class="branchNoExec" title="Branch 46 was not executed"> # </span>][<span class="branchNoExec" title="Branch 48 was not executed"> # </span><span class="branchNoExec" title="Branch 49 was not executed"> # </span>]
+<span class="lineNum">         </span>[<span class="branchNoExec" title="Branch 51 was not executed"> # </span><span class="branchNoExec" title="Branch 52 was not executed"> # </span>][<span class="branchNoExec" title="Branch 54 was not executed"> # </span><span class="branchNoExec" title="Branch 55 was not executed"> # </span>]
+<span class="lineNum">         </span>[<span class="branchNoExec" title="Branch 57 was not executed"> # </span><span class="branchNoExec" title="Branch 58 was not executed"> # </span>][<span class="branchNoExec" title="Branch 60 was not executed"> # </span><span class="branchNoExec" title="Branch 61 was not executed"> # </span>]
+<span class="lineNum">         </span>[<span class="branchNoExec" title="Branch 63 was not executed"> # </span><span class="branchNoExec" title="Branch 64 was not executed"> # </span>][<span class="branchNoExec" title="Branch 66 was not executed"> # </span><span class="branchNoExec" title="Branch 67 was not executed"> # </span>]
+<span class="lineNum">     288 </span>                :            :           ext[0] &lt; nelem(elemtype) &amp;&amp;
+<span class="lineNum">     289 </span>                :            :           ext[1] &lt; nelem(elemtype),
+<span class="lineNum">     290 </span>                :            :           &quot;Invalid element ID extents. Of the requested extents [from...till), &quot;
+<span class="lineNum">     291 </span>                :            :           &quot;'from' must be lower than or equal to 'till', and they must be in &quot;
+<span class="lineNum">     292 </span>                :            :           &quot;the range [0...maxelements), where 'maxelements' is the total &quot;
+<span class="lineNum">     293 </span>                :            :           &quot;number of elements of all element blocks in the file of the &quot;
+<span class="lineNum">     294 </span>                :            :           &quot;requested cell type. Requested element ID extents: [&quot;
+<span class="lineNum">     295 </span>                :            :           + std::to_string(ext[0]) + &quot;...&quot; + std::to_string(ext[1])
+<span class="lineNum">     296 </span>                :            :           + &quot;), 'maxelements' of cell type with &quot;
+<span class="lineNum">     297 </span>                :            :           + std::to_string( m_nnpe[ static_cast&lt;std::size_t&gt;(elemtype) ] )
+<span class="lineNum">     298 </span>                :            :           + &quot; nodes per cell in file '&quot; + m_filename + &quot;': &quot;
+<span class="lineNum">     299 </span>        [<span class="branchCov" title="Branch 0 was taken 322 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">        322 :           + std::to_string( nelem( elemtype ) ) );</span>
+<span class="lineNum">     300 </span>                :            : 
+<span class="lineNum">     301 </span>                :<span class="lineCov">        322 :   auto e = static_cast&lt; std::size_t &gt;( elemtype );</span>
+<span class="lineNum">     302 </span>                :            :   // List of number of elements of all blocks of element type requested
+<span class="lineNum">     303 </span>        [<span class="branchCov" title="Branch 1 was taken 322 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">        322 :   const auto&amp; nel = m_nel[e];</span>
+<span class="lineNum">     304 </span>                :            :   // List of element block IDs for element type requested
+<span class="lineNum">     305 </span>        [<span class="branchCov" title="Branch 1 was taken 322 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">        322 :   const auto&amp; bid = m_eidt[e];</span>
+<span class="lineNum">     306 </span>                :            : 
+<span class="lineNum">     307 </span>                :            :   // Compute lower and upper element block ids to read from based on extents
+<span class="lineNum">     308 </span>                :<span class="lineCov">        322 :   std::size_t lo_bid = 0, hi_bid = 0, offset = 0;</span>
+<span class="lineNum">     309 </span>        [<span class="branchCov" title="Branch 1 was taken 346 times"> + </span><span class="branchCov" title="Branch 2 was taken 322 times"> + </span>]:<span class="lineCov">        668 :   for (std::size_t b=0; b&lt;nel.size(); ++b) {</span>
+<span class="lineNum">     310 </span>                :<span class="lineCov">        346 :     std::size_t lo = offset;                    // lo (min) elem ID in block</span>
+<span class="lineNum">     311 </span>        [<span class="branchCov" title="Branch 1 was taken 346 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">        346 :     std::size_t hi = offset + nel[b] - 1;       // hi (max) elem ID in block</span>
+<span class="lineNum">     312 </span>[<span class="branchCov" title="Branch 1 was taken 322 times"> + </span><span class="branchCov" title="Branch 2 was taken 24 times"> + </span>][<span class="branchCov" title="Branch 4 was taken 322 times"> + </span><span class="branchNoCov" title="Branch 5 was not taken"> - </span>]:<span class="lineCov">        346 :     if (ext[0] &gt;= lo &amp;&amp; ext[0] &lt;= hi) lo_bid = b;</span>
+<span class="lineNum">         </span>        [<span class="branchCov" title="Branch 6 was taken 322 times"> + </span><span class="branchCov" title="Branch 7 was taken 24 times"> + </span>]
+<span class="lineNum">     313 </span>[<span class="branchCov" title="Branch 1 was taken 322 times"> + </span><span class="branchCov" title="Branch 2 was taken 24 times"> + </span>][<span class="branchCov" title="Branch 4 was taken 322 times"> + </span><span class="branchNoCov" title="Branch 5 was not taken"> - </span>]:<span class="lineCov">        346 :     if (ext[1] &gt;= lo &amp;&amp; ext[1] &lt;= hi) hi_bid = b;</span>
+<span class="lineNum">         </span>        [<span class="branchCov" title="Branch 6 was taken 322 times"> + </span><span class="branchCov" title="Branch 7 was taken 24 times"> + </span>]
+<span class="lineNum">     314 </span>        [<span class="branchCov" title="Branch 1 was taken 346 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">        346 :     offset += nel[b];</span>
+<span class="lineNum">     315 </span>                :            :   }
+<span class="lineNum">     316 </span>                :            : 
+<span class="lineNum">     317 </span>[<span class="branchNoCov" title="Branch 2 was not taken"> - </span><span class="branchCov" title="Branch 3 was taken 322 times"> + </span>][<span class="branchNoExec" title="Branch 7 was not executed"> # </span><span class="branchNoExec" title="Branch 8 was not executed"> # </span>]:<span class="lineCov">        644 :   Assert( lo_bid &lt; nel.size() &amp;&amp; lo_bid &lt; bid.size(),</span>
+<span class="lineNum">         </span>[<span class="branchNoExec" title="Branch 11 was not executed"> # </span><span class="branchNoExec" title="Branch 12 was not executed"> # </span>][<span class="branchNoExec" title="Branch 15 was not executed"> # </span><span class="branchNoExec" title="Branch 16 was not executed"> # </span>]
+<span class="lineNum">     318 </span>        [<span class="branchCov" title="Branch 0 was taken 322 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">        322 :           &quot;Invalid start block ID&quot; );</span>
+<span class="lineNum">     319 </span>[<span class="branchNoCov" title="Branch 2 was not taken"> - </span><span class="branchCov" title="Branch 3 was taken 322 times"> + </span>][<span class="branchNoExec" title="Branch 7 was not executed"> # </span><span class="branchNoExec" title="Branch 8 was not executed"> # </span>]:<span class="lineCov">        644 :   Assert( hi_bid &lt; nel.size() &amp;&amp; hi_bid &lt; bid.size(),</span>
+<span class="lineNum">         </span>[<span class="branchNoExec" title="Branch 11 was not executed"> # </span><span class="branchNoExec" title="Branch 12 was not executed"> # </span>][<span class="branchNoExec" title="Branch 15 was not executed"> # </span><span class="branchNoExec" title="Branch 16 was not executed"> # </span>]
+<span class="lineNum">     320 </span>        [<span class="branchCov" title="Branch 0 was taken 322 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">        322 :           &quot;Invalid end block ID&quot; );</span>
+<span class="lineNum">     321 </span>                :            : 
+<span class="lineNum">     322 </span>                :            :   // Compute relative extents based on absolute ones for each block to read from
+<span class="lineNum">     323 </span>        [<span class="branchCov" title="Branch 1 was taken 322 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">        322 :   std::vector&lt; std::array&lt; std::size_t, 2 &gt; &gt; rext;</span>
+<span class="lineNum">     324 </span>                :<span class="lineCov">        322 :   offset = 0;</span>
+<span class="lineNum">     325 </span>[<span class="branchNoExec" title="Branch 1 was not executed"> # </span><span class="branchNoExec" title="Branch 2 was not executed"> # </span>][<span class="branchNoCov" title="Branch 3 was not taken"> - </span><span class="branchCov" title="Branch 4 was taken 322 times"> + </span>]:<span class="lineCov">        322 :   for (std::size_t b=0; b&lt;lo_bid; ++b) offset += nel[b];</span>
+<span class="lineNum">     326 </span>        [<span class="branchCov" title="Branch 0 was taken 322 times"> + </span><span class="branchCov" title="Branch 1 was taken 322 times"> + </span>]:<span class="lineCov">        644 :   for (std::size_t b=lo_bid; b&lt;=hi_bid; ++b) {</span>
+<span class="lineNum">     327 </span>                :<span class="lineCov">        322 :     std::size_t lo = offset;</span>
+<span class="lineNum">     328 </span>        [<span class="branchCov" title="Branch 1 was taken 322 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">        322 :     std::size_t hi = offset + nel[b] - 1;</span>
+<span class="lineNum">     329 </span>        [<span class="branchCov" title="Branch 1 was taken 322 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">        322 :     std::size_t le = 1, he = nel[b];</span>
+<span class="lineNum">     330 </span>[<span class="branchCov" title="Branch 1 was taken 322 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 4 was taken 322 times"> + </span><span class="branchNoCov" title="Branch 5 was not taken"> - </span>]:<span class="lineCov">        322 :     if (ext[0] &gt;= lo &amp;&amp; ext[0] &lt;= hi) le = ext[0] - lo + 1;</span>
+<span class="lineNum">         </span>        [<span class="branchCov" title="Branch 6 was taken 322 times"> + </span><span class="branchNoCov" title="Branch 7 was not taken"> - </span>]
+<span class="lineNum">     331 </span>[<span class="branchCov" title="Branch 1 was taken 322 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 4 was taken 322 times"> + </span><span class="branchNoCov" title="Branch 5 was not taken"> - </span>]:<span class="lineCov">        322 :     if (ext[1] &gt;= lo &amp;&amp; ext[1] &lt;= hi) he = ext[1] - lo + 1;</span>
+<span class="lineNum">         </span>        [<span class="branchCov" title="Branch 6 was taken 322 times"> + </span><span class="branchNoCov" title="Branch 7 was not taken"> - </span>]
+<span class="lineNum">     332 </span>[<span class="branchCov" title="Branch 1 was taken 322 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 3 was taken 322 times"> + </span><span class="branchNoCov" title="Branch 4 was not taken"> - </span>]:<span class="lineCov">        322 :     Assert( le &gt;= 1 &amp;&amp; le &lt;= nel[b] &amp;&amp; he &gt;= 1 &amp;&amp; he &lt;= nel[b],</span>
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 5 was taken 322 times"> + </span><span class="branchNoCov" title="Branch 6 was not taken"> - </span>][<span class="branchCov" title="Branch 8 was taken 322 times"> + </span><span class="branchNoCov" title="Branch 9 was not taken"> - </span>]
+<span class="lineNum">         </span>[<span class="branchNoCov" title="Branch 10 was not taken"> - </span><span class="branchCov" title="Branch 11 was taken 322 times"> + </span>][<span class="branchNoExec" title="Branch 15 was not executed"> # </span><span class="branchNoExec" title="Branch 16 was not executed"> # </span>]
+<span class="lineNum">         </span>[<span class="branchNoExec" title="Branch 19 was not executed"> # </span><span class="branchNoExec" title="Branch 20 was not executed"> # </span>][<span class="branchNoExec" title="Branch 23 was not executed"> # </span><span class="branchNoExec" title="Branch 24 was not executed"> # </span>]
+<span class="lineNum">     333 </span>        [<span class="branchCov" title="Branch 0 was taken 322 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">        322 :             &quot;Relative index out of block&quot; );</span>
+<span class="lineNum">     334 </span>        [<span class="branchCov" title="Branch 1 was taken 322 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">        322 :     rext.push_back( {{ le, he }} );</span>
+<span class="lineNum">     335 </span>        [<span class="branchCov" title="Branch 1 was taken 322 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">        322 :     offset += nel[b];</span>
+<a name="336"><span class="lineNum">     336 </span>                :            :   }</a>
+<span class="lineNum">     337 </span>                :            : 
+<span class="lineNum">     338 </span>[<span class="branchCov" title="Branch 1 was taken 322 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 4 was taken 322 times"> + </span><span class="branchNoCov" title="Branch 5 was not taken"> - </span>]:<span class="lineCov">        322 :   Assert( std::accumulate(</span>
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 7 was taken 322 times"> + </span><span class="branchNoCov" title="Branch 8 was not taken"> - </span>][<span class="branchCov" title="Branch 10 was taken 322 times"> + </span><span class="branchNoCov" title="Branch 11 was not taken"> - </span>]
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 15 was taken 322 times"> + </span><span class="branchNoCov" title="Branch 16 was not taken"> - </span>][<span class="branchCov" title="Branch 18 was taken 322 times"> + </span><span class="branchNoCov" title="Branch 19 was not taken"> - </span>]
+<span class="lineNum">         </span>[<span class="branchNoExec" title="Branch 25 was not executed"> # </span><span class="branchNoExec" title="Branch 26 was not executed"> # </span>][<span class="branchNoExec" title="Branch 29 was not executed"> # </span><span class="branchNoExec" title="Branch 30 was not executed"> # </span>]
+<span class="lineNum">         </span>[<span class="branchNoExec" title="Branch 33 was not executed"> # </span><span class="branchNoExec" title="Branch 34 was not executed"> # </span>][<span class="branchNoExec" title="Branch 37 was not executed"> # </span><span class="branchNoExec" title="Branch 38 was not executed"> # </span>]
+<span class="lineNum">         </span>[<span class="branchNoExec" title="Branch 40 was not executed"> # </span><span class="branchNoExec" title="Branch 41 was not executed"> # </span>][<span class="branchNoExec" title="Branch 43 was not executed"> # </span><span class="branchNoExec" title="Branch 44 was not executed"> # </span>]
+<span class="lineNum">         </span>        [<span class="branchNoExec" title="Branch 46 was not executed"> # </span><span class="branchNoExec" title="Branch 47 was not executed"> # </span>]
+<span class="lineNum">     339 </span>                :            :             std::next(rext.cbegin()), rext.cend(), rext[0][1]-rext[0][0]+1,
+<span class="lineNum">     340 </span>                :            :             []( std::size_t n, const std::array&lt; std::size_t, 2 &gt;&amp; r )
+<span class="lineNum">     341 </span>                :            :             { return n + r[1] - r[0] + 1; }
+<span class="lineNum">     342 </span>                :            :           ) == ext[1]-ext[0]+1,
+<span class="lineNum">     343 </span>                :            :           &quot;Total number of elements to read incorrect, requested extents: &quot; +
+<span class="lineNum">     344 </span>        [<span class="branchNoCov" title="Branch 0 was not taken"> - </span><span class="branchCov" title="Branch 1 was taken 322 times"> + </span>]:<span class="lineCov">        322 :           std::to_string(ext[0]) + &quot; ... &quot; + std::to_string(ext[1]) );</span>
+<span class="lineNum">     345 </span>                :            : 
+<span class="lineNum">     346 </span>        [<span class="branchCov" title="Branch 1 was taken 322 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">        644 :   std::vector&lt; int &gt; inpoel;</span>
+<span class="lineNum">     347 </span>                :            : 
+<span class="lineNum">     348 </span>                :            :   // Read element connectivity from file
+<span class="lineNum">     349 </span>                :<span class="lineCov">        322 :   std::size_t B = 0;</span>
+<span class="lineNum">     350 </span>        [<span class="branchCov" title="Branch 0 was taken 322 times"> + </span><span class="branchCov" title="Branch 1 was taken 322 times"> + </span>]:<span class="lineCov">        644 :   for (auto b=lo_bid; b&lt;=hi_bid; ++b, ++B) {</span>
+<span class="lineNum">     351 </span>        [<span class="branchCov" title="Branch 1 was taken 322 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">        322 :     const auto&amp; r = rext[B];</span>
+<span class="lineNum">     352 </span>        [<span class="branchCov" title="Branch 5 was taken 322 times"> + </span><span class="branchNoCov" title="Branch 6 was not taken"> - </span>]:<span class="lineCov">        322 :     std::vector&lt; int &gt; c( (r[1]-r[0]+1) * m_nnpe[e] );</span>
+<span class="lineNum">     353 </span>[<span class="branchCov" title="Branch 5 was taken 322 times"> + </span><span class="branchNoCov" title="Branch 6 was not taken"> - </span>][<span class="branchCov" title="Branch 8 was taken 322 times"> + </span><span class="branchNoCov" title="Branch 9 was not taken"> - </span>]:<span class="lineCov">        322 :     ErrChk( ex_get_partial_conn( m_inFile,</span>
+<span class="lineNum">         </span>[<span class="branchNoExec" title="Branch 13 was not executed"> # </span><span class="branchNoExec" title="Branch 14 was not executed"> # </span>][<span class="branchNoExec" title="Branch 17 was not executed"> # </span><span class="branchNoExec" title="Branch 18 was not executed"> # </span>]
+<span class="lineNum">         </span>[<span class="branchNoExec" title="Branch 20 was not executed"> # </span><span class="branchNoExec" title="Branch 21 was not executed"> # </span>][<span class="branchNoExec" title="Branch 23 was not executed"> # </span><span class="branchNoExec" title="Branch 24 was not executed"> # </span>]
+<span class="lineNum">         </span>[<span class="branchNoExec" title="Branch 27 was not executed"> # </span><span class="branchNoExec" title="Branch 28 was not executed"> # </span>][<span class="branchNoExec" title="Branch 31 was not executed"> # </span><span class="branchNoExec" title="Branch 32 was not executed"> # </span>]
+<span class="lineNum">         </span>[<span class="branchNoExec" title="Branch 34 was not executed"> # </span><span class="branchNoExec" title="Branch 35 was not executed"> # </span>][<span class="branchNoExec" title="Branch 37 was not executed"> # </span><span class="branchNoExec" title="Branch 38 was not executed"> # </span>]
+<span class="lineNum">         </span>[<span class="branchNoExec" title="Branch 40 was not executed"> # </span><span class="branchNoExec" title="Branch 41 was not executed"> # </span>][<span class="branchNoExec" title="Branch 43 was not executed"> # </span><span class="branchNoExec" title="Branch 44 was not executed"> # </span>]
+<span class="lineNum">         </span>[<span class="branchNoExec" title="Branch 46 was not executed"> # </span><span class="branchNoExec" title="Branch 47 was not executed"> # </span>][<span class="branchNoExec" title="Branch 49 was not executed"> # </span><span class="branchNoExec" title="Branch 50 was not executed"> # </span>]
+<span class="lineNum">         </span>        [<span class="branchNoExec" title="Branch 52 was not executed"> # </span><span class="branchNoExec" title="Branch 53 was not executed"> # </span>]
+<span class="lineNum">     354 </span>                :            :                                  EX_ELEM_BLOCK,
+<span class="lineNum">     355 </span>                :            :                                  bid[b],
+<span class="lineNum">     356 </span>                :            :                                  static_cast&lt; int64_t &gt;( r[0] ),
+<span class="lineNum">     357 </span>                :            :                                  static_cast&lt; int64_t &gt;( r[1]-r[0]+1 ),
+<span class="lineNum">     358 </span>                :            :                                  c.data(),
+<span class="lineNum">     359 </span>                :            :                                  nullptr,
+<span class="lineNum">     360 </span>                :            :                                  nullptr ) == 0,
+<span class="lineNum">     361 </span>                :            :             &quot;Failed to read element connectivity of elements [&quot; +
+<span class="lineNum">     362 </span>                :            :             std::to_string(r[0]) + &quot;...&quot; + std::to_string(r[1]) +
+<span class="lineNum">     363 </span>                :            :             &quot;] from element block &quot; + std::to_string(bid[b]) + &quot; in ExodusII &quot;
+<span class="lineNum">     364 </span>        [<span class="branchNoCov" title="Branch 0 was not taken"> - </span><span class="branchCov" title="Branch 1 was taken 322 times"> + </span>]:<span class="lineCov">        322 :             &quot;file: &quot; + m_filename );</span>
+<span class="lineNum">     365 </span>        [<span class="branchCov" title="Branch 3 was taken 322 times"> + </span><span class="branchNoCov" title="Branch 4 was not taken"> - </span>]:<span class="lineCov">        322 :     inpoel.reserve( inpoel.size() + c.size() );</span>
+<span class="lineNum">     366 </span>[<span class="branchCov" title="Branch 1 was taken 322 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 4 was taken 322 times"> + </span><span class="branchNoCov" title="Branch 5 was not taken"> - </span>]:<span class="lineCov">        322 :     std::move( begin(c), end(c), std::back_inserter(inpoel) );</span>
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 7 was taken 322 times"> + </span><span class="branchNoCov" title="Branch 8 was not taken"> - </span>][<span class="branchCov" title="Branch 10 was taken 322 times"> + </span><span class="branchNoCov" title="Branch 11 was not taken"> - </span>]
+<span class="lineNum">     367 </span>                :<span class="lineCov">        322 :   }</span>
+<span class="lineNum">     368 </span>                :            : 
+<span class="lineNum">     369 </span>[<span class="branchNoExec" title="Branch 7 was not executed"> # </span><span class="branchNoExec" title="Branch 8 was not executed"> # </span>][<span class="branchNoExec" title="Branch 11 was not executed"> # </span><span class="branchNoExec" title="Branch 12 was not executed"> # </span>]:<span class="lineCov">        322 :   Assert( inpoel.size() == (ext[1]-ext[0]+1)*m_nnpe[e],</span>
+<span class="lineNum">         </span>[<span class="branchNoExec" title="Branch 15 was not executed"> # </span><span class="branchNoExec" title="Branch 16 was not executed"> # </span>][<span class="branchNoExec" title="Branch 19 was not executed"> # </span><span class="branchNoExec" title="Branch 20 was not executed"> # </span>]
+<span class="lineNum">         </span>[<span class="branchNoExec" title="Branch 22 was not executed"> # </span><span class="branchNoExec" title="Branch 23 was not executed"> # </span>][<span class="branchNoExec" title="Branch 25 was not executed"> # </span><span class="branchNoExec" title="Branch 26 was not executed"> # </span>]
+<span class="lineNum">         </span>[<span class="branchNoExec" title="Branch 28 was not executed"> # </span><span class="branchNoExec" title="Branch 29 was not executed"> # </span>][<span class="branchNoExec" title="Branch 31 was not executed"> # </span><span class="branchNoExec" title="Branch 32 was not executed"> # </span>]
+<span class="lineNum">         </span>        [<span class="branchNoExec" title="Branch 34 was not executed"> # </span><span class="branchNoExec" title="Branch 35 was not executed"> # </span>]
+<span class="lineNum">     370 </span>                :            :           &quot;Failed to read element connectivity of elements [&quot; +
+<span class="lineNum">     371 </span>                :            :           std::to_string(ext[0]) + &quot;...&quot; + std::to_string(ext[1]) + &quot;) from &quot;
+<span class="lineNum">     372 </span>        [<span class="branchNoCov" title="Branch 0 was not taken"> - </span><span class="branchCov" title="Branch 1 was taken 322 times"> + </span>]:<span class="lineCov">        322 :           &quot;ExodusII file: &quot; + m_filename );</span>
+<span class="lineNum">     373 </span>                :            : 
+<span class="lineNum">     374 </span>                :            :   // Put in element connectivity using zero-based node indexing
+<span class="lineNum">     375 </span>[<span class="branchCov" title="Branch 3 was taken 7661960 times"> + </span><span class="branchNoCov" title="Branch 4 was not taken"> - </span>][<span class="branchCov" title="Branch 6 was taken 7661960 times"> + </span><span class="branchNoCov" title="Branch 7 was not taken"> - </span>]:<span class="lineCov">    7662282 :   for (auto&amp; i : inpoel) --i;</span>
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 9 was taken 7662282 times"> + </span><span class="branchNoCov" title="Branch 10 was not taken"> - </span>][<span class="branchCov" title="Branch 11 was taken 7661960 times"> + </span><span class="branchCov" title="Branch 12 was taken 322 times"> + </span>]
+<span class="lineNum">     376 </span>        [<span class="branchCov" title="Branch 3 was taken 322 times"> + </span><span class="branchNoCov" title="Branch 4 was not taken"> - </span>]:<span class="lineCov">        322 :   conn.reserve( conn.size() + inpoel.size() );</span>
+<span class="lineNum">     377 </span>[<span class="branchCov" title="Branch 1 was taken 322 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 4 was taken 322 times"> + </span><span class="branchNoCov" title="Branch 5 was not taken"> - </span>]:<span class="lineCov">        644 :   std::move( begin(inpoel), end(inpoel), std::back_inserter(conn) );</span>
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 7 was taken 322 times"> + </span><span class="branchNoCov" title="Branch 8 was not taken"> - </span>][<span class="branchCov" title="Branch 10 was taken 322 times"> + </span><span class="branchNoCov" title="Branch 11 was not taken"> - </span>]
+<span class="lineNum">     378 </span>                :<span class="lineCov">        322 : }</span>
+<a name="379"><span class="lineNum">     379 </span>                :            : </a>
+<span class="lineNum">     380 </span>                :            : void
+<span class="lineNum">     381 </span>                :<span class="lineCov">         24 : ExodusIIMeshReader::readFaces( std::size_t nbfac,</span>
+<span class="lineNum">     382 </span>                :            :                                const std::vector&lt; std::size_t &gt;&amp; node_map,
+<span class="lineNum">     383 </span>                :            :                                std::vector&lt; std::size_t &gt;&amp; conn )
+<span class="lineNum">     384 </span>                :            : // *****************************************************************************
+<span class="lineNum">     385 </span>                :            : //  Read face connectivity of a number of boundary faces from ExodusII file
+<span class="lineNum">     386 </span>                :            : //! \param[in] nbfac Number of boundary faces
+<span class="lineNum">     387 </span>                :            : //! \param[in] node_map Vector mapping the local Exodus node-IDs to global
+<span class="lineNum">     388 </span>                :            : //!            node-IDs
+<span class="lineNum">     389 </span>                :            : //! \param[inout] conn Connectivity vector to push to
+<span class="lineNum">     390 </span>                :            : //! \details This function reads-in the total number of boundary faces 
+<span class="lineNum">     391 </span>                :            : //!   also called triangle-elements in the EXO2 file, and their connectivity.
+<span class="lineNum">     392 </span>                :            : // *****************************************************************************
+<span class="lineNum">     393 </span>                :            : {
+<span class="lineNum">     394 </span>[<span class="branchNoCov" title="Branch 0 was not taken"> - </span><span class="branchCov" title="Branch 1 was taken 24 times"> + </span>][<span class="branchNoExec" title="Branch 5 was not executed"> # </span><span class="branchNoExec" title="Branch 6 was not executed"> # </span>]:<span class="lineCov">         24 :   ErrChk( nbfac &gt; 0, &quot;Number of boundary faces must be larger than zero&quot; );</span>
+<span class="lineNum">         </span>[<span class="branchNoExec" title="Branch 9 was not executed"> # </span><span class="branchNoExec" title="Branch 10 was not executed"> # </span>][<span class="branchNoExec" title="Branch 13 was not executed"> # </span><span class="branchNoExec" title="Branch 14 was not executed"> # </span>]
+<span class="lineNum">     395 </span>                :            : 
+<span class="lineNum">     396 </span>                :<span class="lineCov">         24 :   std::size_t nnpf(3);</span>
+<span class="lineNum">     397 </span>                :            : 
+<span class="lineNum">     398 </span>                :            :   // Read triangle boundary-face connectivity
+<span class="lineNum">     399 </span>        [<span class="branchCov" title="Branch 1 was taken 24 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">         24 :   std::vector&lt; std::size_t &gt; l_triinpoel;</span>
+<span class="lineNum">     400 </span>        [<span class="branchCov" title="Branch 1 was taken 24 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">         24 :   readElements( {{0,nbfac-1}}, tk::ExoElemType::TRI, l_triinpoel );</span>
+<span class="lineNum">     401 </span>                :            : 
+<span class="lineNum">     402 </span>                :<span class="lineCov">         24 :   std::size_t count(0);</span>
+<span class="lineNum">     403 </span>                :            :   // Use node_map to get the global-IDs of the face-node connectivity
+<span class="lineNum">     404 </span>        [<span class="branchCov" title="Branch 0 was taken 150384 times"> + </span><span class="branchCov" title="Branch 1 was taken 24 times"> + </span>]:<span class="lineCov">     150408 :   for (std::size_t f=0; f&lt;nbfac; ++f)</span>
+<span class="lineNum">     405 </span>                :            :   {
+<span class="lineNum">     406 </span>                :<span class="lineCov">     150384 :     count = f*nnpf;</span>
+<span class="lineNum">     407 </span>        [<span class="branchCov" title="Branch 0 was taken 451152 times"> + </span><span class="branchCov" title="Branch 1 was taken 150384 times"> + </span>]:<span class="lineCov">     601536 :     for (std::size_t i=0; i&lt;nnpf; ++i)</span>
+<span class="lineNum">     408 </span>                :            :     {
+<span class="lineNum">     409 </span>[<span class="branchCov" title="Branch 1 was taken 451152 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 4 was taken 451152 times"> + </span><span class="branchNoCov" title="Branch 5 was not taken"> - </span>]:<span class="lineCov">     451152 :       conn.push_back( node_map[ l_triinpoel[count+i] ] );</span>
+<span class="lineNum">         </span>        [<span class="branchCov" title="Branch 7 was taken 451152 times"> + </span><span class="branchNoCov" title="Branch 8 was not taken"> - </span>]
+<span class="lineNum">     410 </span>                :            :     }
+<span class="lineNum">     411 </span>                :<span class="lineCov">         24 :   }</span>
+<span class="lineNum">     412 </span>                :<span class="lineCov">         24 : }</span>
+<a name="413"><span class="lineNum">     413 </span>                :            : </a>
+<span class="lineNum">     414 </span>                :            : std::vector&lt; std::size_t &gt;
+<span class="lineNum">     415 </span>                :<span class="lineCov">         82 : ExodusIIMeshReader::readNodemap()</span>
+<span class="lineNum">     416 </span>                :            : // *****************************************************************************
+<span class="lineNum">     417 </span>                :            : //  Read local to global node-ID map from ExodusII file
+<span class="lineNum">     418 </span>                :            : //! \return node_map Vector mapping the local Exodus node-IDs to global node-IDs
+<span class="lineNum">     419 </span>                :            : //! \details The node-map is required to get the &quot;Exodus-global&quot; node-IDs from
+<span class="lineNum">     420 </span>                :            : //!   the &quot;Exodus-internal&quot; node-IDs, which are returned from the exodus APIs.
+<span class="lineNum">     421 </span>                :            : //!   The node-IDs in the exodus file are referred to as the &quot;Exodus-global&quot;
+<span class="lineNum">     422 </span>                :            : //!   node-IDs or &quot;fileIDs&quot; in Quinoa.
+<span class="lineNum">     423 </span>                :            : // *****************************************************************************
+<span class="lineNum">     424 </span>                :            : {
+<span class="lineNum">     425 </span>                :            :   // Read triangle boundary-face connectivity
+<span class="lineNum">     426 </span>        [<span class="branchCov" title="Branch 1 was taken 82 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">         82 :   auto nnode = readElemBlockIDs();</span>
+<span class="lineNum">     427 </span>                :            : 
+<span class="lineNum">     428 </span>                :            :   // Create array to store node-number map
+<span class="lineNum">     429 </span>        [<span class="branchCov" title="Branch 2 was taken 82 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineCov">         82 :   std::vector&lt; int &gt; node_map( nnode );</span>
+<span class="lineNum">     430 </span>                :            : 
+<span class="lineNum">     431 </span>                :            :   // Read in the node number map to map the above nodes to the global node-IDs
+<span class="lineNum">     432 </span>[<span class="branchCov" title="Branch 2 was taken 82 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>][<span class="branchNoExec" title="Branch 7 was not executed"> # </span><span class="branchNoExec" title="Branch 8 was not executed"> # </span>]:<span class="lineCov">         82 :   ErrChk( ex_get_id_map( m_inFile, EX_NODE_MAP, node_map.data() ) == 0,</span>
+<span class="lineNum">         </span>[<span class="branchNoExec" title="Branch 11 was not executed"> # </span><span class="branchNoExec" title="Branch 12 was not executed"> # </span>][<span class="branchNoExec" title="Branch 15 was not executed"> # </span><span class="branchNoExec" title="Branch 16 was not executed"> # </span>]
+<span class="lineNum">     433 </span>        [<span class="branchNoCov" title="Branch 0 was not taken"> - </span><span class="branchCov" title="Branch 1 was taken 82 times"> + </span>]:<span class="lineCov">         82 :           &quot;Failed to read node map length from ExodusII file: &quot; );</span>
+<span class="lineNum">     434 </span>                :            : 
+<span class="lineNum">     435 </span>        [<span class="branchCov" title="Branch 2 was taken 82 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineCov">         82 :   std::vector&lt; std::size_t &gt; node_map1( nnode );</span>
+<span class="lineNum">     436 </span>                :            : 
+<span class="lineNum">     437 </span>        [<span class="branchCov" title="Branch 0 was taken 383079 times"> + </span><span class="branchCov" title="Branch 1 was taken 82 times"> + </span>]:<span class="lineCov">     383161 :   for (std::size_t i=0; i&lt;nnode; ++i)</span>
+<span class="lineNum">     438 </span>                :            :   {
+<span class="lineNum">     439 </span>[<span class="branchCov" title="Branch 1 was taken 383079 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 4 was taken 383079 times"> + </span><span class="branchNoCov" title="Branch 5 was not taken"> - </span>]:<span class="lineCov">     383079 :           node_map1[i] = static_cast&lt; std::size_t &gt;(node_map[i]-1);</span>
+<span class="lineNum">     440 </span>                :            :   }
+<span class="lineNum">     441 </span>                :            : 
+<span class="lineNum">     442 </span>                :<span class="lineCov">         82 :   return node_map1;</span>
+<span class="lineNum">     443 </span>                :            : }
+<a name="444"><span class="lineNum">     444 </span>                :            : </a>
+<span class="lineNum">     445 </span>                :            : std::map&lt; int, std::vector&lt; std::size_t &gt; &gt;
+<span class="lineNum">     446 </span>                :<span class="lineCov">         82 : ExodusIIMeshReader::readSidesets()</span>
+<span class="lineNum">     447 </span>                :            : // *****************************************************************************
+<span class="lineNum">     448 </span>                :            : //  Read node list of all side sets from ExodusII file
+<span class="lineNum">     449 </span>                :            : //! \return Node lists mapped to side set ids
+<span class="lineNum">     450 </span>                :            : // *****************************************************************************
+<span class="lineNum">     451 </span>                :            : {
+<span class="lineNum">     452 </span>                :            :   // Read ExodusII file header (fills m_neset)
+<span class="lineNum">     453 </span>                :<span class="lineCov">         82 :   readHeader();</span>
+<span class="lineNum">     454 </span>                :            : 
+<span class="lineNum">     455 </span>                :            :   // Node lists mapped to side set ids
+<span class="lineNum">     456 </span>                :<span class="lineCov">         82 :   std::map&lt; int, std::vector&lt; std::size_t &gt; &gt; side;</span>
+<span class="lineNum">     457 </span>                :            : 
+<span class="lineNum">     458 </span>        [<span class="branchCov" title="Branch 0 was taken 70 times"> + </span><span class="branchCov" title="Branch 1 was taken 12 times"> + </span>]:<span class="lineCov">         82 :   if (m_neset &gt; 0) {</span>
+<span class="lineNum">     459 </span>                :            :     // Read all side set ids from file
+<span class="lineNum">     460 </span>        [<span class="branchCov" title="Branch 2 was taken 70 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineCov">         70 :     std::vector&lt; int &gt; ids( m_neset );</span>
+<span class="lineNum">     461 </span>[<span class="branchCov" title="Branch 2 was taken 70 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>][<span class="branchNoExec" title="Branch 7 was not executed"> # </span><span class="branchNoExec" title="Branch 8 was not executed"> # </span>]:<span class="lineCov">         70 :     ErrChk( ex_get_ids( m_inFile, EX_SIDE_SET, ids.data() ) == 0,</span>
+<span class="lineNum">         </span>[<span class="branchNoExec" title="Branch 11 was not executed"> # </span><span class="branchNoExec" title="Branch 12 was not executed"> # </span>][<span class="branchNoExec" title="Branch 14 was not executed"> # </span><span class="branchNoExec" title="Branch 15 was not executed"> # </span>]
+<span class="lineNum">     462 </span>        [<span class="branchNoCov" title="Branch 0 was not taken"> - </span><span class="branchCov" title="Branch 1 was taken 70 times"> + </span>]:<span class="lineCov">         70 :             &quot;Failed to read side set ids from ExodusII file: &quot; + m_filename );</span>
+<span class="lineNum">     463 </span>                :            :     // Read in node list for all side sets
+<span class="lineNum">     464 </span>  [<span class="branchCov" title="Branch 3 was taken 180 times"> + </span><span class="branchNoCov" title="Branch 4 was not taken"> - </span><span class="branchCov" title="Branch 6 was taken 180 times"> + </span><span class="branchNoCov" title="Branch 7 was not taken"> - </span>]:<span class="lineCov">        250 :     for (auto i : ids) {</span>
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 9 was taken 250 times"> + </span><span class="branchNoCov" title="Branch 10 was not taken"> - </span>][<span class="branchCov" title="Branch 11 was taken 180 times"> + </span><span class="branchCov" title="Branch 12 was taken 70 times"> + </span>]
+<span class="lineNum">     465 </span>                :            :       int nface, nnode;
+<span class="lineNum">     466 </span>                :            :       // Read number of faces and number of distribution factors in side set i
+<span class="lineNum">     467 </span>[<span class="branchCov" title="Branch 1 was taken 180 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchNoExec" title="Branch 6 was not executed"> # </span><span class="branchNoExec" title="Branch 7 was not executed"> # </span>]:<span class="lineCov">        180 :       ErrChk( ex_get_set_param( m_inFile, EX_SIDE_SET, i, &amp;nface, &amp;nnode ) == 0,</span>
+<span class="lineNum">         </span>[<span class="branchNoExec" title="Branch 10 was not executed"> # </span><span class="branchNoExec" title="Branch 11 was not executed"> # </span>][<span class="branchNoExec" title="Branch 13 was not executed"> # </span><span class="branchNoExec" title="Branch 14 was not executed"> # </span>]
+<span class="lineNum">         </span>[<span class="branchNoExec" title="Branch 16 was not executed"> # </span><span class="branchNoExec" title="Branch 17 was not executed"> # </span>][<span class="branchNoExec" title="Branch 19 was not executed"> # </span><span class="branchNoExec" title="Branch 20 was not executed"> # </span>]
+<span class="lineNum">         </span>        [<span class="branchNoExec" title="Branch 22 was not executed"> # </span><span class="branchNoExec" title="Branch 23 was not executed"> # </span>]
+<span class="lineNum">     468 </span>                :            :               &quot;Failed to read side set &quot; + std::to_string(i) + &quot; parameters &quot;
+<span class="lineNum">     469 </span>        [<span class="branchNoCov" title="Branch 0 was not taken"> - </span><span class="branchCov" title="Branch 1 was taken 180 times"> + </span>]:<span class="lineCov">        180 :               &quot;from ExodusII file: &quot; + m_filename );</span>
+<span class="lineNum">     470 </span>                :            :       // Read number of nodes in side set i (overwrite nnode)
+<span class="lineNum">     471 </span>[<span class="branchCov" title="Branch 1 was taken 180 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchNoExec" title="Branch 6 was not executed"> # </span><span class="branchNoExec" title="Branch 7 was not executed"> # </span>]:<span class="lineCov">        180 :       ErrChk( ex_get_side_set_node_list_len( m_inFile, i, &amp;nnode ) == 0,</span>
+<span class="lineNum">         </span>[<span class="branchNoExec" title="Branch 10 was not executed"> # </span><span class="branchNoExec" title="Branch 11 was not executed"> # </span>][<span class="branchNoExec" title="Branch 13 was not executed"> # </span><span class="branchNoExec" title="Branch 14 was not executed"> # </span>]
+<span class="lineNum">         </span>[<span class="branchNoExec" title="Branch 16 was not executed"> # </span><span class="branchNoExec" title="Branch 17 was not executed"> # </span>][<span class="branchNoExec" title="Branch 19 was not executed"> # </span><span class="branchNoExec" title="Branch 20 was not executed"> # </span>]
+<span class="lineNum">         </span>        [<span class="branchNoExec" title="Branch 22 was not executed"> # </span><span class="branchNoExec" title="Branch 23 was not executed"> # </span>]
+<span class="lineNum">     472 </span>                :            :               &quot;Failed to read side set &quot; + std::to_string(i) + &quot; node list &quot;
+<span class="lineNum">     473 </span>        [<span class="branchNoCov" title="Branch 0 was not taken"> - </span><span class="branchCov" title="Branch 1 was taken 180 times"> + </span>]:<span class="lineCov">        180 :               &quot;length from ExodusII file: &quot; + m_filename );</span>
+<span class="lineNum">     474 </span>[<span class="branchNoCov" title="Branch 0 was not taken"> - </span><span class="branchCov" title="Branch 1 was taken 180 times"> + </span>][<span class="branchNoExec" title="Branch 5 was not executed"> # </span><span class="branchNoExec" title="Branch 6 was not executed"> # </span>]:<span class="lineCov">        180 :       Assert(nnode &gt; 0, &quot;Number of nodes = 0 in side set&quot; + std::to_string(i));</span>
+<span class="lineNum">         </span>[<span class="branchNoExec" title="Branch 9 was not executed"> # </span><span class="branchNoExec" title="Branch 10 was not executed"> # </span>][<span class="branchNoExec" title="Branch 12 was not executed"> # </span><span class="branchNoExec" title="Branch 13 was not executed"> # </span>]
+<span class="lineNum">         </span>        [<span class="branchNoExec" title="Branch 15 was not executed"> # </span><span class="branchNoExec" title="Branch 16 was not executed"> # </span>]
+<span class="lineNum">     475 </span>        [<span class="branchCov" title="Branch 2 was taken 180 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineCov">        180 :       std::vector&lt; int &gt; df( static_cast&lt; std::size_t &gt;( nface ) );</span>
+<span class="lineNum">     476 </span>        [<span class="branchCov" title="Branch 2 was taken 180 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineCov">        360 :       std::vector&lt; int &gt; nodes( static_cast&lt; std::size_t &gt;( nnode ) );</span>
+<span class="lineNum">     477 </span>                :            :       // Read in node list for side set i
+<span class="lineNum">     478 </span>[<span class="branchCov" title="Branch 3 was taken 180 times"> + </span><span class="branchNoCov" title="Branch 4 was not taken"> - </span>][<span class="branchNoExec" title="Branch 8 was not executed"> # </span><span class="branchNoExec" title="Branch 9 was not executed"> # </span>]:<span class="lineCov">        180 :       ErrChk( ex_get_side_set_node_list( m_inFile, i, df.data(), nodes.data() )</span>
+<span class="lineNum">         </span>[<span class="branchNoExec" title="Branch 12 was not executed"> # </span><span class="branchNoExec" title="Branch 13 was not executed"> # </span>][<span class="branchNoExec" title="Branch 15 was not executed"> # </span><span class="branchNoExec" title="Branch 16 was not executed"> # </span>]
+<span class="lineNum">         </span>[<span class="branchNoExec" title="Branch 18 was not executed"> # </span><span class="branchNoExec" title="Branch 19 was not executed"> # </span>][<span class="branchNoExec" title="Branch 21 was not executed"> # </span><span class="branchNoExec" title="Branch 22 was not executed"> # </span>]
+<span class="lineNum">         </span>        [<span class="branchNoExec" title="Branch 24 was not executed"> # </span><span class="branchNoExec" title="Branch 25 was not executed"> # </span>]
+<span class="lineNum">     479 </span>                :            :                 == 0, &quot;Failed to read node list of side set &quot; +
+<span class="lineNum">     480 </span>                :            :                       std::to_string(i) + &quot; from ExodusII file: &quot; +
+<span class="lineNum">     481 </span>        [<span class="branchNoCov" title="Branch 0 was not taken"> - </span><span class="branchCov" title="Branch 1 was taken 180 times"> + </span>]:<span class="lineCov">        180 :                       m_filename );</span>
+<span class="lineNum">     482 </span>                :            :       // Make node list unique
+<span class="lineNum">     483 </span>        [<span class="branchCov" title="Branch 1 was taken 180 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">        180 :       tk::unique( nodes );</span>
+<span class="lineNum">     484 </span>                :            :       // Store 0-based node ID list as std::size_t vector instead of ints
+<span class="lineNum">     485 </span>        [<span class="branchCov" title="Branch 1 was taken 180 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">        180 :       auto&amp; list = side[ i ];</span>
+<span class="lineNum">     486 </span>[<span class="branchCov" title="Branch 3 was taken 168460 times"> + </span><span class="branchNoCov" title="Branch 4 was not taken"> - </span>][<span class="branchCov" title="Branch 6 was taken 168460 times"> + </span><span class="branchNoCov" title="Branch 7 was not taken"> - </span>]:<span class="lineCov">     168640 :       for (auto&amp;&amp; n : nodes) list.push_back( static_cast&lt;std::size_t&gt;(n-1) );</span>
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 9 was taken 168460 times"> + </span><span class="branchNoCov" title="Branch 10 was not taken"> - </span>][<span class="branchCov" title="Branch 12 was taken 168640 times"> + </span><span class="branchNoCov" title="Branch 13 was not taken"> - </span>]
+<span class="lineNum">         </span>        [<span class="branchCov" title="Branch 14 was taken 168460 times"> + </span><span class="branchCov" title="Branch 15 was taken 180 times"> + </span>]
+<span class="lineNum">     487 </span>                :<span class="lineCov">        250 :     }</span>
+<span class="lineNum">     488 </span>                :            :   }
+<span class="lineNum">     489 </span>                :            : 
+<span class="lineNum">     490 </span>                :<span class="lineCov">         82 :   return side;</span>
+<span class="lineNum">     491 </span>                :            : }
+<a name="492"><span class="lineNum">     492 </span>                :            : </a>
+<span class="lineNum">     493 </span>                :            : std::size_t
+<span class="lineNum">     494 </span>                :<span class="lineCov">         24 : ExodusIIMeshReader::readSidesetFaces(</span>
+<span class="lineNum">     495 </span>                :            :   std::map&lt; int, std::vector&lt; std::size_t &gt; &gt;&amp; bface )
+<span class="lineNum">     496 </span>                :            : // *****************************************************************************
+<span class="lineNum">     497 </span>                :            : //  Read face list of all side sets from ExodusII file
+<span class="lineNum">     498 </span>                :            : //! \param[out] bface Face-Element lists mapped to side set ids
+<span class="lineNum">     499 </span>                :            : //! \return Total number of boundary faces
+<span class="lineNum">     500 </span>                :            : // *****************************************************************************
+<span class="lineNum">     501 </span>                :            : {
+<span class="lineNum">     502 </span>                :            :   // Read element block ids
+<span class="lineNum">     503 </span>                :<span class="lineCov">         24 :   readElemBlockIDs();</span>
+<span class="lineNum">     504 </span>                :            : 
+<span class="lineNum">     505 </span>                :<span class="lineCov">         24 :   std::size_t nbfac = 0;</span>
+<span class="lineNum">     506 </span>                :            : 
+<span class="lineNum">     507 </span>        [<span class="branchCov" title="Branch 0 was taken 24 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">         24 :   if (m_neset &gt; 0)</span>
+<span class="lineNum">     508 </span>                :            :   {
+<span class="lineNum">     509 </span>                :            :     // Read all side set ids from file
+<span class="lineNum">     510 </span>        [<span class="branchCov" title="Branch 2 was taken 24 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineCov">         24 :     std::vector&lt; int &gt; ids( m_neset );</span>
+<span class="lineNum">     511 </span>[<span class="branchCov" title="Branch 2 was taken 24 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>][<span class="branchNoExec" title="Branch 7 was not executed"> # </span><span class="branchNoExec" title="Branch 8 was not executed"> # </span>]:<span class="lineCov">         24 :     ErrChk( ex_get_ids( m_inFile, EX_SIDE_SET, ids.data() ) == 0,</span>
+<span class="lineNum">         </span>[<span class="branchNoExec" title="Branch 11 was not executed"> # </span><span class="branchNoExec" title="Branch 12 was not executed"> # </span>][<span class="branchNoExec" title="Branch 14 was not executed"> # </span><span class="branchNoExec" title="Branch 15 was not executed"> # </span>]
+<span class="lineNum">     512 </span>        [<span class="branchNoCov" title="Branch 0 was not taken"> - </span><span class="branchCov" title="Branch 1 was taken 24 times"> + </span>]:<span class="lineCov">         24 :             &quot;Failed to read side set ids from ExodusII file: &quot; + m_filename );</span>
+<span class="lineNum">     513 </span>                :            : 
+<span class="lineNum">     514 </span>[<span class="branchCov" title="Branch 1 was taken 24 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 4 was taken 24 times"> + </span><span class="branchNoCov" title="Branch 5 was not taken"> - </span>]:<span class="lineCov">         24 :     auto num_elem = nelem(tk::ExoElemType::TET) + nelem(tk::ExoElemType::TRI);</span>
+<span class="lineNum">     515 </span>        [<span class="branchCov" title="Branch 2 was taken 24 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineCov">         48 :     std::vector&lt; int &gt; elem_map( num_elem );</span>
+<span class="lineNum">     516 </span>                :            : 
+<span class="lineNum">     517 </span>                :            :     // Read in the element number map to map the above side-set elements to the 
+<span class="lineNum">     518 </span>                :            :     // global element-IDs
+<span class="lineNum">     519 </span>[<span class="branchCov" title="Branch 2 was taken 24 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>][<span class="branchNoExec" title="Branch 7 was not executed"> # </span><span class="branchNoExec" title="Branch 8 was not executed"> # </span>]:<span class="lineCov">         24 :     ErrChk( ex_get_id_map( m_inFile, EX_ELEM_MAP, elem_map.data() ) == 0, </span>
+<span class="lineNum">         </span>[<span class="branchNoExec" title="Branch 11 was not executed"> # </span><span class="branchNoExec" title="Branch 12 was not executed"> # </span>][<span class="branchNoExec" title="Branch 14 was not executed"> # </span><span class="branchNoExec" title="Branch 15 was not executed"> # </span>]
+<span class="lineNum">     520 </span>        [<span class="branchNoCov" title="Branch 0 was not taken"> - </span><span class="branchCov" title="Branch 1 was taken 24 times"> + </span>]:<span class="lineCov">         24 :             &quot;Failed to read elem map length from ExodusII file: &quot; + m_filename );</span>
+<span class="lineNum">     521 </span>                :            : 
+<span class="lineNum">     522 </span>                :            :     // Read in face list for all side sets
+<span class="lineNum">     523 </span>  [<span class="branchCov" title="Branch 3 was taken 24 times"> + </span><span class="branchNoCov" title="Branch 4 was not taken"> - </span><span class="branchCov" title="Branch 6 was taken 24 times"> + </span><span class="branchNoCov" title="Branch 7 was not taken"> - </span>]:<span class="lineCov">         48 :     for (auto i : ids)</span>
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 9 was taken 48 times"> + </span><span class="branchNoCov" title="Branch 10 was not taken"> - </span>][<span class="branchCov" title="Branch 11 was taken 24 times"> + </span><span class="branchCov" title="Branch 12 was taken 24 times"> + </span>]
+<span class="lineNum">     524 </span>                :            :     {
+<span class="lineNum">     525 </span>                :            :       int nface, nnode;
+<span class="lineNum">     526 </span>                :            : 
+<span class="lineNum">     527 </span>                :            :       // Read number of faces and number of distribution factors in side set i
+<span class="lineNum">     528 </span>[<span class="branchCov" title="Branch 1 was taken 24 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchNoExec" title="Branch 6 was not executed"> # </span><span class="branchNoExec" title="Branch 7 was not executed"> # </span>]:<span class="lineCov">         24 :       ErrChk( ex_get_set_param( m_inFile, EX_SIDE_SET, i, &amp;nface, &amp;nnode ) == 0,</span>
+<span class="lineNum">         </span>[<span class="branchNoExec" title="Branch 10 was not executed"> # </span><span class="branchNoExec" title="Branch 11 was not executed"> # </span>][<span class="branchNoExec" title="Branch 13 was not executed"> # </span><span class="branchNoExec" title="Branch 14 was not executed"> # </span>]
+<span class="lineNum">         </span>[<span class="branchNoExec" title="Branch 16 was not executed"> # </span><span class="branchNoExec" title="Branch 17 was not executed"> # </span>][<span class="branchNoExec" title="Branch 19 was not executed"> # </span><span class="branchNoExec" title="Branch 20 was not executed"> # </span>]
+<span class="lineNum">         </span>        [<span class="branchNoExec" title="Branch 22 was not executed"> # </span><span class="branchNoExec" title="Branch 23 was not executed"> # </span>]
+<span class="lineNum">     529 </span>                :            :               &quot;Failed to read side set &quot; + std::to_string(i) + &quot; parameters &quot;
+<span class="lineNum">     530 </span>        [<span class="branchNoCov" title="Branch 0 was not taken"> - </span><span class="branchCov" title="Branch 1 was taken 24 times"> + </span>]:<span class="lineCov">         24 :               &quot;from ExodusII file: &quot; + m_filename );</span>
+<span class="lineNum">     531 </span>                :            : 
+<span class="lineNum">     532 </span>                :            :       // total number of boundary faces
+<span class="lineNum">     533 </span>                :<span class="lineCov">         24 :       nbfac += static_cast&lt; std::size_t &gt;(nface);</span>
+<span class="lineNum">     534 </span>                :            : 
+<span class="lineNum">     535 </span>[<span class="branchNoCov" title="Branch 0 was not taken"> - </span><span class="branchCov" title="Branch 1 was taken 24 times"> + </span>][<span class="branchNoExec" title="Branch 5 was not executed"> # </span><span class="branchNoExec" title="Branch 6 was not executed"> # </span>]:<span class="lineCov">         24 :       Assert(nface &gt; 0, &quot;Number of faces = 0 in side set&quot; + std::to_string(i));</span>
+<span class="lineNum">         </span>[<span class="branchNoExec" title="Branch 9 was not executed"> # </span><span class="branchNoExec" title="Branch 10 was not executed"> # </span>][<span class="branchNoExec" title="Branch 12 was not executed"> # </span><span class="branchNoExec" title="Branch 13 was not executed"> # </span>]
+<span class="lineNum">         </span>        [<span class="branchNoExec" title="Branch 15 was not executed"> # </span><span class="branchNoExec" title="Branch 16 was not executed"> # </span>]
+<span class="lineNum">     536 </span>        [<span class="branchCov" title="Branch 2 was taken 24 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineCov">         24 :       std::vector&lt; int &gt; tbface( static_cast&lt; std::size_t &gt;( nface ) );</span>
+<span class="lineNum">     537 </span>        [<span class="branchCov" title="Branch 2 was taken 24 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineCov">         48 :       std::vector&lt; int &gt; tbelem( static_cast&lt; std::size_t &gt;( nface ) );</span>
+<span class="lineNum">     538 </span>        [<span class="branchCov" title="Branch 2 was taken 24 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineCov">         48 :       std::vector&lt; int &gt; gbelem( static_cast&lt; std::size_t &gt;( nface ) );</span>
+<span class="lineNum">     539 </span>                :            : 
+<span class="lineNum">     540 </span>                :            :       // Read in face and element list for side set i
+<span class="lineNum">     541 </span>[<span class="branchCov" title="Branch 3 was taken 24 times"> + </span><span class="branchNoCov" title="Branch 4 was not taken"> - </span>][<span class="branchNoExec" title="Branch 8 was not executed"> # </span><span class="branchNoExec" title="Branch 9 was not executed"> # </span>]:<span class="lineCov">         24 :       ErrChk( ex_get_set( m_inFile, EX_SIDE_SET, i, tbelem.data(),</span>
+<span class="lineNum">         </span>[<span class="branchNoExec" title="Branch 12 was not executed"> # </span><span class="branchNoExec" title="Branch 13 was not executed"> # </span>][<span class="branchNoExec" title="Branch 15 was not executed"> # </span><span class="branchNoExec" title="Branch 16 was not executed"> # </span>]
+<span class="lineNum">         </span>[<span class="branchNoExec" title="Branch 18 was not executed"> # </span><span class="branchNoExec" title="Branch 19 was not executed"> # </span>][<span class="branchNoExec" title="Branch 21 was not executed"> # </span><span class="branchNoExec" title="Branch 22 was not executed"> # </span>]
+<span class="lineNum">         </span>        [<span class="branchNoExec" title="Branch 24 was not executed"> # </span><span class="branchNoExec" title="Branch 25 was not executed"> # </span>]
+<span class="lineNum">     542 </span>                :            :                           tbface.data() ) == 0,
+<span class="lineNum">     543 </span>                :            :               &quot;Failed to read side set &quot; + std::to_string(i) + &quot; face/elem list&quot;
+<span class="lineNum">     544 </span>        [<span class="branchNoCov" title="Branch 0 was not taken"> - </span><span class="branchCov" title="Branch 1 was taken 24 times"> + </span>]:<span class="lineCov">         24 :               &quot; length from ExodusII file: &quot; + m_filename );</span>
+<span class="lineNum">     545 </span>                :            : 
+<span class="lineNum">     546 </span>                :            :       // Use elem_map to get the global-IDs of the boundary elements
+<span class="lineNum">     547 </span>                :<span class="lineCov">         24 :       std::size_t icount = 0;</span>
+<span class="lineNum">     548 </span>[<span class="branchCov" title="Branch 3 was taken 150384 times"> + </span><span class="branchNoCov" title="Branch 4 was not taken"> - </span>][<span class="branchCov" title="Branch 6 was taken 150384 times"> + </span><span class="branchNoCov" title="Branch 7 was not taken"> - </span>]:<span class="lineCov">     150408 :       for (auto&amp; n : tbelem)</span>
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 9 was taken 150408 times"> + </span><span class="branchNoCov" title="Branch 10 was not taken"> - </span>][<span class="branchCov" title="Branch 11 was taken 150384 times"> + </span><span class="branchCov" title="Branch 12 was taken 24 times"> + </span>]
+<span class="lineNum">     549 </span>                :            :       {
+<span class="lineNum">     550 </span>[<span class="branchCov" title="Branch 1 was taken 150384 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 4 was taken 150384 times"> + </span><span class="branchNoCov" title="Branch 5 was not taken"> - </span>]:<span class="lineCov">     150384 :               gbelem[icount] = elem_map[ static_cast&lt; std::size_t &gt;( n-1 ) ];</span>
+<span class="lineNum">     551 </span>                :<span class="lineCov">     150384 :               icount++;</span>
+<span class="lineNum">     552 </span>                :            :       }
+<span class="lineNum">     553 </span>                :            : 
+<span class="lineNum">     554 </span>                :            :       // Store 0-based face ID list as std::size_t vector instead of ints
+<span class="lineNum">     555 </span>        [<span class="branchCov" title="Branch 1 was taken 24 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">         24 :       auto&amp; list2 = bface[ i ];</span>
+<span class="lineNum">     556 </span>[<span class="branchCov" title="Branch 3 was taken 150384 times"> + </span><span class="branchNoCov" title="Branch 4 was not taken"> - </span>][<span class="branchCov" title="Branch 6 was taken 150384 times"> + </span><span class="branchNoCov" title="Branch 7 was not taken"> - </span>]:<span class="lineCov">     150408 :       for (auto&amp;&amp; n : gbelem) list2.push_back( static_cast&lt;std::size_t&gt;(n-1) );</span>
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 9 was taken 150384 times"> + </span><span class="branchNoCov" title="Branch 10 was not taken"> - </span>][<span class="branchCov" title="Branch 12 was taken 150408 times"> + </span><span class="branchNoCov" title="Branch 13 was not taken"> - </span>]
+<span class="lineNum">         </span>        [<span class="branchCov" title="Branch 14 was taken 150384 times"> + </span><span class="branchCov" title="Branch 15 was taken 24 times"> + </span>]
+<span class="lineNum">     557 </span>                :<span class="lineCov">         48 :     }</span>
+<span class="lineNum">     558 </span>                :            :   }
+<span class="lineNum">     559 </span>                :            : 
+<span class="lineNum">     560 </span>                :<span class="lineCov">         24 :   return nbfac;</span>
+<span class="lineNum">     561 </span>                :            : }
+<a name="562"><span class="lineNum">     562 </span>                :            : </a>
+<span class="lineNum">     563 </span>                :            : std::size_t
+<span class="lineNum">     564 </span>                :<span class="lineCov">        990 : ExodusIIMeshReader::nelem( tk::ExoElemType elemtype ) const</span>
+<span class="lineNum">     565 </span>                :            : // *****************************************************************************
+<span class="lineNum">     566 </span>                :            : //  Return number of elements in all mesh blocks for a given elem type in file
+<span class="lineNum">     567 </span>                :            : //! \param[in] elemtype Element type
+<span class="lineNum">     568 </span>                :            : //! \return Number of elements in all blocks for the elem type
+<span class="lineNum">     569 </span>                :            : //! \note Must be preceded by a call to readElemBlockIDs()
+<span class="lineNum">     570 </span>                :            : // *****************************************************************************
+<span class="lineNum">     571 </span>                :            : {
+<span class="lineNum">     572 </span>                :<span class="lineCov">        990 :   auto e = static_cast&lt; std::size_t &gt;( elemtype );</span>
+<span class="lineNum">     573 </span>                :<span class="lineCov">        990 :   std::size_t sum = 0;</span>
+<a name="574"><span class="lineNum">     574 </span>[<span class="branchCov" title="Branch 1 was taken 990 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 6 was taken 1086 times"> + </span><span class="branchNoCov" title="Branch 7 was not taken"> - </span>]:<span class="lineCov">       2076 :   for (auto n : m_nel[e]) sum += n;</span></a>
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 9 was taken 1086 times"> + </span><span class="branchNoCov" title="Branch 10 was not taken"> - </span>][<span class="branchCov" title="Branch 12 was taken 2076 times"> + </span><span class="branchNoCov" title="Branch 13 was not taken"> - </span>]
+<span class="lineNum">         </span>        [<span class="branchCov" title="Branch 14 was taken 1086 times"> + </span><span class="branchCov" title="Branch 15 was taken 990 times"> + </span>]
+<span class="lineNum">     575 </span>                :<span class="lineCov">        990 :   return sum;</span>
+<span class="lineNum">     576 </span>[<span class="branchCov" title="Branch 1 was taken 317 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 3 was taken 317 times"> + </span><span class="branchNoCov" title="Branch 4 was not taken"> - </span>]:<span class="lineCov">       1268 : }</span>
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.12</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

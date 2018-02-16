@@ -1,0 +1,683 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html lang="en">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>Quinoa unit test code coverage report</title>
+  <link rel="stylesheet" type="text/css" href="../../gcov.css">
+</head>
+<body>
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title">Quinoa regression test code coverage report</td></tr>
+    <tr><td class="ruler"><img src="../../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../../index.html">top level</a> - <a href="index.html">PDE/CompFlow</a> - CompFlow.h<span style="font-size: 80%;"> (source / <a href="CompFlow.h.func-sort-c.html">functions</a>)</span></td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Commit:</td>
+            <td class="headerValue"><a href="https://github.com/quinoacomputing/quinoa/commit/b349737">Quinoa_v0.2-354-gb349737</a></td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">141</td>
+            <td class="headerCovTableEntry">157</td>
+            <td class="headerCovTableEntryMed">89.8 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2018-02-15 20:52:34</td>
+            <td></td>
+            <td class="headerItem">Functions:</td>
+            <td class="headerCovTableEntry">16</td>
+            <td class="headerCovTableEntry">130</td>
+            <td class="headerCovTableEntryLo">12.3 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Legend:</td>
+            <td class="headerValueLeg">            Lines:
+            <span class="coverLegendCov">hit</span>
+            <span class="coverLegendNoCov">not hit</span>
+            | Branches:
+            <span class="coverLegendCov">+</span> taken
+            <span class="coverLegendNoCov">-</span> not taken
+            <span class="coverLegendNoCov">#</span> not executed
+</td>
+            <td></td>
+            <td class="headerItem">Branches:</td>
+            <td class="headerCovTableEntry">256</td>
+            <td class="headerCovTableEntry">720</td>
+            <td class="headerCovTableEntryLo">35.6 %</td>
+          </tr>
+          <tr><td><img src="../../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">           Branch data     Line data    Source code</pre>
+<pre class="source">
+<a name="1"><span class="lineNum">       1 </span>                :            : // *****************************************************************************</a>
+<span class="lineNum">       2 </span>                :            : /*!
+<span class="lineNum">       3 </span>                :            :   \file      src/PDE/CompFlow/CompFlow.h
+<span class="lineNum">       4 </span>                :            :   \copyright 2012-2015, J. Bakosi, 2016-2018, Los Alamos National Security, LLC.
+<span class="lineNum">       5 </span>                :            :   \brief     Governing equations describing compressible single-phase flow
+<span class="lineNum">       6 </span>                :            :   \details   This file implements the physics operators governing compressible
+<span class="lineNum">       7 </span>                :            :     fluid flow.
+<span class="lineNum">       8 </span>                :            : */
+<span class="lineNum">       9 </span>                :            : // *****************************************************************************
+<span class="lineNum">      10 </span>                :            : #ifndef CompFlow_h
+<span class="lineNum">      11 </span>                :            : #define CompFlow_h
+<span class="lineNum">      12 </span>                :            : 
+<span class="lineNum">      13 </span>                :            : #include &lt;cmath&gt;
+<span class="lineNum">      14 </span>                :            : #include &lt;algorithm&gt;
+<span class="lineNum">      15 </span>                :            : #include &lt;unordered_set&gt;
+<span class="lineNum">      16 </span>                :            : #include &lt;unordered_map&gt;
+<span class="lineNum">      17 </span>                :            : 
+<span class="lineNum">      18 </span>                :            : #include &quot;Macro.h&quot;
+<span class="lineNum">      19 </span>                :            : #include &quot;Exception.h&quot;
+<span class="lineNum">      20 </span>                :            : #include &quot;Vector.h&quot;
+<span class="lineNum">      21 </span>                :            : 
+<span class="lineNum">      22 </span>                :            : namespace inciter {
+<span class="lineNum">      23 </span>                :            : 
+<span class="lineNum">      24 </span>                :            : extern ctr::InputDeck g_inputdeck;
+<span class="lineNum">      25 </span>                :            : 
+<span class="lineNum">      26 </span>                :            : //! \brief CompFlow used polymorphically with tk::PDE
+<span class="lineNum">      27 </span>                :            : //! \details The template arguments specify policies and are used to configure
+<span class="lineNum">      28 </span>                :            : //!   the behavior of the class. The policies are:
+<span class="lineNum">      29 </span>                :            : //!   - Physics - physics configuration, see PDE/CompFlow/Physics.h
+<span class="lineNum">      30 </span>                :            : //!   - Problem - problem configuration, see PDE/CompFlow/Problems.h
+<span class="lineNum">      31 </span>                :            : //! \note The default physics is Euler, set in inciter::deck::check_compflow()
+<span class="lineNum">      32 </span>                :            : template&lt; class Physics, class Problem &gt;
+<span class="lineNum">      33 </span>                :            : class CompFlow {
+<span class="lineNum">      34 </span>                :            : 
+<span class="lineNum">      35 </span>                :            :   private:
+<span class="lineNum">      36 </span>                :            :     using ncomp_t = kw::ncomp::info::expect::type;
+<span class="lineNum">      37 </span>                :            : 
+<a name="38"><span class="lineNum">      38 </span>                :            :   public:</a>
+<span class="lineNum">      39 </span>                :            :     //! \brief Constructor
+<span class="lineNum">      40 </span>                :<span class="lineNoCov">          0 :     explicit CompFlow( ncomp_t ) : m_offset( 0 ) {}</span>
+<span class="lineNum">      41 </span>                :            : 
+<span class="lineNum">      42 </span>                :            :     //! Initalize the compressible flow equations, prepare for time integration
+<span class="lineNum">      43 </span>                :            :     //! \param[in] coord Mesh node coordinates
+<span class="lineNum">      44 </span>                :            :     //! \param[in,out] unk Array of unknowns
+<span class="lineNum">      45 </span>                :            :     //! \param[in] t Physical time
+<span class="lineNum">      46 </span>                :            :     //! \param[in] gid Global node IDs of owned elements
+<span class="lineNum">      47 </span>                :            :     void initialize( const std::array&lt; std::vector&lt; tk::real &gt;, 3 &gt;&amp; coord,
+<span class="lineNum">      48 </span>                :            :                      tk::Fields&amp; unk,
+<span class="lineNum">      49 </span>                :            :                      tk::real t,
+<span class="lineNum">      50 </span>                :            :                      const std::vector&lt; std::size_t &gt;&amp; gid ) const
+<span class="lineNum">      51 </span>                :            :     {
+<span class="lineNum">      52 </span>                :            :       // Set initial conditions using problem configuration policy
+<span class="lineNum">      53 </span>                :<span class="lineCov">       3174 :       Problem::init( coord, gid, unk, 0, m_offset, t );</span>
+<span class="lineNum">      54 </span>                :            :     }
+<span class="lineNum">      55 </span>                :            : 
+<span class="lineNum">      56 </span>                :            :     //! Compute the left hand side sparse matrix
+<span class="lineNum">      57 </span>                :            :     //! \param[in] coord Mesh node coordinates
+<span class="lineNum">      58 </span>                :            :     //! \param[in] inpoel Mesh element connectivity
+<span class="lineNum">      59 </span>                :            :     //! \param[in] psup Linked lists storing IDs of points surrounding points
+<span class="lineNum">      60 </span>                :            :     //! \param[in,out] lhsd Diagonal of the sparse matrix storing nonzeros
+<span class="lineNum">      61 </span>                :            :     //! \param[in,out] lhso Off-diagonal of the sparse matrix storing nonzeros
+<span class="lineNum">      62 </span>                :            :     //! \details Sparse matrix storing the nonzero matrix values at rows and
+<span class="lineNum">      63 </span>                :            :     //!   columns given by psup. The format is similar to compressed row
+<span class="lineNum">      64 </span>                :            :     //!   storage, but the diagonal and off-diagonal data are stored in separate
+<span class="lineNum">      65 </span>                :            :     //!   vectors. For the off-diagonal data the local row and column indices,
+<span class="lineNum">      66 </span>                :            :     //!   at which values are nonzero, are stored by psup (psup1 and psup2,
+<span class="lineNum">      67 </span>                :            :     //!   where psup2 holds the indices at which psup1 holds the point ids
+<a name="68"><span class="lineNum">      68 </span>                :            :     //!   surrounding points, see also tk::genPsup()). Note that the number of</a>
+<span class="lineNum">      69 </span>                :            :     //!   mesh points (our chunk) npoin = psup.second.size()-1.
+<span class="lineNum">      70 </span>                :<span class="lineCov">         49 :     void lhs( const std::array&lt; std::vector&lt; tk::real &gt;, 3 &gt;&amp; coord,</span>
+<span class="lineNum">      71 </span>                :<span class="lineCov">       9539 :               const std::vector&lt; std::size_t &gt;&amp; inpoel,</span>
+<span class="lineNum">      72 </span>                :            :               const std::pair&lt; std::vector&lt; std::size_t &gt;,
+<span class="lineNum">      73 </span>                :            :                                std::vector&lt; std::size_t &gt; &gt;&amp; psup,
+<span class="lineNum">      74 </span>                :            :               tk::Fields&amp; lhsd,
+<span class="lineNum">      75 </span>                :            :               tk::Fields&amp; lhso ) const
+<span class="lineNum">      76 </span>                :            :     {
+<span class="lineNum">      77 </span>                :            :       Assert( psup.second.size()-1 == coord[0].size(),
+<span class="lineNum">      78 </span>                :            :               &quot;Number of mesh points and number of global IDs unequal&quot; );
+<span class="lineNum">      79 </span>                :            :       Assert( lhsd.nunk() == psup.second.size()-1, &quot;Number of unknowns in &quot;
+<span class="lineNum">      80 </span>                :            :               &quot;diagonal sparse matrix storage incorrect&quot; );
+<span class="lineNum">      81 </span>                :            :       Assert( lhso.nunk() == psup.first.size(), &quot;Number of unknowns in &quot;
+<span class="lineNum">      82 </span>                :            :               &quot;off-diagonal sparse matrix storage incorrect&quot; );
+<span class="lineNum">      83 </span>                :            : 
+<a name="84"><span class="lineNum">      84 </span>                :            :       // Lambda to compute the sparse matrix vector index for row and column</a>
+<span class="lineNum">      85 </span>                :            :       // indices. Used only for off-diagonal entries.
+<span class="lineNum">      86 </span>                :<span class="lineCov">     569400 :       auto spidx = [ &amp;psup ]( std::size_t r, std::size_t c ) -&gt; std::size_t {</span>
+<span class="lineNum">      87 </span>                :            :         Assert( r != c, &quot;Only for computing the off-diagonal indices&quot; );
+<span class="lineNum">      88 </span>[<span class="branchNoExec" title="Branch 0 was not executed"> # </span><span class="branchNoExec" title="Branch 1 was not executed"> # </span>][<span class="branchCov" title="Branch 2 was taken 870065 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineCov">    3810995 :         for (auto i=psup.second[r]+1; i&lt;=psup.second[r+1]; ++i)</span>
+<span class="lineNum">         </span>[<span class="branchNoExec" title="Branch 4 was not executed"> # </span><span class="branchNoExec" title="Branch 5 was not executed"> # </span>][<span class="branchCov" title="Branch 6 was taken 870065 times"> + </span><span class="branchNoCov" title="Branch 7 was not taken"> - </span>]
+<span class="lineNum">         </span>[<span class="branchNoExec" title="Branch 8 was not executed"> # </span><span class="branchNoExec" title="Branch 9 was not executed"> # </span>][<span class="branchCov" title="Branch 10 was taken 1200800 times"> + </span><span class="branchNoCov" title="Branch 11 was not taken"> - </span>]
+<span class="lineNum">         </span>[<span class="branchNoExec" title="Branch 12 was not executed"> # </span><span class="branchNoExec" title="Branch 13 was not executed"> # </span>][<span class="branchCov" title="Branch 14 was taken 870065 times"> + </span><span class="branchNoCov" title="Branch 15 was not taken"> - </span>]
+<span class="lineNum">         </span>[<span class="branchNoExec" title="Branch 16 was not executed"> # </span><span class="branchNoExec" title="Branch 17 was not executed"> # </span>][<span class="branchNoExec" title="Branch 18 was not executed"> # </span><span class="branchNoExec" title="Branch 19 was not executed"> # </span>]
+<span class="lineNum">      89 </span>[<span class="branchNoExec" title="Branch 0 was not executed"> # </span><span class="branchNoExec" title="Branch 1 was not executed"> # </span>][<span class="branchCov" title="Branch 2 was taken 131400 times"> + </span><span class="branchCov" title="Branch 3 was taken 738665 times"> + </span>]:<span class="lineCov">    3810995 :           if (c == psup.first[i]) return i;</span>
+<span class="lineNum">         </span>[<span class="branchNoExec" title="Branch 4 was not executed"> # </span><span class="branchNoExec" title="Branch 5 was not executed"> # </span>][<span class="branchCov" title="Branch 6 was taken 131400 times"> + </span><span class="branchCov" title="Branch 7 was taken 738665 times"> + </span>]
+<span class="lineNum">         </span>[<span class="branchNoExec" title="Branch 8 was not executed"> # </span><span class="branchNoExec" title="Branch 9 was not executed"> # </span>][<span class="branchCov" title="Branch 10 was taken 175200 times"> + </span><span class="branchCov" title="Branch 11 was taken 1025600 times"> + </span>]
+<span class="lineNum">         </span>[<span class="branchNoExec" title="Branch 12 was not executed"> # </span><span class="branchNoExec" title="Branch 13 was not executed"> # </span>][<span class="branchCov" title="Branch 14 was taken 131400 times"> + </span><span class="branchCov" title="Branch 15 was taken 738665 times"> + </span>]
+<span class="lineNum">         </span>[<span class="branchNoExec" title="Branch 16 was not executed"> # </span><span class="branchNoExec" title="Branch 17 was not executed"> # </span>][<span class="branchNoExec" title="Branch 18 was not executed"> # </span><span class="branchNoExec" title="Branch 19 was not executed"> # </span>]
+<span class="lineNum">      90 </span>[<span class="branchNoExec" title="Branch 2 was not executed"> # </span><span class="branchNoExec" title="Branch 3 was not executed"> # </span>][<span class="branchNoExec" title="Branch 5 was not executed"> # </span><span class="branchNoExec" title="Branch 6 was not executed"> # </span>]:<span class="lineNoCov">          0 :         Throw( &quot;Cannot find row, column: &quot; + std::to_string(r) + ',' +</span>
+<span class="lineNum">         </span>[<span class="branchNoExec" title="Branch 8 was not executed"> # </span><span class="branchNoExec" title="Branch 9 was not executed"> # </span>][<span class="branchNoExec" title="Branch 15 was not executed"> # </span><span class="branchNoExec" title="Branch 16 was not executed"> # </span>]
+<span class="lineNum">         </span>[<span class="branchNoExec" title="Branch 18 was not executed"> # </span><span class="branchNoExec" title="Branch 19 was not executed"> # </span>][<span class="branchNoExec" title="Branch 21 was not executed"> # </span><span class="branchNoExec" title="Branch 22 was not executed"> # </span>]
+<span class="lineNum">         </span>[<span class="branchNoExec" title="Branch 28 was not executed"> # </span><span class="branchNoExec" title="Branch 29 was not executed"> # </span>][<span class="branchNoExec" title="Branch 31 was not executed"> # </span><span class="branchNoExec" title="Branch 32 was not executed"> # </span>]
+<span class="lineNum">         </span>[<span class="branchNoExec" title="Branch 34 was not executed"> # </span><span class="branchNoExec" title="Branch 35 was not executed"> # </span>][<span class="branchNoExec" title="Branch 41 was not executed"> # </span><span class="branchNoExec" title="Branch 42 was not executed"> # </span>]
+<span class="lineNum">         </span>[<span class="branchNoExec" title="Branch 44 was not executed"> # </span><span class="branchNoExec" title="Branch 45 was not executed"> # </span>][<span class="branchNoExec" title="Branch 47 was not executed"> # </span><span class="branchNoExec" title="Branch 48 was not executed"> # </span>]
+<span class="lineNum">         </span>[<span class="branchNoExec" title="Branch 54 was not executed"> # </span><span class="branchNoExec" title="Branch 55 was not executed"> # </span>][<span class="branchNoExec" title="Branch 57 was not executed"> # </span><span class="branchNoExec" title="Branch 58 was not executed"> # </span>]
+<span class="lineNum">         </span>[<span class="branchNoExec" title="Branch 60 was not executed"> # </span><span class="branchNoExec" title="Branch 61 was not executed"> # </span>][<span class="branchNoExec" title="Branch 67 was not executed"> # </span><span class="branchNoExec" title="Branch 68 was not executed"> # </span>]
+<span class="lineNum">         </span>[<span class="branchNoExec" title="Branch 70 was not executed"> # </span><span class="branchNoExec" title="Branch 71 was not executed"> # </span>][<span class="branchNoExec" title="Branch 73 was not executed"> # </span><span class="branchNoExec" title="Branch 74 was not executed"> # </span>]
+<span class="lineNum">         </span>[<span class="branchNoExec" title="Branch 80 was not executed"> # </span><span class="branchNoExec" title="Branch 81 was not executed"> # </span>][<span class="branchNoExec" title="Branch 83 was not executed"> # </span><span class="branchNoExec" title="Branch 84 was not executed"> # </span>]
+<span class="lineNum">         </span>[<span class="branchNoExec" title="Branch 86 was not executed"> # </span><span class="branchNoExec" title="Branch 87 was not executed"> # </span>][<span class="branchNoExec" title="Branch 93 was not executed"> # </span><span class="branchNoExec" title="Branch 94 was not executed"> # </span>]
+<span class="lineNum">         </span>[<span class="branchNoExec" title="Branch 96 was not executed"> # </span><span class="branchNoExec" title="Branch 97 was not executed"> # </span>][<span class="branchNoExec" title="Branch 99 was not executed"> # </span><span class="branchNoExec" title="Branch 100 was not executed"> # </span>]
+<span class="lineNum">         </span>[<span class="branchNoExec" title="Branch 106 was not executed"> # </span><span class="branchNoExec" title="Branch 107 was not executed"> # </span>][<span class="branchNoExec" title="Branch 109 was not executed"> # </span><span class="branchNoExec" title="Branch 110 was not executed"> # </span>]
+<span class="lineNum">         </span>[<span class="branchNoExec" title="Branch 112 was not executed"> # </span><span class="branchNoExec" title="Branch 113 was not executed"> # </span>][<span class="branchNoExec" title="Branch 119 was not executed"> # </span><span class="branchNoExec" title="Branch 120 was not executed"> # </span>]
+<span class="lineNum">         </span>[<span class="branchNoExec" title="Branch 122 was not executed"> # </span><span class="branchNoExec" title="Branch 123 was not executed"> # </span>][<span class="branchNoExec" title="Branch 125 was not executed"> # </span><span class="branchNoExec" title="Branch 126 was not executed"> # </span>]
+<span class="lineNum">      91 </span>                :            :                std::to_string(c) + &quot; in sparse matrix&quot; );
+<span class="lineNum">      92 </span>                :<span class="lineCov">         49 :       };</span>
+<span class="lineNum">      93 </span>                :            : 
+<span class="lineNum">      94 </span>                :<span class="lineCov">      18980 :       const auto&amp; x = coord[0];</span>
+<span class="lineNum">      95 </span>                :<span class="lineCov">       9490 :       const auto&amp; y = coord[1];</span>
+<span class="lineNum">      96 </span>                :<span class="lineCov">       9490 :       const auto&amp; z = coord[2];</span>
+<span class="lineNum">      97 </span>                :            : 
+<span class="lineNum">      98 </span>                :            :       // Zero matrix for all components
+<span class="lineNum">      99 </span>[<span class="branchNoExec" title="Branch 0 was not executed"> # </span><span class="branchNoExec" title="Branch 1 was not executed"> # </span>][<span class="branchCov" title="Branch 2 was taken 65 times"> + </span><span class="branchCov" title="Branch 3 was taken 13 times"> + </span>]:<span class="lineCov">        294 :       for (ncomp_t c=0; c&lt;5; ++c) {</span>
+<span class="lineNum">         </span>[<span class="branchNoExec" title="Branch 4 was not executed"> # </span><span class="branchNoExec" title="Branch 5 was not executed"> # </span>][<span class="branchCov" title="Branch 6 was taken 65 times"> + </span><span class="branchCov" title="Branch 7 was taken 13 times"> + </span>]
+<span class="lineNum">         </span>[<span class="branchNoExec" title="Branch 8 was not executed"> # </span><span class="branchNoExec" title="Branch 9 was not executed"> # </span>][<span class="branchCov" title="Branch 10 was taken 50 times"> + </span><span class="branchCov" title="Branch 11 was taken 10 times"> + </span>]
+<span class="lineNum">         </span>[<span class="branchNoExec" title="Branch 12 was not executed"> # </span><span class="branchNoExec" title="Branch 13 was not executed"> # </span>][<span class="branchCov" title="Branch 14 was taken 65 times"> + </span><span class="branchCov" title="Branch 15 was taken 13 times"> + </span>]
+<span class="lineNum">         </span>[<span class="branchNoExec" title="Branch 16 was not executed"> # </span><span class="branchNoExec" title="Branch 17 was not executed"> # </span>][<span class="branchNoExec" title="Branch 18 was not executed"> # </span><span class="branchNoExec" title="Branch 19 was not executed"> # </span>]
+<span class="lineNum">     100 </span>                :<span class="lineCov">        245 :         lhsd.fill( c, m_offset, 0.0 );</span>
+<span class="lineNum">     101 </span>                :            :         lhso.fill( c, m_offset, 0.0 );
+<span class="lineNum">     102 </span>                :            :       }
+<span class="lineNum">     103 </span>                :            : 
+<span class="lineNum">     104 </span>[<span class="branchNoExec" title="Branch 0 was not executed"> # </span><span class="branchNoExec" title="Branch 1 was not executed"> # </span>][<span class="branchCov" title="Branch 2 was taken 2190 times"> + </span><span class="branchCov" title="Branch 3 was taken 13 times"> + </span>]:<span class="lineCov">       9539 :       for (std::size_t e=0; e&lt;inpoel.size()/4; ++e) {</span>
+<span class="lineNum">         </span>[<span class="branchNoExec" title="Branch 4 was not executed"> # </span><span class="branchNoExec" title="Branch 5 was not executed"> # </span>][<span class="branchCov" title="Branch 6 was taken 2190 times"> + </span><span class="branchCov" title="Branch 7 was taken 13 times"> + </span>]
+<span class="lineNum">         </span>[<span class="branchNoExec" title="Branch 8 was not executed"> # </span><span class="branchNoExec" title="Branch 9 was not executed"> # </span>][<span class="branchCov" title="Branch 10 was taken 2920 times"> + </span><span class="branchCov" title="Branch 11 was taken 10 times"> + </span>]
+<span class="lineNum">         </span>[<span class="branchNoExec" title="Branch 12 was not executed"> # </span><span class="branchNoExec" title="Branch 13 was not executed"> # </span>][<span class="branchCov" title="Branch 14 was taken 2190 times"> + </span><span class="branchCov" title="Branch 15 was taken 13 times"> + </span>]
+<span class="lineNum">         </span>[<span class="branchNoExec" title="Branch 16 was not executed"> # </span><span class="branchNoExec" title="Branch 17 was not executed"> # </span>][<span class="branchNoExec" title="Branch 18 was not executed"> # </span><span class="branchNoExec" title="Branch 19 was not executed"> # </span>]
+<span class="lineNum">     105 </span>                :<span class="lineCov">      18980 :         const auto A = inpoel[e*4+0];</span>
+<span class="lineNum">     106 </span>                :<span class="lineCov">      18980 :         const auto B = inpoel[e*4+1];</span>
+<span class="lineNum">     107 </span>                :<span class="lineCov">      18980 :         const auto C = inpoel[e*4+2];</span>
+<span class="lineNum">     108 </span>                :<span class="lineCov">      18980 :         const auto D = inpoel[e*4+3];</span>
+<span class="lineNum">     109 </span>                :<span class="lineCov">      56940 :         std::array&lt; tk::real, 3 &gt; ba{{ x[B]-x[A], y[B]-y[A], z[B]-z[A] }},</span>
+<span class="lineNum">     110 </span>                :<span class="lineCov">      37960 :                                   ca{{ x[C]-x[A], y[C]-y[A], z[C]-z[A] }},</span>
+<span class="lineNum">     111 </span>                :<span class="lineCov">      28470 :                                   da{{ x[D]-x[A], y[D]-y[A], z[D]-z[A] }};</span>
+<span class="lineNum">     112 </span>                :<span class="lineCov">       9490 :         const auto J = tk::triple( ba, ca, da ) / 120.0;</span>
+<span class="lineNum">     113 </span>                :            :         Assert( J &gt; 0, &quot;Element Jacobian non-positive&quot; );
+<span class="lineNum">     114 </span>                :            : 
+<span class="lineNum">     115 </span>[<span class="branchNoExec" title="Branch 0 was not executed"> # </span><span class="branchNoExec" title="Branch 1 was not executed"> # </span>][<span class="branchCov" title="Branch 2 was taken 10950 times"> + </span><span class="branchCov" title="Branch 3 was taken 2190 times"> + </span>]:<span class="lineCov">      56940 :         for (ncomp_t c=0; c&lt;5; ++c) {</span>
+<span class="lineNum">         </span>[<span class="branchNoExec" title="Branch 4 was not executed"> # </span><span class="branchNoExec" title="Branch 5 was not executed"> # </span>][<span class="branchCov" title="Branch 6 was taken 10950 times"> + </span><span class="branchCov" title="Branch 7 was taken 2190 times"> + </span>]
+<span class="lineNum">         </span>[<span class="branchNoExec" title="Branch 8 was not executed"> # </span><span class="branchNoExec" title="Branch 9 was not executed"> # </span>][<span class="branchCov" title="Branch 10 was taken 14600 times"> + </span><span class="branchCov" title="Branch 11 was taken 2920 times"> + </span>]
+<span class="lineNum">         </span>[<span class="branchNoExec" title="Branch 12 was not executed"> # </span><span class="branchNoExec" title="Branch 13 was not executed"> # </span>][<span class="branchCov" title="Branch 14 was taken 10950 times"> + </span><span class="branchCov" title="Branch 15 was taken 2190 times"> + </span>]
+<span class="lineNum">         </span>[<span class="branchNoExec" title="Branch 16 was not executed"> # </span><span class="branchNoExec" title="Branch 17 was not executed"> # </span>][<span class="branchNoExec" title="Branch 18 was not executed"> # </span><span class="branchNoExec" title="Branch 19 was not executed"> # </span>]
+<span class="lineNum">     116 </span>                :<span class="lineCov">      47450 :           const auto r = lhsd.cptr( c, m_offset );</span>
+<span class="lineNum">     117 </span>                :<span class="lineCov">      47450 :           lhsd.var( r, A ) += 2.0 * J;</span>
+<span class="lineNum">     118 </span>                :<span class="lineCov">      47450 :           lhsd.var( r, B ) += 2.0 * J;</span>
+<span class="lineNum">     119 </span>                :<span class="lineCov">      47450 :           lhsd.var( r, C ) += 2.0 * J;</span>
+<span class="lineNum">     120 </span>                :<span class="lineCov">      47450 :           lhsd.var( r, D ) += 2.0 * J;</span>
+<span class="lineNum">     121 </span>                :            : 
+<span class="lineNum">     122 </span>                :<span class="lineCov">      47450 :           const auto s = lhso.cptr( c, m_offset );</span>
+<span class="lineNum">     123 </span>                :<span class="lineCov">      47450 :           lhso.var( s, spidx(A,B) ) += J;</span>
+<span class="lineNum">     124 </span>                :<span class="lineCov">      47450 :           lhso.var( s, spidx(A,C) ) += J;</span>
+<span class="lineNum">     125 </span>                :<span class="lineCov">      47450 :           lhso.var( s, spidx(A,D) ) += J;</span>
+<span class="lineNum">     126 </span>                :            : 
+<span class="lineNum">     127 </span>                :<span class="lineCov">      47450 :           lhso.var( s, spidx(B,A) ) += J;</span>
+<span class="lineNum">     128 </span>                :<span class="lineCov">      47450 :           lhso.var( s, spidx(B,C) ) += J;</span>
+<span class="lineNum">     129 </span>                :<span class="lineCov">      47450 :           lhso.var( s, spidx(B,D) ) += J;</span>
+<span class="lineNum">     130 </span>                :            : 
+<span class="lineNum">     131 </span>                :<span class="lineCov">      47450 :           lhso.var( s, spidx(C,A) ) += J;</span>
+<span class="lineNum">     132 </span>                :<span class="lineCov">      47450 :           lhso.var( s, spidx(C,B) ) += J;</span>
+<span class="lineNum">     133 </span>                :<span class="lineCov">      47450 :           lhso.var( s, spidx(C,D) ) += J;</span>
+<span class="lineNum">     134 </span>                :            : 
+<span class="lineNum">     135 </span>                :<span class="lineCov">      47450 :           lhso.var( s, spidx(D,A) ) += J;</span>
+<span class="lineNum">     136 </span>                :<span class="lineCov">      47450 :           lhso.var( s, spidx(D,B) ) += J;</span>
+<span class="lineNum">     137 </span>                :<span class="lineCov">      47450 :           lhso.var( s, spidx(D,C) ) += J;</span>
+<span class="lineNum">     138 </span>                :            :         }
+<span class="lineNum">     139 </span>                :            :       }
+<span class="lineNum">     140 </span>                :<span class="lineCov">         49 :     }</span>
+<span class="lineNum">     141 </span>                :            : 
+<span class="lineNum">     142 </span>                :            :     //! Compute right hand side
+<span class="lineNum">     143 </span>                :            :     //! \param[in] t Physical time
+<span class="lineNum">     144 </span>                :            :     //! \param[in] deltat Size of time step
+<span class="lineNum">     145 </span>                :            :     //! \param[in] coord Mesh node coordinates
+<span class="lineNum">     146 </span>                :            :     //! \param[in] inpoel Mesh element connectivity
+<a name="147"><span class="lineNum">     147 </span>                :            :     //! \param[in] U Solution vector at recent time step</a>
+<span class="lineNum">     148 </span>                :            :     //! \param[in,out] R Right-hand side vector computed
+<span class="lineNum">     149 </span>                :<span class="lineCov">       3740 :     void rhs( tk::real t,</span>
+<span class="lineNum">     150 </span>                :            :               tk::real deltat,
+<span class="lineNum">     151 </span>                :            :               const std::array&lt; std::vector&lt; tk::real &gt;, 3 &gt;&amp; coord,
+<span class="lineNum">     152 </span>                :<span class="lineCov">    1993810 :               const std::vector&lt; std::size_t &gt;&amp; inpoel,</span>
+<span class="lineNum">     153 </span>                :            :               const tk::Fields&amp; U,
+<span class="lineNum">     154 </span>                :            :               tk::Fields&amp; Ue,
+<span class="lineNum">     155 </span>                :            :               tk::Fields&amp; R ) const
+<span class="lineNum">     156 </span>                :            :     {
+<span class="lineNum">     157 </span>                :            :       Assert( U.nunk() == coord[0].size(), &quot;Number of unknowns in solution &quot;
+<span class="lineNum">     158 </span>                :            :               &quot;vector at recent time step incorrect&quot; );
+<span class="lineNum">     159 </span>                :            :       Assert( R.nunk() == coord[0].size() &amp;&amp; R.nprop() == 5,
+<span class="lineNum">     160 </span>                :            :               &quot;Number of unknowns and/or number of components in right-hand &quot;
+<span class="lineNum">     161 </span>                :            :               &quot;side vector incorrect&quot; );
+<span class="lineNum">     162 </span>                :            :       Assert( U.nprop() == 5,
+<span class="lineNum">     163 </span>                :            :               &quot;Number of components in solution vector must be 5&quot; );
+<span class="lineNum">     164 </span>                :            :       Assert( R.nprop() == 5, &quot;Number of components in rhs must be 5&quot; );
+<span class="lineNum">     165 </span>                :            : 
+<span class="lineNum">     166 </span>                :<span class="lineCov">    3310550 :       const auto&amp; x = coord[0];</span>
+<span class="lineNum">     167 </span>                :<span class="lineCov">    3310550 :       const auto&amp; y = coord[1];</span>
+<span class="lineNum">     168 </span>                :<span class="lineCov">    2679830 :       const auto&amp; z = coord[2];</span>
+<span class="lineNum">     169 </span>                :            : 
+<span class="lineNum">     170 </span>                :            :       // ratio of specific heats
+<span class="lineNum">     171 </span>                :<span class="lineCov">       3740 :       auto g = g_inputdeck.get&lt; tag::param, tag::compflow, tag::gamma &gt;()[0];</span>
+<span class="lineNum">     172 </span>                :            : 
+<span class="lineNum">     173 </span>                :            :       // 1st stage: update element values from node values (gather-add)
+<span class="lineNum">     174 </span>[<span class="branchNoExec" title="Branch 0 was not executed"> # </span><span class="branchNoExec" title="Branch 1 was not executed"> # </span>][<span class="branchCov" title="Branch 2 was taken 324850 times"> + </span><span class="branchCov" title="Branch 3 was taken 1958 times"> + </span>]:<span class="lineCov">     665850 :       for (std::size_t e=0; e&lt;inpoel.size()/4; ++e) {</span>
+<span class="lineNum">         </span>[<span class="branchNoExec" title="Branch 4 was not executed"> # </span><span class="branchNoExec" title="Branch 5 was not executed"> # </span>][<span class="branchCov" title="Branch 6 was taken 39420 times"> + </span><span class="branchCov" title="Branch 7 was taken 234 times"> + </span>]
+<span class="lineNum">         </span>[<span class="branchNoExec" title="Branch 8 was not executed"> # </span><span class="branchNoExec" title="Branch 9 was not executed"> # </span>][<span class="branchCov" title="Branch 10 was taken 87600 times"> + </span><span class="branchCov" title="Branch 11 was taken 300 times"> + </span>]
+<span class="lineNum">         </span>[<span class="branchNoExec" title="Branch 12 was not executed"> # </span><span class="branchNoExec" title="Branch 13 was not executed"> # </span>][<span class="branchCov" title="Branch 14 was taken 210240 times"> + </span><span class="branchCov" title="Branch 15 was taken 1248 times"> + </span>]
+<span class="lineNum">         </span>[<span class="branchNoExec" title="Branch 16 was not executed"> # </span><span class="branchNoExec" title="Branch 17 was not executed"> # </span>][<span class="branchNoExec" title="Branch 18 was not executed"> # </span><span class="branchNoExec" title="Branch 19 was not executed"> # </span>]
+<span class="lineNum">     175 </span>                :            : 
+<span class="lineNum">     176 </span>                :            :         // access node IDs
+<span class="lineNum">     177 </span>                :            :         const std::array&lt; std::size_t, 4 &gt; N{{ inpoel[e*4+0], inpoel[e*4+1],
+<span class="lineNum">     178 </span>                :<span class="lineCov">    3310550 :                                                inpoel[e*4+2], inpoel[e*4+3] }};</span>
+<span class="lineNum">     179 </span>                :            :         // compute element Jacobi determinant
+<span class="lineNum">     180 </span>                :            :         const std::array&lt; tk::real, 3 &gt;
+<span class="lineNum">     181 </span>                :<span class="lineCov">    3972660 :           ba{{ x[N[1]]-x[N[0]], y[N[1]]-y[N[0]], z[N[1]]-z[N[0]] }},</span>
+<span class="lineNum">     182 </span>                :<span class="lineCov">    1986330 :           ca{{ x[N[2]]-x[N[0]], y[N[2]]-y[N[0]], z[N[2]]-z[N[0]] }},</span>
+<span class="lineNum">     183 </span>                :<span class="lineCov">    1986330 :           da{{ x[N[3]]-x[N[0]], y[N[3]]-y[N[0]], z[N[3]]-z[N[0]] }};</span>
+<span class="lineNum">     184 </span>                :<span class="lineCov">     662110 :         const auto J = tk::triple( ba, ca, da );        // J = 6V</span>
+<span class="lineNum">     185 </span>                :            :         Assert( J &gt; 0, &quot;Element Jacobian non-positive&quot; );
+<span class="lineNum">     186 </span>                :            : 
+<span class="lineNum">     187 </span>                :            :         // shape function derivatives, nnode*ndim [4][3]
+<span class="lineNum">     188 </span>                :            :         std::array&lt; std::array&lt; tk::real, 3 &gt;, 4 &gt; grad;
+<span class="lineNum">     189 </span>                :<span class="lineCov">     662110 :         grad[1] = tk::crossdiv( ca, da, J );</span>
+<span class="lineNum">     190 </span>                :<span class="lineCov">     662110 :         grad[2] = tk::crossdiv( da, ba, J );</span>
+<span class="lineNum">     191 </span>                :<span class="lineCov">     662110 :         grad[3] = tk::crossdiv( ba, ca, J );</span>
+<span class="lineNum">     192 </span>[<span class="branchNoExec" title="Branch 0 was not executed"> # </span><span class="branchNoExec" title="Branch 1 was not executed"> # </span>][<span class="branchCov" title="Branch 2 was taken 974550 times"> + </span><span class="branchCov" title="Branch 3 was taken 324850 times"> + </span>]:<span class="lineCov">    2648440 :         for (std::size_t i=0; i&lt;3; ++i)</span>
+<span class="lineNum">         </span>[<span class="branchNoExec" title="Branch 4 was not executed"> # </span><span class="branchNoExec" title="Branch 5 was not executed"> # </span>][<span class="branchCov" title="Branch 6 was taken 118260 times"> + </span><span class="branchCov" title="Branch 7 was taken 39420 times"> + </span>]
+<span class="lineNum">         </span>[<span class="branchNoExec" title="Branch 8 was not executed"> # </span><span class="branchNoExec" title="Branch 9 was not executed"> # </span>][<span class="branchCov" title="Branch 10 was taken 262800 times"> + </span><span class="branchCov" title="Branch 11 was taken 87600 times"> + </span>]
+<span class="lineNum">         </span>[<span class="branchNoExec" title="Branch 12 was not executed"> # </span><span class="branchNoExec" title="Branch 13 was not executed"> # </span>][<span class="branchCov" title="Branch 14 was taken 630720 times"> + </span><span class="branchCov" title="Branch 15 was taken 210240 times"> + </span>]
+<span class="lineNum">         </span>[<span class="branchNoExec" title="Branch 16 was not executed"> # </span><span class="branchNoExec" title="Branch 17 was not executed"> # </span>][<span class="branchNoExec" title="Branch 18 was not executed"> # </span><span class="branchNoExec" title="Branch 19 was not executed"> # </span>]
+<span class="lineNum">     193 </span>                :<span class="lineCov">    1986330 :           grad[0][i] = -grad[1][i]-grad[2][i]-grad[3][i];</span>
+<span class="lineNum">     194 </span>                :            : 
+<span class="lineNum">     195 </span>                :            :         // access solution at element nodes
+<span class="lineNum">     196 </span>                :            :         std::array&lt; std::array&lt; tk::real, 4 &gt;, 5 &gt; u;
+<span class="lineNum">     197 </span>[<span class="branchNoExec" title="Branch 1 was not executed"> # </span><span class="branchNoExec" title="Branch 2 was not executed"> # </span>][<span class="branchCov" title="Branch 4 was taken 1624250 times"> + </span><span class="branchCov" title="Branch 5 was taken 324850 times"> + </span>]:<span class="lineCov">    3972660 :         for (ncomp_t c=0; c&lt;5; ++c) u[c] = U.extract( c, m_offset, N );</span>
+<span class="lineNum">         </span>[<span class="branchNoExec" title="Branch 7 was not executed"> # </span><span class="branchNoExec" title="Branch 8 was not executed"> # </span>][<span class="branchCov" title="Branch 10 was taken 197100 times"> + </span><span class="branchCov" title="Branch 11 was taken 39420 times"> + </span>]
+<span class="lineNum">         </span>[<span class="branchNoExec" title="Branch 13 was not executed"> # </span><span class="branchNoExec" title="Branch 14 was not executed"> # </span>][<span class="branchCov" title="Branch 16 was taken 438000 times"> + </span><span class="branchCov" title="Branch 17 was taken 87600 times"> + </span>]
+<span class="lineNum">         </span>[<span class="branchNoExec" title="Branch 19 was not executed"> # </span><span class="branchNoExec" title="Branch 20 was not executed"> # </span>][<span class="branchCov" title="Branch 22 was taken 1051200 times"> + </span><span class="branchCov" title="Branch 23 was taken 210240 times"> + </span>]
+<span class="lineNum">         </span>[<span class="branchNoExec" title="Branch 25 was not executed"> # </span><span class="branchNoExec" title="Branch 26 was not executed"> # </span>][<span class="branchNoExec" title="Branch 28 was not executed"> # </span><span class="branchNoExec" title="Branch 29 was not executed"> # </span>]
+<span class="lineNum">     198 </span>                :            :         // access solution at elements
+<span class="lineNum">     199 </span>                :            :         std::array&lt; const tk::real*, 5 &gt; ue;
+<span class="lineNum">     200 </span>[<span class="branchNoExec" title="Branch 0 was not executed"> # </span><span class="branchNoExec" title="Branch 1 was not executed"> # </span>][<span class="branchCov" title="Branch 2 was taken 1624250 times"> + </span><span class="branchCov" title="Branch 3 was taken 324850 times"> + </span>]:<span class="lineCov">    3972660 :         for (ncomp_t c=0; c&lt;5; ++c) ue[c] = Ue.cptr( c, m_offset );</span>
+<span class="lineNum">         </span>[<span class="branchNoExec" title="Branch 4 was not executed"> # </span><span class="branchNoExec" title="Branch 5 was not executed"> # </span>][<span class="branchCov" title="Branch 6 was taken 197100 times"> + </span><span class="branchCov" title="Branch 7 was taken 39420 times"> + </span>]
+<span class="lineNum">         </span>[<span class="branchNoExec" title="Branch 8 was not executed"> # </span><span class="branchNoExec" title="Branch 9 was not executed"> # </span>][<span class="branchCov" title="Branch 10 was taken 438000 times"> + </span><span class="branchCov" title="Branch 11 was taken 87600 times"> + </span>]
+<span class="lineNum">         </span>[<span class="branchNoExec" title="Branch 12 was not executed"> # </span><span class="branchNoExec" title="Branch 13 was not executed"> # </span>][<span class="branchCov" title="Branch 14 was taken 1051200 times"> + </span><span class="branchCov" title="Branch 15 was taken 210240 times"> + </span>]
+<span class="lineNum">         </span>[<span class="branchNoExec" title="Branch 16 was not executed"> # </span><span class="branchNoExec" title="Branch 17 was not executed"> # </span>][<span class="branchNoExec" title="Branch 18 was not executed"> # </span><span class="branchNoExec" title="Branch 19 was not executed"> # </span>]
+<span class="lineNum">     201 </span>                :            : 
+<span class="lineNum">     202 </span>                :            :         // pressure
+<span class="lineNum">     203 </span>                :            :         std::array&lt; tk::real, 4 &gt; p;
+<span class="lineNum">     204 </span>[<span class="branchNoExec" title="Branch 0 was not executed"> # </span><span class="branchNoExec" title="Branch 1 was not executed"> # </span>][<span class="branchCov" title="Branch 2 was taken 1299400 times"> + </span><span class="branchCov" title="Branch 3 was taken 324850 times"> + </span>]:<span class="lineCov">    3310550 :         for (std::size_t a=0; a&lt;4; ++a)</span>
+<span class="lineNum">         </span>[<span class="branchNoExec" title="Branch 4 was not executed"> # </span><span class="branchNoExec" title="Branch 5 was not executed"> # </span>][<span class="branchCov" title="Branch 6 was taken 157680 times"> + </span><span class="branchCov" title="Branch 7 was taken 39420 times"> + </span>]
+<span class="lineNum">         </span>[<span class="branchNoExec" title="Branch 8 was not executed"> # </span><span class="branchNoExec" title="Branch 9 was not executed"> # </span>][<span class="branchCov" title="Branch 10 was taken 350400 times"> + </span><span class="branchCov" title="Branch 11 was taken 87600 times"> + </span>]
+<span class="lineNum">         </span>[<span class="branchNoExec" title="Branch 12 was not executed"> # </span><span class="branchNoExec" title="Branch 13 was not executed"> # </span>][<span class="branchCov" title="Branch 14 was taken 840960 times"> + </span><span class="branchCov" title="Branch 15 was taken 210240 times"> + </span>]
+<span class="lineNum">         </span>[<span class="branchNoExec" title="Branch 16 was not executed"> # </span><span class="branchNoExec" title="Branch 17 was not executed"> # </span>][<span class="branchNoExec" title="Branch 18 was not executed"> # </span><span class="branchNoExec" title="Branch 19 was not executed"> # </span>]
+<span class="lineNum">     205 </span>                :<span class="lineCov">    2648440 :           p[a] = (g-1.0)*(u[4][a] - (u[1][a]*u[1][a] +</span>
+<span class="lineNum">     206 </span>                :            :                                      u[2][a]*u[2][a] +
+<span class="lineNum">     207 </span>                :            :                                      u[3][a]*u[3][a])/2.0/u[0][a]);
+<span class="lineNum">     208 </span>                :            : 
+<span class="lineNum">     209 </span>                :            :         // sum nodal averages to element
+<span class="lineNum">     210 </span>[<span class="branchNoExec" title="Branch 0 was not executed"> # </span><span class="branchNoExec" title="Branch 1 was not executed"> # </span>][<span class="branchCov" title="Branch 2 was taken 1624250 times"> + </span><span class="branchCov" title="Branch 3 was taken 324850 times"> + </span>]:<span class="lineCov">    3972660 :         for (ncomp_t c=0; c&lt;5; ++c) {</span>
+<span class="lineNum">         </span>[<span class="branchNoExec" title="Branch 4 was not executed"> # </span><span class="branchNoExec" title="Branch 5 was not executed"> # </span>][<span class="branchCov" title="Branch 6 was taken 197100 times"> + </span><span class="branchCov" title="Branch 7 was taken 39420 times"> + </span>]
+<span class="lineNum">         </span>[<span class="branchNoExec" title="Branch 8 was not executed"> # </span><span class="branchNoExec" title="Branch 9 was not executed"> # </span>][<span class="branchCov" title="Branch 10 was taken 438000 times"> + </span><span class="branchCov" title="Branch 11 was taken 87600 times"> + </span>]
+<span class="lineNum">         </span>[<span class="branchNoExec" title="Branch 12 was not executed"> # </span><span class="branchNoExec" title="Branch 13 was not executed"> # </span>][<span class="branchCov" title="Branch 14 was taken 1051200 times"> + </span><span class="branchCov" title="Branch 15 was taken 210240 times"> + </span>]
+<span class="lineNum">         </span>[<span class="branchNoExec" title="Branch 16 was not executed"> # </span><span class="branchNoExec" title="Branch 17 was not executed"> # </span>][<span class="branchNoExec" title="Branch 18 was not executed"> # </span><span class="branchNoExec" title="Branch 19 was not executed"> # </span>]
+<span class="lineNum">     211 </span>                :<span class="lineCov">    6621100 :           Ue.var(ue[c],e) = 0.0;</span>
+<span class="lineNum">     212 </span>[<span class="branchNoExec" title="Branch 0 was not executed"> # </span><span class="branchNoExec" title="Branch 1 was not executed"> # </span>][<span class="branchCov" title="Branch 2 was taken 6497000 times"> + </span><span class="branchCov" title="Branch 3 was taken 1624250 times"> + </span>]:<span class="lineCov">   16552750 :           for (std::size_t a=0; a&lt;4; ++a)</span>
+<span class="lineNum">         </span>[<span class="branchNoExec" title="Branch 4 was not executed"> # </span><span class="branchNoExec" title="Branch 5 was not executed"> # </span>][<span class="branchCov" title="Branch 6 was taken 788400 times"> + </span><span class="branchCov" title="Branch 7 was taken 197100 times"> + </span>]
+<span class="lineNum">         </span>[<span class="branchNoExec" title="Branch 8 was not executed"> # </span><span class="branchNoExec" title="Branch 9 was not executed"> # </span>][<span class="branchCov" title="Branch 10 was taken 1752000 times"> + </span><span class="branchCov" title="Branch 11 was taken 438000 times"> + </span>]
+<span class="lineNum">         </span>[<span class="branchNoExec" title="Branch 12 was not executed"> # </span><span class="branchNoExec" title="Branch 13 was not executed"> # </span>][<span class="branchCov" title="Branch 14 was taken 4204800 times"> + </span><span class="branchCov" title="Branch 15 was taken 1051200 times"> + </span>]
+<span class="lineNum">         </span>[<span class="branchNoExec" title="Branch 16 was not executed"> # </span><span class="branchNoExec" title="Branch 17 was not executed"> # </span>][<span class="branchNoExec" title="Branch 18 was not executed"> # </span><span class="branchNoExec" title="Branch 19 was not executed"> # </span>]
+<span class="lineNum">     213 </span>                :<span class="lineCov">   26484400 :             Ue.var(ue[c],e) += u[c][a]/4.0;</span>
+<span class="lineNum">     214 </span>                :            :         }
+<span class="lineNum">     215 </span>                :            : 
+<span class="lineNum">     216 </span>                :            :         // sum flux contributions to element
+<span class="lineNum">     217 </span>                :<span class="lineCov">     662110 :         tk::real d = deltat/2.0;</span>
+<span class="lineNum">     218 </span>[<span class="branchNoExec" title="Branch 0 was not executed"> # </span><span class="branchNoExec" title="Branch 1 was not executed"> # </span>][<span class="branchCov" title="Branch 2 was taken 974550 times"> + </span><span class="branchCov" title="Branch 3 was taken 324850 times"> + </span>]:<span class="lineCov">    2648440 :         for (std::size_t j=0; j&lt;3; ++j)</span>
+<span class="lineNum">         </span>[<span class="branchNoExec" title="Branch 4 was not executed"> # </span><span class="branchNoExec" title="Branch 5 was not executed"> # </span>][<span class="branchCov" title="Branch 6 was taken 118260 times"> + </span><span class="branchCov" title="Branch 7 was taken 39420 times"> + </span>]
+<span class="lineNum">         </span>[<span class="branchNoExec" title="Branch 8 was not executed"> # </span><span class="branchNoExec" title="Branch 9 was not executed"> # </span>][<span class="branchCov" title="Branch 10 was taken 262800 times"> + </span><span class="branchCov" title="Branch 11 was taken 87600 times"> + </span>]
+<span class="lineNum">         </span>[<span class="branchNoExec" title="Branch 12 was not executed"> # </span><span class="branchNoExec" title="Branch 13 was not executed"> # </span>][<span class="branchCov" title="Branch 14 was taken 630720 times"> + </span><span class="branchCov" title="Branch 15 was taken 210240 times"> + </span>]
+<span class="lineNum">         </span>[<span class="branchNoExec" title="Branch 16 was not executed"> # </span><span class="branchNoExec" title="Branch 17 was not executed"> # </span>][<span class="branchNoExec" title="Branch 18 was not executed"> # </span><span class="branchNoExec" title="Branch 19 was not executed"> # </span>]
+<span class="lineNum">     219 </span>[<span class="branchNoExec" title="Branch 0 was not executed"> # </span><span class="branchNoExec" title="Branch 1 was not executed"> # </span>][<span class="branchCov" title="Branch 2 was taken 3898200 times"> + </span><span class="branchCov" title="Branch 3 was taken 974550 times"> + </span>]:<span class="lineCov">    9931650 :           for (std::size_t a=0; a&lt;4; ++a) {</span>
+<span class="lineNum">         </span>[<span class="branchNoExec" title="Branch 4 was not executed"> # </span><span class="branchNoExec" title="Branch 5 was not executed"> # </span>][<span class="branchCov" title="Branch 6 was taken 473040 times"> + </span><span class="branchCov" title="Branch 7 was taken 118260 times"> + </span>]
+<span class="lineNum">         </span>[<span class="branchNoExec" title="Branch 8 was not executed"> # </span><span class="branchNoExec" title="Branch 9 was not executed"> # </span>][<span class="branchCov" title="Branch 10 was taken 1051200 times"> + </span><span class="branchCov" title="Branch 11 was taken 262800 times"> + </span>]
+<span class="lineNum">         </span>[<span class="branchNoExec" title="Branch 12 was not executed"> # </span><span class="branchNoExec" title="Branch 13 was not executed"> # </span>][<span class="branchCov" title="Branch 14 was taken 2522880 times"> + </span><span class="branchCov" title="Branch 15 was taken 630720 times"> + </span>]
+<span class="lineNum">         </span>[<span class="branchNoExec" title="Branch 16 was not executed"> # </span><span class="branchNoExec" title="Branch 17 was not executed"> # </span>][<span class="branchNoExec" title="Branch 18 was not executed"> # </span><span class="branchNoExec" title="Branch 19 was not executed"> # </span>]
+<span class="lineNum">     220 </span>                :            :             // mass: advection
+<span class="lineNum">     221 </span>                :<span class="lineCov">   15890640 :             Ue.var(ue[0],e) -= d * grad[a][j] * u[j+1][a];</span>
+<span class="lineNum">     222 </span>                :            :             // momentum: advection
+<span class="lineNum">     223 </span>[<span class="branchNoExec" title="Branch 0 was not executed"> # </span><span class="branchNoExec" title="Branch 1 was not executed"> # </span>][<span class="branchCov" title="Branch 2 was taken 11694600 times"> + </span><span class="branchCov" title="Branch 3 was taken 3898200 times"> + </span>]:<span class="lineCov">   31781280 :             for (std::size_t i=0; i&lt;3; ++i)</span>
+<span class="lineNum">         </span>[<span class="branchNoExec" title="Branch 4 was not executed"> # </span><span class="branchNoExec" title="Branch 5 was not executed"> # </span>][<span class="branchCov" title="Branch 6 was taken 1419120 times"> + </span><span class="branchCov" title="Branch 7 was taken 473040 times"> + </span>]
+<span class="lineNum">         </span>[<span class="branchNoExec" title="Branch 8 was not executed"> # </span><span class="branchNoExec" title="Branch 9 was not executed"> # </span>][<span class="branchCov" title="Branch 10 was taken 3153600 times"> + </span><span class="branchCov" title="Branch 11 was taken 1051200 times"> + </span>]
+<span class="lineNum">         </span>[<span class="branchNoExec" title="Branch 12 was not executed"> # </span><span class="branchNoExec" title="Branch 13 was not executed"> # </span>][<span class="branchCov" title="Branch 14 was taken 7568640 times"> + </span><span class="branchCov" title="Branch 15 was taken 2522880 times"> + </span>]
+<span class="lineNum">         </span>[<span class="branchNoExec" title="Branch 16 was not executed"> # </span><span class="branchNoExec" title="Branch 17 was not executed"> # </span>][<span class="branchNoExec" title="Branch 18 was not executed"> # </span><span class="branchNoExec" title="Branch 19 was not executed"> # </span>]
+<span class="lineNum">     224 </span>                :<span class="lineCov">   23835960 :               Ue.var(ue[i+1],e) -= d * grad[a][j] * u[j+1][a]*u[i+1][a]/u[0][a];</span>
+<span class="lineNum">     225 </span>                :            :             // momentum: pressure
+<span class="lineNum">     226 </span>                :<span class="lineCov">   15890640 :             Ue.var(ue[j+1],e) -= d * grad[a][j] * p[a];</span>
+<span class="lineNum">     227 </span>                :            :             // energy: advection and pressure
+<span class="lineNum">     228 </span>                :<span class="lineCov">   15890640 :             Ue.var(ue[4],e) -= d * grad[a][j] *</span>
+<span class="lineNum">     229 </span>                :            :                               (u[4][a] + p[a]) * u[j+1][a]/u[0][a];
+<span class="lineNum">     230 </span>                :            :           }
+<span class="lineNum">     231 </span>                :            : 
+<span class="lineNum">     232 </span>                :            :         // add (optional) source to all equations
+<span class="lineNum">     233 </span>                :            :         std::array&lt; std::array&lt; tk::real, 5 &gt;, 4 &gt; s{{
+<span class="lineNum">     234 </span>                :<span class="lineCov">     662110 :           Problem::src( 0, x[N[0]], y[N[0]], z[N[0]], t ),</span>
+<span class="lineNum">     235 </span>                :<span class="lineCov">    2438200 :           Problem::src( 0, x[N[1]], y[N[1]], z[N[1]], t ),</span>
+<span class="lineNum">     236 </span>                :<span class="lineCov">    2438200 :           Problem::src( 0, x[N[2]], y[N[2]], z[N[2]], t ),</span>
+<span class="lineNum">     237 </span>                :<span class="lineCov">     662110 :           Problem::src( 0, x[N[3]], y[N[3]], z[N[3]], t ) }};</span>
+<span class="lineNum">     238 </span>[<span class="branchNoExec" title="Branch 0 was not executed"> # </span><span class="branchNoExec" title="Branch 1 was not executed"> # </span>][<span class="branchCov" title="Branch 2 was taken 1624250 times"> + </span><span class="branchCov" title="Branch 3 was taken 324850 times"> + </span>]:<span class="lineCov">    3972660 :         for (std::size_t c=0; c&lt;5; ++c)</span>
+<span class="lineNum">         </span>[<span class="branchNoExec" title="Branch 4 was not executed"> # </span><span class="branchNoExec" title="Branch 5 was not executed"> # </span>][<span class="branchCov" title="Branch 6 was taken 197100 times"> + </span><span class="branchCov" title="Branch 7 was taken 39420 times"> + </span>]
+<span class="lineNum">         </span>[<span class="branchNoExec" title="Branch 8 was not executed"> # </span><span class="branchNoExec" title="Branch 9 was not executed"> # </span>][<span class="branchCov" title="Branch 10 was taken 438000 times"> + </span><span class="branchCov" title="Branch 11 was taken 87600 times"> + </span>]
+<span class="lineNum">         </span>[<span class="branchNoExec" title="Branch 12 was not executed"> # </span><span class="branchNoExec" title="Branch 13 was not executed"> # </span>][<span class="branchCov" title="Branch 14 was taken 1051200 times"> + </span><span class="branchCov" title="Branch 15 was taken 210240 times"> + </span>]
+<span class="lineNum">         </span>[<span class="branchNoExec" title="Branch 16 was not executed"> # </span><span class="branchNoExec" title="Branch 17 was not executed"> # </span>][<span class="branchNoExec" title="Branch 18 was not executed"> # </span><span class="branchNoExec" title="Branch 19 was not executed"> # </span>]
+<span class="lineNum">     239 </span>[<span class="branchNoExec" title="Branch 0 was not executed"> # </span><span class="branchNoExec" title="Branch 1 was not executed"> # </span>][<span class="branchCov" title="Branch 2 was taken 6497000 times"> + </span><span class="branchCov" title="Branch 3 was taken 1624250 times"> + </span>]:<span class="lineCov">   16552750 :           for (std::size_t a=0; a&lt;4; ++a)</span>
+<span class="lineNum">         </span>[<span class="branchNoExec" title="Branch 4 was not executed"> # </span><span class="branchNoExec" title="Branch 5 was not executed"> # </span>][<span class="branchCov" title="Branch 6 was taken 788400 times"> + </span><span class="branchCov" title="Branch 7 was taken 197100 times"> + </span>]
+<span class="lineNum">         </span>[<span class="branchNoExec" title="Branch 8 was not executed"> # </span><span class="branchNoExec" title="Branch 9 was not executed"> # </span>][<span class="branchCov" title="Branch 10 was taken 1752000 times"> + </span><span class="branchCov" title="Branch 11 was taken 438000 times"> + </span>]
+<span class="lineNum">         </span>[<span class="branchNoExec" title="Branch 12 was not executed"> # </span><span class="branchNoExec" title="Branch 13 was not executed"> # </span>][<span class="branchCov" title="Branch 14 was taken 4204800 times"> + </span><span class="branchCov" title="Branch 15 was taken 1051200 times"> + </span>]
+<span class="lineNum">         </span>[<span class="branchNoExec" title="Branch 16 was not executed"> # </span><span class="branchNoExec" title="Branch 17 was not executed"> # </span>][<span class="branchNoExec" title="Branch 18 was not executed"> # </span><span class="branchNoExec" title="Branch 19 was not executed"> # </span>]
+<span class="lineNum">     240 </span>                :<span class="lineCov">   26484400 :             Ue.var(ue[c],e) += d/4.0 * s[a][c];</span>
+<span class="lineNum">     241 </span>                :            : 
+<span class="lineNum">     242 </span>                :            :       }
+<span class="lineNum">     243 </span>                :            : 
+<span class="lineNum">     244 </span>                :            : 
+<span class="lineNum">     245 </span>                :            :       // zero right hand side for all components
+<span class="lineNum">     246 </span>[<span class="branchNoExec" title="Branch 0 was not executed"> # </span><span class="branchNoExec" title="Branch 1 was not executed"> # </span>][<span class="branchCov" title="Branch 2 was taken 9790 times"> + </span><span class="branchCov" title="Branch 3 was taken 1958 times"> + </span>]:<span class="lineCov">      22440 :       for (ncomp_t c=0; c&lt;5; ++c) R.fill( c, m_offset, 0.0 );</span>
+<span class="lineNum">         </span>[<span class="branchNoExec" title="Branch 4 was not executed"> # </span><span class="branchNoExec" title="Branch 5 was not executed"> # </span>][<span class="branchCov" title="Branch 6 was taken 1170 times"> + </span><span class="branchCov" title="Branch 7 was taken 234 times"> + </span>]
+<span class="lineNum">         </span>[<span class="branchNoExec" title="Branch 8 was not executed"> # </span><span class="branchNoExec" title="Branch 9 was not executed"> # </span>][<span class="branchCov" title="Branch 10 was taken 1500 times"> + </span><span class="branchCov" title="Branch 11 was taken 300 times"> + </span>]
+<span class="lineNum">         </span>[<span class="branchNoExec" title="Branch 12 was not executed"> # </span><span class="branchNoExec" title="Branch 13 was not executed"> # </span>][<span class="branchCov" title="Branch 14 was taken 6240 times"> + </span><span class="branchCov" title="Branch 15 was taken 1248 times"> + </span>]
+<span class="lineNum">         </span>[<span class="branchNoExec" title="Branch 16 was not executed"> # </span><span class="branchNoExec" title="Branch 17 was not executed"> # </span>][<span class="branchNoExec" title="Branch 18 was not executed"> # </span><span class="branchNoExec" title="Branch 19 was not executed"> # </span>]
+<span class="lineNum">     247 </span>                :            : 
+<span class="lineNum">     248 </span>                :            :       // 2nd stage: form rhs from element values (scatter-add)
+<span class="lineNum">     249 </span>[<span class="branchNoExec" title="Branch 0 was not executed"> # </span><span class="branchNoExec" title="Branch 1 was not executed"> # </span>][<span class="branchCov" title="Branch 2 was taken 324850 times"> + </span><span class="branchCov" title="Branch 3 was taken 1958 times"> + </span>]:<span class="lineCov">     665850 :       for (std::size_t e=0; e&lt;inpoel.size()/4; ++e) {</span>
+<span class="lineNum">         </span>[<span class="branchNoExec" title="Branch 4 was not executed"> # </span><span class="branchNoExec" title="Branch 5 was not executed"> # </span>][<span class="branchCov" title="Branch 6 was taken 39420 times"> + </span><span class="branchCov" title="Branch 7 was taken 234 times"> + </span>]
+<span class="lineNum">         </span>[<span class="branchNoExec" title="Branch 8 was not executed"> # </span><span class="branchNoExec" title="Branch 9 was not executed"> # </span>][<span class="branchCov" title="Branch 10 was taken 87600 times"> + </span><span class="branchCov" title="Branch 11 was taken 300 times"> + </span>]
+<span class="lineNum">         </span>[<span class="branchNoExec" title="Branch 12 was not executed"> # </span><span class="branchNoExec" title="Branch 13 was not executed"> # </span>][<span class="branchCov" title="Branch 14 was taken 210240 times"> + </span><span class="branchCov" title="Branch 15 was taken 1248 times"> + </span>]
+<span class="lineNum">         </span>[<span class="branchNoExec" title="Branch 16 was not executed"> # </span><span class="branchNoExec" title="Branch 17 was not executed"> # </span>][<span class="branchNoExec" title="Branch 18 was not executed"> # </span><span class="branchNoExec" title="Branch 19 was not executed"> # </span>]
+<span class="lineNum">     250 </span>                :            : 
+<span class="lineNum">     251 </span>                :            :         // access node IDs
+<span class="lineNum">     252 </span>                :            :         const std::array&lt; std::size_t, 4 &gt; N{{ inpoel[e*4+0], inpoel[e*4+1],
+<span class="lineNum">     253 </span>                :<span class="lineCov">    3310550 :                                                inpoel[e*4+2], inpoel[e*4+3] }};</span>
+<span class="lineNum">     254 </span>                :            :         // compute element Jacobi determinant
+<span class="lineNum">     255 </span>                :            :         const std::array&lt; tk::real, 3 &gt;
+<span class="lineNum">     256 </span>                :<span class="lineCov">    3972660 :           ba{{ x[N[1]]-x[N[0]], y[N[1]]-y[N[0]], z[N[1]]-z[N[0]] }},</span>
+<span class="lineNum">     257 </span>                :<span class="lineCov">    1986330 :           ca{{ x[N[2]]-x[N[0]], y[N[2]]-y[N[0]], z[N[2]]-z[N[0]] }},</span>
+<span class="lineNum">     258 </span>                :<span class="lineCov">    1986330 :           da{{ x[N[3]]-x[N[0]], y[N[3]]-y[N[0]], z[N[3]]-z[N[0]] }};</span>
+<span class="lineNum">     259 </span>                :<span class="lineCov">     662110 :         const auto J = tk::triple( ba, ca, da );        // J = 6V</span>
+<span class="lineNum">     260 </span>                :            :         Assert( J &gt; 0, &quot;Element Jacobian non-positive&quot; );
+<span class="lineNum">     261 </span>                :            : 
+<span class="lineNum">     262 </span>                :            :         // shape function derivatives, nnode*ndim [4][3]
+<span class="lineNum">     263 </span>                :            :         std::array&lt; std::array&lt; tk::real, 3 &gt;, 4 &gt; grad;
+<span class="lineNum">     264 </span>                :<span class="lineCov">     662110 :         grad[1] = tk::crossdiv( ca, da, J );</span>
+<span class="lineNum">     265 </span>                :<span class="lineCov">     662110 :         grad[2] = tk::crossdiv( da, ba, J );</span>
+<span class="lineNum">     266 </span>                :<span class="lineCov">     662110 :         grad[3] = tk::crossdiv( ba, ca, J );</span>
+<span class="lineNum">     267 </span>[<span class="branchNoExec" title="Branch 0 was not executed"> # </span><span class="branchNoExec" title="Branch 1 was not executed"> # </span>][<span class="branchCov" title="Branch 2 was taken 974550 times"> + </span><span class="branchCov" title="Branch 3 was taken 324850 times"> + </span>]:<span class="lineCov">    2648440 :         for (std::size_t i=0; i&lt;3; ++i)</span>
+<span class="lineNum">         </span>[<span class="branchNoExec" title="Branch 4 was not executed"> # </span><span class="branchNoExec" title="Branch 5 was not executed"> # </span>][<span class="branchCov" title="Branch 6 was taken 118260 times"> + </span><span class="branchCov" title="Branch 7 was taken 39420 times"> + </span>]
+<span class="lineNum">         </span>[<span class="branchNoExec" title="Branch 8 was not executed"> # </span><span class="branchNoExec" title="Branch 9 was not executed"> # </span>][<span class="branchCov" title="Branch 10 was taken 262800 times"> + </span><span class="branchCov" title="Branch 11 was taken 87600 times"> + </span>]
+<span class="lineNum">         </span>[<span class="branchNoExec" title="Branch 12 was not executed"> # </span><span class="branchNoExec" title="Branch 13 was not executed"> # </span>][<span class="branchCov" title="Branch 14 was taken 630720 times"> + </span><span class="branchCov" title="Branch 15 was taken 210240 times"> + </span>]
+<span class="lineNum">         </span>[<span class="branchNoExec" title="Branch 16 was not executed"> # </span><span class="branchNoExec" title="Branch 17 was not executed"> # </span>][<span class="branchNoExec" title="Branch 18 was not executed"> # </span><span class="branchNoExec" title="Branch 19 was not executed"> # </span>]
+<span class="lineNum">     268 </span>                :<span class="lineCov">    1986330 :           grad[0][i] = -grad[1][i]-grad[2][i]-grad[3][i];</span>
+<span class="lineNum">     269 </span>                :            : 
+<span class="lineNum">     270 </span>                :            :         // access solution at elements
+<span class="lineNum">     271 </span>                :            :         std::array&lt; tk::real, 5 &gt; ue;
+<span class="lineNum">     272 </span>[<span class="branchNoExec" title="Branch 0 was not executed"> # </span><span class="branchNoExec" title="Branch 1 was not executed"> # </span>][<span class="branchCov" title="Branch 2 was taken 1624250 times"> + </span><span class="branchCov" title="Branch 3 was taken 324850 times"> + </span>]:<span class="lineCov">    3972660 :         for (ncomp_t c=0; c&lt;5; ++c) ue[c] = Ue( e, c, m_offset );</span>
+<span class="lineNum">         </span>[<span class="branchNoExec" title="Branch 4 was not executed"> # </span><span class="branchNoExec" title="Branch 5 was not executed"> # </span>][<span class="branchCov" title="Branch 6 was taken 197100 times"> + </span><span class="branchCov" title="Branch 7 was taken 39420 times"> + </span>]
+<span class="lineNum">         </span>[<span class="branchNoExec" title="Branch 8 was not executed"> # </span><span class="branchNoExec" title="Branch 9 was not executed"> # </span>][<span class="branchCov" title="Branch 10 was taken 438000 times"> + </span><span class="branchCov" title="Branch 11 was taken 87600 times"> + </span>]
+<span class="lineNum">         </span>[<span class="branchNoExec" title="Branch 12 was not executed"> # </span><span class="branchNoExec" title="Branch 13 was not executed"> # </span>][<span class="branchCov" title="Branch 14 was taken 1051200 times"> + </span><span class="branchCov" title="Branch 15 was taken 210240 times"> + </span>]
+<span class="lineNum">         </span>[<span class="branchNoExec" title="Branch 16 was not executed"> # </span><span class="branchNoExec" title="Branch 17 was not executed"> # </span>][<span class="branchNoExec" title="Branch 18 was not executed"> # </span><span class="branchNoExec" title="Branch 19 was not executed"> # </span>]
+<span class="lineNum">     273 </span>                :            :         // access pointer to right hand side at component and offset
+<span class="lineNum">     274 </span>                :            :         std::array&lt; const tk::real*, 5 &gt; r;
+<span class="lineNum">     275 </span>[<span class="branchNoExec" title="Branch 0 was not executed"> # </span><span class="branchNoExec" title="Branch 1 was not executed"> # </span>][<span class="branchCov" title="Branch 2 was taken 1624250 times"> + </span><span class="branchCov" title="Branch 3 was taken 324850 times"> + </span>]:<span class="lineCov">    3972660 :         for (ncomp_t c=0; c&lt;5; ++c) r[c] = R.cptr( c, m_offset );</span>
+<span class="lineNum">         </span>[<span class="branchNoExec" title="Branch 4 was not executed"> # </span><span class="branchNoExec" title="Branch 5 was not executed"> # </span>][<span class="branchCov" title="Branch 6 was taken 197100 times"> + </span><span class="branchCov" title="Branch 7 was taken 39420 times"> + </span>]
+<span class="lineNum">         </span>[<span class="branchNoExec" title="Branch 8 was not executed"> # </span><span class="branchNoExec" title="Branch 9 was not executed"> # </span>][<span class="branchCov" title="Branch 10 was taken 438000 times"> + </span><span class="branchCov" title="Branch 11 was taken 87600 times"> + </span>]
+<span class="lineNum">         </span>[<span class="branchNoExec" title="Branch 12 was not executed"> # </span><span class="branchNoExec" title="Branch 13 was not executed"> # </span>][<span class="branchCov" title="Branch 14 was taken 1051200 times"> + </span><span class="branchCov" title="Branch 15 was taken 210240 times"> + </span>]
+<span class="lineNum">         </span>[<span class="branchNoExec" title="Branch 16 was not executed"> # </span><span class="branchNoExec" title="Branch 17 was not executed"> # </span>][<span class="branchNoExec" title="Branch 18 was not executed"> # </span><span class="branchNoExec" title="Branch 19 was not executed"> # </span>]
+<span class="lineNum">     276 </span>                :            : 
+<span class="lineNum">     277 </span>                :            :         // pressure
+<span class="lineNum">     278 </span>                :            :         auto p = (g-1.0)*(ue[4] -
+<span class="lineNum">     279 </span>                :<span class="lineCov">     662110 :                    (ue[1]*ue[1] + ue[2]*ue[2] + ue[3]*ue[3])/2.0/ue[0]);</span>
+<span class="lineNum">     280 </span>                :            : 
+<span class="lineNum">     281 </span>                :            :         // scatter-add flux contributions to rhs at nodes
+<span class="lineNum">     282 </span>                :<span class="lineCov">     662110 :         tk::real d = deltat * J/6.0;</span>
+<span class="lineNum">     283 </span>[<span class="branchNoExec" title="Branch 0 was not executed"> # </span><span class="branchNoExec" title="Branch 1 was not executed"> # </span>][<span class="branchCov" title="Branch 2 was taken 974550 times"> + </span><span class="branchCov" title="Branch 3 was taken 324850 times"> + </span>]:<span class="lineCov">    2648440 :         for (std::size_t j=0; j&lt;3; ++j)</span>
+<span class="lineNum">         </span>[<span class="branchNoExec" title="Branch 4 was not executed"> # </span><span class="branchNoExec" title="Branch 5 was not executed"> # </span>][<span class="branchCov" title="Branch 6 was taken 118260 times"> + </span><span class="branchCov" title="Branch 7 was taken 39420 times"> + </span>]
+<span class="lineNum">         </span>[<span class="branchNoExec" title="Branch 8 was not executed"> # </span><span class="branchNoExec" title="Branch 9 was not executed"> # </span>][<span class="branchCov" title="Branch 10 was taken 262800 times"> + </span><span class="branchCov" title="Branch 11 was taken 87600 times"> + </span>]
+<span class="lineNum">         </span>[<span class="branchNoExec" title="Branch 12 was not executed"> # </span><span class="branchNoExec" title="Branch 13 was not executed"> # </span>][<span class="branchCov" title="Branch 14 was taken 630720 times"> + </span><span class="branchCov" title="Branch 15 was taken 210240 times"> + </span>]
+<span class="lineNum">         </span>[<span class="branchNoExec" title="Branch 16 was not executed"> # </span><span class="branchNoExec" title="Branch 17 was not executed"> # </span>][<span class="branchNoExec" title="Branch 18 was not executed"> # </span><span class="branchNoExec" title="Branch 19 was not executed"> # </span>]
+<span class="lineNum">     284 </span>[<span class="branchNoExec" title="Branch 0 was not executed"> # </span><span class="branchNoExec" title="Branch 1 was not executed"> # </span>][<span class="branchCov" title="Branch 2 was taken 3898200 times"> + </span><span class="branchCov" title="Branch 3 was taken 974550 times"> + </span>]:<span class="lineCov">    9931650 :           for (std::size_t a=0; a&lt;4; ++a) {</span>
+<span class="lineNum">         </span>[<span class="branchNoExec" title="Branch 4 was not executed"> # </span><span class="branchNoExec" title="Branch 5 was not executed"> # </span>][<span class="branchCov" title="Branch 6 was taken 473040 times"> + </span><span class="branchCov" title="Branch 7 was taken 118260 times"> + </span>]
+<span class="lineNum">         </span>[<span class="branchNoExec" title="Branch 8 was not executed"> # </span><span class="branchNoExec" title="Branch 9 was not executed"> # </span>][<span class="branchCov" title="Branch 10 was taken 1051200 times"> + </span><span class="branchCov" title="Branch 11 was taken 262800 times"> + </span>]
+<span class="lineNum">         </span>[<span class="branchNoExec" title="Branch 12 was not executed"> # </span><span class="branchNoExec" title="Branch 13 was not executed"> # </span>][<span class="branchCov" title="Branch 14 was taken 2522880 times"> + </span><span class="branchCov" title="Branch 15 was taken 630720 times"> + </span>]
+<span class="lineNum">         </span>[<span class="branchNoExec" title="Branch 16 was not executed"> # </span><span class="branchNoExec" title="Branch 17 was not executed"> # </span>][<span class="branchNoExec" title="Branch 18 was not executed"> # </span><span class="branchNoExec" title="Branch 19 was not executed"> # </span>]
+<span class="lineNum">     285 </span>                :            :             // mass: advection
+<span class="lineNum">     286 </span>                :<span class="lineCov">   15890640 :             R.var(r[0],N[a]) += d * grad[a][j] * ue[j+1];</span>
+<span class="lineNum">     287 </span>                :            :             // momentum: advection
+<span class="lineNum">     288 </span>[<span class="branchNoExec" title="Branch 0 was not executed"> # </span><span class="branchNoExec" title="Branch 1 was not executed"> # </span>][<span class="branchCov" title="Branch 2 was taken 11694600 times"> + </span><span class="branchCov" title="Branch 3 was taken 3898200 times"> + </span>]:<span class="lineCov">   31781280 :             for (std::size_t i=0; i&lt;3; ++i)</span>
+<span class="lineNum">         </span>[<span class="branchNoExec" title="Branch 4 was not executed"> # </span><span class="branchNoExec" title="Branch 5 was not executed"> # </span>][<span class="branchCov" title="Branch 6 was taken 1419120 times"> + </span><span class="branchCov" title="Branch 7 was taken 473040 times"> + </span>]
+<span class="lineNum">         </span>[<span class="branchNoExec" title="Branch 8 was not executed"> # </span><span class="branchNoExec" title="Branch 9 was not executed"> # </span>][<span class="branchCov" title="Branch 10 was taken 3153600 times"> + </span><span class="branchCov" title="Branch 11 was taken 1051200 times"> + </span>]
+<span class="lineNum">         </span>[<span class="branchNoExec" title="Branch 12 was not executed"> # </span><span class="branchNoExec" title="Branch 13 was not executed"> # </span>][<span class="branchCov" title="Branch 14 was taken 7568640 times"> + </span><span class="branchCov" title="Branch 15 was taken 2522880 times"> + </span>]
+<span class="lineNum">         </span>[<span class="branchNoExec" title="Branch 16 was not executed"> # </span><span class="branchNoExec" title="Branch 17 was not executed"> # </span>][<span class="branchNoExec" title="Branch 18 was not executed"> # </span><span class="branchNoExec" title="Branch 19 was not executed"> # </span>]
+<span class="lineNum">     289 </span>                :<span class="lineCov">   23835960 :               R.var(r[i+1],N[a]) += d * grad[a][j] * ue[j+1]*ue[i+1]/ue[0];</span>
+<span class="lineNum">     290 </span>                :            :             // momentum: pressure
+<span class="lineNum">     291 </span>                :<span class="lineCov">   15890640 :             R.var(r[j+1],N[a]) += d * grad[a][j] * p;</span>
+<span class="lineNum">     292 </span>                :            :             // energy: advection and pressure
+<span class="lineNum">     293 </span>                :<span class="lineCov">   15890640 :             R.var(r[4],N[a]) += d * grad[a][j] * (ue[4] + p) * ue[j+1]/ue[0];</span>
+<span class="lineNum">     294 </span>                :            :           }
+<span class="lineNum">     295 </span>                :            : 
+<span class="lineNum">     296 </span>                :            :         // add (optional) source to all equations
+<span class="lineNum">     297 </span>                :<span class="lineCov">     662110 :         auto xc = (x[N[0]] + x[N[1]] + x[N[2]] + x[N[3]]) / 4.0;</span>
+<span class="lineNum">     298 </span>                :<span class="lineCov">     662110 :         auto yc = (y[N[0]] + y[N[1]] + y[N[2]] + y[N[3]]) / 4.0;</span>
+<span class="lineNum">     299 </span>                :<span class="lineCov">     451870 :         auto zc = (z[N[0]] + z[N[1]] + z[N[2]] + z[N[3]]) / 4.0;</span>
+<span class="lineNum">     300 </span>                :<span class="lineCov">     662110 :         auto s = Problem::src( 0, xc, yc, zc, t+deltat/2 );</span>
+<span class="lineNum">     301 </span>[<span class="branchNoExec" title="Branch 0 was not executed"> # </span><span class="branchNoExec" title="Branch 1 was not executed"> # </span>][<span class="branchCov" title="Branch 2 was taken 1624250 times"> + </span><span class="branchCov" title="Branch 3 was taken 324850 times"> + </span>]:<span class="lineCov">    3972660 :         for (std::size_t c=0; c&lt;5; ++c)</span>
+<span class="lineNum">         </span>[<span class="branchNoExec" title="Branch 4 was not executed"> # </span><span class="branchNoExec" title="Branch 5 was not executed"> # </span>][<span class="branchCov" title="Branch 6 was taken 197100 times"> + </span><span class="branchCov" title="Branch 7 was taken 39420 times"> + </span>]
+<span class="lineNum">         </span>[<span class="branchNoExec" title="Branch 8 was not executed"> # </span><span class="branchNoExec" title="Branch 9 was not executed"> # </span>][<span class="branchCov" title="Branch 10 was taken 438000 times"> + </span><span class="branchCov" title="Branch 11 was taken 87600 times"> + </span>]
+<span class="lineNum">         </span>[<span class="branchNoExec" title="Branch 12 was not executed"> # </span><span class="branchNoExec" title="Branch 13 was not executed"> # </span>][<span class="branchCov" title="Branch 14 was taken 1051200 times"> + </span><span class="branchCov" title="Branch 15 was taken 210240 times"> + </span>]
+<span class="lineNum">         </span>[<span class="branchNoExec" title="Branch 16 was not executed"> # </span><span class="branchNoExec" title="Branch 17 was not executed"> # </span>][<span class="branchNoExec" title="Branch 18 was not executed"> # </span><span class="branchNoExec" title="Branch 19 was not executed"> # </span>]
+<span class="lineNum">     302 </span>[<span class="branchNoExec" title="Branch 0 was not executed"> # </span><span class="branchNoExec" title="Branch 1 was not executed"> # </span>][<span class="branchCov" title="Branch 2 was taken 6497000 times"> + </span><span class="branchCov" title="Branch 3 was taken 1624250 times"> + </span>]:<span class="lineCov">   16552750 :           for (std::size_t a=0; a&lt;4; ++a)</span>
+<span class="lineNum">         </span>[<span class="branchNoExec" title="Branch 4 was not executed"> # </span><span class="branchNoExec" title="Branch 5 was not executed"> # </span>][<span class="branchCov" title="Branch 6 was taken 788400 times"> + </span><span class="branchCov" title="Branch 7 was taken 197100 times"> + </span>]
+<span class="lineNum">         </span>[<span class="branchNoExec" title="Branch 8 was not executed"> # </span><span class="branchNoExec" title="Branch 9 was not executed"> # </span>][<span class="branchCov" title="Branch 10 was taken 1752000 times"> + </span><span class="branchCov" title="Branch 11 was taken 438000 times"> + </span>]
+<span class="lineNum">         </span>[<span class="branchNoExec" title="Branch 12 was not executed"> # </span><span class="branchNoExec" title="Branch 13 was not executed"> # </span>][<span class="branchCov" title="Branch 14 was taken 4204800 times"> + </span><span class="branchCov" title="Branch 15 was taken 1051200 times"> + </span>]
+<span class="lineNum">         </span>[<span class="branchNoExec" title="Branch 16 was not executed"> # </span><span class="branchNoExec" title="Branch 17 was not executed"> # </span>][<span class="branchNoExec" title="Branch 18 was not executed"> # </span><span class="branchNoExec" title="Branch 19 was not executed"> # </span>]
+<span class="lineNum">     303 </span>                :<span class="lineCov">   26484400 :             R.var(r[c],N[a]) += d/4.0 * s[c];</span>
+<span class="lineNum">     304 </span>                :            : 
+<span class="lineNum">     305 </span>                :            :       }
+<span class="lineNum">     306 </span>                :            : //         // add viscous stress contribution to momentum and energy rhs
+<span class="lineNum">     307 </span>                :            : //         Physics::viscousRhs( deltat, J, N, grad, u, r, R );
+<span class="lineNum">     308 </span>                :            : //         // add heat conduction contribution to energy rhs
+<span class="lineNum">     309 </span>                :            : //         Physics::conductRhs( deltat, J, N, grad, u, r, R );
+<span class="lineNum">     310 </span>                :<span class="lineCov">       3740 :     }</span>
+<span class="lineNum">     311 </span>                :            : 
+<span class="lineNum">     312 </span>                :            :     //! Compute the minimum time step size
+<span class="lineNum">     313 </span>                :            :     //! \param[in] U Solution vector at recent time step
+<span class="lineNum">     314 </span>                :            :     //! \param[in] coord Mesh node coordinates
+<a name="315"><span class="lineNum">     315 </span>                :            :     //! \param[in] inpoel Mesh element connectivity</a>
+<span class="lineNum">     316 </span>                :            :     //! \return Minimum time step size
+<span class="lineNum">     317 </span>                :<span class="lineCov">       3740 :     tk::real dt( const std::array&lt; std::vector&lt; tk::real &gt;, 3 &gt;&amp; coord,</span>
+<span class="lineNum">     318 </span>                :<span class="lineCov">     665850 :                  const std::vector&lt; std::size_t &gt;&amp; inpoel,</span>
+<span class="lineNum">     319 </span>                :            :                  const tk::Fields&amp; U ) const
+<span class="lineNum">     320 </span>                :            :     {
+<span class="lineNum">     321 </span>                :            :       Assert( U.nunk() == coord[0].size(), &quot;Number of unknowns in solution &quot;
+<span class="lineNum">     322 </span>                :            :               &quot;vector at recent time step incorrect&quot; );
+<span class="lineNum">     323 </span>                :<span class="lineCov">     662110 :       const auto&amp; x = coord[0];</span>
+<span class="lineNum">     324 </span>                :<span class="lineCov">     662110 :       const auto&amp; y = coord[1];</span>
+<span class="lineNum">     325 </span>                :<span class="lineCov">     662110 :       const auto&amp; z = coord[2];</span>
+<span class="lineNum">     326 </span>                :            :       // ratio of specific heats
+<span class="lineNum">     327 </span>                :<span class="lineCov">       3740 :       auto g = g_inputdeck.get&lt; tag::param, tag::compflow, tag::gamma &gt;()[0];</span>
+<span class="lineNum">     328 </span>                :            :       // compute the minimum dt across all elements we own
+<span class="lineNum">     329 </span>                :            :       tk::real mindt = std::numeric_limits&lt; tk::real &gt;::max();
+<span class="lineNum">     330 </span>[<span class="branchNoExec" title="Branch 0 was not executed"> # </span><span class="branchNoExec" title="Branch 1 was not executed"> # </span>][<span class="branchCov" title="Branch 2 was taken 324850 times"> + </span><span class="branchCov" title="Branch 3 was taken 1958 times"> + </span>]:<span class="lineCov">     665850 :       for (std::size_t e=0; e&lt;inpoel.size()/4; ++e) {</span>
+<span class="lineNum">         </span>[<span class="branchNoExec" title="Branch 4 was not executed"> # </span><span class="branchNoExec" title="Branch 5 was not executed"> # </span>][<span class="branchCov" title="Branch 6 was taken 39420 times"> + </span><span class="branchCov" title="Branch 7 was taken 234 times"> + </span>]
+<span class="lineNum">         </span>[<span class="branchNoExec" title="Branch 8 was not executed"> # </span><span class="branchNoExec" title="Branch 9 was not executed"> # </span>][<span class="branchCov" title="Branch 10 was taken 87600 times"> + </span><span class="branchCov" title="Branch 11 was taken 300 times"> + </span>]
+<span class="lineNum">         </span>[<span class="branchNoExec" title="Branch 12 was not executed"> # </span><span class="branchNoExec" title="Branch 13 was not executed"> # </span>][<span class="branchCov" title="Branch 14 was taken 210240 times"> + </span><span class="branchCov" title="Branch 15 was taken 1248 times"> + </span>]
+<span class="lineNum">         </span>[<span class="branchNoExec" title="Branch 16 was not executed"> # </span><span class="branchNoExec" title="Branch 17 was not executed"> # </span>][<span class="branchNoExec" title="Branch 18 was not executed"> # </span><span class="branchNoExec" title="Branch 19 was not executed"> # </span>]
+<span class="lineNum">     331 </span>                :            :         const std::array&lt; std::size_t, 4 &gt; N{{ inpoel[e*4+0], inpoel[e*4+1],
+<span class="lineNum">     332 </span>                :<span class="lineCov">    3310550 :                                                inpoel[e*4+2], inpoel[e*4+3] }};</span>
+<span class="lineNum">     333 </span>                :            :         // compute cubic root of element volume as the characteristic length
+<span class="lineNum">     334 </span>                :            :         const std::array&lt; tk::real, 3 &gt;
+<span class="lineNum">     335 </span>                :<span class="lineCov">    3972660 :           ba{{ x[N[1]]-x[N[0]], y[N[1]]-y[N[0]], z[N[1]]-z[N[0]] }},</span>
+<span class="lineNum">     336 </span>                :<span class="lineCov">    1986330 :           ca{{ x[N[2]]-x[N[0]], y[N[2]]-y[N[0]], z[N[2]]-z[N[0]] }},</span>
+<span class="lineNum">     337 </span>                :<span class="lineCov">    1986330 :           da{{ x[N[3]]-x[N[0]], y[N[3]]-y[N[0]], z[N[3]]-z[N[0]] }};</span>
+<span class="lineNum">     338 </span>                :<span class="lineCov">     662110 :         const auto L = std::cbrt( tk::triple( ba, ca, da ) / 6.0 );</span>
+<span class="lineNum">     339 </span>                :            :         // access solution at element nodes at recent time step
+<span class="lineNum">     340 </span>                :            :         std::array&lt; std::array&lt; tk::real, 4 &gt;, 5 &gt; u;
+<span class="lineNum">     341 </span>[<span class="branchNoExec" title="Branch 1 was not executed"> # </span><span class="branchNoExec" title="Branch 2 was not executed"> # </span>][<span class="branchCov" title="Branch 4 was taken 1624250 times"> + </span><span class="branchCov" title="Branch 5 was taken 324850 times"> + </span>]:<span class="lineCov">    3972660 :         for (ncomp_t c=0; c&lt;5; ++c) u[c] = U.extract( c, m_offset, N );</span>
+<span class="lineNum">         </span>[<span class="branchNoExec" title="Branch 7 was not executed"> # </span><span class="branchNoExec" title="Branch 8 was not executed"> # </span>][<span class="branchCov" title="Branch 10 was taken 197100 times"> + </span><span class="branchCov" title="Branch 11 was taken 39420 times"> + </span>]
+<span class="lineNum">         </span>[<span class="branchNoExec" title="Branch 13 was not executed"> # </span><span class="branchNoExec" title="Branch 14 was not executed"> # </span>][<span class="branchCov" title="Branch 16 was taken 438000 times"> + </span><span class="branchCov" title="Branch 17 was taken 87600 times"> + </span>]
+<span class="lineNum">         </span>[<span class="branchNoExec" title="Branch 19 was not executed"> # </span><span class="branchNoExec" title="Branch 20 was not executed"> # </span>][<span class="branchCov" title="Branch 22 was taken 1051200 times"> + </span><span class="branchCov" title="Branch 23 was taken 210240 times"> + </span>]
+<span class="lineNum">         </span>[<span class="branchNoExec" title="Branch 25 was not executed"> # </span><span class="branchNoExec" title="Branch 26 was not executed"> # </span>][<span class="branchNoExec" title="Branch 28 was not executed"> # </span><span class="branchNoExec" title="Branch 29 was not executed"> # </span>]
+<span class="lineNum">     342 </span>                :            :         // compute the maximum length of the characteristic velocity (fluid
+<span class="lineNum">     343 </span>                :            :         // velocity + sound velocity) across the four element nodes
+<span class="lineNum">     344 </span>                :            :         tk::real maxvel = 0.0;
+<span class="lineNum">     345 </span>[<span class="branchNoExec" title="Branch 0 was not executed"> # </span><span class="branchNoExec" title="Branch 1 was not executed"> # </span>][<span class="branchCov" title="Branch 2 was taken 1299400 times"> + </span><span class="branchCov" title="Branch 3 was taken 324850 times"> + </span>]:<span class="lineCov">    3310550 :         for (std::size_t j=0; j&lt;4; ++j) {</span>
+<span class="lineNum">         </span>[<span class="branchNoExec" title="Branch 4 was not executed"> # </span><span class="branchNoExec" title="Branch 5 was not executed"> # </span>][<span class="branchCov" title="Branch 6 was taken 157680 times"> + </span><span class="branchCov" title="Branch 7 was taken 39420 times"> + </span>]
+<span class="lineNum">         </span>[<span class="branchNoExec" title="Branch 8 was not executed"> # </span><span class="branchNoExec" title="Branch 9 was not executed"> # </span>][<span class="branchCov" title="Branch 10 was taken 350400 times"> + </span><span class="branchCov" title="Branch 11 was taken 87600 times"> + </span>]
+<span class="lineNum">         </span>[<span class="branchNoExec" title="Branch 12 was not executed"> # </span><span class="branchNoExec" title="Branch 13 was not executed"> # </span>][<span class="branchCov" title="Branch 14 was taken 840960 times"> + </span><span class="branchCov" title="Branch 15 was taken 210240 times"> + </span>]
+<span class="lineNum">         </span>[<span class="branchNoExec" title="Branch 16 was not executed"> # </span><span class="branchNoExec" title="Branch 17 was not executed"> # </span>][<span class="branchNoExec" title="Branch 18 was not executed"> # </span><span class="branchNoExec" title="Branch 19 was not executed"> # </span>]
+<span class="lineNum">     346 </span>                :            :           auto&amp; r  = u[0][j];    // rho
+<span class="lineNum">     347 </span>                :            :           auto&amp; ru = u[1][j];    // rho * u
+<span class="lineNum">     348 </span>                :            :           auto&amp; rv = u[2][j];    // rho * v
+<span class="lineNum">     349 </span>                :            :           auto&amp; rw = u[3][j];    // rho * w
+<span class="lineNum">     350 </span>                :            :           auto&amp; re = u[4][j];    // rho * e
+<span class="lineNum">     351 </span>                :<span class="lineCov">    2648440 :           auto p = (g-1.0)*(re - (ru*ru + rv*rv + rw*rw)/2.0/r); // pressure</span>
+<span class="lineNum">     352 </span>[<span class="branchNoExec" title="Branch 0 was not executed"> # </span><span class="branchNoExec" title="Branch 1 was not executed"> # </span>][<span class="branchNoCov" title="Branch 2 was not taken"> - </span><span class="branchCov" title="Branch 3 was taken 1299400 times"> + </span>]:<span class="lineCov">    2648440 :           if (p &lt; 0) p = 0.0;</span>
+<span class="lineNum">         </span>[<span class="branchNoExec" title="Branch 4 was not executed"> # </span><span class="branchNoExec" title="Branch 5 was not executed"> # </span>][<span class="branchNoCov" title="Branch 6 was not taken"> - </span><span class="branchCov" title="Branch 7 was taken 157680 times"> + </span>]
+<span class="lineNum">         </span>[<span class="branchNoExec" title="Branch 8 was not executed"> # </span><span class="branchNoExec" title="Branch 9 was not executed"> # </span>][<span class="branchNoCov" title="Branch 10 was not taken"> - </span><span class="branchCov" title="Branch 11 was taken 350400 times"> + </span>]
+<span class="lineNum">         </span>[<span class="branchNoExec" title="Branch 12 was not executed"> # </span><span class="branchNoExec" title="Branch 13 was not executed"> # </span>][<span class="branchNoCov" title="Branch 14 was not taken"> - </span><span class="branchCov" title="Branch 15 was taken 840960 times"> + </span>]
+<span class="lineNum">         </span>[<span class="branchNoExec" title="Branch 16 was not executed"> # </span><span class="branchNoExec" title="Branch 17 was not executed"> # </span>][<span class="branchNoExec" title="Branch 18 was not executed"> # </span><span class="branchNoExec" title="Branch 19 was not executed"> # </span>]
+<span class="lineNum">     353 </span>                :<span class="lineCov">    2648440 :           auto c = std::sqrt(g*p/r);     // sound speed</span>
+<span class="lineNum">     354 </span>                :<span class="lineCov">    2648440 :           auto v = std::sqrt((ru*ru + rv*rv + rw*rw)/r/r) + c; // char. velocity</span>
+<span class="lineNum">     355 </span>[<span class="branchNoExec" title="Branch 0 was not executed"> # </span><span class="branchNoExec" title="Branch 1 was not executed"> # </span>][<span class="branchCov" title="Branch 2 was taken 632024 times"> + </span><span class="branchCov" title="Branch 3 was taken 667376 times"> + </span>]:<span class="lineCov">    2648440 :           if (v &gt; maxvel) maxvel = v;</span>
+<span class="lineNum">         </span>[<span class="branchNoExec" title="Branch 4 was not executed"> # </span><span class="branchNoExec" title="Branch 5 was not executed"> # </span>][<span class="branchCov" title="Branch 6 was taken 89313 times"> + </span><span class="branchCov" title="Branch 7 was taken 68367 times"> + </span>]
+<span class="lineNum">         </span>[<span class="branchNoExec" title="Branch 8 was not executed"> # </span><span class="branchNoExec" title="Branch 9 was not executed"> # </span>][<span class="branchCov" title="Branch 10 was taken 164672 times"> + </span><span class="branchCov" title="Branch 11 was taken 185728 times"> + </span>]
+<span class="lineNum">         </span>[<span class="branchNoExec" title="Branch 12 was not executed"> # </span><span class="branchNoExec" title="Branch 13 was not executed"> # </span>][<span class="branchCov" title="Branch 14 was taken 429210 times"> + </span><span class="branchCov" title="Branch 15 was taken 411750 times"> + </span>]
+<span class="lineNum">         </span>[<span class="branchNoExec" title="Branch 16 was not executed"> # </span><span class="branchNoExec" title="Branch 17 was not executed"> # </span>][<span class="branchNoExec" title="Branch 18 was not executed"> # </span><span class="branchNoExec" title="Branch 19 was not executed"> # </span>]
+<span class="lineNum">     356 </span>                :            :         }
+<span class="lineNum">     357 </span>                :            :         // compute element dt for the Euler equations
+<span class="lineNum">     358 </span>                :<span class="lineCov">     662110 :         auto euler_dt = L / maxvel;</span>
+<span class="lineNum">     359 </span>                :            :         // compute element dt based on the viscous force
+<span class="lineNum">     360 </span>                :<span class="lineCov">     662110 :         auto viscous_dt = Physics::viscous_dt( L, u );</span>
+<span class="lineNum">     361 </span>                :            :         // compute element dt based on thermal diffusion
+<span class="lineNum">     362 </span>                :<span class="lineNoCov">          0 :         auto conduct_dt = Physics::conduct_dt( L, u );</span>
+<span class="lineNum">     363 </span>                :            :         // compute minimum element dt
+<span class="lineNum">     364 </span>                :<span class="lineCov">     662110 :         auto elemdt = std::min( euler_dt, std::min( viscous_dt, conduct_dt ) );</span>
+<span class="lineNum">     365 </span>                :            :         // find minimum dt across all elements
+<span class="lineNum">     366 </span>[<span class="branchNoExec" title="Branch 0 was not executed"> # </span><span class="branchNoExec" title="Branch 1 was not executed"> # </span>][<span class="branchCov" title="Branch 2 was taken 11303 times"> + </span><span class="branchCov" title="Branch 3 was taken 313547 times"> + </span>]:<span class="lineCov">     662110 :         if (elemdt &lt; mindt) mindt = elemdt;</span>
+<span class="lineNum">         </span>[<span class="branchNoExec" title="Branch 4 was not executed"> # </span><span class="branchNoExec" title="Branch 5 was not executed"> # </span>][<span class="branchCov" title="Branch 6 was taken 1374 times"> + </span><span class="branchCov" title="Branch 7 was taken 38046 times"> + </span>]
+<span class="lineNum">         </span>[<span class="branchNoExec" title="Branch 8 was not executed"> # </span><span class="branchNoExec" title="Branch 9 was not executed"> # </span>][<span class="branchCov" title="Branch 10 was taken 3378 times"> + </span><span class="branchCov" title="Branch 11 was taken 84222 times"> + </span>]
+<span class="lineNum">         </span>[<span class="branchNoExec" title="Branch 12 was not executed"> # </span><span class="branchNoExec" title="Branch 13 was not executed"> # </span>][<span class="branchCov" title="Branch 14 was taken 7078 times"> + </span><span class="branchCov" title="Branch 15 was taken 203162 times"> + </span>]
+<span class="lineNum">         </span>[<span class="branchNoExec" title="Branch 16 was not executed"> # </span><span class="branchNoExec" title="Branch 17 was not executed"> # </span>][<span class="branchNoExec" title="Branch 18 was not executed"> # </span><span class="branchNoExec" title="Branch 19 was not executed"> # </span>]
+<span class="lineNum">     367 </span>                :            :       }
+<span class="lineNum">     368 </span>                :<span class="lineCov">       3740 :       return mindt;</span>
+<span class="lineNum">     369 </span>                :            :     }
+<span class="lineNum">     370 </span>                :            : 
+<span class="lineNum">     371 </span>                :            :     //! Extract the velocity field at cell nodes
+<span class="lineNum">     372 </span>                :            :     //! \param[in] U Solution vector at recent time step
+<span class="lineNum">     373 </span>                :            :     //! \param[in] N Element node indices    
+<a name="374"><span class="lineNum">     374 </span>                :            :     //! \return Array of the four values of the velocity field</a>
+<span class="lineNum">     375 </span>                :            :     std::array&lt; std::array&lt; tk::real, 4 &gt;, 3 &gt;
+<span class="lineNum">     376 </span>                :<span class="lineNoCov">          0 :     velocity( const tk::Fields&amp; U,</span>
+<span class="lineNum">     377 </span>                :            :               const std::array&lt; std::vector&lt; tk::real &gt;, 3 &gt;&amp;,
+<span class="lineNum">     378 </span>                :            :               const std::array&lt; std::size_t, 4 &gt;&amp; N ) const
+<span class="lineNum">     379 </span>                :            :     {
+<span class="lineNum">     380 </span>                :            :       std::array&lt; std::array&lt; tk::real, 4 &gt;, 3 &gt; v;
+<span class="lineNum">     381 </span>                :<span class="lineNoCov">          0 :       v[0] = U.extract( 1, m_offset, N );</span>
+<span class="lineNum">     382 </span>                :<span class="lineNoCov">          0 :       v[1] = U.extract( 2, m_offset, N );</span>
+<span class="lineNum">     383 </span>                :<span class="lineNoCov">          0 :       v[2] = U.extract( 3, m_offset, N );</span>
+<a name="384"><span class="lineNum">     384 </span>                :<span class="lineNoCov">          0 :       auto r = U.extract( 0, m_offset, N );</span></a>
+<span class="lineNum">     385 </span>                :            :       std::transform( r.begin(), r.end(), v[0].begin(), v[0].begin(),
+<a name="386"><span class="lineNum">     386 </span>                :<span class="lineNoCov">          0 :                       []( tk::real s, tk::real&amp; d ){ return d /= s; } );</span></a>
+<span class="lineNum">     387 </span>                :            :       std::transform( r.begin(), r.end(), v[1].begin(), v[1].begin(),
+<a name="388"><span class="lineNum">     388 </span>                :<span class="lineNoCov">          0 :                       []( tk::real s, tk::real&amp; d ){ return d /= s; } );</span></a>
+<span class="lineNum">     389 </span>                :            :       std::transform( r.begin(), r.end(), v[2].begin(), v[2].begin(),
+<span class="lineNum">     390 </span>                :<span class="lineNoCov">          0 :                       []( tk::real s, tk::real&amp; d ){ return d /= s; } );</span>
+<span class="lineNum">     391 </span>                :<span class="lineNoCov">          0 :       return v;</span>
+<span class="lineNum">     392 </span>                :            :     }
+<span class="lineNum">     393 </span>                :            : 
+<span class="lineNum">     394 </span>                :            :     //! \brief Query all side set IDs the user has configured for all components
+<a name="395"><span class="lineNum">     395 </span>                :            :     //!   in this PDE system</a>
+<span class="lineNum">     396 </span>                :            :     //! \param[in,out] conf Set of unique side set IDs to add to
+<span class="lineNum">     397 </span>                :<span class="lineNoCov">          0 :     void side( std::unordered_set&lt; int &gt;&amp; conf ) const</span>
+<span class="lineNum">     398 </span>                :<span class="lineCov">         15 :     { Problem::side( conf ); }</span>
+<span class="lineNum">     399 </span>                :            : 
+<span class="lineNum">     400 </span>                :            :     //! \brief Query Dirichlet boundary condition value on a given side set for
+<span class="lineNum">     401 </span>                :            :     //!    all components in this PDE system
+<span class="lineNum">     402 </span>                :            :     //! \param[in] t Physical time
+<span class="lineNum">     403 </span>                :            :     //! \param[in] deltat Time step size
+<span class="lineNum">     404 </span>                :            :     //! \param[in] sides Pair of side set ID and node IDs on the side set
+<span class="lineNum">     405 </span>                :            :     //! \param[in] coord Mesh node coordinates
+<span class="lineNum">     406 </span>                :            :     //! \return Vector of pairs of bool and boundary condition value associated
+<span class="lineNum">     407 </span>                :            :     //!   to mesh node IDs at which Dirichlet boundary conditions are set. Note
+<span class="lineNum">     408 </span>                :            :     //!   that instead of the actual boundary condition value, we return the
+<span class="lineNum">     409 </span>                :            :     //!   increment between t+dt and t, since that is what the solution requires
+<a name="410"><span class="lineNum">     410 </span>                :            :     //!   as we solve for the soution increments and not the solution itself.</a>
+<span class="lineNum">     411 </span>                :            :     std::unordered_map&lt; std::size_t, std::vector&lt; std::pair&lt;bool,tk::real&gt; &gt; &gt;
+<span class="lineNum">     412 </span>                :<span class="lineNoCov">          0 :     dirbc( tk::real t,</span>
+<span class="lineNum">     413 </span>                :            :            tk::real deltat,
+<span class="lineNum">     414 </span>                :            :            const std::pair&lt; const int, std::vector&lt; std::size_t &gt; &gt;&amp; sides,
+<span class="lineNum">     415 </span>                :            :            const std::array&lt; std::vector&lt; tk::real &gt;, 3 &gt;&amp; coord ) const
+<span class="lineNum">     416 </span>                :<span class="lineCov">      22440 :     { return Problem::dirbc( 0, t, deltat, sides, coord ); }</span>
+<span class="lineNum">     417 </span>                :            : 
+<a name="418"><span class="lineNum">     418 </span>                :            :     //! Return field names to be output to file</a>
+<span class="lineNum">     419 </span>                :            :     //! \return Vector of strings labelling fields output in file
+<span class="lineNum">     420 </span>                :<span class="lineNoCov">          0 :     std::vector&lt; std::string &gt; fieldNames() const</span>
+<span class="lineNum">     421 </span>                :<span class="lineCov">         58 :     { return Problem::fieldNames(); }</span>
+<span class="lineNum">     422 </span>                :            : 
+<span class="lineNum">     423 </span>                :            :     //! Return field output going to file
+<span class="lineNum">     424 </span>                :            :     //! \param[in] t Physical time
+<span class="lineNum">     425 </span>                :            :     //! \param[in] V Total mesh volume
+<span class="lineNum">     426 </span>                :            :     //! \param[in] coord Mesh node coordinates
+<span class="lineNum">     427 </span>                :            :     //! \param[in] v Nodal mesh volumes
+<span class="lineNum">     428 </span>                :            :     //! \param[in,out] U Solution vector at recent time step
+<span class="lineNum">     429 </span>                :            :     //! \return Vector of vectors to be output to file
+<span class="lineNum">     430 </span>                :            :     std::vector&lt; std::vector&lt; tk::real &gt; &gt;
+<span class="lineNum">     431 </span>                :            :     fieldOutput( tk::real t,
+<span class="lineNum">     432 </span>                :            :                  tk::real V,
+<span class="lineNum">     433 </span>                :            :                  const std::array&lt; std::vector&lt; tk::real &gt;, 3 &gt;&amp; coord,
+<span class="lineNum">     434 </span>                :            :                  const std::vector&lt; tk::real &gt;&amp; v,
+<span class="lineNum">     435 </span>                :            :                  tk::Fields&amp; U ) const
+<span class="lineNum">     436 </span>                :<span class="lineCov">        448 :     { return Problem::fieldOutput( 0, m_offset, t, V, v, coord, U ); }</span>
+<span class="lineNum">     437 </span>                :            : 
+<a name="438"><span class="lineNum">     438 </span>                :            :     //! Return names of integral variables to be output to diagnostics file</a>
+<span class="lineNum">     439 </span>                :            :     //! \return Vector of strings labelling integral variables output
+<span class="lineNum">     440 </span>                :<span class="lineNoCov">          0 :     std::vector&lt; std::string &gt; names() const</span>
+<span class="lineNum">     441 </span>                :<span class="lineCov">         15 :     { return Problem::names(); }</span>
+<span class="lineNum">     442 </span>                :            : 
+<span class="lineNum">     443 </span>                :            :   private:
+<span class="lineNum">     444 </span>                :            :     const ncomp_t m_offset;             //!&lt; Offset PDE operates from
+<span class="lineNum">     445 </span>                :            : };
+<span class="lineNum">     446 </span>                :            : 
+<span class="lineNum">     447 </span>                :            : } // inciter::
+<span class="lineNum">     448 </span>                :            : 
+<span class="lineNum">     449 </span>                :            : #endif // CompFlow_h
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.12</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>
