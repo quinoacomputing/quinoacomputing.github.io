@@ -64,6 +64,7 @@ var searchData=
   ['global2local',['global2local',['../namespacetk.html#a0ee7abd71123782d48e2ec04906fe982',1,'tk']]],
   ['gmshmeshreader',['GmshMeshReader',['../classtk_1_1_gmsh_mesh_reader.html#a456604e8eb840f033cee46dc46552f3c',1,'tk::GmshMeshReader']]],
   ['gmshmeshwriter',['GmshMeshWriter',['../classtk_1_1_gmsh_mesh_writer.html#a57f5e08fcdebc8c4f1cad2fe5d5deaa9',1,'tk::GmshMeshWriter']]],
+  ['gradients',['Gradients',['../namespacetut.html#a827fb359aa2e1e7415015e7d0dadcf31',1,'tut']]],
   ['graphsize',['graphsize',['../classtk_1_1_uns_mesh.html#adcc0649d6d564348dd575ed977b668dc',1,'tk::UnsMesh']]],
   ['group',['group',['../classtk_1_1_toggle.html#a4a62602fd062a3838a2703877edc8eeb',1,'tk::Toggle']]]
 ];

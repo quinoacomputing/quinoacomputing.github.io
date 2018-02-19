@@ -5,5 +5,7 @@ var searchData=
   ['gen01ptr',['Gen01Ptr',['../namespacerngtest.html#acfe86a5d54dc25c89d8b42a048cc978f',1,'rngtest']]],
   ['gendirichletparameters',['GenDirichletParameters',['../namespacewalker_1_1ctr.html#aff55866d28aab3c5d7f4a48714b6e3d3',1,'walker::ctr']]],
   ['generalizeddirichletcoeffpolicies',['GeneralizedDirichletCoeffPolicies',['../namespacewalker.html#abc90d99c3d12096898b0a80648ed1673',1,'walker']]],
-  ['gno_5ft',['gno_t',['../classtk_1_1zoltan_1_1_geometric_mesh_elem_adapter.html#afa9c629a02c6d3576d1287a3a43e2d9d',1,'tk::zoltan::GeometricMeshElemAdapter']]]
+  ['gno_5ft',['gno_t',['../classtk_1_1zoltan_1_1_geometric_mesh_elem_adapter.html#afa9c629a02c6d3576d1287a3a43e2d9d',1,'tk::zoltan::GeometricMeshElemAdapter']]],
+  ['gradients_5fgroup',['Gradients_group',['../namespacetut.html#a6d72af3343b3d77dd6696304e3e7608f',1,'tut']]],
+  ['gradients_5fobject',['Gradients_object',['../namespacetut.html#a4a3d4378596b8afd429dc96959763163',1,'tut']]]
 ];

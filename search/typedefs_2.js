@@ -1,14 +1,16 @@
 var searchData=
 [
+  ['cgfactory',['CGFactory',['../namespaceinciter.html#acc148fbf6c6cfb1be76e9ba0ba2d93f8',1,'inciter']]],
   ['charmutil_5fgroup',['CharmUtil_group',['../namespacetut.html#a42c61e17739df8995c7b35edabc08bce',1,'tut']]],
   ['charmutil_5fobject',['CharmUtil_object',['../namespacetut.html#a7e3702639262b1ed0bab40300cd54261',1,'tut']]],
   ['child_5fid_5flist_5ft',['child_id_list_t',['../_a_m_r__types_8h.html#ab3ec9bebb0d5f9982ae67134070b6351',1,'AMR_types.h']]],
   ['clock',['clock',['../classtk_1_1_timer.html#ae2820e459eee7cd63045a42f6bb9ec76',1,'tk::Timer']]],
   ['code',['code',['../structtut_1_1_has__common_1_1yes_code.html#a42faa414927fbd6c8f34b2cb1326c329',1,'tut::Has_common::yesCode']]],
   ['compflowpdeparameters',['CompFlowPDEParameters',['../namespaceinciter_1_1ctr.html#a65450af21232c6859f4338723ddb5a36',1,'inciter::ctr']]],
-  ['compflowphysics',['CompFlowPhysics',['../namespaceinciter.html#a50705b0aa2ce3395b2dad97dd13f9e08',1,'inciter']]],
+  ['compflowphysics',['CompFlowPhysics',['../namespaceinciter_1_1cg.html#a61f3f82cd82b930f41b1ad1c3ae688cc',1,'inciter::cg::CompFlowPhysics()'],['../namespaceinciter_1_1dg.html#a0f67a7116d03cf10d9bf83e5a98c73cf',1,'inciter::dg::CompFlowPhysics()']]],
   ['compflowproblems',['CompFlowProblems',['../namespaceinciter.html#ade5f0cbeda07924e22b71b3e39c61383',1,'inciter']]],
   ['connect_5fstore',['connect_store',['../classtk_1_1_root_mesh_writer.html#ac1cc4fab579d44cba37e50b93c33bbb3',1,'tk::RootMeshWriter']]],
+  ['const_5fiterator',['const_iterator',['../classtk_1_1_around.html#aa478016f52c2044967020823fb0667d9',1,'tk::Around']]],
   ['containerutil_5fgroup',['ContainerUtil_group',['../namespacetut.html#a08071c20b2c608c7d400e6a874d3e29d',1,'tut']]],
   ['containerutil_5fobject',['ContainerUtil_object',['../namespacetut.html#ab0c2560cdd5cadd71279b2b0db84e650',1,'tut']]],
   ['control',['control',['../structtut_1_1_control__common.html#af76d59428969d1bca7eb726cb68f1a29',1,'tut::Control_common']]],

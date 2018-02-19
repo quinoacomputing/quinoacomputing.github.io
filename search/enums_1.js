@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['coeffpolicytype',['CoeffPolicyType',['../namespacewalker_1_1ctr.html#a173f5bb53d7e621fa2569076fa704842',1,'walker::ctr']]]
+  ['batterytype',['BatteryType',['../namespacerngtest_1_1ctr.html#a151ceec1487ba03f04e1bcf5b3d10194',1,'rngtest::ctr']]]
 ];

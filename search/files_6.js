@@ -13,5 +13,7 @@ var searchData=
   ['gmshmeshreader_2eh',['GmshMeshReader.h',['../_gmsh_mesh_reader_8h.html',1,'']]],
   ['gmshmeshwriter_2ec',['GmshMeshWriter.C',['../_gmsh_mesh_writer_8_c.html',1,'']]],
   ['gmshmeshwriter_2eh',['GmshMeshWriter.h',['../_gmsh_mesh_writer_8h.html',1,'']]],
+  ['gradients_2ec',['Gradients.C',['../_gradients_8_c.html',1,'']]],
+  ['gradients_2eh',['Gradients.h',['../_gradients_8h.html',1,'']]],
   ['grammar_2eh',['Grammar.h',['../_file_conv_2_cmd_line_2_grammar_8h.html',1,'(Global Namespace)'],['../_inciter_2_cmd_line_2_grammar_8h.html',1,'(Global Namespace)'],['../_inciter_2_input_deck_2_grammar_8h.html',1,'(Global Namespace)'],['../_mesh_conv_2_cmd_line_2_grammar_8h.html',1,'(Global Namespace)'],['../_r_n_g_test_2_cmd_line_2_grammar_8h.html',1,'(Global Namespace)'],['../_r_n_g_test_2_input_deck_2_grammar_8h.html',1,'(Global Namespace)'],['../_unit_test_2_cmd_line_2_grammar_8h.html',1,'(Global Namespace)'],['../_walker_2_cmd_line_2_grammar_8h.html',1,'(Global Namespace)'],['../_walker_2_input_deck_2_grammar_8h.html',1,'(Global Namespace)']]]
 ];
