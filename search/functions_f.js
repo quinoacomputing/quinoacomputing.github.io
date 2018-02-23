@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['query',['query',['../classinciter_1_1_partitioner.html#a715bc4d4675333f1ba062ee83d3cb34e',1,'inciter::Partitioner']]]
+  ['query',['query',['../classinciter_1_1_partitioner.html#ae5b1b80a8fb414b63127462d65f6662d',1,'inciter::Partitioner']]]
 ];

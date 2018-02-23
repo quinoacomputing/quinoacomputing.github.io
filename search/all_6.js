@@ -113,6 +113,7 @@ var searchData=
   ['gradients_5fgroup',['Gradients_group',['../namespacetut.html#a6d72af3343b3d77dd6696304e3e7608f',1,'tut']]],
   ['gradients_5fobject',['Gradients_object',['../namespacetut.html#a4a3d4378596b8afd429dc96959763163',1,'tut']]],
   ['grammar_2eh',['Grammar.h',['../_file_conv_2_cmd_line_2_grammar_8h.html',1,'(Global Namespace)'],['../_inciter_2_cmd_line_2_grammar_8h.html',1,'(Global Namespace)'],['../_inciter_2_input_deck_2_grammar_8h.html',1,'(Global Namespace)'],['../_mesh_conv_2_cmd_line_2_grammar_8h.html',1,'(Global Namespace)'],['../_r_n_g_test_2_cmd_line_2_grammar_8h.html',1,'(Global Namespace)'],['../_r_n_g_test_2_input_deck_2_grammar_8h.html',1,'(Global Namespace)'],['../_unit_test_2_cmd_line_2_grammar_8h.html',1,'(Global Namespace)'],['../_walker_2_cmd_line_2_grammar_8h.html',1,'(Global Namespace)'],['../_walker_2_input_deck_2_grammar_8h.html',1,'(Global Namespace)']]],
+  ['graph',['GRAPH',['../classinciter_1_1_transporter.html#a9c57bb47fd1ce6a1b00b91b74d68078aaa419c51b9166a65a422b44b422034a3d',1,'inciter::Transporter']]],
   ['graphsize',['graphsize',['../classtk_1_1_uns_mesh.html#adcc0649d6d564348dd575ed977b668dc',1,'tk::UnsMesh']]],
   ['group',['group',['../structtag_1_1group.html',1,'tag::group'],['../structunittest_1_1cmd_1_1group.html',1,'unittest::cmd::group'],['../classtk_1_1_toggle.html#a4a62602fd062a3838a2703877edc8eeb',1,'tk::Toggle::group()']]],
   ['groupname',['groupname',['../classtk_1_1_toggle.html#ae48fc450a0207f20e2090e03e17570ea',1,'tk::Toggle']]],
