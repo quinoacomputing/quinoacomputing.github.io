@@ -23,6 +23,8 @@ var searchData=
   ['gammaparameters',['GammaParameters',['../namespacewalker_1_1ctr.html#a97fefcbc9fbcb8ae906950bad8d2bf8d',1,'walker::ctr']]],
   ['gap',['Gap',['../structtag_1_1_gap.html',1,'tag::Gap'],['../classrngtest_1_1_test_u01_stack.html#a4a11cec60eac843206f8df755981f54e',1,'rngtest::TestU01Stack::Gap()']]],
   ['gather',['gather',['../classinciter_1_1_partitioner.html#ad334fe5a4acd071eaeedd859533e4857',1,'inciter::Partitioner']]],
+  ['gauss_5fhump',['GAUSS_HUMP',['../namespaceinciter_1_1ctr.html#a6233f49244094f9b305675039fe62482a31c5cb9bb92eb8c1c0ea98ff7c9afefb',1,'inciter::ctr']]],
+  ['gausshump_2eh',['GaussHump.h',['../_gauss_hump_8h.html',1,'']]],
   ['gaussian',['gaussian',['../classtk_1_1_m_k_l_r_n_g.html#a439cb3251c2e07388dfb65b9ab65b217',1,'tk::MKLRNG::gaussian()'],['../classtk_1_1_random123.html#a1527e7de577ee08519b65a54bdce795c',1,'tk::Random123::gaussian()'],['../classtk_1_1_r_n_g.html#a5ed371cb43b285ed0cb540025f248942',1,'tk::RNG::gaussian()'],['../structtk_1_1_r_n_g_1_1_concept.html#a2e623f4e119ac35712f0a3b954f9e00f',1,'tk::RNG::Concept::gaussian()'],['../structtk_1_1_r_n_g_1_1_model.html#a6b6c5041942b0849853f7a53136b2405',1,'tk::RNG::Model::gaussian()'],['../classtk_1_1_r_n_g_s_s_e.html#a52547c1cc377928a9d94aedc4f2b5ae6',1,'tk::RNGSSE::gaussian()']]],
   ['gaussian_5fmethod',['gaussian_method',['../structtk_1_1mkl_1_1gaussian__method.html',1,'tk::mkl::gaussian_method&lt; use, sel, vec, tags &gt;'],['../structtag_1_1gaussian__method.html',1,'tag::gaussian_method']]],
   ['gcd',['GCD',['../structtag_1_1_g_c_d.html',1,'tag::GCD'],['../classrngtest_1_1_test_u01_stack.html#a02756953342aa32bb6805576dde8b7dc',1,'rngtest::TestU01Stack::GCD()']]],

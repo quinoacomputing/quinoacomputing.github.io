@@ -3,6 +3,7 @@ var searchData=
   ['gamma_2edox',['Gamma.dox',['../_gamma_8dox.html',1,'']]],
   ['gamma_2eh',['Gamma.h',['../_gamma_8h.html',1,'']]],
   ['gammacoeffpolicy_2eh',['GammaCoeffPolicy.h',['../_gamma_coeff_policy_8h.html',1,'']]],
+  ['gausshump_2eh',['GaussHump.h',['../_gauss_hump_8h.html',1,'']]],
   ['generalized_5fdirichlet_2edox',['Generalized_Dirichlet.dox',['../_generalized___dirichlet_8dox.html',1,'']]],
   ['generalizeddirichlet_2eh',['GeneralizedDirichlet.h',['../_generalized_dirichlet_8h.html',1,'']]],
   ['generalizeddirichletcoeffpolicy_2eh',['GeneralizedDirichletCoeffPolicy.h',['../_generalized_dirichlet_coeff_policy_8h.html',1,'']]],

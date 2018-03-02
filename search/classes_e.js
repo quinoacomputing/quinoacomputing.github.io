@@ -18,7 +18,7 @@ var searchData=
   ['pdffile',['PDFFile',['../classtk_1_1ctr_1_1_p_d_f_file.html',1,'tk::ctr']]],
   ['pdfinfo',['PDFInfo',['../structtk_1_1ctr_1_1_p_d_f_info.html',1,'tk::ctr']]],
   ['pdfnames',['pdfnames',['../structtag_1_1pdfnames.html',1,'tag']]],
-  ['pdfpolicy',['pdfpolicy',['../structtag_1_1pdfpolicy.html',1,'tag::pdfpolicy'],['../classtk_1_1ctr_1_1_p_d_f_policy.html',1,'tk::ctr::PDFPolicy']]],
+  ['pdfpolicy',['PDFPolicy',['../classtk_1_1ctr_1_1_p_d_f_policy.html',1,'tk::ctr::PDFPolicy'],['../structtag_1_1pdfpolicy.html',1,'tag::pdfpolicy']]],
   ['pdfwriter',['PDFWriter',['../classtk_1_1_p_d_f_writer.html',1,'tk']]],
   ['periodsinstrings',['PeriodsInStrings',['../structtag_1_1_periods_in_strings.html',1,'tag']]],
   ['permutation',['Permutation',['../structtag_1_1_permutation.html',1,'tag']]],
