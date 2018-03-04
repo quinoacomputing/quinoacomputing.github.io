@@ -63,5 +63,6 @@ var searchData=
   ['lowlhscomplete',['lowlhscomplete',['../classtk_1_1_solver.html#ac9ac9815d3617f4bae94ba9eb9309f44',1,'tk::Solver']]],
   ['lowrhscomplete',['lowrhscomplete',['../classtk_1_1_solver.html#a4e3434316f4316977063b72bed398b10',1,'tk::Solver']]],
   ['lowsolve',['lowsolve',['../classtk_1_1_solver.html#a7bfe4d55939e03e51bb0e9b9547f2e7a',1,'tk::Solver']]],
+  ['lpofa',['lpofa',['../namespacetk.html#a30ac7c57927d6134e6563817f5d005a0',1,'tk']]],
   ['lump',['lump',['../classinciter_1_1_dist_f_c_t.html#a4f5c5420bbd5d8eb52fb5cd0731525cf',1,'inciter::DistFCT::lump()'],['../classinciter_1_1_flux_corrector.html#abc0d65b8309fc2f45f07968bcb4e88b1',1,'inciter::FluxCorrector::lump()']]]
 ];
