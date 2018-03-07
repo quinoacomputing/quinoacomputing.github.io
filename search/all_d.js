@@ -61,7 +61,7 @@ var searchData=
   ['noexpecttype',['noExpectType',['../structtut_1_1_has__common_1_1no_expect_type.html',1,'tut::Has_common']]],
   ['noinit',['NOINIT',['../namespacetk_1_1grm.html#a86dbe384e8ce31796b7eb5f6ac87e1a3a77b3e8da86a70a357f25d04608341734',1,'tk::grm']]],
   ['noncomp',['NONCOMP',['../namespacetk_1_1grm.html#a86dbe384e8ce31796b7eb5f6ac87e1a3ac727e3ca4f9464113e8bc6aa5ca6fc2e',1,'tk::grm']]],
-  ['none',['none',['../namespace_a_m_r.html#aff53dc457ce57f50f7af28ccff2e8ceba334c4a4c42fdb79d7ebc3e73b517e6f8',1,'AMR::none()'],['../namespaceinciter_1_1ctr.html#ab492311c84666c98ea0363b2991f81faab50339a10e1de285ac99d4c3990b8693',1,'inciter::ctr::NONE()']]],
+  ['none',['NONE',['../namespaceinciter_1_1ctr.html#ab492311c84666c98ea0363b2991f81faab50339a10e1de285ac99d4c3990b8693',1,'inciter::ctr::NONE()'],['../namespace_a_m_r.html#aff53dc457ce57f50f7af28ccff2e8ceba334c4a4c42fdb79d7ebc3e73b517e6f8',1,'AMR::none()']]],
   ['nooption',['NOOPTION',['../namespacetk_1_1grm.html#a86dbe384e8ce31796b7eb5f6ac87e1a3ae4a0814c024a470edc9841424ccd8989',1,'tk::grm']]],
   ['noproblem',['NOPROBLEM',['../namespacetk_1_1grm.html#a86dbe384e8ce31796b7eb5f6ac87e1a3a15c7e870262beaa74148eb67bdd7895b',1,'tk::grm']]],
   ['noproxy',['noProxy',['../structtut_1_1_charm_util__common_1_1no_proxy.html',1,'tut::CharmUtil_common::noProxy'],['../structtut_1_1_has__common_1_1no_proxy.html',1,'tut::Has_common::noProxy']]],
