@@ -6,7 +6,7 @@ var searchData=
   ['child_5fid_5flist_5ft',['child_id_list_t',['../_a_m_r__types_8h.html#ab3ec9bebb0d5f9982ae67134070b6351',1,'AMR_types.h']]],
   ['clock',['clock',['../classtk_1_1_timer.html#ae2820e459eee7cd63045a42f6bb9ec76',1,'tk::Timer']]],
   ['code',['code',['../structtut_1_1_has__common_1_1yes_code.html#a42faa414927fbd6c8f34b2cb1326c329',1,'tut::Has_common::yesCode']]],
-  ['compflowpdeparameters',['CompFlowPDEParameters',['../namespaceinciter_1_1ctr.html#a65450af21232c6859f4338723ddb5a36',1,'inciter::ctr']]],
+  ['compflowpdeparameters',['CompFlowPDEParameters',['../namespaceinciter_1_1ctr.html#a5d9daecc02094cffa664b883924b6114',1,'inciter::ctr']]],
   ['compflowphysics',['CompFlowPhysics',['../namespaceinciter_1_1cg.html#a61f3f82cd82b930f41b1ad1c3ae688cc',1,'inciter::cg::CompFlowPhysics()'],['../namespaceinciter_1_1dg.html#a0f67a7116d03cf10d9bf83e5a98c73cf',1,'inciter::dg::CompFlowPhysics()']]],
   ['compflowproblems',['CompFlowProblems',['../namespaceinciter.html#ade5f0cbeda07924e22b71b3e39c61383',1,'inciter']]],
   ['connect_5fstore',['connect_store',['../classtk_1_1_root_mesh_writer.html#ac1cc4fab579d44cba37e50b93c33bbb3',1,'tk::RootMeshWriter']]],

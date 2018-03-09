@@ -16,5 +16,5 @@ var searchData=
   ['updatediag',['updateDiag',['../classtk_1_1_solver.html#ad3d56eabdc727142c5244530bd2e9106',1,'tk::Solver']]],
   ['updatelowsol',['updateLowSol',['../classinciter_1_1_mat_c_g.html#ac8b325a8bdcf8ff22ee567f46131c26f',1,'inciter::MatCG::updateLowSol()'],['../classtk_1_1_solver.html#afd2cf6f3695d1007aedfd69bcd847d36',1,'tk::Solver::updateLowSol()']]],
   ['updatesol',['updateSol',['../classinciter_1_1_mat_c_g.html#aae076314c3481241c199d210a269f2ea',1,'inciter::MatCG::updateSol()'],['../classtk_1_1_solver.html#ac4260f32744d54b5f8ea91fd492a456b',1,'tk::Solver::updateSol()']]],
-  ['upwindflux',['upwindFlux',['../classinciter_1_1dg_1_1_transport.html#ab95b52a424661f4a05b3fb295f62084d',1,'inciter::dg::Transport']]]
+  ['upwindflux',['upwindFlux',['../classinciter_1_1dg_1_1_transport.html#a8b5bb8ee46e647e5befd556d7447ebf6',1,'inciter::dg::Transport']]]
 ];
