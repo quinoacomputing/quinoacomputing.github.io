@@ -1,6 +1,7 @@
 var searchData=
 [
   ['central',['CENTRAL',['../namespacetk_1_1ctr.html#ad8f59bc1d2814d96060f4ba652bc08bfa1e5b1273f11ef1d41fc403c56e7acee9',1,'tk::ctr']]],
+  ['centroid',['CENTROID',['../classinciter_1_1_transporter.html#abc3946777879e5187f583131c54ee6c0a6235976707654290974a3268cdd1d985',1,'inciter::Transporter']]],
   ['charmarg',['CHARMARG',['../namespacetk_1_1grm.html#a86dbe384e8ce31796b7eb5f6ac87e1a3a8c970ecda90f7da2938effc047671913',1,'tk::grm']]],
   ['cja',['CJA',['../namespacetk_1_1ctr.html#acc4d0d1a1c27c555f100b137a98895b8a6465d36391f6b43819658a6379d262b6',1,'tk::ctr']]],
   ['cja_5faccurate',['CJA_ACCURATE',['../namespacetk_1_1ctr.html#acc4d0d1a1c27c555f100b137a98895b8ac47bbca36875d36ed195e91f354b768c',1,'tk::ctr']]],

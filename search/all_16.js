@@ -40,7 +40,7 @@ var searchData=
   ['workflow',['Workflow',['../workflow.html',1,'']]],
   ['workflow_2edox',['workflow.dox',['../workflow_8dox.html',1,'']]],
   ['wright_5ffisher',['wright_fisher',['../structwalker_1_1deck_1_1wright__fisher.html',1,'walker::deck']]],
-  ['wrightfisher',['wrightfisher',['../structtag_1_1wrightfisher.html',1,'tag::wrightfisher'],['../classwalker_1_1_wright_fisher.html',1,'walker::WrightFisher&lt; Init, Coefficients &gt;'],['../classwalker_1_1_wright_fisher.html#adae9d27fca3a694548ffc8ca3c27aec5',1,'walker::WrightFisher::WrightFisher()'],['../namespacewalker_1_1ctr.html#a4592cfa71c6e4c64a71c5691df56c79fa54c1a814984538454d1edc7062702658',1,'walker::ctr::WRIGHTFISHER()']]],
+  ['wrightfisher',['WrightFisher',['../classwalker_1_1_wright_fisher.html',1,'walker::WrightFisher&lt; Init, Coefficients &gt;'],['../structtag_1_1wrightfisher.html',1,'tag::wrightfisher'],['../classwalker_1_1_wright_fisher.html#adae9d27fca3a694548ffc8ca3c27aec5',1,'walker::WrightFisher::WrightFisher()'],['../namespacewalker_1_1ctr.html#a4592cfa71c6e4c64a71c5691df56c79fa54c1a814984538454d1edc7062702658',1,'walker::ctr::WRIGHTFISHER()']]],
   ['wrightfisher_2eh',['WrightFisher.h',['../_wright_fisher_8h.html',1,'']]],
   ['wrightfishercoeffconst',['WrightFisherCoeffConst',['../classwalker_1_1_wright_fisher_coeff_const.html',1,'walker::WrightFisherCoeffConst'],['../classwalker_1_1_wright_fisher_coeff_const.html#aebaf8fad249e7e469a8a880ae0e53378',1,'walker::WrightFisherCoeffConst::WrightFisherCoeffConst()']]],
   ['wrightfishercoeffpolicies',['WrightFisherCoeffPolicies',['../namespacewalker.html#a1aa1f1b033c55d88dffdfaf724785654',1,'walker']]],
