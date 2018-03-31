@@ -82,7 +82,7 @@ var searchData=
   ['estimateord',['estimateOrd',['../classwalker_1_1_distributor.html#a888cb0fa72031663a308904e131fc05f',1,'walker::Distributor']]],
   ['estimateordpdf',['estimateOrdPDF',['../classwalker_1_1_distributor.html#aa3cfc7a4d4e8bddcc0b144501a3bba50',1,'walker::Distributor']]],
   ['esuel',['Esuel',['../classinciter_1_1_face_data.html#a4af420ba825bdab42eecfd6f0d2da3c8',1,'inciter::FaceData']]],
-  ['esuf',['Esuf',['../classinciter_1_1_face_data.html#a93f91f4d5d753097c419b89e1f783e27',1,'inciter::FaceData']]],
+  ['esuf',['Esuf',['../classinciter_1_1_face_data.html#a93f91f4d5d753097c419b89e1f783e27',1,'inciter::FaceData::Esuf() const'],['../classinciter_1_1_face_data.html#a28986e6adde3a8a5300e346c9b57ad52',1,'inciter::FaceData::Esuf()']]],
   ['esup',['esup',['../structtag_1_1esup.html',1,'tag']]],
   ['eta',['eta',['../classtk_1_1_timer.html#adb5da256a75c55e2c8a87b6a5f550987',1,'tk::Timer']]],
   ['euler',['EULER',['../namespaceinciter_1_1ctr.html#a05792aa346ef778c24407416c5560d14a678c1200011554fa94722938765910bf',1,'inciter::ctr']]],

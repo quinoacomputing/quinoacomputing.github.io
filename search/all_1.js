@@ -36,7 +36,7 @@ var searchData=
   ['betax',['betax',['../structtag_1_1betax.html',1,'tag']]],
   ['betay',['betay',['../structtag_1_1betay.html',1,'tag']]],
   ['betaz',['betaz',['../structtag_1_1betaz.html',1,'tag']]],
-  ['bface',['Bface',['../classinciter_1_1_face_data.html#a5050ebd85c9918b10eedc01e150a29d8',1,'inciter::FaceData']]],
+  ['bface',['Bface',['../classinciter_1_1_face_data.html#a95a3070984ed784369fe804d0b98f40c',1,'inciter::FaceData']]],
   ['bid',['Bid',['../classinciter_1_1_discretization.html#a880a95f07d4880166a40dc693c0450f6',1,'inciter::Discretization::Bid() const'],['../classinciter_1_1_discretization.html#a74cab94400ca5bbe84c7f542996199cc',1,'inciter::Discretization::Bid()']]],
   ['bigcrush',['BigCrush',['../classrngtest_1_1_big_crush.html',1,'rngtest::BigCrush'],['../namespacerngtest_1_1ctr.html#a151ceec1487ba03f04e1bcf5b3d10194a885f27d3523ae9aed30ca3a34ed17299',1,'rngtest::ctr::BIGCRUSH()']]],
   ['bigcrush_2ec',['BigCrush.C',['../_big_crush_8_c.html',1,'']]],

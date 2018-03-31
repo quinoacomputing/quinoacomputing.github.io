@@ -1,7 +1,7 @@
 var searchData=
 [
   ['face_5flist_5fopposite',['face_list_opposite',['../class_a_m_r_1_1node__connectivity__t.html#aa9d23fde02a281ecdc01d7f47afd58c0',1,'AMR::node_connectivity_t']]],
-  ['facedata',['FaceData',['../classinciter_1_1_face_data.html#aa846dffcd08d7710c390bd18071dc1df',1,'inciter::FaceData::FaceData()'],['../classinciter_1_1_face_data.html#a54060eb2b80efc603fd2cb4b6ea86cee',1,'inciter::FaceData::FaceData(const std::vector&lt; std::size_t &gt; &amp;conn, std::size_t nbfac_complete, const std::map&lt; int, std::vector&lt; std::size_t &gt; &gt; &amp;bface, const std::vector&lt; std::size_t &gt; &amp;triinpoel_complete)']]],
+  ['facedata',['FaceData',['../classinciter_1_1_face_data.html#aa846dffcd08d7710c390bd18071dc1df',1,'inciter::FaceData::FaceData()'],['../classinciter_1_1_face_data.html#ac2112fff2cffa146fbd3be7fc8ee121f',1,'inciter::FaceData::FaceData(const std::vector&lt; std::size_t &gt; &amp;conn, const std::unordered_map&lt; int, std::vector&lt; std::size_t &gt; &gt; &amp;bface, const std::vector&lt; std::size_t &gt; &amp;triinpoel)']]],
   ['factory',['factory',['../classwalker_1_1_diff_eq_stack.html#a5bd8559b8a4b69600e43d5e023fb9e7f',1,'walker::DiffEqStack::factory()'],['../classinciter_1_1_p_d_e_stack.html#a6122ddc4aa117d7bd06f76bf3ca014bf',1,'inciter::PDEStack::factory()'],['../namespacetut.html#aee6d9f355bfc979bac6fea8bf2649ee8',1,'tut::Factory()']]],
   ['fail',['fail',['../classrngtest_1_1_test_u01_props.html#aef5a526629ccc310d60219fbdaa7ced1',1,'rngtest::TestU01Props']]],
   ['failed',['failed',['../classrngtest_1_1_r_n_g_test_print.html#ae7d88ed671cda0fe0556488bfef8f418',1,'rngtest::RNGTestPrint::failed()'],['../structrngtest_1_1_test_u01_suite_1_1_failed.html#aad7768ca38fce57a63e746c521507065',1,'rngtest::TestU01Suite::Failed::Failed()']]],
@@ -19,6 +19,7 @@ var searchData=
   ['find',['find',['../class_a_m_r_1_1node__connectivity__t.html#aef83853c4d5dbc74d9f886835ada5d2a',1,'AMR::node_connectivity_t']]],
   ['find_5fmid_5fpoint',['find_mid_point',['../class_a_m_r_1_1node__store__t.html#add28762f9e09810516dcfdf107e6d2c3',1,'AMR::node_store_t::find_mid_point()'],['../namespace_a_m_r_1_1util.html#a5a0c619adf06eb7dd7ad37d653ef6d19',1,'AMR::util::find_mid_point(coordinate_t edge_node_A, coordinate_t edge_node_B)'],['../namespace_a_m_r_1_1util.html#a382de98e72a7d17521d75673cb6efeba',1,'AMR::util::find_mid_point(real_t x1, real_t y1, real_t z1, real_t x2, real_t y2, real_t z2)']]],
   ['find_5fsingle_5frefinement_5fnodes',['find_single_refinement_nodes',['../class_a_m_r_1_1refinement__t.html#a58bd67630c69cff10b27523fe9eeb9ef',1,'AMR::refinement_t']]],
+  ['findchare',['findchare',['../classinciter_1_1_d_g.html#ac0db5689e13368c82e1c62ca6c37cdaa',1,'inciter::DG']]],
   ['findpar',['findpar',['../classtk_1_1_tracker.html#a394bb78c8bcd80ed0c10df00d4f3035d',1,'tk::Tracker']]],
   ['finish',['finish',['../classinciter_1_1_transporter.html#a28c19c72c7f603b49d32a6a05a0eedc6',1,'inciter::Transporter::finish()'],['../classwalker_1_1_distributor.html#a47e049f25139fe701a45a1e0bbe3c6c5',1,'walker::Distributor::finish()']]],
   ['first',['first',['../classedge__t.html#a989c78bc9d0df30b8b039664a4ea51af',1,'edge_t']]],

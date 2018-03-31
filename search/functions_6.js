@@ -35,6 +35,7 @@ var searchData=
   ['genntfac',['genNtfac',['../namespacetk.html#a94114220a51c1ba65f5f1e8314ffc27e',1,'tk']]],
   ['genpar',['genpar',['../classtk_1_1_tracker.html#a999e420acc4782b98af0305b7acbae6e',1,'tk::Tracker']]],
   ['genpsup',['genPsup',['../namespacetk.html#ad2a88a65102c17149b44660db15d445b',1,'tk']]],
+  ['geofacetri',['geoFaceTri',['../namespacetk.html#a51f7ec47d21ee4be4ef5a6e58fdd4776',1,'tk']]],
   ['geometric',['geometric',['../classtk_1_1ctr_1_1_partitioning_algorithm.html#ac20375af3b6b9ade275013bfc3f63241',1,'tk::ctr::PartitioningAlgorithm']]],
   ['geometricmeshelemadapter',['GeometricMeshElemAdapter',['../classtk_1_1zoltan_1_1_geometric_mesh_elem_adapter.html#abe52cec8bd3702748774715e4e013e67',1,'tk::zoltan::GeometricMeshElemAdapter']]],
   ['geompartmesh',['geomPartMesh',['../namespacetk_1_1zoltan.html#af211161a3f36764997bb32651484e597',1,'tk::zoltan']]],

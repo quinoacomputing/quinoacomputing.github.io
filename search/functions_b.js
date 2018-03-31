@@ -57,5 +57,6 @@ var searchData=
   ['momentnames',['momentNames',['../classwalker_1_1ctr_1_1_input_deck.html#a2bef3fe53c5f415b034e7a91ec40dfe2',1,'walker::ctr::InputDeck']]],
   ['morton_5fid_5fgenerator_5ft',['morton_id_generator_t',['../class_a_m_r_1_1morton__id__generator__t.html#ac573e9e0205c40a2cc02c9ccf204b875',1,'AMR::morton_id_generator_t']]],
   ['msg',['Msg',['../structtk_1_1_msg.html#ae986bed7b9615269bbb4afa1e2273183',1,'tk::Msg']]],
-  ['msum',['Msum',['../classinciter_1_1_discretization.html#afdf2107ac8bb75e3321111a21380c5ad',1,'inciter::Discretization::Msum() const'],['../classinciter_1_1_discretization.html#ad42fe9dc4145722ee269de8e3e8aba5a',1,'inciter::Discretization::Msum()']]]
+  ['msum',['Msum',['../classinciter_1_1_discretization.html#afdf2107ac8bb75e3321111a21380c5ad',1,'inciter::Discretization::Msum() const'],['../classinciter_1_1_discretization.html#ad42fe9dc4145722ee269de8e3e8aba5a',1,'inciter::Discretization::Msum()']]],
+  ['msumset',['msumset',['../classinciter_1_1_d_g.html#a9d96fd6e1b2051146f3bb05de80f50d9',1,'inciter::DG']]]
 ];
