@@ -7,6 +7,5 @@ var searchData=
   ['ornsteinuhlenbeck',['OrnsteinUhlenbeck',['../classwalker_1_1_ornstein_uhlenbeck.html',1,'walker']]],
   ['ornsteinuhlenbeckcoeffconst',['OrnsteinUhlenbeckCoeffConst',['../classwalker_1_1_ornstein_uhlenbeck_coeff_const.html',1,'walker']]],
   ['ou',['ou',['../structtag_1_1ou.html',1,'tag']]],
-  ['outlet',['Outlet',['../structinciter_1_1dg_1_1_transport_1_1_outlet.html',1,'inciter::dg::Transport']]],
   ['output',['output',['../structtag_1_1output.html',1,'tag']]]
 ];

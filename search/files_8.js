@@ -13,6 +13,7 @@ var searchData=
   ['inciterprint_2eh',['InciterPrint.h',['../_inciter_print_8h.html',1,'']]],
   ['inhomogeneity_2edox',['inhomogeneity.dox',['../inhomogeneity_8dox.html',1,'']]],
   ['init_2eh',['Init.h',['../_init_8h.html',1,'']]],
+  ['initialamr_2eh',['InitialAMR.h',['../_initial_a_m_r_8h.html',1,'']]],
   ['initpolicy_2eh',['InitPolicy.h',['../_control_2_walker_2_options_2_init_policy_8h.html',1,'(Global Namespace)'],['../_diff_eq_2_init_policy_8h.html',1,'(Global Namespace)']]],
   ['inputdeck_2eh',['InputDeck.h',['../_inciter_2_input_deck_2_input_deck_8h.html',1,'(Global Namespace)'],['../_r_n_g_test_2_input_deck_2_input_deck_8h.html',1,'(Global Namespace)'],['../_walker_2_input_deck_2_input_deck_8h.html',1,'(Global Namespace)']]],
   ['integrator_2ec',['Integrator.C',['../_integrator_8_c.html',1,'']]],

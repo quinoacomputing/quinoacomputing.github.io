@@ -5,7 +5,6 @@ var searchData=
   ['depvar',['depvar',['../structtag_1_1depvar.html',1,'tag::depvar'],['../structwalker_1_1ctr_1_1_input_deck_1_1depvar.html',1,'walker::ctr::InputDeck::depvar']]],
   ['deriveddata_5fcommon',['DerivedData_common',['../structtut_1_1_derived_data__common.html',1,'tut']]],
   ['dg',['DG',['../classinciter_1_1_d_g.html',1,'inciter']]],
-  ['dgpde',['DGPDE',['../classinciter_1_1_d_g_p_d_e.html',1,'inciter']]],
   ['diag',['diag',['../structtag_1_1diag.html',1,'tag']]],
   ['diag_5fou',['diag_ou',['../structwalker_1_1deck_1_1diag__ou.html',1,'walker::deck']]],
   ['diagcg',['DiagCG',['../classinciter_1_1_diag_c_g.html',1,'inciter']]],

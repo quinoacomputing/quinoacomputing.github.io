@@ -16,6 +16,5 @@ var searchData=
   ['glob',['glob',['../structtag_1_1glob.html',1,'tag']]],
   ['gmshmeshreader',['GmshMeshReader',['../classtk_1_1_gmsh_mesh_reader.html',1,'tk']]],
   ['gmshmeshwriter',['GmshMeshWriter',['../classtk_1_1_gmsh_mesh_writer.html',1,'tk']]],
-  ['gradients_5fcommon',['Gradients_common',['../structtut_1_1_gradients__common.html',1,'tut']]],
   ['group',['group',['../structtag_1_1group.html',1,'tag::group'],['../structunittest_1_1cmd_1_1group.html',1,'unittest::cmd::group']]]
 ];

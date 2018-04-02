@@ -1,10 +1,7 @@
 var searchData=
 [
-  ['face',['Face',['../classtk_1_1_uns_mesh.html#ae8262763c870433021affc6bb5a0f804',1,'tk::UnsMesh']]],
   ['face_5fids_5ft',['face_ids_t',['../_a_m_r__types_8h.html#af9706cbab0817d6993709d2f2392c87c',1,'AMR_types.h']]],
   ['face_5flist_5ft',['face_list_t',['../_a_m_r__types_8h.html#a857704a54a2d14618d343fdb87b54ae6',1,'AMR_types.h']]],
-  ['facemap',['FaceMap',['../classinciter_1_1_d_g.html#ace1e61bf205f412937a8eb75fc07ba3f',1,'inciter::DG']]],
-  ['faceset',['FaceSet',['../classtk_1_1_uns_mesh.html#a5004e2a1a99924a9b9dfea050bb432a7',1,'tk::UnsMesh']]],
   ['factory',['Factory',['../structtut_1_1_factory__common.html#aab13d1e00c3c7eb85823cb3a7c19ddfa',1,'tut::Factory_common']]],
   ['factory_5fgroup',['Factory_group',['../namespacetut.html#ad2f5e3640b11a3a697489d61920cf463',1,'tut']]],
   ['factory_5fobject',['Factory_object',['../namespacetut.html#a4e4a76be444a4476cacd20894829bb9f',1,'tut']]],

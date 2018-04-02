@@ -1,6 +1,5 @@
 var searchData=
 [
-  ['headertype',['HeaderType',['../namespacetk.html#a3032aaeb67d38d01181590cd7f0acc7d',1,'tk']]],
-  ['hydroproductionstype',['HydroProductionsType',['../namespacewalker_1_1ctr.html#a7ca032c82e736a235bf8e92b875086d1',1,'walker::ctr']]],
-  ['hydrotimescalestype',['HydroTimeScalesType',['../namespacewalker_1_1ctr.html#aa39b258a505c5281de73b77b06661828',1,'walker::ctr']]]
+  ['initialamrtype',['InitialAMRType',['../namespaceinciter_1_1ctr.html#ae9ced82015a29c39b2f5280867559fe4',1,'inciter::ctr']]],
+  ['initpolicytype',['InitPolicyType',['../namespacewalker_1_1ctr.html#a073db7656ce7d82e9ef0321698253b57',1,'walker::ctr']]]
 ];
