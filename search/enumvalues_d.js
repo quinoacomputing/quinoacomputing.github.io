@@ -16,7 +16,7 @@ var searchData=
   ['nodt',['NODT',['../namespacetk_1_1grm.html#a86dbe384e8ce31796b7eb5f6ac87e1a3a725e7394d50e3101784998ece8051240',1,'tk::grm']]],
   ['noinit',['NOINIT',['../namespacetk_1_1grm.html#a86dbe384e8ce31796b7eb5f6ac87e1a3a77b3e8da86a70a357f25d04608341734',1,'tk::grm']]],
   ['noncomp',['NONCOMP',['../namespacetk_1_1grm.html#a86dbe384e8ce31796b7eb5f6ac87e1a3ac727e3ca4f9464113e8bc6aa5ca6fc2e',1,'tk::grm']]],
-  ['none',['none',['../namespace_a_m_r.html#aff53dc457ce57f50f7af28ccff2e8ceba334c4a4c42fdb79d7ebc3e73b517e6f8',1,'AMR::none()'],['../namespaceinciter_1_1ctr.html#ae9ced82015a29c39b2f5280867559fe4ab50339a10e1de285ac99d4c3990b8693',1,'inciter::ctr::NONE()']]],
+  ['none',['none',['../namespace_a_m_r.html#aff53dc457ce57f50f7af28ccff2e8ceba334c4a4c42fdb79d7ebc3e73b517e6f8',1,'AMR']]],
   ['nooption',['NOOPTION',['../namespacetk_1_1grm.html#a86dbe384e8ce31796b7eb5f6ac87e1a3ae4a0814c024a470edc9841424ccd8989',1,'tk::grm']]],
   ['noproblem',['NOPROBLEM',['../namespacetk_1_1grm.html#a86dbe384e8ce31796b7eb5f6ac87e1a3a15c7e870262beaa74148eb67bdd7895b',1,'tk::grm']]],
   ['norng',['NORNG',['../namespacetk_1_1grm.html#a86dbe384e8ce31796b7eb5f6ac87e1a3a61cb7af456776a7f26a0cb9330b2ce55',1,'tk::grm']]],
