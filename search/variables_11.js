@@ -10,6 +10,5 @@ var searchData=
   ['triangles',['triangles',['../structtk_1_1_root_mesh_writer_1_1mesh__data.html#a64e97d1361d6066680cd3a1a6bffdded',1,'tk::RootMeshWriter::mesh_data']]],
   ['triinpoel',['triinpoel',['../structtut_1_1_around__common.html#a8672812553d3d1193c1cbf4d96008f79',1,'tut::Around_common']]],
   ['tup',['tup',['../structtut_1_1_tagged_tuple__common.html#a4b2cc0e63ebe2435534c2cb5949dc8e6',1,'tut::TaggedTuple_common']]],
-  ['tuple',['tuple',['../classtk_1_1_variant.html#a7ce0b131209792b933ee81351486aa28',1,'tk::Variant']]],
   ['type',['type',['../structwalker_1_1_diff_eq_stack_1_1register_diff_eq.html#a07746419af6b5689075be4ef2da27094',1,'walker::DiffEqStack::registerDiffEq::type()'],['../structinciter_1_1_p_d_e_stack_1_1register_p_d_e.html#a3f5b18db390092630ba4f623aac1f01b',1,'inciter::PDEStack::registerPDE::type()'],['../structtut_1_1_factory__common_1_1_base.html#a6d00d151a2a7d0957e4f66d25a648a97',1,'tut::Factory_common::Base::type()'],['../structtut_1_1_factory__common_1_1_v_child.html#a91be26f8e5b2c6829fec62bcb1c6229c',1,'tut::Factory_common::VChild::type()']]]
 ];

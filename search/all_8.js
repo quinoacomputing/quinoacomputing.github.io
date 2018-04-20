@@ -16,7 +16,7 @@ var searchData=
   ['id_5fgenerator_5ft',['id_generator_t',['../class_a_m_r_1_1id__generator__t.html',1,'AMR::id_generator_t'],['../class_a_m_r_1_1id__generator__t.html#a3713bf2fe4e080aabb3c768f8c0bdcb3',1,'AMR::id_generator_t::id_generator_t()']]],
   ['id_5fshift',['ID_SHIFT',['../_a_m_r__types_8h.html#a6b5030b29df481b11e1730ce70b18783',1,'AMR_types.h']]],
   ['id_5fto_5fcoordinate',['id_to_coordinate',['../class_a_m_r_1_1node__store__t.html#a906e7c4c343b8017b5a33f183dba0839',1,'AMR::node_store_t']]],
-  ['idx',['Idx',['../structtk_1_1_idx.html',1,'tk::Idx&lt; ProxyElem &gt;'],['../classtk_1_1_variant.html#a5f9de88c6681a8e392d4dea683e76865',1,'tk::Variant::idx()'],['../structtk_1_1_idx.html#ad136babe826ba2d9297fe55443bb1b00',1,'tk::Idx::Idx()']]],
+  ['idx',['Idx',['../structtk_1_1_idx.html',1,'tk::Idx&lt; ProxyElem &gt;'],['../structtk_1_1_idx.html#ad136babe826ba2d9297fe55443bb1b00',1,'tk::Idx::Idx()']]],
   ['if_2eh',['If.h',['../_if_8h.html',1,'']]],
   ['if_5f',['if_',['../structtk_1_1if__.html',1,'tk']]],
   ['if_5f_3c_20false_2c_20then_2c_20else_20_3e',['if_&lt; false, Then, Else &gt;',['../structtk_1_1if___3_01false_00_01_then_00_01_else_01_4.html',1,'tk']]],
