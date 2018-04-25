@@ -3,7 +3,7 @@ var searchData=
   ['base',['Base',['../structinciter_1_1_scheme_1_1call__setup.html#a8bc641042e70b24fa40fc73be30de47d',1,'inciter::Scheme::call_setup::Base()'],['../structinciter_1_1_scheme_1_1call__insert.html#a5351fcddb747392a51a693c911ae6da8',1,'inciter::Scheme::call_insert::Base()'],['../structinciter_1_1_scheme_1_1call__done_inserting.html#a8618955e192447e7b981a885b016269c',1,'inciter::Scheme::call_doneInserting::Base()'],['../structinciter_1_1_scheme_1_1call__dt.html#a40eae9d9dbbf3d2f0aa91edd61e81636',1,'inciter::Scheme::call_dt::Base()'],['../structinciter_1_1_scheme_1_1call__eval.html#a95193eaad3f5de9636fd18c9f859da0b',1,'inciter::Scheme::call_eval::Base()']]],
   ['base_5fadapter_5ft',['base_adapter_t',['../classtk_1_1zoltan_1_1_geometric_mesh_elem_adapter.html#ad0f9a5717e64db6d8f4e3b14b9214658',1,'tk::zoltan::GeometricMeshElemAdapter']]],
   ['batteryfactory',['BatteryFactory',['../namespacerngtest.html#a27f5b52643c9bffce647cde2438d33c1',1,'rngtest']]],
-  ['bcconf_5ft',['bcconf_t',['../classinciter_1_1dg_1_1_transport.html#a1f8ec62dd9d0d2a7a482c0856422192f',1,'inciter::dg::Transport']]],
+  ['bcconf_5ft',['bcconf_t',['../classinciter_1_1dg_1_1_comp_flow.html#a64bb6fa8566af9080ce1294a66b7c7d5',1,'inciter::dg::CompFlow::bcconf_t()'],['../classinciter_1_1dg_1_1_transport.html#a1f8ec62dd9d0d2a7a482c0856422192f',1,'inciter::dg::Transport::bcconf_t()']]],
   ['betacoeffpolicies',['BetaCoeffPolicies',['../namespacewalker.html#af9ae6258ad44a778afd53cdbe4b668fd',1,'walker']]],
   ['betaparameters',['BetaParameters',['../namespacewalker_1_1ctr.html#a50edc3e343b2ae45016d2667c0d2bdd9',1,'walker::ctr']]],
   ['boostoptionalint',['BoostOptionalInt',['../namespacetut_1_1charm.html#a752469d4174512553107b86c859315ce',1,'tut::charm']]],

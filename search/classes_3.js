@@ -16,6 +16,7 @@ var searchData=
   ['diffeq',['DiffEq',['../classwalker_1_1ctr_1_1_diff_eq.html',1,'walker::ctr::DiffEq'],['../classwalker_1_1_diff_eq.html',1,'walker::DiffEq'],['../structtag_1_1diffeq.html',1,'tag::diffeq']]],
   ['diffeqstack',['DiffEqStack',['../classwalker_1_1_diff_eq_stack.html',1,'walker']]],
   ['diffusivity',['diffusivity',['../structtag_1_1diffusivity.html',1,'tag']]],
+  ['dir',['Dir',['../structinciter_1_1dg_1_1_comp_flow_1_1_dir.html',1,'inciter::dg::CompFlow']]],
   ['dirichlet',['dirichlet',['../structwalker_1_1deck_1_1dirichlet.html',1,'walker::deck::dirichlet'],['../classwalker_1_1_dirichlet.html',1,'walker::Dirichlet&lt; Init, Coefficients &gt;'],['../structtag_1_1dirichlet.html',1,'tag::dirichlet']]],
   ['dirichletcoeffconst',['DirichletCoeffConst',['../classwalker_1_1_dirichlet_coeff_const.html',1,'walker']]],
   ['discr',['discr',['../structtag_1_1discr.html',1,'tag']]],

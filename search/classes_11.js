@@ -15,7 +15,7 @@ var searchData=
   ['scan_5fsde',['scan_sde',['../structwalker_1_1deck_1_1scan__sde.html',1,'walker::deck']]],
   ['scan_5funtil',['scan_until',['../structtk_1_1grm_1_1scan__until.html',1,'tk::grm']]],
   ['scan_5funtil_3c_20fieldvar_3c_20c_20_3e_2c_20match_5fdepvar_3c_20push_5fsample_3c_20m_20_3e_20_3e_2c_20pegtl_3a_3aone_3c_27_3a_27_3e_20_3e',['scan_until&lt; fieldvar&lt; c &gt;, match_depvar&lt; push_sample&lt; m &gt; &gt;, pegtl::one&lt;&apos;:&apos;&gt; &gt;',['../structtk_1_1grm_1_1scan__until.html',1,'tk::grm']]],
-  ['scheme',['Scheme',['../classinciter_1_1_scheme.html',1,'inciter::Scheme'],['../classinciter_1_1ctr_1_1_scheme.html',1,'inciter::ctr::Scheme'],['../structtag_1_1scheme.html',1,'tag::scheme']]],
+  ['scheme',['scheme',['../structtag_1_1scheme.html',1,'tag::scheme'],['../classinciter_1_1_scheme.html',1,'inciter::Scheme'],['../classinciter_1_1ctr_1_1_scheme.html',1,'inciter::ctr::Scheme']]],
   ['scheme_5fcommon',['Scheme_common',['../structtut_1_1_scheme__common.html',1,'tut']]],
   ['schemebase',['SchemeBase',['../classinciter_1_1_scheme_base.html',1,'inciter']]],
   ['sde',['sde',['../structwalker_1_1deck_1_1sde.html',1,'walker::deck']]],
@@ -29,7 +29,7 @@ var searchData=
   ['sigmasq',['sigmasq',['../structtag_1_1sigmasq.html',1,'tag']]],
   ['silowriter',['SiloWriter',['../classtk_1_1_silo_writer.html',1,'tk']]],
   ['simplepoker',['SimplePoker',['../structtag_1_1_simple_poker.html',1,'tag']]],
-  ['skewnormal',['skewnormal',['../structwalker_1_1deck_1_1skewnormal.html',1,'walker::deck::skewnormal'],['../classwalker_1_1_skew_normal.html',1,'walker::SkewNormal&lt; Init, Coefficients &gt;'],['../structtag_1_1skewnormal.html',1,'tag::skewnormal']]],
+  ['skewnormal',['skewnormal',['../structtag_1_1skewnormal.html',1,'tag::skewnormal'],['../classwalker_1_1_skew_normal.html',1,'walker::SkewNormal&lt; Init, Coefficients &gt;'],['../structwalker_1_1deck_1_1skewnormal.html',1,'walker::deck::skewnormal']]],
   ['skewnormalcoeffconst',['SkewNormalCoeffConst',['../classwalker_1_1_skew_normal_coeff_const.html',1,'walker']]],
   ['slm',['slm',['../structtag_1_1slm.html',1,'tag']]],
   ['smallcrush',['SmallCrush',['../classrngtest_1_1_small_crush.html',1,'rngtest']]],
@@ -63,6 +63,6 @@ var searchData=
   ['stringrun',['StringRun',['../structtag_1_1_string_run.html',1,'tag']]],
   ['stringsmsg',['StringsMsg',['../structtk_1_1_strings_msg.html',1,'tk']]],
   ['sumcollector',['SumCollector',['../structtag_1_1_sum_collector.html',1,'tag']]],
-  ['sym',['Sym',['../structinciter_1_1dg_1_1_transport_1_1_sym.html',1,'inciter::dg::Transport']]],
+  ['sym',['Sym',['../structinciter_1_1dg_1_1_comp_flow_1_1_sym.html',1,'inciter::dg::CompFlow&lt; Physics, Problem &gt;::Sym'],['../structinciter_1_1dg_1_1_transport_1_1_sym.html',1,'inciter::dg::Transport&lt; Physics, Problem &gt;::Sym']]],
   ['systemcomponents_5fcommon',['SystemComponents_common',['../structtut_1_1_system_components__common.html',1,'tut']]]
 ];

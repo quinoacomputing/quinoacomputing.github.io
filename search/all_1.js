@@ -12,7 +12,7 @@ var searchData=
   ['bc_2eh',['BC.h',['../_b_c_8h.html',1,'']]],
   ['bc_5fempty',['BC_EMPTY',['../namespacetk_1_1grm.html#a86dbe384e8ce31796b7eb5f6ac87e1a3a007ae8e190b2682e73db46fb00adf7e4',1,'tk::grm']]],
   ['bcast',['bcast',['../structtag_1_1bcast.html',1,'tag']]],
-  ['bcconf_5ft',['bcconf_t',['../classinciter_1_1dg_1_1_transport.html#a1f8ec62dd9d0d2a7a482c0856422192f',1,'inciter::dg::Transport']]],
+  ['bcconf_5ft',['bcconf_t',['../classinciter_1_1dg_1_1_comp_flow.html#a64bb6fa8566af9080ce1294a66b7c7d5',1,'inciter::dg::CompFlow::bcconf_t()'],['../classinciter_1_1dg_1_1_transport.html#a1f8ec62dd9d0d2a7a482c0856422192f',1,'inciter::dg::Transport::bcconf_t()']]],
   ['bcdir',['bcdir',['../structtag_1_1bcdir.html',1,'tag']]],
   ['bcinlet',['bcinlet',['../structtag_1_1bcinlet.html',1,'tag']]],
   ['bcmapmerger',['BCMapMerger',['../namespacetk.html#a1320fa5c795146f9a4ac4fc2eb4e2606',1,'tk']]],

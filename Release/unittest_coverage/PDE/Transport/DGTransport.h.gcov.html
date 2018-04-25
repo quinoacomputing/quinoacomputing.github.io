@@ -24,7 +24,7 @@
           </tr>
           <tr>
             <td class="headerItem">Commit:</td>
-            <td class="headerValue"><a href="https://github.com/quinoacomputing/quinoa/commit/866b8f3">Quinoa_v0.2-572-g866b8f3</a></td>
+            <td class="headerValue"><a href="https://github.com/quinoacomputing/quinoa/commit/7a79d85">Quinoa_v0.2-578-g7a79d85</a></td>
             <td></td>
             <td class="headerItem">Lines:</td>
             <td class="headerCovTableEntry">0</td>
@@ -33,7 +33,7 @@
           </tr>
           <tr>
             <td class="headerItem">Date:</td>
-            <td class="headerValue">2018-04-19 20:22:33</td>
+            <td class="headerValue">2018-04-24 12:15:47</td>
             <td></td>
             <td class="headerItem">Functions:</td>
             <td class="headerCovTableEntry">0</td>
@@ -119,7 +119,7 @@
 <span class="lineNum">      45 </span>                :            :     //! Extract BC configuration ignoring if BC not specified
 <span class="lineNum">      46 </span>                :            :     //! \param[in] c Equation system index (among multiple systems configured)
 <span class="lineNum">      47 </span>                :            :     //! \return Vector of BC config of type bcconf_t used to apply BCs for all
-<span class="lineNum">      48 </span>                :            :     //!   scalar components this Transport eq system is configred for
+<span class="lineNum">      48 </span>                :            :     //!   scalar components this Transport eq system is configured for
 <span class="lineNum">      49 </span>                :            :     //! \note A more preferable way of catching errors such as this function
 <span class="lineNum">      50 </span>                :            :     //!   hides is during parsing, so that we don't even get here if BCs are not
 <span class="lineNum">      51 </span>                :            :     //!   correctly specified. For now we simply ignore if BCs are not
@@ -174,7 +174,7 @@
 <span class="lineNum">     100 </span>                :            : 
 <span class="lineNum">     101 </span>                :            :     //! Compute the left hand side mass matrix
 <a name="102"><span class="lineNum">     102 </span>                :            :     //! \param[in] geoElem Element geometry array</a>
-<span class="lineNum">     103 </span>                :            :     //! \param[in,out] l Block diagonal mass matrix matrix
+<span class="lineNum">     103 </span>                :            :     //! \param[in,out] l Block diagonal mass matrix
 <span class="lineNum">     104 </span>                :<span class="lineNoCov">          0 :     void lhs( const tk::Fields&amp; geoElem, tk::Fields&amp; l ) const</span>
 <span class="lineNum">     105 </span>                :            :     {
 <span class="lineNum">     106 </span>                :            :       Assert( geoElem.nunk() == l.nunk(), &quot;Size mismatch&quot; );
@@ -194,259 +194,260 @@
 <span class="lineNum">     120 </span>                :            :     //! \param[in,out] R Right-hand side vector computed
 <span class="lineNum">     121 </span>                :<span class="lineNoCov">          0 :     void rhs( tk::real,</span>
 <span class="lineNum">     122 </span>                :            :               const tk::Fields&amp; geoFace,
-<span class="lineNum">     123 </span>                :            :               const inciter::FaceData&amp; fd,
-<span class="lineNum">     124 </span>                :            :               const tk::Fields&amp; U,
-<span class="lineNum">     125 </span>                :            :               tk::Fields&amp; R ) const
-<span class="lineNum">     126 </span>                :            :     {
-<span class="lineNum">     127 </span>                :            :       Assert( U.nunk() == R.nunk(), &quot;Number of unknowns in solution &quot;
-<span class="lineNum">     128 </span>                :            :               &quot;vector and right-hand side at recent time step incorrect&quot; );
-<span class="lineNum">     129 </span>                :            :       Assert( U.nprop() == m_ncomp &amp;&amp; R.nprop() == m_ncomp,
-<span class="lineNum">     130 </span>                :            :               &quot;Number of components in solution and right-hand side vector &quot; 
-<span class="lineNum">     131 </span>                :            :               &quot;must equal &quot;+ std::to_string(m_ncomp) );
-<span class="lineNum">     132 </span>                :            : 
-<span class="lineNum">     133 </span>                :            :       const auto&amp; bface = fd.Bface();
-<span class="lineNum">     134 </span>                :<span class="lineNoCov">          0 :       const auto&amp; esuf = fd.Esuf();</span>
-<span class="lineNum">     135 </span>                :            : 
-<span class="lineNum">     136 </span>                :            :       // set rhs to zero
-<span class="lineNum">     137 </span>                :            :       R.fill(0.0);
-<span class="lineNum">     138 </span>                :            : 
-<span class="lineNum">     139 </span>                :            :       // compute internal surface flux integrals
-<span class="lineNum">     140 </span>                :<span class="lineNoCov">          0 :       for (auto f=fd.Nbfac(); f&lt;esuf.size()/2; ++f)</span>
-<span class="lineNum">     141 </span>                :            :       {
-<span class="lineNum">     142 </span>                :<span class="lineNoCov">          0 :         std::size_t el = static_cast&lt; std::size_t &gt;(esuf[2*f]);</span>
-<span class="lineNum">     143 </span>                :<span class="lineNoCov">          0 :         std::size_t er = static_cast&lt; std::size_t &gt;(esuf[2*f+1]);</span>
-<span class="lineNum">     144 </span>                :<span class="lineNoCov">          0 :         auto farea = geoFace(f,0,0);</span>
-<span class="lineNum">     145 </span>                :            : 
-<span class="lineNum">     146 </span>                :            :         //--- upwind fluxes
-<span class="lineNum">     147 </span>                :<span class="lineNoCov">          0 :         auto flux = upwindFlux( f, geoFace, {{U.extract(el), U.extract(er)}} );</span>
-<span class="lineNum">     148 </span>                :            : 
-<span class="lineNum">     149 </span>                :<span class="lineNoCov">          0 :         for (ncomp_t c=0; c&lt;m_ncomp; ++c) {</span>
-<span class="lineNum">     150 </span>                :<span class="lineNoCov">          0 :           R(el, c, m_offset) -= farea * flux[c];</span>
-<span class="lineNum">     151 </span>                :<span class="lineNoCov">          0 :           R(er, c, m_offset) += farea * flux[c];</span>
-<span class="lineNum">     152 </span>                :            :         }
-<span class="lineNum">     153 </span>                :            :       }
-<span class="lineNum">     154 </span>                :            : 
-<span class="lineNum">     155 </span>                :            :       // compute boundary surface flux integrals
-<span class="lineNum">     156 </span>                :<span class="lineNoCov">          0 :       for (const auto&amp; s : m_bcsym) {    // for all symbc sidesets</span>
-<span class="lineNum">     157 </span>                :<span class="lineNoCov">          0 :         auto bc = bface.find( std::stoi(s) );  // faces for sym bc side set</span>
-<span class="lineNum">     158 </span>                :<span class="lineNoCov">          0 :         if (bc != end(bface))</span>
-<span class="lineNum">     159 </span>                :<span class="lineNoCov">          0 :           surfInt&lt; Sym &gt;( bc-&gt;second, esuf, geoFace, U, R );</span>
-<span class="lineNum">     160 </span>                :            :       }
-<span class="lineNum">     161 </span>                :<span class="lineNoCov">          0 :       for (const auto&amp; s : m_bcinlet) {  // for all inlet bc sidesets</span>
-<span class="lineNum">     162 </span>                :<span class="lineNoCov">          0 :         auto bc = bface.find( std::stoi(s) );// faces for inlet bc side set</span>
-<span class="lineNum">     163 </span>                :<span class="lineNoCov">          0 :         if (bc != end(bface))</span>
-<span class="lineNum">     164 </span>                :<span class="lineNoCov">          0 :           surfInt&lt; Inlet &gt; ( bc-&gt;second, esuf, geoFace, U, R );</span>
-<span class="lineNum">     165 </span>                :            :       }
-<span class="lineNum">     166 </span>                :<span class="lineNoCov">          0 :       for (const auto&amp; s : m_bcoutlet) {// for all outlet bc sidesets</span>
-<span class="lineNum">     167 </span>                :<span class="lineNoCov">          0 :         auto bc = bface.find( std::stoi(s) );// faces for outlet bc side set</span>
-<span class="lineNum">     168 </span>                :<span class="lineNoCov">          0 :         if (bc != end(bface))</span>
-<span class="lineNum">     169 </span>                :<span class="lineNoCov">          0 :           surfInt&lt; Outlet &gt;( bc-&gt;second, esuf, geoFace, U, R );</span>
-<span class="lineNum">     170 </span>                :            :       }
-<span class="lineNum">     171 </span>                :<span class="lineNoCov">          0 :     }</span>
-<span class="lineNum">     172 </span>                :            : 
-<span class="lineNum">     173 </span>                :            :     //! Compute the minimum time step size
-<span class="lineNum">     174 </span>                :            : //     //! \param[in] U Solution vector at recent time step
-<span class="lineNum">     175 </span>                :            : //     //! \param[in] coord Mesh node coordinates
-<a name="176"><span class="lineNum">     176 </span>                :            : //     //! \param[in] inpoel Mesh element connectivity</a>
-<span class="lineNum">     177 </span>                :            :     //! \return Minimum time step size
-<span class="lineNum">     178 </span>                :<span class="lineNoCov">          0 :     tk::real dt( const std::array&lt; std::vector&lt; tk::real &gt;, 3 &gt;&amp; /*coord*/,</span>
-<span class="lineNum">     179 </span>                :            :                  const std::vector&lt; std::size_t &gt;&amp; /*inpoel*/,
-<span class="lineNum">     180 </span>                :            :                  const tk::Fields&amp; /*U*/ ) const
-<span class="lineNum">     181 </span>                :            :     {
-<span class="lineNum">     182 </span>                :            :       tk::real mindt = std::numeric_limits&lt; tk::real &gt;::max();
-<span class="lineNum">     183 </span>                :<span class="lineNoCov">          0 :       return mindt;</span>
-<span class="lineNum">     184 </span>                :            :     }
-<span class="lineNum">     185 </span>                :            : 
-<span class="lineNum">     186 </span>                :            :     //! \brief Query all side set IDs the user has configured for all components
-<a name="187"><span class="lineNum">     187 </span>                :            :     //!   in this PDE system</a>
-<span class="lineNum">     188 </span>                :            :     //! \param[in,out] conf Set of unique side set IDs to add to
-<span class="lineNum">     189 </span>                :<span class="lineNoCov">          0 :     void side( std::unordered_set&lt; int &gt;&amp; conf ) const</span>
-<span class="lineNum">     190 </span>                :<span class="lineNoCov">          0 :     { Problem::side( conf ); }</span>
-<span class="lineNum">     191 </span>                :            : 
-<span class="lineNum">     192 </span>                :            :     //! Return field names to be output to file
-<span class="lineNum">     193 </span>                :            :     //! \return Vector of strings labelling fields output in file
-<a name="194"><span class="lineNum">     194 </span>                :            :     //! \details This functions should be written in conjunction with</a>
-<span class="lineNum">     195 </span>                :            :     //!   fieldOutput(), which provides the vector of fields to be output
-<span class="lineNum">     196 </span>                :<span class="lineNoCov">          0 :     std::vector&lt; std::string &gt; fieldNames() const {</span>
-<span class="lineNum">     197 </span>                :            :       std::vector&lt; std::string &gt; n;
-<span class="lineNum">     198 </span>                :            :       const auto&amp; depvar =
-<span class="lineNum">     199 </span>                :<span class="lineNoCov">          0 :         g_inputdeck.get&lt; tag::param, tag::transport, tag::depvar &gt;().at(m_c);</span>
-<span class="lineNum">     200 </span>                :            :       // will output numerical solution for all components
-<span class="lineNum">     201 </span>                :<span class="lineNoCov">          0 :       for (ncomp_t c=0; c&lt;m_ncomp; ++c)</span>
-<span class="lineNum">     202 </span>                :<span class="lineNoCov">          0 :         n.push_back( depvar + std::to_string(c) + &quot;_numerical&quot; );</span>
-<span class="lineNum">     203 </span>                :            :       // will output analytic solution for all components
-<span class="lineNum">     204 </span>                :<span class="lineNoCov">          0 :       for (ncomp_t c=0; c&lt;m_ncomp; ++c)</span>
-<span class="lineNum">     205 </span>                :<span class="lineNoCov">          0 :         n.push_back( depvar + std::to_string(c) + &quot;_analytic&quot; );</span>
-<span class="lineNum">     206 </span>                :            :       // will output error for all components
-<span class="lineNum">     207 </span>                :<span class="lineNoCov">          0 :       for (ncomp_t c=0; c&lt;m_ncomp; ++c)</span>
-<span class="lineNum">     208 </span>                :<span class="lineNoCov">          0 :         n.push_back( depvar + std::to_string(c) + &quot;_error&quot; );</span>
-<span class="lineNum">     209 </span>                :<span class="lineNoCov">          0 :       return n;</span>
-<span class="lineNum">     210 </span>                :            :     }
-<span class="lineNum">     211 </span>                :            : 
-<span class="lineNum">     212 </span>                :            :     //! Return field output going to file
-<span class="lineNum">     213 </span>                :            :     //! \param[in] t Physical time
-<span class="lineNum">     214 </span>                :            :     //! \param[in] geoElem Element geometry array
-<span class="lineNum">     215 </span>                :            :     //! \param[in,out] U Solution vector at recent time step
-<span class="lineNum">     216 </span>                :            :     //! \return Vector of vectors to be output to file
-<span class="lineNum">     217 </span>                :            :     //! \details This functions should be written in conjunction with names(),
-<span class="lineNum">     218 </span>                :            :     //!   which provides the vector of field names
-<a name="219"><span class="lineNum">     219 </span>                :            :     //! \note U is overwritten</a>
-<span class="lineNum">     220 </span>                :            :     std::vector&lt; std::vector&lt; tk::real &gt; &gt;
-<span class="lineNum">     221 </span>                :<span class="lineNoCov">          0 :     fieldOutput( tk::real t,</span>
-<span class="lineNum">     222 </span>                :            :                  tk::real /*V*/,
-<span class="lineNum">     223 </span>                :            :                  const tk::Fields&amp; geoElem,
-<span class="lineNum">     224 </span>                :            :                  tk::Fields&amp; U ) const
-<span class="lineNum">     225 </span>                :            :     {
-<span class="lineNum">     226 </span>                :            :       Assert( geoElem.nunk() == U.nunk(), &quot;Size mismatch&quot; );
-<span class="lineNum">     227 </span>                :            :       std::vector&lt; std::vector&lt; tk::real &gt; &gt; out;
-<span class="lineNum">     228 </span>                :            :       // will output numerical solution for all components
-<span class="lineNum">     229 </span>                :<span class="lineNoCov">          0 :       for (ncomp_t c=0; c&lt;m_ncomp; ++c)</span>
-<span class="lineNum">     230 </span>                :<span class="lineNoCov">          0 :         out.push_back( U.extract( c, m_offset ) );</span>
-<span class="lineNum">     231 </span>                :            :       // evaluate analytic solution at time t
-<span class="lineNum">     232 </span>                :            :       auto E = U;
-<span class="lineNum">     233 </span>                :<span class="lineNoCov">          0 :       initialize( geoElem, E, t );</span>
-<span class="lineNum">     234 </span>                :            :       // will output analytic solution for all components
-<span class="lineNum">     235 </span>                :<span class="lineNoCov">          0 :       for (ncomp_t c=0; c&lt;m_ncomp; ++c)</span>
-<span class="lineNum">     236 </span>                :<span class="lineNoCov">          0 :         out.push_back( E.extract( c, m_offset ) );</span>
-<span class="lineNum">     237 </span>                :            :       // will output error for all components
-<span class="lineNum">     238 </span>                :<span class="lineNoCov">          0 :       for (ncomp_t c=0; c&lt;m_ncomp; ++c) {</span>
-<span class="lineNum">     239 </span>                :<span class="lineNoCov">          0 :         auto u = U.extract( c, m_offset );</span>
-<span class="lineNum">     240 </span>                :<span class="lineNoCov">          0 :         auto e = E.extract( c, m_offset );</span>
-<span class="lineNum">     241 </span>                :<span class="lineNoCov">          0 :         for (std::size_t i=0; i&lt;u.size(); ++i)</span>
-<span class="lineNum">     242 </span>                :<span class="lineNoCov">          0 :           e[i] = std::pow( e[i] - u[i], 2.0 ) * geoElem(i,0,0);</span>
-<span class="lineNum">     243 </span>                :<span class="lineNoCov">          0 :         out.push_back( e );</span>
-<span class="lineNum">     244 </span>                :            :       }
-<span class="lineNum">     245 </span>                :<span class="lineNoCov">          0 :       return out;</span>
-<span class="lineNum">     246 </span>                :            :     }
-<span class="lineNum">     247 </span>                :            : 
-<a name="248"><span class="lineNum">     248 </span>                :            :     //! Return names of integral variables to be output to diagnostics file</a>
-<span class="lineNum">     249 </span>                :            :     //! \return Vector of strings labelling integral variables output
-<span class="lineNum">     250 </span>                :<span class="lineNoCov">          0 :     std::vector&lt; std::string &gt; names() const {</span>
-<span class="lineNum">     251 </span>                :            :       std::vector&lt; std::string &gt; n;
-<span class="lineNum">     252 </span>                :            :       const auto&amp; depvar =
-<span class="lineNum">     253 </span>                :<span class="lineNoCov">          0 :         g_inputdeck.get&lt; tag::param, tag::transport, tag::depvar &gt;().at(m_c);</span>
-<span class="lineNum">     254 </span>                :            :       // construct the name of the numerical solution for all components
-<span class="lineNum">     255 </span>                :<span class="lineNoCov">          0 :       for (ncomp_t c=0; c&lt;m_ncomp; ++c)</span>
-<span class="lineNum">     256 </span>                :<span class="lineNoCov">          0 :         n.push_back( depvar + std::to_string(c) );</span>
-<span class="lineNum">     257 </span>                :<span class="lineNoCov">          0 :       return n;</span>
-<span class="lineNum">     258 </span>                :            :     }
-<span class="lineNum">     259 </span>                :            : 
-<span class="lineNum">     260 </span>                :            :   private:
-<span class="lineNum">     261 </span>                :            :     const ncomp_t m_c;                  //!&lt; Equation system index
-<span class="lineNum">     262 </span>                :            :     const ncomp_t m_ncomp;              //!&lt; Number of components in this PDE
-<span class="lineNum">     263 </span>                :            :     const ncomp_t m_offset;             //!&lt; Offset this PDE operates from
-<span class="lineNum">     264 </span>                :            :     //! Symmetry BC configuration
-<span class="lineNum">     265 </span>                :            :     const std::vector&lt; bcconf_t &gt; m_bcsym;
-<span class="lineNum">     266 </span>                :            :     //! Inlet BC configuration
-<span class="lineNum">     267 </span>                :            :     const std::vector&lt; bcconf_t &gt; m_bcinlet;
-<span class="lineNum">     268 </span>                :            :     //! Outlet BC configuration
-<span class="lineNum">     269 </span>                :            :     const std::vector&lt; bcconf_t &gt; m_bcoutlet;
-<span class="lineNum">     270 </span>                :            : 
-<span class="lineNum">     271 </span>                :            :     //! \brief State policy class providing the left and right state of a face
-<span class="lineNum">     272 </span>                :            :     //!   at symmetric boundaries
-<span class="lineNum">     273 </span>                :            :     struct Sym {
-<span class="lineNum">     274 </span>                :            :       static std::array&lt; std::vector&lt; tk::real &gt;, 2 &gt;
-<span class="lineNum">     275 </span>                :            :       LR( const tk::Fields&amp; U, std::size_t e ) {
-<span class="lineNum">     276 </span>                :<span class="lineNoCov">          0 :         return {{ U.extract( e ), U.extract( e ) }};</span>
-<span class="lineNum">     277 </span>                :            :       }
-<span class="lineNum">     278 </span>                :            :     };
-<span class="lineNum">     279 </span>                :            : 
-<span class="lineNum">     280 </span>                :            :     //! \brief State policy class providing the left and right state of a face
-<span class="lineNum">     281 </span>                :            :     //!   at inlet boundaries
-<a name="282"><span class="lineNum">     282 </span>                :            :     struct Inlet {</a>
-<span class="lineNum">     283 </span>                :            :       static std::array&lt; std::vector&lt; tk::real &gt;, 2 &gt;
-<span class="lineNum">     284 </span>                :<span class="lineNoCov">          0 :       LR( const tk::Fields&amp; U, std::size_t e ) {</span>
-<span class="lineNum">     285 </span>                :<span class="lineNoCov">          0 :         auto ul = U.extract( e );</span>
-<span class="lineNum">     286 </span>                :<span class="lineNoCov">          0 :         auto ur = ul;</span>
-<span class="lineNum">     287 </span>                :            :         std::fill( begin(ur), end(ur), 0.0 );
-<span class="lineNum">     288 </span>                :<span class="lineNoCov">          0 :         return {{ std::move(ul), std::move(ur) }};</span>
-<span class="lineNum">     289 </span>                :            :       }
-<span class="lineNum">     290 </span>                :            :     };
-<span class="lineNum">     291 </span>                :            : 
-<span class="lineNum">     292 </span>                :            :     //! \brief State policy class providing the left and right state of a face
-<span class="lineNum">     293 </span>                :            :     //!   at outlet boundaries
-<span class="lineNum">     294 </span>                :            :     struct Outlet {
-<span class="lineNum">     295 </span>                :            :       static std::array&lt; std::vector&lt; tk::real &gt;, 2 &gt;
-<span class="lineNum">     296 </span>                :            :       LR( const tk::Fields&amp; U, std::size_t e ) {
-<span class="lineNum">     297 </span>                :<span class="lineNoCov">          0 :         return {{ U.extract( e ), U.extract( e ) }};</span>
-<span class="lineNum">     298 </span>                :            :       }
-<span class="lineNum">     299 </span>                :            :     };
-<span class="lineNum">     300 </span>                :            : 
-<span class="lineNum">     301 </span>                :            :     //! Compute boundary surface integral
-<span class="lineNum">     302 </span>                :            :     //! \param[in] faces FAce IDs at which to compute surface integral
-<span class="lineNum">     303 </span>                :            :     //! \param[in] esuf Elements surrounding face, see tk::genEsuf()
-<span class="lineNum">     304 </span>                :            :     //! \param[in] geoFace Face geometry array
-<span class="lineNum">     305 </span>                :            :     //! \param[in] U Solution vector at recent time step
-<span class="lineNum">     306 </span>                :            :     //! \param[in,out] R Right-hand side vector computed
-<span class="lineNum">     307 </span>                :            :     //! \tparam State Policy class providing the left and right state at
-<a name="308"><span class="lineNum">     308 </span>                :            :     //!   boundaries by its member function State::LR()</a>
-<span class="lineNum">     309 </span>                :            :     template&lt; class State &gt;
-<span class="lineNum">     310 </span>                :<span class="lineNoCov">          0 :     void surfInt( const std::vector&lt; std::size_t &gt;&amp; faces,</span>
-<span class="lineNum">     311 </span>                :<span class="lineNoCov">          0 :                   const std::vector&lt; int &gt;&amp; esuf,</span>
-<span class="lineNum">     312 </span>                :            :                   const tk::Fields&amp; geoFace,
-<span class="lineNum">     313 </span>                :            :                   const tk::Fields&amp; U,
-<span class="lineNum">     314 </span>                :            :                   tk::Fields&amp; R ) const
-<span class="lineNum">     315 </span>                :            :     {
-<span class="lineNum">     316 </span>                :<span class="lineNoCov">          0 :       for (const auto&amp; f : faces) {</span>
-<span class="lineNum">     317 </span>                :<span class="lineNoCov">          0 :         std::size_t el = static_cast&lt; std::size_t &gt;(esuf[2*f]);</span>
-<span class="lineNum">     318 </span>                :            :         Assert( esuf[2*f+1] == -1, &quot;outside boundary element not -1&quot; );
-<span class="lineNum">     319 </span>                :<span class="lineNoCov">          0 :         auto farea = geoFace(f,0,0);</span>
-<span class="lineNum">     320 </span>                :            : 
-<span class="lineNum">     321 </span>                :            :         //--- upwind fluxes
-<span class="lineNum">     322 </span>                :<span class="lineNoCov">          0 :         auto flux = upwindFlux( f, geoFace, State::LR(U,el) );</span>
-<span class="lineNum">     323 </span>                :            : 
-<span class="lineNum">     324 </span>                :<span class="lineNoCov">          0 :         for (ncomp_t c=0; c&lt;m_ncomp; ++c)</span>
-<span class="lineNum">     325 </span>                :<span class="lineNoCov">          0 :           R(el, c, m_offset) -= farea * flux[c];</span>
-<span class="lineNum">     326 </span>                :            :       }
-<span class="lineNum">     327 </span>                :<span class="lineNoCov">          0 :     }</span>
-<span class="lineNum">     328 </span>                :            : 
-<span class="lineNum">     329 </span>                :            :     //! Riemann solver using upwind method
-<span class="lineNum">     330 </span>                :            :     //! \param[in] f Face ID
-<span class="lineNum">     331 </span>                :            :     //! \param[in] geoFace Face geometry array
-<span class="lineNum">     332 </span>                :            :     //! \param[in] u Left and right unknown/state vector
-<a name="333"><span class="lineNum">     333 </span>                :            :     //! \return Riemann solution using upwind method</a>
-<span class="lineNum">     334 </span>                :            :     std::vector&lt; tk::real &gt;
-<span class="lineNum">     335 </span>                :<span class="lineNoCov">          0 :     upwindFlux( std::size_t f,</span>
-<span class="lineNum">     336 </span>                :            :                 const tk::Fields&amp; geoFace,
-<span class="lineNum">     337 </span>                :            :                 const std::array&lt; std::vector&lt; tk::real &gt;, 2 &gt;&amp; u ) const
-<span class="lineNum">     338 </span>                :            :     {
-<span class="lineNum">     339 </span>                :<span class="lineNoCov">          0 :       std::vector&lt; tk::real &gt; flux( u[0].size(), 0 );</span>
-<span class="lineNum">     340 </span>                :            : 
-<span class="lineNum">     341 </span>                :<span class="lineNoCov">          0 :       auto xc = geoFace(f,4,0);</span>
-<span class="lineNum">     342 </span>                :<span class="lineNoCov">          0 :       auto yc = geoFace(f,5,0);</span>
-<span class="lineNum">     343 </span>                :<span class="lineNoCov">          0 :       auto zc = geoFace(f,6,0);</span>
-<span class="lineNum">     344 </span>                :            : 
-<span class="lineNum">     345 </span>                :            :       std::array&lt; tk::real, 3 &gt; fn {{ geoFace(f,1,0),
-<span class="lineNum">     346 </span>                :            :                                       geoFace(f,2,0),
-<span class="lineNum">     347 </span>                :<span class="lineNoCov">          0 :                                       geoFace(f,3,0) }};</span>
-<span class="lineNum">     348 </span>                :            : 
-<span class="lineNum">     349 </span>                :<span class="lineNoCov">          0 :       const auto vel = Problem::prescribedVelocity( xc, yc, zc, m_c, m_ncomp );</span>
-<span class="lineNum">     350 </span>                :            :     
-<span class="lineNum">     351 </span>                :<span class="lineNoCov">          0 :       for(ncomp_t c=0; c&lt;m_ncomp; ++c)</span>
-<span class="lineNum">     352 </span>                :            :       {
-<span class="lineNum">     353 </span>                :<span class="lineNoCov">          0 :         auto ax = vel[c][0];</span>
-<span class="lineNum">     354 </span>                :<span class="lineNoCov">          0 :         auto ay = vel[c][1];</span>
-<span class="lineNum">     355 </span>                :<span class="lineNoCov">          0 :         auto az = vel[c][2];</span>
-<span class="lineNum">     356 </span>                :            : 
-<span class="lineNum">     357 </span>                :            :         // wave speed
-<span class="lineNum">     358 </span>                :<span class="lineNoCov">          0 :         tk::real swave = ax*fn[0] + ay*fn[1] + az*fn[2];</span>
-<span class="lineNum">     359 </span>                :            :     
-<span class="lineNum">     360 </span>                :            :         // upwinding
-<span class="lineNum">     361 </span>                :<span class="lineNoCov">          0 :         tk::real splus  = 0.5 * (swave + fabs(swave));</span>
-<span class="lineNum">     362 </span>                :<span class="lineNoCov">          0 :         tk::real sminus = 0.5 * (swave - fabs(swave));</span>
-<span class="lineNum">     363 </span>                :            :     
-<span class="lineNum">     364 </span>                :<span class="lineNoCov">          0 :         flux[c] = splus * u[0][c] + sminus * u[1][c];</span>
-<span class="lineNum">     365 </span>                :            :       }
-<span class="lineNum">     366 </span>                :            :     
-<span class="lineNum">     367 </span>                :<span class="lineNoCov">          0 :       return flux;</span>
-<span class="lineNum">     368 </span>                :            :     }
-<span class="lineNum">     369 </span>                :            : 
-<span class="lineNum">     370 </span>                :            : };
-<span class="lineNum">     371 </span>                :            : 
-<span class="lineNum">     372 </span>                :            : } // dg::
-<span class="lineNum">     373 </span>                :            : } // inciter::
-<span class="lineNum">     374 </span>                :            : 
-<span class="lineNum">     375 </span>                :            : #endif // DGTransport_h
+<span class="lineNum">     123 </span>                :            :               const tk::Fields&amp;,
+<span class="lineNum">     124 </span>                :            :               const inciter::FaceData&amp; fd,
+<span class="lineNum">     125 </span>                :            :               const tk::Fields&amp; U,
+<span class="lineNum">     126 </span>                :            :               tk::Fields&amp; R ) const
+<span class="lineNum">     127 </span>                :            :     {
+<span class="lineNum">     128 </span>                :            :       Assert( U.nunk() == R.nunk(), &quot;Number of unknowns in solution &quot;
+<span class="lineNum">     129 </span>                :            :               &quot;vector and right-hand side at recent time step incorrect&quot; );
+<span class="lineNum">     130 </span>                :            :       Assert( U.nprop() == m_ncomp &amp;&amp; R.nprop() == m_ncomp,
+<span class="lineNum">     131 </span>                :            :               &quot;Number of components in solution and right-hand side vector &quot; 
+<span class="lineNum">     132 </span>                :            :               &quot;must equal &quot;+ std::to_string(m_ncomp) );
+<span class="lineNum">     133 </span>                :            : 
+<span class="lineNum">     134 </span>                :            :       const auto&amp; bface = fd.Bface();
+<span class="lineNum">     135 </span>                :<span class="lineNoCov">          0 :       const auto&amp; esuf = fd.Esuf();</span>
+<span class="lineNum">     136 </span>                :            : 
+<span class="lineNum">     137 </span>                :            :       // set rhs to zero
+<span class="lineNum">     138 </span>                :            :       R.fill(0.0);
+<span class="lineNum">     139 </span>                :            : 
+<span class="lineNum">     140 </span>                :            :       // compute internal surface flux integrals
+<span class="lineNum">     141 </span>                :<span class="lineNoCov">          0 :       for (auto f=fd.Nbfac(); f&lt;esuf.size()/2; ++f)</span>
+<span class="lineNum">     142 </span>                :            :       {
+<span class="lineNum">     143 </span>                :<span class="lineNoCov">          0 :         std::size_t el = static_cast&lt; std::size_t &gt;(esuf[2*f]);</span>
+<span class="lineNum">     144 </span>                :<span class="lineNoCov">          0 :         std::size_t er = static_cast&lt; std::size_t &gt;(esuf[2*f+1]);</span>
+<span class="lineNum">     145 </span>                :<span class="lineNoCov">          0 :         auto farea = geoFace(f,0,0);</span>
+<span class="lineNum">     146 </span>                :            : 
+<span class="lineNum">     147 </span>                :            :         //--- upwind fluxes
+<span class="lineNum">     148 </span>                :<span class="lineNoCov">          0 :         auto flux = upwindFlux( f, geoFace, {{U.extract(el), U.extract(er)}} );</span>
+<span class="lineNum">     149 </span>                :            : 
+<span class="lineNum">     150 </span>                :<span class="lineNoCov">          0 :         for (ncomp_t c=0; c&lt;m_ncomp; ++c) {</span>
+<span class="lineNum">     151 </span>                :<span class="lineNoCov">          0 :           R(el, c, m_offset) -= farea * flux[c];</span>
+<span class="lineNum">     152 </span>                :<span class="lineNoCov">          0 :           R(er, c, m_offset) += farea * flux[c];</span>
+<span class="lineNum">     153 </span>                :            :         }
+<span class="lineNum">     154 </span>                :            :       }
+<span class="lineNum">     155 </span>                :            : 
+<span class="lineNum">     156 </span>                :            :       // compute boundary surface flux integrals
+<span class="lineNum">     157 </span>                :<span class="lineNoCov">          0 :       for (const auto&amp; s : m_bcsym) {    // for all symbc sidesets</span>
+<span class="lineNum">     158 </span>                :<span class="lineNoCov">          0 :         auto bc = bface.find( std::stoi(s) );  // faces for sym bc side set</span>
+<span class="lineNum">     159 </span>                :<span class="lineNoCov">          0 :         if (bc != end(bface))</span>
+<span class="lineNum">     160 </span>                :<span class="lineNoCov">          0 :           surfInt&lt; Sym &gt;( bc-&gt;second, esuf, geoFace, U, R );</span>
+<span class="lineNum">     161 </span>                :            :       }
+<span class="lineNum">     162 </span>                :<span class="lineNoCov">          0 :       for (const auto&amp; s : m_bcinlet) {  // for all inlet bc sidesets</span>
+<span class="lineNum">     163 </span>                :<span class="lineNoCov">          0 :         auto bc = bface.find( std::stoi(s) );// faces for inlet bc side set</span>
+<span class="lineNum">     164 </span>                :<span class="lineNoCov">          0 :         if (bc != end(bface))</span>
+<span class="lineNum">     165 </span>                :<span class="lineNoCov">          0 :           surfInt&lt; Inlet &gt; ( bc-&gt;second, esuf, geoFace, U, R );</span>
+<span class="lineNum">     166 </span>                :            :       }
+<span class="lineNum">     167 </span>                :<span class="lineNoCov">          0 :       for (const auto&amp; s : m_bcoutlet) {// for all outlet bc sidesets</span>
+<span class="lineNum">     168 </span>                :<span class="lineNoCov">          0 :         auto bc = bface.find( std::stoi(s) );// faces for outlet bc side set</span>
+<span class="lineNum">     169 </span>                :<span class="lineNoCov">          0 :         if (bc != end(bface))</span>
+<span class="lineNum">     170 </span>                :<span class="lineNoCov">          0 :           surfInt&lt; Outlet &gt;( bc-&gt;second, esuf, geoFace, U, R );</span>
+<span class="lineNum">     171 </span>                :            :       }
+<span class="lineNum">     172 </span>                :<span class="lineNoCov">          0 :     }</span>
+<span class="lineNum">     173 </span>                :            : 
+<span class="lineNum">     174 </span>                :            :     //! Compute the minimum time step size
+<span class="lineNum">     175 </span>                :            : //     //! \param[in] U Solution vector at recent time step
+<span class="lineNum">     176 </span>                :            : //     //! \param[in] coord Mesh node coordinates
+<a name="177"><span class="lineNum">     177 </span>                :            : //     //! \param[in] inpoel Mesh element connectivity</a>
+<span class="lineNum">     178 </span>                :            :     //! \return Minimum time step size
+<span class="lineNum">     179 </span>                :<span class="lineNoCov">          0 :     tk::real dt( const std::array&lt; std::vector&lt; tk::real &gt;, 3 &gt;&amp; /*coord*/,</span>
+<span class="lineNum">     180 </span>                :            :                  const std::vector&lt; std::size_t &gt;&amp; /*inpoel*/,
+<span class="lineNum">     181 </span>                :            :                  const tk::Fields&amp; /*U*/ ) const
+<span class="lineNum">     182 </span>                :            :     {
+<span class="lineNum">     183 </span>                :            :       tk::real mindt = std::numeric_limits&lt; tk::real &gt;::max();
+<span class="lineNum">     184 </span>                :<span class="lineNoCov">          0 :       return mindt;</span>
+<span class="lineNum">     185 </span>                :            :     }
+<span class="lineNum">     186 </span>                :            : 
+<span class="lineNum">     187 </span>                :            :     //! \brief Query all side set IDs the user has configured for all components
+<a name="188"><span class="lineNum">     188 </span>                :            :     //!   in this PDE system</a>
+<span class="lineNum">     189 </span>                :            :     //! \param[in,out] conf Set of unique side set IDs to add to
+<span class="lineNum">     190 </span>                :<span class="lineNoCov">          0 :     void side( std::unordered_set&lt; int &gt;&amp; conf ) const</span>
+<span class="lineNum">     191 </span>                :<span class="lineNoCov">          0 :     { Problem::side( conf ); }</span>
+<span class="lineNum">     192 </span>                :            : 
+<span class="lineNum">     193 </span>                :            :     //! Return field names to be output to file
+<span class="lineNum">     194 </span>                :            :     //! \return Vector of strings labelling fields output in file
+<a name="195"><span class="lineNum">     195 </span>                :            :     //! \details This functions should be written in conjunction with</a>
+<span class="lineNum">     196 </span>                :            :     //!   fieldOutput(), which provides the vector of fields to be output
+<span class="lineNum">     197 </span>                :<span class="lineNoCov">          0 :     std::vector&lt; std::string &gt; fieldNames() const {</span>
+<span class="lineNum">     198 </span>                :            :       std::vector&lt; std::string &gt; n;
+<span class="lineNum">     199 </span>                :            :       const auto&amp; depvar =
+<span class="lineNum">     200 </span>                :<span class="lineNoCov">          0 :         g_inputdeck.get&lt; tag::param, tag::transport, tag::depvar &gt;().at(m_c);</span>
+<span class="lineNum">     201 </span>                :            :       // will output numerical solution for all components
+<span class="lineNum">     202 </span>                :<span class="lineNoCov">          0 :       for (ncomp_t c=0; c&lt;m_ncomp; ++c)</span>
+<span class="lineNum">     203 </span>                :<span class="lineNoCov">          0 :         n.push_back( depvar + std::to_string(c) + &quot;_numerical&quot; );</span>
+<span class="lineNum">     204 </span>                :            :       // will output analytic solution for all components
+<span class="lineNum">     205 </span>                :<span class="lineNoCov">          0 :       for (ncomp_t c=0; c&lt;m_ncomp; ++c)</span>
+<span class="lineNum">     206 </span>                :<span class="lineNoCov">          0 :         n.push_back( depvar + std::to_string(c) + &quot;_analytic&quot; );</span>
+<span class="lineNum">     207 </span>                :            :       // will output error for all components
+<span class="lineNum">     208 </span>                :<span class="lineNoCov">          0 :       for (ncomp_t c=0; c&lt;m_ncomp; ++c)</span>
+<span class="lineNum">     209 </span>                :<span class="lineNoCov">          0 :         n.push_back( depvar + std::to_string(c) + &quot;_error&quot; );</span>
+<span class="lineNum">     210 </span>                :<span class="lineNoCov">          0 :       return n;</span>
+<span class="lineNum">     211 </span>                :            :     }
+<span class="lineNum">     212 </span>                :            : 
+<span class="lineNum">     213 </span>                :            :     //! Return field output going to file
+<span class="lineNum">     214 </span>                :            :     //! \param[in] t Physical time
+<span class="lineNum">     215 </span>                :            :     //! \param[in] geoElem Element geometry array
+<span class="lineNum">     216 </span>                :            :     //! \param[in,out] U Solution vector at recent time step
+<span class="lineNum">     217 </span>                :            :     //! \return Vector of vectors to be output to file
+<span class="lineNum">     218 </span>                :            :     //! \details This functions should be written in conjunction with names(),
+<span class="lineNum">     219 </span>                :            :     //!   which provides the vector of field names
+<a name="220"><span class="lineNum">     220 </span>                :            :     //! \note U is overwritten</a>
+<span class="lineNum">     221 </span>                :            :     std::vector&lt; std::vector&lt; tk::real &gt; &gt;
+<span class="lineNum">     222 </span>                :<span class="lineNoCov">          0 :     fieldOutput( tk::real t,</span>
+<span class="lineNum">     223 </span>                :            :                  tk::real /*V*/,
+<span class="lineNum">     224 </span>                :            :                  const tk::Fields&amp; geoElem,
+<span class="lineNum">     225 </span>                :            :                  tk::Fields&amp; U ) const
+<span class="lineNum">     226 </span>                :            :     {
+<span class="lineNum">     227 </span>                :            :       Assert( geoElem.nunk() == U.nunk(), &quot;Size mismatch&quot; );
+<span class="lineNum">     228 </span>                :            :       std::vector&lt; std::vector&lt; tk::real &gt; &gt; out;
+<span class="lineNum">     229 </span>                :            :       // will output numerical solution for all components
+<span class="lineNum">     230 </span>                :<span class="lineNoCov">          0 :       for (ncomp_t c=0; c&lt;m_ncomp; ++c)</span>
+<span class="lineNum">     231 </span>                :<span class="lineNoCov">          0 :         out.push_back( U.extract( c, m_offset ) );</span>
+<span class="lineNum">     232 </span>                :            :       // evaluate analytic solution at time t
+<span class="lineNum">     233 </span>                :            :       auto E = U;
+<span class="lineNum">     234 </span>                :<span class="lineNoCov">          0 :       initialize( geoElem, E, t );</span>
+<span class="lineNum">     235 </span>                :            :       // will output analytic solution for all components
+<span class="lineNum">     236 </span>                :<span class="lineNoCov">          0 :       for (ncomp_t c=0; c&lt;m_ncomp; ++c)</span>
+<span class="lineNum">     237 </span>                :<span class="lineNoCov">          0 :         out.push_back( E.extract( c, m_offset ) );</span>
+<span class="lineNum">     238 </span>                :            :       // will output error for all components
+<span class="lineNum">     239 </span>                :<span class="lineNoCov">          0 :       for (ncomp_t c=0; c&lt;m_ncomp; ++c) {</span>
+<span class="lineNum">     240 </span>                :<span class="lineNoCov">          0 :         auto u = U.extract( c, m_offset );</span>
+<span class="lineNum">     241 </span>                :<span class="lineNoCov">          0 :         auto e = E.extract( c, m_offset );</span>
+<span class="lineNum">     242 </span>                :<span class="lineNoCov">          0 :         for (std::size_t i=0; i&lt;u.size(); ++i)</span>
+<span class="lineNum">     243 </span>                :<span class="lineNoCov">          0 :           e[i] = std::pow( e[i] - u[i], 2.0 ) * geoElem(i,0,0);</span>
+<span class="lineNum">     244 </span>                :<span class="lineNoCov">          0 :         out.push_back( e );</span>
+<span class="lineNum">     245 </span>                :            :       }
+<span class="lineNum">     246 </span>                :<span class="lineNoCov">          0 :       return out;</span>
+<span class="lineNum">     247 </span>                :            :     }
+<span class="lineNum">     248 </span>                :            : 
+<a name="249"><span class="lineNum">     249 </span>                :            :     //! Return names of integral variables to be output to diagnostics file</a>
+<span class="lineNum">     250 </span>                :            :     //! \return Vector of strings labelling integral variables output
+<span class="lineNum">     251 </span>                :<span class="lineNoCov">          0 :     std::vector&lt; std::string &gt; names() const {</span>
+<span class="lineNum">     252 </span>                :            :       std::vector&lt; std::string &gt; n;
+<span class="lineNum">     253 </span>                :            :       const auto&amp; depvar =
+<span class="lineNum">     254 </span>                :<span class="lineNoCov">          0 :         g_inputdeck.get&lt; tag::param, tag::transport, tag::depvar &gt;().at(m_c);</span>
+<span class="lineNum">     255 </span>                :            :       // construct the name of the numerical solution for all components
+<span class="lineNum">     256 </span>                :<span class="lineNoCov">          0 :       for (ncomp_t c=0; c&lt;m_ncomp; ++c)</span>
+<span class="lineNum">     257 </span>                :<span class="lineNoCov">          0 :         n.push_back( depvar + std::to_string(c) );</span>
+<span class="lineNum">     258 </span>                :<span class="lineNoCov">          0 :       return n;</span>
+<span class="lineNum">     259 </span>                :            :     }
+<span class="lineNum">     260 </span>                :            : 
+<span class="lineNum">     261 </span>                :            :   private:
+<span class="lineNum">     262 </span>                :            :     const ncomp_t m_c;                  //!&lt; Equation system index
+<span class="lineNum">     263 </span>                :            :     const ncomp_t m_ncomp;              //!&lt; Number of components in this PDE
+<span class="lineNum">     264 </span>                :            :     const ncomp_t m_offset;             //!&lt; Offset this PDE operates from
+<span class="lineNum">     265 </span>                :            :     //! Symmetry BC configuration
+<span class="lineNum">     266 </span>                :            :     const std::vector&lt; bcconf_t &gt; m_bcsym;
+<span class="lineNum">     267 </span>                :            :     //! Inlet BC configuration
+<span class="lineNum">     268 </span>                :            :     const std::vector&lt; bcconf_t &gt; m_bcinlet;
+<span class="lineNum">     269 </span>                :            :     //! Outlet BC configuration
+<span class="lineNum">     270 </span>                :            :     const std::vector&lt; bcconf_t &gt; m_bcoutlet;
+<span class="lineNum">     271 </span>                :            : 
+<span class="lineNum">     272 </span>                :            :     //! \brief State policy class providing the left and right state of a face
+<span class="lineNum">     273 </span>                :            :     //!   at symmetric boundaries
+<span class="lineNum">     274 </span>                :            :     struct Sym {
+<span class="lineNum">     275 </span>                :            :       static std::array&lt; std::vector&lt; tk::real &gt;, 2 &gt;
+<span class="lineNum">     276 </span>                :            :       LR( const tk::Fields&amp; U, std::size_t e ) {
+<span class="lineNum">     277 </span>                :<span class="lineNoCov">          0 :         return {{ U.extract( e ), U.extract( e ) }};</span>
+<span class="lineNum">     278 </span>                :            :       }
+<span class="lineNum">     279 </span>                :            :     };
+<span class="lineNum">     280 </span>                :            : 
+<span class="lineNum">     281 </span>                :            :     //! \brief State policy class providing the left and right state of a face
+<span class="lineNum">     282 </span>                :            :     //!   at inlet boundaries
+<a name="283"><span class="lineNum">     283 </span>                :            :     struct Inlet {</a>
+<span class="lineNum">     284 </span>                :            :       static std::array&lt; std::vector&lt; tk::real &gt;, 2 &gt;
+<span class="lineNum">     285 </span>                :<span class="lineNoCov">          0 :       LR( const tk::Fields&amp; U, std::size_t e ) {</span>
+<span class="lineNum">     286 </span>                :<span class="lineNoCov">          0 :         auto ul = U.extract( e );</span>
+<span class="lineNum">     287 </span>                :<span class="lineNoCov">          0 :         auto ur = ul;</span>
+<span class="lineNum">     288 </span>                :            :         std::fill( begin(ur), end(ur), 0.0 );
+<span class="lineNum">     289 </span>                :<span class="lineNoCov">          0 :         return {{ std::move(ul), std::move(ur) }};</span>
+<span class="lineNum">     290 </span>                :            :       }
+<span class="lineNum">     291 </span>                :            :     };
+<span class="lineNum">     292 </span>                :            : 
+<span class="lineNum">     293 </span>                :            :     //! \brief State policy class providing the left and right state of a face
+<span class="lineNum">     294 </span>                :            :     //!   at outlet boundaries
+<span class="lineNum">     295 </span>                :            :     struct Outlet {
+<span class="lineNum">     296 </span>                :            :       static std::array&lt; std::vector&lt; tk::real &gt;, 2 &gt;
+<span class="lineNum">     297 </span>                :            :       LR( const tk::Fields&amp; U, std::size_t e ) {
+<span class="lineNum">     298 </span>                :<span class="lineNoCov">          0 :         return {{ U.extract( e ), U.extract( e ) }};</span>
+<span class="lineNum">     299 </span>                :            :       }
+<span class="lineNum">     300 </span>                :            :     };
+<span class="lineNum">     301 </span>                :            : 
+<span class="lineNum">     302 </span>                :            :     //! Compute boundary surface integral
+<span class="lineNum">     303 </span>                :            :     //! \param[in] faces FAce IDs at which to compute surface integral
+<span class="lineNum">     304 </span>                :            :     //! \param[in] esuf Elements surrounding face, see tk::genEsuf()
+<span class="lineNum">     305 </span>                :            :     //! \param[in] geoFace Face geometry array
+<span class="lineNum">     306 </span>                :            :     //! \param[in] U Solution vector at recent time step
+<span class="lineNum">     307 </span>                :            :     //! \param[in,out] R Right-hand side vector computed
+<span class="lineNum">     308 </span>                :            :     //! \tparam State Policy class providing the left and right state at
+<a name="309"><span class="lineNum">     309 </span>                :            :     //!   boundaries by its member function State::LR()</a>
+<span class="lineNum">     310 </span>                :            :     template&lt; class State &gt;
+<span class="lineNum">     311 </span>                :<span class="lineNoCov">          0 :     void surfInt( const std::vector&lt; std::size_t &gt;&amp; faces,</span>
+<span class="lineNum">     312 </span>                :<span class="lineNoCov">          0 :                   const std::vector&lt; int &gt;&amp; esuf,</span>
+<span class="lineNum">     313 </span>                :            :                   const tk::Fields&amp; geoFace,
+<span class="lineNum">     314 </span>                :            :                   const tk::Fields&amp; U,
+<span class="lineNum">     315 </span>                :            :                   tk::Fields&amp; R ) const
+<span class="lineNum">     316 </span>                :            :     {
+<span class="lineNum">     317 </span>                :<span class="lineNoCov">          0 :       for (const auto&amp; f : faces) {</span>
+<span class="lineNum">     318 </span>                :<span class="lineNoCov">          0 :         std::size_t el = static_cast&lt; std::size_t &gt;(esuf[2*f]);</span>
+<span class="lineNum">     319 </span>                :            :         Assert( esuf[2*f+1] == -1, &quot;outside boundary element not -1&quot; );
+<span class="lineNum">     320 </span>                :<span class="lineNoCov">          0 :         auto farea = geoFace(f,0,0);</span>
+<span class="lineNum">     321 </span>                :            : 
+<span class="lineNum">     322 </span>                :            :         //--- upwind fluxes
+<span class="lineNum">     323 </span>                :<span class="lineNoCov">          0 :         auto flux = upwindFlux( f, geoFace, State::LR(U,el) );</span>
+<span class="lineNum">     324 </span>                :            : 
+<span class="lineNum">     325 </span>                :<span class="lineNoCov">          0 :         for (ncomp_t c=0; c&lt;m_ncomp; ++c)</span>
+<span class="lineNum">     326 </span>                :<span class="lineNoCov">          0 :           R(el, c, m_offset) -= farea * flux[c];</span>
+<span class="lineNum">     327 </span>                :            :       }
+<span class="lineNum">     328 </span>                :<span class="lineNoCov">          0 :     }</span>
+<span class="lineNum">     329 </span>                :            : 
+<span class="lineNum">     330 </span>                :            :     //! Riemann solver using upwind method
+<span class="lineNum">     331 </span>                :            :     //! \param[in] f Face ID
+<span class="lineNum">     332 </span>                :            :     //! \param[in] geoFace Face geometry array
+<span class="lineNum">     333 </span>                :            :     //! \param[in] u Left and right unknown/state vector
+<a name="334"><span class="lineNum">     334 </span>                :            :     //! \return Riemann solution using upwind method</a>
+<span class="lineNum">     335 </span>                :            :     std::vector&lt; tk::real &gt;
+<span class="lineNum">     336 </span>                :<span class="lineNoCov">          0 :     upwindFlux( std::size_t f,</span>
+<span class="lineNum">     337 </span>                :            :                 const tk::Fields&amp; geoFace,
+<span class="lineNum">     338 </span>                :            :                 const std::array&lt; std::vector&lt; tk::real &gt;, 2 &gt;&amp; u ) const
+<span class="lineNum">     339 </span>                :            :     {
+<span class="lineNum">     340 </span>                :<span class="lineNoCov">          0 :       std::vector&lt; tk::real &gt; flux( u[0].size(), 0 );</span>
+<span class="lineNum">     341 </span>                :            : 
+<span class="lineNum">     342 </span>                :<span class="lineNoCov">          0 :       auto xc = geoFace(f,4,0);</span>
+<span class="lineNum">     343 </span>                :<span class="lineNoCov">          0 :       auto yc = geoFace(f,5,0);</span>
+<span class="lineNum">     344 </span>                :<span class="lineNoCov">          0 :       auto zc = geoFace(f,6,0);</span>
+<span class="lineNum">     345 </span>                :            : 
+<span class="lineNum">     346 </span>                :            :       std::array&lt; tk::real, 3 &gt; fn {{ geoFace(f,1,0),
+<span class="lineNum">     347 </span>                :            :                                       geoFace(f,2,0),
+<span class="lineNum">     348 </span>                :<span class="lineNoCov">          0 :                                       geoFace(f,3,0) }};</span>
+<span class="lineNum">     349 </span>                :            : 
+<span class="lineNum">     350 </span>                :<span class="lineNoCov">          0 :       const auto vel = Problem::prescribedVelocity( xc, yc, zc, m_c, m_ncomp );</span>
+<span class="lineNum">     351 </span>                :            :     
+<span class="lineNum">     352 </span>                :<span class="lineNoCov">          0 :       for(ncomp_t c=0; c&lt;m_ncomp; ++c)</span>
+<span class="lineNum">     353 </span>                :            :       {
+<span class="lineNum">     354 </span>                :<span class="lineNoCov">          0 :         auto ax = vel[c][0];</span>
+<span class="lineNum">     355 </span>                :<span class="lineNoCov">          0 :         auto ay = vel[c][1];</span>
+<span class="lineNum">     356 </span>                :<span class="lineNoCov">          0 :         auto az = vel[c][2];</span>
+<span class="lineNum">     357 </span>                :            : 
+<span class="lineNum">     358 </span>                :            :         // wave speed
+<span class="lineNum">     359 </span>                :<span class="lineNoCov">          0 :         tk::real swave = ax*fn[0] + ay*fn[1] + az*fn[2];</span>
+<span class="lineNum">     360 </span>                :            :     
+<span class="lineNum">     361 </span>                :            :         // upwinding
+<span class="lineNum">     362 </span>                :<span class="lineNoCov">          0 :         tk::real splus  = 0.5 * (swave + fabs(swave));</span>
+<span class="lineNum">     363 </span>                :<span class="lineNoCov">          0 :         tk::real sminus = 0.5 * (swave - fabs(swave));</span>
+<span class="lineNum">     364 </span>                :            :     
+<span class="lineNum">     365 </span>                :<span class="lineNoCov">          0 :         flux[c] = splus * u[0][c] + sminus * u[1][c];</span>
+<span class="lineNum">     366 </span>                :            :       }
+<span class="lineNum">     367 </span>                :            :     
+<span class="lineNum">     368 </span>                :<span class="lineNoCov">          0 :       return flux;</span>
+<span class="lineNum">     369 </span>                :            :     }
+<span class="lineNum">     370 </span>                :            : 
+<span class="lineNum">     371 </span>                :            : };
+<span class="lineNum">     372 </span>                :            : 
+<span class="lineNum">     373 </span>                :            : } // dg::
+<span class="lineNum">     374 </span>                :            : } // inciter::
+<span class="lineNum">     375 </span>                :            : 
+<span class="lineNum">     376 </span>                :            : #endif // DGTransport_h
 </pre>
       </td>
     </tr>
