@@ -6,6 +6,7 @@ var searchData=
   ['bc',['bc',['../structinciter_1_1deck_1_1bc.html',1,'inciter::deck::bc&lt; keyword, eq, param &gt;'],['../classinciter_1_1ctr_1_1_b_c.html',1,'inciter::ctr::BC']]],
   ['bcast',['bcast',['../structtag_1_1bcast.html',1,'tag']]],
   ['bcdir',['bcdir',['../structtag_1_1bcdir.html',1,'tag']]],
+  ['bcextrapolate',['bcextrapolate',['../structtag_1_1bcextrapolate.html',1,'tag']]],
   ['bcinlet',['bcinlet',['../structtag_1_1bcinlet.html',1,'tag']]],
   ['bcoutlet',['bcoutlet',['../structtag_1_1bcoutlet.html',1,'tag']]],
   ['bcsym',['bcsym',['../structtag_1_1bcsym.html',1,'tag']]],

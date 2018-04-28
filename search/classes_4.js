@@ -33,5 +33,6 @@ var searchData=
   ['extract_5fimpl_3c_20n_2c_200_2c_20t_2c_20ts_2e_2e_2e_20_3e',['extract_impl&lt; n, 0, T, Ts... &gt;',['../structtk_1_1tuple_1_1extract__impl_3_01n_00_010_00_01_t_00_01_ts_8_8_8_01_4.html',1,'tk::tuple']]],
   ['extract_5fimpl_3c_20n_2c_20m_20_2d_201_2c_20ts_2e_2e_2e_20_3e',['extract_impl&lt; n, m - 1, Ts... &gt;',['../structtk_1_1tuple_1_1extract__impl.html',1,'tk::tuple']]],
   ['extract_5fimpl_3c_20n_2c_20m_20_3e',['extract_impl&lt; n, m &gt;',['../structtk_1_1tuple_1_1extract__impl_3_01n_00_01m_01_4.html',1,'tk::tuple']]],
-  ['extract_5fimpl_3c_20n_2c_20m_2c_20t_2c_20ts_2e_2e_2e_20_3e',['extract_impl&lt; n, m, T, Ts... &gt;',['../structtk_1_1tuple_1_1extract__impl_3_01n_00_01m_00_01_t_00_01_ts_8_8_8_01_4.html',1,'tk::tuple']]]
+  ['extract_5fimpl_3c_20n_2c_20m_2c_20t_2c_20ts_2e_2e_2e_20_3e',['extract_impl&lt; n, m, T, Ts... &gt;',['../structtk_1_1tuple_1_1extract__impl_3_01n_00_01m_00_01_t_00_01_ts_8_8_8_01_4.html',1,'tk::tuple']]],
+  ['extrapolate',['Extrapolate',['../structinciter_1_1dg_1_1_comp_flow_1_1_extrapolate.html',1,'inciter::dg::CompFlow&lt; Physics, Problem &gt;::Extrapolate'],['../structinciter_1_1dg_1_1_transport_1_1_extrapolate.html',1,'inciter::dg::Transport&lt; Physics, Problem &gt;::Extrapolate']]]
 ];

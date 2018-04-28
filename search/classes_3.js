@@ -21,7 +21,7 @@ var searchData=
   ['dirichletcoeffconst',['DirichletCoeffConst',['../classwalker_1_1_dirichlet_coeff_const.html',1,'walker']]],
   ['discr',['discr',['../structtag_1_1discr.html',1,'tag']]],
   ['discretization',['discretization',['../structinciter_1_1deck_1_1discretization.html',1,'inciter::deck::discretization'],['../classinciter_1_1_discretization.html',1,'inciter::Discretization']]],
-  ['discretization_5fparameters',['discretization_parameters',['../structwalker_1_1deck_1_1discretization__parameters.html',1,'walker::deck::discretization_parameters'],['../structinciter_1_1deck_1_1discretization__parameters.html',1,'inciter::deck::discretization_parameters']]],
+  ['discretization_5fparameters',['discretization_parameters',['../structinciter_1_1deck_1_1discretization__parameters.html',1,'inciter::deck::discretization_parameters'],['../structwalker_1_1deck_1_1discretization__parameters.html',1,'walker::deck::discretization_parameters']]],
   ['distfct',['DistFCT',['../classinciter_1_1_dist_f_c_t.html',1,'inciter']]],
   ['distributed',['distributed',['../structtag_1_1distributed.html',1,'tag']]],
   ['distributor',['Distributor',['../classwalker_1_1_distributor.html',1,'walker']]],

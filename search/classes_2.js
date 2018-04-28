@@ -62,6 +62,7 @@ var searchData=
   ['compflowphysicsnavierstokes',['CompFlowPhysicsNavierStokes',['../classinciter_1_1cg_1_1_comp_flow_physics_navier_stokes.html',1,'inciter::cg::CompFlowPhysicsNavierStokes'],['../classinciter_1_1dg_1_1_comp_flow_physics_navier_stokes.html',1,'inciter::dg::CompFlowPhysicsNavierStokes']]],
   ['compflowproblemnlenergygrowth',['CompFlowProblemNLEnergyGrowth',['../classinciter_1_1_comp_flow_problem_n_l_energy_growth.html',1,'inciter']]],
   ['compflowproblemrayleightaylor',['CompFlowProblemRayleighTaylor',['../classinciter_1_1_comp_flow_problem_rayleigh_taylor.html',1,'inciter']]],
+  ['compflowproblemsodshocktube',['CompFlowProblemSodShocktube',['../classinciter_1_1_comp_flow_problem_sod_shocktube.html',1,'inciter']]],
   ['compflowproblemtaylorgreen',['CompFlowProblemTaylorGreen',['../classinciter_1_1_comp_flow_problem_taylor_green.html',1,'inciter']]],
   ['compflowproblemuserdefined',['CompFlowProblemUserDefined',['../classinciter_1_1_comp_flow_problem_user_defined.html',1,'inciter']]],
   ['compflowproblemvorticalflow',['CompFlowProblemVorticalFlow',['../classinciter_1_1_comp_flow_problem_vortical_flow.html',1,'inciter']]],

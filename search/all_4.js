@@ -134,5 +134,6 @@ var searchData=
   ['extract_5fimpl_3c_20n_2c_20m_20_2d_201_2c_20ts_2e_2e_2e_20_3e',['extract_impl&lt; n, m - 1, Ts... &gt;',['../structtk_1_1tuple_1_1extract__impl.html',1,'tk::tuple']]],
   ['extract_5fimpl_3c_20n_2c_20m_20_3e',['extract_impl&lt; n, m &gt;',['../structtk_1_1tuple_1_1extract__impl_3_01n_00_01m_01_4.html',1,'tk::tuple']]],
   ['extract_5fimpl_3c_20n_2c_20m_2c_20t_2c_20ts_2e_2e_2e_20_3e',['extract_impl&lt; n, m, T, Ts... &gt;',['../structtk_1_1tuple_1_1extract__impl_3_01n_00_01m_00_01_t_00_01_ts_8_8_8_01_4.html',1,'tk::tuple']]],
+  ['extrapolate',['Extrapolate',['../structinciter_1_1dg_1_1_comp_flow_1_1_extrapolate.html',1,'inciter::dg::CompFlow&lt; Physics, Problem &gt;::Extrapolate'],['../structinciter_1_1dg_1_1_transport_1_1_extrapolate.html',1,'inciter::dg::Transport&lt; Physics, Problem &gt;::Extrapolate'],['../namespaceinciter_1_1ctr.html#af39f430acfc8f1aafa85f65aa3f44a89a5765f108b8ee77f8e20d0c4815f8a65e',1,'inciter::ctr::EXTRAPOLATE()']]],
   ['exts',['exts',['../structtk_1_1ctr_1_1_p_d_f_info.html#abeecfd59b3001515a7fbccaf47fab00c',1,'tk::ctr::PDFInfo']]]
 ];

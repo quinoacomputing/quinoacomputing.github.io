@@ -112,7 +112,7 @@ var searchData=
   ['discretization_2edecl_2eh',['discretization.decl.h',['../discretization_8decl_8h.html',1,'']]],
   ['discretization_2edef_2eh',['discretization.def.h',['../discretization_8def_8h.html',1,'']]],
   ['discretization_2eh',['Discretization.h',['../_discretization_8h.html',1,'']]],
-  ['discretization_5fparameters',['discretization_parameters',['../structwalker_1_1deck_1_1discretization__parameters.html',1,'walker::deck::discretization_parameters'],['../structinciter_1_1deck_1_1discretization__parameters.html',1,'inciter::deck::discretization_parameters']]],
+  ['discretization_5fparameters',['discretization_parameters',['../structinciter_1_1deck_1_1discretization__parameters.html',1,'inciter::deck::discretization_parameters'],['../structwalker_1_1deck_1_1discretization__parameters.html',1,'walker::deck::discretization_parameters']]],
   ['dist',['DIST',['../classinciter_1_1_transporter.html#ae1a6913106efc8b037a403e4e75f4845a1f4060ac0a6f9fe1ca27ab457066da21',1,'inciter::Transporter']]],
   ['distfct',['DistFCT',['../classinciter_1_1_dist_f_c_t.html',1,'inciter::DistFCT'],['../classinciter_1_1_dist_f_c_t.html#a8bba9bdd74a332cebec94143e73a7324',1,'inciter::DistFCT::DistFCT(const CProxy_Transporter &amp;host, int nchare, std::size_t nu, std::size_t np, const std::unordered_map&lt; int, std::vector&lt; std::size_t &gt; &gt; &amp;msum, const std::unordered_map&lt; std::size_t, std::size_t &gt; &amp;bid, const std::unordered_map&lt; std::size_t, std::size_t &gt; &amp;lid, const std::vector&lt; std::size_t &gt; &amp;inpoel)'],['../classinciter_1_1_dist_f_c_t.html#a1e9e03190622fc56097f3638b2eabd61',1,'inciter::DistFCT::DistFCT(CkMigrateMessage *)']]],
   ['distfct_2ec',['DistFCT.C',['../_dist_f_c_t_8_c.html',1,'']]],

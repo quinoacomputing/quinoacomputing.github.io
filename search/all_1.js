@@ -14,6 +14,7 @@ var searchData=
   ['bcast',['bcast',['../structtag_1_1bcast.html',1,'tag']]],
   ['bcconf_5ft',['bcconf_t',['../classinciter_1_1dg_1_1_comp_flow.html#a64bb6fa8566af9080ce1294a66b7c7d5',1,'inciter::dg::CompFlow::bcconf_t()'],['../classinciter_1_1dg_1_1_transport.html#a1f8ec62dd9d0d2a7a482c0856422192f',1,'inciter::dg::Transport::bcconf_t()']]],
   ['bcdir',['bcdir',['../structtag_1_1bcdir.html',1,'tag']]],
+  ['bcextrapolate',['bcextrapolate',['../structtag_1_1bcextrapolate.html',1,'tag']]],
   ['bcinlet',['bcinlet',['../structtag_1_1bcinlet.html',1,'tag']]],
   ['bcmapmerger',['BCMapMerger',['../namespacetk.html#a1320fa5c795146f9a4ac4fc2eb4e2606',1,'tk']]],
   ['bcoutlet',['bcoutlet',['../structtag_1_1bcoutlet.html',1,'tag']]],
