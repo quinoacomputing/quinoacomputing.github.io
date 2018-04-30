@@ -32,7 +32,6 @@ var searchData=
   ['numberfractionbeta',['NumberFractionBeta',['../classwalker_1_1_number_fraction_beta.html#ab8eb8f571adba5bf9dc82879b70a3e5a',1,'walker::NumberFractionBeta']]],
   ['numberfractionbetacoeffconst',['NumberFractionBetaCoeffConst',['../classwalker_1_1_number_fraction_beta_coeff_const.html#a40ff9460d4824279336eaff57c8072a8',1,'walker::NumberFractionBetaCoeffConst']]],
   ['numbndfaces',['numBndFaces',['../classinciter_1_1_face_data.html#a4ada45ff84f332a96ad1a68f447990b4',1,'inciter::FaceData']]],
-  ['numericalfluxfunc',['numericalFluxFunc',['../classinciter_1_1dg_1_1_comp_flow.html#af33288f287c1cb8a16ea7bdfce628c2f',1,'inciter::dg::CompFlow']]],
   ['numpdf',['numPDF',['../namespacetk_1_1ctr.html#abbf4a0edb859f31c0643dd812042558a',1,'tk::ctr']]],
   ['nunk',['nunk',['../classtk_1_1_data.html#a0e41c2b27307c6338b5a3dab688f8e80',1,'tk::Data']]]
 ];

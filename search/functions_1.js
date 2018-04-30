@@ -13,6 +13,7 @@ var searchData=
   ['binsize',['binsize',['../classtk_1_1_bi_p_d_f.html#aedbc730d8028b91873b4702406ff6b76',1,'tk::BiPDF::binsize()'],['../classtk_1_1_tri_p_d_f.html#a28c5a0af2eb79dc4f91ad87815441a11',1,'tk::TriPDF::binsize()'],['../classtk_1_1_uni_p_d_f.html#a83519a7b7b48c14694c5d683218d3419',1,'tk::UniPDF::binsize()']]],
   ['bipdf',['BiPDF',['../classtk_1_1_bi_p_d_f.html#a9aa47a8ef85bdc4448e8796825ce9bfb',1,'tk::BiPDF::BiPDF()'],['../classtk_1_1_bi_p_d_f.html#afe44d03194f64f07cc96f01544d23014',1,'tk::BiPDF::BiPDF(const std::vector&lt; tk::real &gt; &amp;bs)']]],
   ['birthdayspacings',['BirthdaySpacings',['../classrngtest_1_1_test_u01_stack.html#a523c89eee2fa9a5f248bc01c2d41448e',1,'rngtest::TestU01Stack']]],
+  ['bndintegral',['bndIntegral',['../classinciter_1_1dg_1_1_comp_flow.html#a22c83c8060babb4194b9ff49f4fb0966',1,'inciter::dg::CompFlow::bndIntegral()'],['../classinciter_1_1dg_1_1_transport.html#a99268fc7e7a960e144ef478336231d23',1,'inciter::dg::Transport::bndIntegral()']]],
   ['boundaryconditions',['BoundaryConditions',['../classinciter_1_1_boundary_conditions.html#ab45dbba66ee57c992327b9c92d518d32',1,'inciter::BoundaryConditions']]],
   ['bounds',['bounds',['../classinciter_1_1_partitioner.html#a9ee1971863741cc4afb7cae051197599',1,'inciter::Partitioner::bounds()'],['../classtk_1_1_solver.html#ae64639059051bc44536ed5e7452632f4',1,'tk::Solver::bounds()']]]
 ];

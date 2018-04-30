@@ -87,7 +87,7 @@ var searchData=
   ['sumstat',['sumstat',['../classinciter_1_1_transporter.html#a6d69452302c563e4dbec1d12c204ebaf',1,'inciter::Transporter']]],
   ['supportsopt',['supportsOpt',['../classtk_1_1ctr_1_1_r_n_g.html#afb70e2150171c762c8deb0b7eb75ef03',1,'tk::ctr::RNG']]],
   ['supportsseq',['supportsSeq',['../classtk_1_1ctr_1_1_r_n_g.html#aeb492dfb19e0f44ea286db5646fb527a',1,'tk::ctr::RNG']]],
-  ['surfint',['surfInt',['../classinciter_1_1dg_1_1_comp_flow.html#a286d5b67953cee72d223cb728c71094b',1,'inciter::dg::CompFlow::surfInt()'],['../classinciter_1_1dg_1_1_transport.html#a38d289bec3c42d4f8e92451b35f52ca5',1,'inciter::dg::Transport::surfInt()']]],
+  ['surfint',['surfInt',['../classinciter_1_1dg_1_1_comp_flow.html#ad9160bf81c824f7c9e72bff5409bde76',1,'inciter::dg::CompFlow::surfInt()'],['../classinciter_1_1dg_1_1_transport.html#a38d289bec3c42d4f8e92451b35f52ca5',1,'inciter::dg::Transport::surfInt()']]],
   ['swap_5fendian',['swap_endian',['../namespacetk.html#aa7d376e7f0dd51a64632432345dd4423',1,'tk::swap_endian(T u)'],['../namespacetk.html#a550509206419175e2b2277bc5c18016e',1,'tk::swap_endian(double u)']]],
   ['systemcomponents',['SystemComponents',['../namespacetut.html#a8dc11c8ec2cf3fbd70c9c599fb946ad3',1,'tut']]]
 ];

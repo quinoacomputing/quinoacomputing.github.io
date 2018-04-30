@@ -12,6 +12,7 @@ var searchData=
   ['reorder_5fobject',['Reorder_object',['../namespacetut.html#a1f42c954b42231279681c06a4b3b97fa',1,'tut']]],
   ['result_5ftype',['result_type',['../structtk_1_1_random123_1_1_adaptor.html#a9707d7296112f2f7e2bfd31f9286c6aa',1,'tk::Random123::Adaptor::result_type()'],['../structtk_1_1_r_n_g_s_s_e_1_1_adaptor.html#a45ae6fc6f56f9c86dbdcd4232eb13c09',1,'tk::RNGSSE::Adaptor::result_type()']]],
   ['resultptr',['ResultPtr',['../classrngtest_1_1_test_u01_props.html#a4b187f8dbc53295b9cd16b0ceddc9042',1,'rngtest::TestU01Props']]],
+  ['riemannfactory',['RiemannFactory',['../classinciter_1_1dg_1_1_comp_flow.html#ad56c34ef34745e5708ead9ab9a83aef1',1,'inciter::dg::CompFlow']]],
   ['rng_5fgroup',['RNG_group',['../namespacetut.html#aea08cc21d040026fe106fb28e87ba664',1,'tut']]],
   ['rng_5fobject',['RNG_object',['../namespacetut.html#ad673b4c715a379f604f65106998f55ee',1,'tut']]],
   ['rngfactory',['RNGFactory',['../namespacetk.html#a74de56fa53c55c0a8f35b764729cdf20',1,'tk']]],

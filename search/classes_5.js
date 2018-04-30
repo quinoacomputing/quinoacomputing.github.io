@@ -18,6 +18,7 @@ var searchData=
   ['flattened',['flattened',['../structtag_1_1flattened.html',1,'tag']]],
   ['flformat',['flformat',['../structtag_1_1flformat.html',1,'tag']]],
   ['flip_5fmap_5fcommon',['Flip_map_common',['../structtut_1_1_flip__map__common.html',1,'tut']]],
+  ['flux',['flux',['../structtag_1_1flux.html',1,'tag::flux'],['../classinciter_1_1ctr_1_1_flux.html',1,'inciter::ctr::Flux']]],
   ['fluxcorrector',['FluxCorrector',['../classinciter_1_1_flux_corrector.html',1,'inciter']]],
   ['fourier3',['Fourier3',['../structtag_1_1_fourier3.html',1,'tag']]],
   ['frequency',['frequency',['../structtag_1_1frequency.html',1,'tag']]]

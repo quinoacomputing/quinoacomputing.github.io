@@ -12,6 +12,7 @@ var searchData=
   ['reorder_2ec',['Reorder.C',['../_reorder_8_c.html',1,'']]],
   ['reorder_2eh',['Reorder.h',['../_reorder_8h.html',1,'']]],
   ['replace_2eh',['replace.h',['../replace_8h.html',1,'']]],
+  ['riemannsolver_2eh',['RiemannSolver.h',['../_riemann_solver_8h.html',1,'']]],
   ['rng_2edox',['rng.dox',['../rng_8dox.html',1,'']]],
   ['rng_2eh',['RNG.h',['../_control_2_options_2_r_n_g_8h.html',1,'(Global Namespace)'],['../_r_n_g_2_r_n_g_8h.html',1,'(Global Namespace)']]],
   ['rngparam_2eh',['RNGParam.h',['../_r_n_g_param_8h.html',1,'']]],

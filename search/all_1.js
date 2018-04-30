@@ -52,6 +52,7 @@ var searchData=
   ['blas_20license',['BLAS license',['../_b_l_a_s_license.html',1,'licenses']]],
   ['blas_5flicense_2edox',['BLAS_license.dox',['../_b_l_a_s__license_8dox.html',1,'']]],
   ['block',['block',['../structtk_1_1grm_1_1block.html',1,'tk::grm']]],
+  ['bndintegral',['bndIntegral',['../classinciter_1_1dg_1_1_comp_flow.html#a22c83c8060babb4194b9ff49f4fb0966',1,'inciter::dg::CompFlow::bndIntegral()'],['../classinciter_1_1dg_1_1_transport.html#a99268fc7e7a960e144ef478336231d23',1,'inciter::dg::Transport::bndIntegral()']]],
   ['boost_20license',['Boost license',['../_boost_license.html',1,'licenses']]],
   ['boost_5flicense_2edox',['Boost_license.dox',['../_boost__license_8dox.html',1,'']]],
   ['boostoptionalint',['BoostOptionalInt',['../namespacetut_1_1charm.html#a752469d4174512553107b86c859315ce',1,'tut::charm']]],

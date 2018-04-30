@@ -8,6 +8,8 @@ var searchData=
   ['lapack_5flicense_2edox',['LAPACK_license.dox',['../_l_a_p_a_c_k__license_8dox.html',1,'']]],
   ['lapacke_2eh',['lapacke.h',['../lapacke_8h.html',1,'']]],
   ['lastfieldwritetime',['LastFieldWriteTime',['../classinciter_1_1_discretization.html#ae974f7576160f1217ed0694244a0352f',1,'inciter::Discretization::LastFieldWriteTime() const'],['../classinciter_1_1_discretization.html#a19915a108e3466ca32ddbcf7d62d39db',1,'inciter::Discretization::LastFieldWriteTime()']]],
+  ['laxfriedrichs',['LaxFriedrichs',['../structinciter_1_1_lax_friedrichs.html',1,'inciter::LaxFriedrichs'],['../namespaceinciter_1_1ctr.html#ad03f0cd2ce483aefb8c19fa8dc7af1d2aed47604fc3e8751ed09bacd0a0754a71',1,'inciter::ctr::LaxFriedrichs()']]],
+  ['laxfriedrichs_2eh',['LaxFriedrichs.h',['../_lax_friedrichs_8h.html',1,'']]],
   ['layout',['layout',['../classtk_1_1_data.html#a81743d43dfcb14ead9a73ef0e31daa6b',1,'tk::Data::layout()'],['../classtk_1_1_data.html#a210953988f982e446415920d0e15d2d0',1,'tk::Data::layout(int2type&lt; UnkEqComp &gt;)'],['../classtk_1_1_data.html#a46c685dd151f3518c0db73eb36559f26',1,'tk::Data::layout(int2type&lt; EqCompUnk &gt;)']]],
   ['layout_2edox',['layout.dox',['../layout_8dox.html',1,'']]],
   ['leakyadjacency',['leakyAdjacency',['../classinciter_1_1_d_g.html#a6021bf395a57064c247df142762cf3ba',1,'inciter::DG']]],
