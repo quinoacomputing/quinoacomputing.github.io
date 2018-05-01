@@ -241,7 +241,7 @@ var searchData=
   ['tutsuite_2edecl_2eh',['tutsuite.decl.h',['../tutsuite_8decl_8h.html',1,'']]],
   ['tutsuite_2edef_2eh',['tutsuite.def.h',['../tutsuite_8def_8h.html',1,'']]],
   ['tutsuite_2eh',['TUTSuite.h',['../_t_u_t_suite_8h.html',1,'']]],
-  ['tuttest',['TUTTest',['../classunittest_1_1_t_u_t_test.html',1,'unittest::TUTTest&lt; Proxy &gt;'],['../classunittest_1_1_t_u_t_test.html#aa2e228587e50ca68bd6e26cc62324d79',1,'unittest::TUTTest::TUTTest()']]],
+  ['tuttest',['TUTTest',['../classunittest_1_1_t_u_t_test.html',1,'unittest::TUTTest&lt; Proxy &gt;'],['../classunittest_1_1_t_u_t_test.html#a496f54928ec10cd93b58a46661a8db42',1,'unittest::TUTTest::TUTTest()']]],
   ['tuttest_2ec',['TUTTest.C',['../_t_u_t_test_8_c.html',1,'']]],
   ['tuttest_2eci',['tuttest.ci',['../tuttest_8ci.html',1,'']]],
   ['tuttest_2edecl_2eh',['tuttest.decl.h',['../tuttest_8decl_8h.html',1,'']]],

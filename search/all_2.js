@@ -114,7 +114,7 @@ var searchData=
   ['coeffpolicy_2eh',['CoeffPolicy.h',['../_coeff_policy_8h.html',1,'']]],
   ['coeffpolicytype',['CoeffPolicyType',['../namespacewalker_1_1ctr.html#a173f5bb53d7e621fa2569076fa704842',1,'walker::ctr']]],
   ['collectedpar',['collectedpar',['../classtk_1_1_tracker.html#a4629ce81761ffa3f0802a96cfdb6efd3',1,'tk::Tracker']]],
-  ['collector',['Collector',['../classwalker_1_1_collector.html',1,'walker::Collector'],['../classwalker_1_1_collector.html#abe8888f082db7a3e27ed0775ea92364c',1,'walker::Collector::Collector()']]],
+  ['collector',['Collector',['../classwalker_1_1_collector.html',1,'walker::Collector'],['../classwalker_1_1_collector.html#af65e3f0024baf924df47b5026511ead9',1,'walker::Collector::Collector()']]],
   ['collector_2ec',['Collector.C',['../_collector_8_c.html',1,'']]],
   ['collector_2eci',['collector.ci',['../collector_8ci.html',1,'']]],
   ['collector_2edef_2eh',['collector.def.h',['../collector_8def_8h.html',1,'']]],

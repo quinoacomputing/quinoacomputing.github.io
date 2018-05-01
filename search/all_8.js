@@ -89,7 +89,7 @@ var searchData=
   ['insert_5fseq',['insert_seq',['../structtk_1_1grm_1_1insert__seq.html',1,'tk::grm']]],
   ['instantiate',['instantiate',['../namespacetk.html#aeb9673379e599043b13fff369dce1402',1,'tk']]],
   ['int2type',['int2type',['../structtk_1_1_data_1_1int2type.html',1,'tk::Data']]],
-  ['integrator',['Integrator',['../classwalker_1_1_integrator.html',1,'walker::Integrator'],['../classwalker_1_1_integrator.html#a42daf9a7c23e21086a8c21a24e5b1013',1,'walker::Integrator::Integrator(CProxy_Distributor &amp;hostproxy, CProxy_Collector &amp;collproxy, uint64_t npar)'],['../classwalker_1_1_integrator.html#a950534337788f58e568a4337416300b0',1,'walker::Integrator::Integrator(CkMigrateMessage *)']]],
+  ['integrator',['Integrator',['../classwalker_1_1_integrator.html',1,'walker::Integrator'],['../classwalker_1_1_integrator.html#a46228c93cfbc050dbc71991d692b0c3c',1,'walker::Integrator::Integrator(CProxy_Distributor hostproxy, CProxy_Collector collproxy, uint64_t npar)'],['../classwalker_1_1_integrator.html#a950534337788f58e568a4337416300b0',1,'walker::Integrator::Integrator(CkMigrateMessage *)']]],
   ['integrator_2ec',['Integrator.C',['../_integrator_8_c.html',1,'']]],
   ['integrator_2eci',['integrator.ci',['../integrator_8ci.html',1,'']]],
   ['integrator_2edecl_2eh',['integrator.decl.h',['../integrator_8decl_8h.html',1,'']]],

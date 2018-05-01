@@ -19,7 +19,7 @@ var searchData=
   ['random123params',['Random123Params',['../classtk_1_1_r_n_g_print.html#ac955be023ce3bcd8de2d82c28035355c',1,'tk::RNGPrint']]],
   ['randomwalk1',['RandomWalk1',['../structtag_1_1_random_walk1.html',1,'tag::RandomWalk1'],['../classrngtest_1_1_test_u01_stack.html#a63471c08d45c065e124bd93b134b9dae',1,'rngtest::TestU01Stack::RandomWalk1()']]],
   ['rank',['rank',['../classrngtest_1_1_r_n_g_test_print.html#a6b70bdf3a6e6a3043a46ab798b9e1934',1,'rngtest::RNGTestPrint']]],
-  ['raw',['raw',['../classtk_1_1_print.html#a346e0944ed2897d1c0529fb11e72a445',1,'tk::Print::raw()'],['../namespacewalker_1_1ctr.html#a073db7656ce7d82e9ef0321698253b57a633d6abff0a3fc22404347728d195059',1,'walker::ctr::RAW()'],['../namespacetk_1_1ctr.html#af176a3bacd8979ebdb32e7f4cf2c4324',1,'tk::ctr::raw()']]],
+  ['raw',['raw',['../classtk_1_1_print.html#a346e0944ed2897d1c0529fb11e72a445',1,'tk::Print::raw()'],['../namespacetk_1_1ctr.html#af176a3bacd8979ebdb32e7f4cf2c4324',1,'tk::ctr::raw()'],['../namespacewalker_1_1ctr.html#a073db7656ce7d82e9ef0321698253b57a633d6abff0a3fc22404347728d195059',1,'walker::ctr::RAW()']]],
   ['rawrngtype',['RawRNGType',['../namespacetk_1_1ctr.html#a3c1eb788bf59ae3b61f2ec000e410c7e',1,'tk::ctr']]],
   ['rayleigh_5ftaylor',['RAYLEIGH_TAYLOR',['../namespaceinciter_1_1ctr.html#a6233f49244094f9b305675039fe62482a08bac4bd195a32f4a18507a6f937b731',1,'inciter::ctr']]],
   ['rayleightaylor_2eh',['RayleighTaylor.h',['../_rayleigh_taylor_8h.html',1,'']]],
