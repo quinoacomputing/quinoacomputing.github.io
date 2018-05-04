@@ -34,7 +34,7 @@ var searchData=
   ['destroy',['destroy',['../namespacetk.html#a9140b408dcbd2eaef58f9c3a54fa104a',1,'tk']]],
   ['detect_5fcompatibility',['detect_compatibility',['../class_a_m_r_1_1mesh__adapter__t.html#a74c65af6a6675ec8854a7c937a2c9e1f',1,'AMR::mesh_adapter_t']]],
   ['detectinput',['detectInput',['../namespacetk.html#a08e7ddf794b944c7d2095c1222f4244a',1,'tk']]],
-  ['dg',['DG',['../classinciter_1_1_d_g.html',1,'inciter::DG'],['../classinciter_1_1_d_g.html#a407228609a073a8e3ecda38f20378e99',1,'inciter::DG::DG(const CProxy_Discretization &amp;disc, const tk::CProxy_Solver &amp;, const FaceData &amp;fd)'],['../classinciter_1_1_d_g.html#aea0ffdec153e752c89c28122bdcf7c65',1,'inciter::DG::DG(CkMigrateMessage *)'],['../namespaceinciter_1_1ctr.html#aba4e861eef4516f2b2b8f78e99b5af5ead7fb95a565d5b96f24fd2a30a7231729',1,'inciter::ctr::DG()']]],
+  ['dg',['DG',['../classinciter_1_1_d_g.html',1,'inciter::DG'],['../classinciter_1_1_d_g.html#ae9ff9db477480b88f863ed6c01fcba9e',1,'inciter::DG::DG(const CProxy_Discretization &amp;disc, const tk::CProxy_Solver &amp;solver, const FaceData &amp;fd)'],['../classinciter_1_1_d_g.html#aea0ffdec153e752c89c28122bdcf7c65',1,'inciter::DG::DG(CkMigrateMessage *)'],['../namespaceinciter_1_1ctr.html#aba4e861eef4516f2b2b8f78e99b5af5ead7fb95a565d5b96f24fd2a30a7231729',1,'inciter::ctr::DG()']]],
   ['dg_2ec',['DG.C',['../_d_g_8_c.html',1,'']]],
   ['dg_2eci',['dg.ci',['../dg_8ci.html',1,'']]],
   ['dg_2edecl_2eh',['dg.decl.h',['../dg_8decl_8h.html',1,'']]],
