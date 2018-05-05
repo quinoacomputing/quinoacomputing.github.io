@@ -20,7 +20,7 @@ var searchData=
   ['dirichlet',['dirichlet',['../structwalker_1_1deck_1_1dirichlet.html',1,'walker::deck::dirichlet'],['../classwalker_1_1_dirichlet.html',1,'walker::Dirichlet&lt; Init, Coefficients &gt;'],['../structtag_1_1dirichlet.html',1,'tag::dirichlet']]],
   ['dirichletcoeffconst',['DirichletCoeffConst',['../classwalker_1_1_dirichlet_coeff_const.html',1,'walker']]],
   ['discr',['discr',['../structtag_1_1discr.html',1,'tag']]],
-  ['discretization',['Discretization',['../classinciter_1_1_discretization.html',1,'inciter::Discretization'],['../structinciter_1_1deck_1_1discretization.html',1,'inciter::deck::discretization']]],
+  ['discretization',['discretization',['../structinciter_1_1deck_1_1discretization.html',1,'inciter::deck::discretization'],['../classinciter_1_1_discretization.html',1,'inciter::Discretization']]],
   ['discretization_5fparameters',['discretization_parameters',['../structwalker_1_1deck_1_1discretization__parameters.html',1,'walker::deck']]],
   ['discroption',['discroption',['../structinciter_1_1deck_1_1discroption.html',1,'inciter::deck']]],
   ['distfct',['DistFCT',['../classinciter_1_1_dist_f_c_t.html',1,'inciter']]],

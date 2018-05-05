@@ -9,7 +9,7 @@ var searchData=
   ['partitioner',['Partitioner',['../classinciter_1_1_partitioner.html',1,'inciter::Partitioner'],['../structtag_1_1partitioner.html',1,'tag::partitioner']]],
   ['partitioning',['partitioning',['../structinciter_1_1deck_1_1partitioning.html',1,'inciter::deck']]],
   ['partitioningalgorithm',['PartitioningAlgorithm',['../classtk_1_1ctr_1_1_partitioning_algorithm.html',1,'tk::ctr']]],
-  ['pde',['pde',['../structtag_1_1pde.html',1,'tag::pde'],['../classinciter_1_1ctr_1_1_p_d_e.html',1,'inciter::ctr::PDE']]],
+  ['pde',['PDE',['../classinciter_1_1ctr_1_1_p_d_e.html',1,'inciter::ctr::PDE'],['../structtag_1_1pde.html',1,'tag::pde']]],
   ['pde_5fparameter_5fvector',['pde_parameter_vector',['../structinciter_1_1deck_1_1pde__parameter__vector.html',1,'inciter::deck']]],
   ['pdestack',['PDEStack',['../classinciter_1_1_p_d_e_stack.html',1,'inciter']]],
   ['pdf',['pdf',['../structtag_1_1pdf.html',1,'tag']]],
