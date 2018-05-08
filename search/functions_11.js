@@ -84,7 +84,7 @@ var searchData=
   ['subsection',['subsection',['../classtk_1_1_print.html#a864fcee8d740603b26cff3c37153351a',1,'tk::Print']]],
   ['sumcollector',['SumCollector',['../classrngtest_1_1_test_u01_stack.html#afd9422efe459f1fc0aaee082699286d3',1,'rngtest::TestU01Stack']]],
   ['sumsize',['sumsize',['../namespacetk.html#a0f319a47a6a5b983e161aa5f4d8f7b6c',1,'tk']]],
-  ['sumstat',['sumstat',['../classinciter_1_1_transporter.html#a6d69452302c563e4dbec1d12c204ebaf',1,'inciter::Transporter']]],
+  ['sumstat',['sumstat',['../classinciter_1_1_transporter.html#a93817b0d2408934cf942810836f81d44',1,'inciter::Transporter']]],
   ['supportsopt',['supportsOpt',['../classtk_1_1ctr_1_1_r_n_g.html#afb70e2150171c762c8deb0b7eb75ef03',1,'tk::ctr::RNG']]],
   ['supportsseq',['supportsSeq',['../classtk_1_1ctr_1_1_r_n_g.html#aeb492dfb19e0f44ea286db5646fb527a',1,'tk::ctr::RNG']]],
   ['surfint',['surfInt',['../classinciter_1_1dg_1_1_comp_flow.html#ad9160bf81c824f7c9e72bff5409bde76',1,'inciter::dg::CompFlow::surfInt()'],['../classinciter_1_1dg_1_1_transport.html#a38d289bec3c42d4f8e92451b35f52ca5',1,'inciter::dg::Transport::surfInt()']]],

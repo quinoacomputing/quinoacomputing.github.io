@@ -191,7 +191,7 @@ var searchData=
   ['success',['SUCCESS',['../namespacetk.html#afcc275d91d4368505f221061b9ba822aa44683a43d6d73a54b10158203fe65ae3',1,'tk']]],
   ['sumcollector',['SumCollector',['../structtag_1_1_sum_collector.html',1,'tag::SumCollector'],['../classrngtest_1_1_test_u01_stack.html#afd9422efe459f1fc0aaee082699286d3',1,'rngtest::TestU01Stack::SumCollector()']]],
   ['sumsize',['sumsize',['../namespacetk.html#a0f319a47a6a5b983e161aa5f4d8f7b6c',1,'tk']]],
-  ['sumstat',['sumstat',['../classinciter_1_1_transporter.html#a6d69452302c563e4dbec1d12c204ebaf',1,'inciter::Transporter']]],
+  ['sumstat',['sumstat',['../classinciter_1_1_transporter.html#a93817b0d2408934cf942810836f81d44',1,'inciter::Transporter']]],
   ['support',['support',['../classtk_1_1ctr_1_1_r_n_g.html#ab0bfda38ce1598e6e3a50bc070802c59',1,'tk::ctr::RNG']]],
   ['supportsopt',['supportsOpt',['../classtk_1_1ctr_1_1_r_n_g.html#afb70e2150171c762c8deb0b7eb75ef03',1,'tk::ctr::RNG']]],
   ['supportsseq',['supportsSeq',['../classtk_1_1ctr_1_1_r_n_g.html#aeb492dfb19e0f44ea286db5646fb527a',1,'tk::ctr::RNG']]],
