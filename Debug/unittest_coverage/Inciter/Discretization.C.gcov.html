@@ -24,20 +24,20 @@
           </tr>
           <tr>
             <td class="headerItem">Commit:</td>
-            <td class="headerValue"><a href="https://github.com/quinoacomputing/quinoa/commit/9cdd7c9">Quinoa_v0.2-648-g9cdd7c9</a></td>
+            <td class="headerValue"><a href="https://github.com/quinoacomputing/quinoa/commit/cf229ad">Quinoa_v0.2-692-gcf229ad</a></td>
             <td></td>
             <td class="headerItem">Lines:</td>
             <td class="headerCovTableEntry">0</td>
-            <td class="headerCovTableEntry">235</td>
+            <td class="headerCovTableEntry">206</td>
             <td class="headerCovTableEntryLo">0.0 %</td>
           </tr>
           <tr>
             <td class="headerItem">Date:</td>
-            <td class="headerValue">2018-05-07 16:33:32</td>
+            <td class="headerValue">2018-05-10 14:00:49</td>
             <td></td>
             <td class="headerItem">Functions:</td>
             <td class="headerCovTableEntry">0</td>
-            <td class="headerCovTableEntry">20</td>
+            <td class="headerCovTableEntry">17</td>
             <td class="headerCovTableEntryLo">0.0 %</td>
           </tr>
           <tr>
@@ -114,9 +114,9 @@
 <span class="lineNum">      40 </span>                :            :   const CProxy_Transporter&amp; transporter,
 <span class="lineNum">      41 </span>                :            :   const CProxy_BoundaryConditions&amp; bc,
 <span class="lineNum">      42 </span>                :            :   const std::vector&lt; std::size_t &gt;&amp; conn,
-<span class="lineNum">      43 </span>                :            :   const std::unordered_map&lt; int, std::unordered_set&lt; std::size_t &gt; &gt;&amp; msum,
-<span class="lineNum">      44 </span>                :            :   const std::unordered_map&lt; std::size_t, std::size_t &gt;&amp; filenodes,
-<span class="lineNum">      45 </span>                :            :   const tk::UnsMesh::EdgeNodes&amp; edgenodes,
+<span class="lineNum">      43 </span>                :            :   const tk::UnsMesh::CoordMap&amp; coordmap,
+<span class="lineNum">      44 </span>                :            :   const std::unordered_map&lt; int, std::unordered_set&lt; std::size_t &gt; &gt;&amp; msum,
+<span class="lineNum">      45 </span>                :            :   const std::unordered_map&lt; std::size_t, std::size_t &gt;&amp; filenodes,
 <span class="lineNum">      46 </span>                :            :   int nchare ) :
 <span class="lineNum">      47 </span>                :            :   m_it( 0 ),
 <span class="lineNum">      48 </span>                :<span class="lineNoCov">          0 :   m_t( g_inputdeck.get&lt; tag::discr, tag::t0 &gt;() ),</span>
@@ -134,562 +134,500 @@
 <span class="lineNum">      60 </span>                :            :   m_transporter( transporter ),
 <span class="lineNum">      61 </span>                :            :   m_bc( bc ),
 <span class="lineNum">      62 </span>                :            :   m_filenodes( filenodes ),
-<span class="lineNum">      63 </span>                :            :   m_edgenodes( edgenodes ),
-<span class="lineNum">      64 </span>                :            :   m_el( tk::global2local( conn ) ),     // fills m_inpoel, m_gid, m_lid
-<span class="lineNum">      65 </span>                :            :   m_coord(),
-<span class="lineNum">      66 </span>                :            :   m_psup( tk::genPsup( m_inpoel, 4, tk::genEsup(m_inpoel,4) ) ),
-<span class="lineNum">      67 </span>                :            :   m_v( m_gid.size(), 0.0 ),
-<span class="lineNum">      68 </span>                :            :   m_vol( m_gid.size(), 0.0 ),
-<span class="lineNum">      69 </span>                :            :   m_volc(),
-<span class="lineNum">      70 </span>                :            :   m_bid(),
-<span class="lineNum">      71 </span>                :<span class="lineNoCov">          0 :   m_timer()</span>
-<span class="lineNum">      72 </span>                :            : // *****************************************************************************
-<span class="lineNum">      73 </span>                :            : //  Constructor
-<span class="lineNum">      74 </span>                :            : //! \param[in] transporter Host (Transporter) proxy
-<span class="lineNum">      75 </span>                :            : //! \param[in] fctproxy Distributed FCT proxy
-<span class="lineNum">      76 </span>                :            : //! \param[in] conn Vector of mesh element connectivity owned (global IDs)
+<span class="lineNum">      63 </span>                :            :   m_el( tk::global2local( conn ) ),     // fills m_inpoel, m_gid, m_lid
+<span class="lineNum">      64 </span>                :            :   m_coord( setCoord( coordmap ) ),
+<span class="lineNum">      65 </span>                :            :   m_psup( tk::genPsup( m_inpoel, 4, tk::genEsup(m_inpoel,4) ) ),
+<span class="lineNum">      66 </span>                :            :   m_v( m_gid.size(), 0.0 ),
+<span class="lineNum">      67 </span>                :            :   m_vol( m_gid.size(), 0.0 ),
+<span class="lineNum">      68 </span>                :            :   m_volc(),
+<span class="lineNum">      69 </span>                :            :   m_bid(),
+<span class="lineNum">      70 </span>                :<span class="lineNoCov">          0 :   m_timer()</span>
+<span class="lineNum">      71 </span>                :            : // *****************************************************************************
+<span class="lineNum">      72 </span>                :            : //  Constructor
+<span class="lineNum">      73 </span>                :            : //! \param[in] transporter Host (Transporter) proxy
+<span class="lineNum">      74 </span>                :            : //! \param[in] fctproxy Distributed FCT proxy
+<span class="lineNum">      75 </span>                :            : //! \param[in] conn Vector of mesh element connectivity owned (global IDs)
+<span class="lineNum">      76 </span>                :            : //! \param[in] coordmap Coordinates of mesh nodes and their global IDs
 <span class="lineNum">      77 </span>                :            : //! \param[in] msum Global mesh node IDs associated to chare IDs bordering the
 <span class="lineNum">      78 </span>                :            : //!   mesh chunk we operate on
 <span class="lineNum">      79 </span>                :            : //! \param[in] filenodes Map associating old node IDs (as in file) to new node
 <span class="lineNum">      80 </span>                :            : //!   IDs (as in producing contiguous-row-id linear system contributions)
-<span class="lineNum">      81 </span>                :            : //! \param[in] edgenodes Map associating new node IDs ('new' as in producing
-<span class="lineNum">      82 </span>                :            : //!   contiguous-row-id linear system contributions) to edges (a pair of old
-<span class="lineNum">      83 </span>                :            : //!   node IDs ('old' as in file). These 'new' node IDs are the ones newly
-<span class="lineNum">      84 </span>                :            : //!   added during inital uniform mesh refinement.
-<span class="lineNum">      85 </span>                :            : //! \param[in] nchare Total number of Discretization chares
-<span class="lineNum">      86 </span>                :            : //! \details &quot;Contiguous-row-id&quot; here means that the numbering of the mesh nodes
-<span class="lineNum">      87 </span>                :            : //!   (which corresponds to rows in the linear system) are (approximately)
-<span class="lineNum">      88 </span>                :            : //!   contiguous (as much as this can be done with an unstructured mesh) as the
-<span class="lineNum">      89 </span>                :            : //!   problem is distirbuted across PEs, held by Solver objects. This ordering
-<span class="lineNum">      90 </span>                :            : //!   is in start contrast with &quot;as-in-file&quot; ordering, which is the ordering of
-<span class="lineNum">      91 </span>                :            : //!   the mesh nodes as it is stored in the file from which the mesh is read in.
-<span class="lineNum">      92 </span>                :            : //!   The as-in-file ordering is highly non-contiguous across the distributed
-<span class="lineNum">      93 </span>                :            : //!   problem.
-<span class="lineNum">      94 </span>                :            : // *****************************************************************************
-<span class="lineNum">      95 </span>                :            : {
-<span class="lineNum">      96 </span>                :<span class="lineNoCov">          0 :   Assert( m_psup.second.size()-1 == m_gid.size(),</span>
-<span class="lineNum">      97 </span>                :<span class="lineNoCov">          0 :           &quot;Number of mesh points and number of global IDs unequal&quot; );</span>
-<span class="lineNum">      98 </span>                :            : 
-<span class="lineNum">      99 </span>                :            :   // Convert neighbor nodes to vectors from sets
-<span class="lineNum">     100 </span>                :<span class="lineNoCov">          0 :   for (const auto&amp; n : msum) {</span>
-<span class="lineNum">     101 </span>                :<span class="lineNoCov">          0 :     auto&amp; v = m_msum[ n.first ];</span>
-<span class="lineNum">     102 </span>                :<span class="lineNoCov">          0 :     v.insert( end(v), begin(n.second), end(n.second) );</span>
-<span class="lineNum">     103 </span>                :            :   }
-<span class="lineNum">     104 </span>                :            : 
-<span class="lineNum">     105 </span>                :            :   // Count the number of mesh nodes at which we receive data from other chares
-<span class="lineNum">     106 </span>                :            :   // and compute map associating boundary-chare node ID associated to global ID
-<span class="lineNum">     107 </span>                :<span class="lineNoCov">          0 :   std::vector&lt; std::size_t &gt; c;</span>
-<span class="lineNum">     108 </span>                :<span class="lineNoCov">          0 :   for (const auto&amp; n : m_msum) for (auto i : n.second) c.push_back( i );</span>
-<span class="lineNum">     109 </span>                :<span class="lineNoCov">          0 :   tk::unique( c );</span>
-<span class="lineNum">     110 </span>                :<span class="lineNoCov">          0 :   m_bid = tk::assignLid( c );</span>
-<span class="lineNum">     111 </span>                :            : 
-<span class="lineNum">     112 </span>                :            :   // Allocate receive buffer for nodal volumes
-<span class="lineNum">     113 </span>                :<span class="lineNoCov">          0 :   m_volc.resize( m_bid.size(), 0.0 );</span>
-<span class="lineNum">     114 </span>                :            : 
-<span class="lineNum">     115 </span>                :            :   // Insert DistFCT chare array element if FCT is needed. Note that even if FCT
-<span class="lineNum">     116 </span>                :            :   // is configured false in the input deck, at this point, we still need the FCT
-<span class="lineNum">     117 </span>                :            :   // object as FCT is still being performed, only its results are ignored. See
-<span class="lineNum">     118 </span>                :            :   // also, e.g., MatCG::next().
-<span class="lineNum">     119 </span>                :<span class="lineNoCov">          0 :   const auto sch = g_inputdeck.get&lt; tag::discr, tag::scheme &gt;();</span>
-<span class="lineNum">     120 </span>                :<span class="lineNoCov">          0 :   const auto nprop = g_inputdeck.get&lt; tag::component &gt;().nprop();</span>
-<span class="lineNum">     121 </span>                :<span class="lineNoCov">          0 :   if ((sch == ctr::SchemeType::MatCG || sch == ctr::SchemeType::DiagCG))</span>
-<span class="lineNum">     122 </span>                :<span class="lineNoCov">          0 :     m_fct[ thisIndex ].insert( m_transporter, nchare, m_gid.size(), nprop,</span>
-<span class="lineNum">     123 </span>                :<span class="lineNoCov">          0 :                                m_msum, m_bid, m_lid, m_inpoel, CkMyPe() );</span>
-<span class="lineNum">     124 </span>                :<span class="lineNoCov">          0 : }</span>
-<a name="125"><span class="lineNum">     125 </span>                :            : </a>
-<span class="lineNum">     126 </span>                :            : void
-<span class="lineNum">     127 </span>                :<span class="lineNoCov">          0 : Discretization::registerReducers()</span>
-<span class="lineNum">     128 </span>                :            : // *****************************************************************************
-<span class="lineNum">     129 </span>                :            : //  Configure Charm++ reduction types
-<span class="lineNum">     130 </span>                :            : //!  \details Since this is a [nodeinit] routine, see cg.ci, the
-<span class="lineNum">     131 </span>                :            : //!   Charm++ runtime system executes the routine exactly once on every
-<span class="lineNum">     132 </span>                :            : //!   logical node early on in the Charm++ init sequence. Must be static as
-<span class="lineNum">     133 </span>                :            : //!   it is called without an object. See also: Section &quot;Initializations at
-<span class="lineNum">     134 </span>                :            : //!   Program Startup&quot; at in the Charm++ manual
-<span class="lineNum">     135 </span>                :            : //!   http://charm.cs.illinois.edu/manuals/html/charm++/manual.html.
-<span class="lineNum">     136 </span>                :            : // *****************************************************************************
-<span class="lineNum">     137 </span>                :            : {
-<span class="lineNum">     138 </span>                :<span class="lineNoCov">          0 :   PDFMerger = CkReduction::addReducer( tk::mergeUniPDFs );</span>
-<span class="lineNum">     139 </span>                :<span class="lineNoCov">          0 : }</span>
-<a name="140"><span class="lineNum">     140 </span>                :            : </a>
-<span class="lineNum">     141 </span>                :            : void
-<span class="lineNum">     142 </span>                :<span class="lineNoCov">          0 : Discretization::coord()</span>
-<span class="lineNum">     143 </span>                :            : // *****************************************************************************
-<span class="lineNum">     144 </span>                :            : //  Read mesh node coordinates and optionally add new edge-nodes in case of
-<span class="lineNum">     145 </span>                :            : //  initial uniform refinement
-<span class="lineNum">     146 </span>                :            : // *****************************************************************************
-<span class="lineNum">     147 </span>                :            : {
-<span class="lineNum">     148 </span>                :            :   // Read coordinates of nodes of the mesh chunk we operate on
-<span class="lineNum">     149 </span>                :<span class="lineNoCov">          0 :   readCoords();</span>
-<span class="lineNum">     150 </span>                :            :   // Add coordinates of mesh nodes newly generated to edge-mid points during
-<span class="lineNum">     151 </span>                :            :   // initial refinement
-<span class="lineNum">     152 </span>                :<span class="lineNoCov">          0 :   addEdgeNodeCoords();</span>
-<span class="lineNum">     153 </span>                :            :   // Compute mesh cell volumes
-<span class="lineNum">     154 </span>                :<span class="lineNoCov">          0 :   vol();</span>
-<span class="lineNum">     155 </span>                :<span class="lineNoCov">          0 : }</span>
-<a name="156"><span class="lineNum">     156 </span>                :            : </a>
-<span class="lineNum">     157 </span>                :            : void
-<span class="lineNum">     158 </span>                :<span class="lineNoCov">          0 : Discretization::vol()</span>
-<span class="lineNum">     159 </span>                :            : // *****************************************************************************
-<span class="lineNum">     160 </span>                :            : // Sum mesh volumes to nodes, start communicating them on chare-boundaries
-<span class="lineNum">     161 </span>                :            : // *****************************************************************************
-<span class="lineNum">     162 </span>                :            : {
-<span class="lineNum">     163 </span>                :<span class="lineNoCov">          0 :   const auto&amp; x = m_coord[0];</span>
-<span class="lineNum">     164 </span>                :<span class="lineNoCov">          0 :   const auto&amp; y = m_coord[1];</span>
-<span class="lineNum">     165 </span>                :<span class="lineNoCov">          0 :   const auto&amp; z = m_coord[2];</span>
-<span class="lineNum">     166 </span>                :            : 
-<span class="lineNum">     167 </span>                :            :   // Compute nodal volumes on our chunk of the mesh
-<span class="lineNum">     168 </span>                :<span class="lineNoCov">          0 :   for (std::size_t e=0; e&lt;m_inpoel.size()/4; ++e) {</span>
-<span class="lineNum">     169 </span>                :<span class="lineNoCov">          0 :     const std::array&lt; std::size_t, 4 &gt; N{{ m_inpoel[e*4+0], m_inpoel[e*4+1],</span>
-<span class="lineNum">     170 </span>                :<span class="lineNoCov">          0 :                                            m_inpoel[e*4+2], m_inpoel[e*4+3] }};</span>
-<span class="lineNum">     171 </span>                :            :     // compute element Jacobi determinant * 5/120 = element volume / 4
-<span class="lineNum">     172 </span>                :            :     const std::array&lt; tk::real, 3 &gt;
-<span class="lineNum">     173 </span>                :<span class="lineNoCov">          0 :       ba{{ x[N[1]]-x[N[0]], y[N[1]]-y[N[0]], z[N[1]]-z[N[0]] }},</span>
-<span class="lineNum">     174 </span>                :<span class="lineNoCov">          0 :       ca{{ x[N[2]]-x[N[0]], y[N[2]]-y[N[0]], z[N[2]]-z[N[0]] }},</span>
-<span class="lineNum">     175 </span>                :<span class="lineNoCov">          0 :       da{{ x[N[3]]-x[N[0]], y[N[3]]-y[N[0]], z[N[3]]-z[N[0]] }};</span>
-<span class="lineNum">     176 </span>                :<span class="lineNoCov">          0 :     const auto J = tk::triple( ba, ca, da ) * 5.0 / 120.0;</span>
-<span class="lineNum">     177 </span>                :<span class="lineNoCov">          0 :     ErrChk( J &gt; 0, &quot;Element Jacobian non-positive: PE:&quot; +</span>
-<span class="lineNum">     178 </span>                :            :                    std::to_string(CkMyPe()) + &quot;, node IDs: &quot; +
-<span class="lineNum">     179 </span>                :            :                    std::to_string(m_gid[N[0]]) + ',' +
-<span class="lineNum">     180 </span>                :            :                    std::to_string(m_gid[N[1]]) + ',' +
-<span class="lineNum">     181 </span>                :            :                    std::to_string(m_gid[N[2]]) + ',' +
-<span class="lineNum">     182 </span>                :            :                    std::to_string(m_gid[N[3]]) + &quot;, coords: (&quot; +
-<span class="lineNum">     183 </span>                :            :                    std::to_string(x[N[0]]) + &quot;, &quot; +
-<span class="lineNum">     184 </span>                :            :                    std::to_string(y[N[0]]) + &quot;, &quot; +
-<span class="lineNum">     185 </span>                :            :                    std::to_string(z[N[0]]) + &quot;), (&quot; +
-<span class="lineNum">     186 </span>                :            :                    std::to_string(x[N[1]]) + &quot;, &quot; +
-<span class="lineNum">     187 </span>                :            :                    std::to_string(y[N[1]]) + &quot;, &quot; +
-<span class="lineNum">     188 </span>                :            :                    std::to_string(z[N[1]]) + &quot;), (&quot; +
-<span class="lineNum">     189 </span>                :            :                    std::to_string(x[N[2]]) + &quot;, &quot; +
-<span class="lineNum">     190 </span>                :            :                    std::to_string(y[N[2]]) + &quot;, &quot; +
-<span class="lineNum">     191 </span>                :            :                    std::to_string(z[N[2]]) + &quot;), (&quot; +
-<span class="lineNum">     192 </span>                :            :                    std::to_string(x[N[3]]) + &quot;, &quot; +
-<span class="lineNum">     193 </span>                :            :                    std::to_string(y[N[3]]) + &quot;, &quot; +
-<span class="lineNum">     194 </span>                :<span class="lineNoCov">          0 :                    std::to_string(z[N[3]]) + ')' );</span>
-<span class="lineNum">     195 </span>                :            :     // scatter add V/4 to nodes
-<span class="lineNum">     196 </span>                :<span class="lineNoCov">          0 :     for (std::size_t j=0; j&lt;4; ++j) m_vol[N[j]] += J;</span>
-<span class="lineNum">     197 </span>                :            :   }
-<span class="lineNum">     198 </span>                :            : 
-<span class="lineNum">     199 </span>                :            :   // Store nodal volumes without contributions from other chares on
-<span class="lineNum">     200 </span>                :            :   // chare-boundaries
-<span class="lineNum">     201 </span>                :<span class="lineNoCov">          0 :   m_v = m_vol;</span>
+<span class="lineNum">      81 </span>                :            : //! \param[in] nchare Total number of Discretization chares
+<span class="lineNum">      82 </span>                :            : //! \details &quot;Contiguous-row-id&quot; here means that the numbering of the mesh nodes
+<span class="lineNum">      83 </span>                :            : //!   (which corresponds to rows in the linear system) are (approximately)
+<span class="lineNum">      84 </span>                :            : //!   contiguous (as much as this can be done with an unstructured mesh) as the
+<span class="lineNum">      85 </span>                :            : //!   problem is distirbuted across PEs, held by Solver objects. This ordering
+<span class="lineNum">      86 </span>                :            : //!   is in start contrast with &quot;as-in-file&quot; ordering, which is the ordering of
+<span class="lineNum">      87 </span>                :            : //!   the mesh nodes as it is stored in the file from which the mesh is read in.
+<span class="lineNum">      88 </span>                :            : //!   The as-in-file ordering is highly non-contiguous across the distributed
+<span class="lineNum">      89 </span>                :            : //!   problem.
+<span class="lineNum">      90 </span>                :            : // *****************************************************************************
+<span class="lineNum">      91 </span>                :            : {
+<span class="lineNum">      92 </span>                :<span class="lineNoCov">          0 :   Assert( m_psup.second.size()-1 == m_gid.size(),</span>
+<span class="lineNum">      93 </span>                :<span class="lineNoCov">          0 :           &quot;Number of mesh points and number of global IDs unequal&quot; );</span>
+<span class="lineNum">      94 </span>                :            : 
+<span class="lineNum">      95 </span>                :            :   // Convert neighbor nodes to vectors from sets
+<span class="lineNum">      96 </span>                :<span class="lineNoCov">          0 :   for (const auto&amp; n : msum) {</span>
+<span class="lineNum">      97 </span>                :<span class="lineNoCov">          0 :     auto&amp; v = m_msum[ n.first ];</span>
+<span class="lineNum">      98 </span>                :<span class="lineNoCov">          0 :     v.insert( end(v), begin(n.second), end(n.second) );</span>
+<span class="lineNum">      99 </span>                :            :   }
+<span class="lineNum">     100 </span>                :            : 
+<span class="lineNum">     101 </span>                :            :   // Count the number of mesh nodes at which we receive data from other chares
+<span class="lineNum">     102 </span>                :            :   // and compute map associating boundary-chare node ID associated to global ID
+<span class="lineNum">     103 </span>                :<span class="lineNoCov">          0 :   std::vector&lt; std::size_t &gt; c;</span>
+<span class="lineNum">     104 </span>                :<span class="lineNoCov">          0 :   for (const auto&amp; n : m_msum) for (auto i : n.second) c.push_back( i );</span>
+<span class="lineNum">     105 </span>                :<span class="lineNoCov">          0 :   tk::unique( c );</span>
+<span class="lineNum">     106 </span>                :<span class="lineNoCov">          0 :   m_bid = tk::assignLid( c );</span>
+<span class="lineNum">     107 </span>                :            : 
+<span class="lineNum">     108 </span>                :            :   // Allocate receive buffer for nodal volumes
+<span class="lineNum">     109 </span>                :<span class="lineNoCov">          0 :   m_volc.resize( m_bid.size(), 0.0 );</span>
+<span class="lineNum">     110 </span>                :            : 
+<span class="lineNum">     111 </span>                :            :   // Insert DistFCT chare array element if FCT is needed. Note that even if FCT
+<span class="lineNum">     112 </span>                :            :   // is configured false in the input deck, at this point, we still need the FCT
+<span class="lineNum">     113 </span>                :            :   // object as FCT is still being performed, only its results are ignored. See
+<span class="lineNum">     114 </span>                :            :   // also, e.g., MatCG::next().
+<span class="lineNum">     115 </span>                :<span class="lineNoCov">          0 :   const auto sch = g_inputdeck.get&lt; tag::discr, tag::scheme &gt;();</span>
+<span class="lineNum">     116 </span>                :<span class="lineNoCov">          0 :   const auto nprop = g_inputdeck.get&lt; tag::component &gt;().nprop();</span>
+<span class="lineNum">     117 </span>                :<span class="lineNoCov">          0 :   if ((sch == ctr::SchemeType::MatCG || sch == ctr::SchemeType::DiagCG))</span>
+<span class="lineNum">     118 </span>                :<span class="lineNoCov">          0 :     m_fct[ thisIndex ].insert( m_transporter, nchare, m_gid.size(), nprop,</span>
+<span class="lineNum">     119 </span>                :<span class="lineNoCov">          0 :                                m_msum, m_bid, m_lid, m_inpoel, CkMyPe() );</span>
+<span class="lineNum">     120 </span>                :<span class="lineNoCov">          0 : }</span>
+<a name="121"><span class="lineNum">     121 </span>                :            : </a>
+<span class="lineNum">     122 </span>                :            : void
+<span class="lineNum">     123 </span>                :<span class="lineNoCov">          0 : Discretization::registerReducers()</span>
+<span class="lineNum">     124 </span>                :            : // *****************************************************************************
+<span class="lineNum">     125 </span>                :            : //  Configure Charm++ reduction types
+<span class="lineNum">     126 </span>                :            : //!  \details Since this is a [nodeinit] routine, see cg.ci, the
+<span class="lineNum">     127 </span>                :            : //!   Charm++ runtime system executes the routine exactly once on every
+<span class="lineNum">     128 </span>                :            : //!   logical node early on in the Charm++ init sequence. Must be static as
+<span class="lineNum">     129 </span>                :            : //!   it is called without an object. See also: Section &quot;Initializations at
+<span class="lineNum">     130 </span>                :            : //!   Program Startup&quot; at in the Charm++ manual
+<span class="lineNum">     131 </span>                :            : //!   http://charm.cs.illinois.edu/manuals/html/charm++/manual.html.
+<span class="lineNum">     132 </span>                :            : // *****************************************************************************
+<span class="lineNum">     133 </span>                :            : {
+<span class="lineNum">     134 </span>                :<span class="lineNoCov">          0 :   PDFMerger = CkReduction::addReducer( tk::mergeUniPDFs );</span>
+<span class="lineNum">     135 </span>                :<span class="lineNoCov">          0 : }</span>
+<a name="136"><span class="lineNum">     136 </span>                :            : </a>
+<span class="lineNum">     137 </span>                :            : tk::UnsMesh::Coords
+<span class="lineNum">     138 </span>                :<span class="lineNoCov">          0 : Discretization::setCoord( const tk::UnsMesh::CoordMap&amp; coordmap )</span>
+<span class="lineNum">     139 </span>                :            : // *****************************************************************************
+<span class="lineNum">     140 </span>                :            : // ...
+<span class="lineNum">     141 </span>                :            : // *****************************************************************************
+<span class="lineNum">     142 </span>                :            : {
+<span class="lineNum">     143 </span>                :<span class="lineNoCov">          0 :   Assert( coordmap.size() == m_gid.size(), &quot;Size mismatch&quot; );</span>
+<span class="lineNum">     144 </span>                :<span class="lineNoCov">          0 :   Assert( coordmap.size() == m_lid.size(), &quot;Size mismatch&quot; );</span>
+<span class="lineNum">     145 </span>                :            : 
+<span class="lineNum">     146 </span>                :<span class="lineNoCov">          0 :   tk::UnsMesh::Coords coord;</span>
+<span class="lineNum">     147 </span>                :<span class="lineNoCov">          0 :   coord[0].resize( coordmap.size() );</span>
+<span class="lineNum">     148 </span>                :<span class="lineNoCov">          0 :   coord[1].resize( coordmap.size() );</span>
+<span class="lineNum">     149 </span>                :<span class="lineNoCov">          0 :   coord[2].resize( coordmap.size() );</span>
+<span class="lineNum">     150 </span>                :            : 
+<span class="lineNum">     151 </span>                :<span class="lineNoCov">          0 :   for (const auto&amp; p : coordmap) {</span>
+<span class="lineNum">     152 </span>                :<span class="lineNoCov">          0 :     auto i = tk::cref_find( m_lid, p.first );</span>
+<span class="lineNum">     153 </span>                :<span class="lineNoCov">          0 :     coord[0][i] = p.second[0];</span>
+<span class="lineNum">     154 </span>                :<span class="lineNoCov">          0 :     coord[1][i] = p.second[1];</span>
+<span class="lineNum">     155 </span>                :<span class="lineNoCov">          0 :     coord[2][i] = p.second[2];</span>
+<span class="lineNum">     156 </span>                :            :   }
+<span class="lineNum">     157 </span>                :            : 
+<span class="lineNum">     158 </span>                :<span class="lineNoCov">          0 :   return coord;</span>
+<span class="lineNum">     159 </span>                :            : }
+<a name="160"><span class="lineNum">     160 </span>                :            : </a>
+<span class="lineNum">     161 </span>                :            : void
+<span class="lineNum">     162 </span>                :<span class="lineNoCov">          0 : Discretization::vol()</span>
+<span class="lineNum">     163 </span>                :            : // *****************************************************************************
+<span class="lineNum">     164 </span>                :            : // Sum mesh volumes to nodes, start communicating them on chare-boundaries
+<span class="lineNum">     165 </span>                :            : // *****************************************************************************
+<span class="lineNum">     166 </span>                :            : {
+<span class="lineNum">     167 </span>                :<span class="lineNoCov">          0 :   const auto&amp; x = m_coord[0];</span>
+<span class="lineNum">     168 </span>                :<span class="lineNoCov">          0 :   const auto&amp; y = m_coord[1];</span>
+<span class="lineNum">     169 </span>                :<span class="lineNoCov">          0 :   const auto&amp; z = m_coord[2];</span>
+<span class="lineNum">     170 </span>                :            : 
+<span class="lineNum">     171 </span>                :            :   // Compute nodal volumes on our chunk of the mesh
+<span class="lineNum">     172 </span>                :<span class="lineNoCov">          0 :   for (std::size_t e=0; e&lt;m_inpoel.size()/4; ++e) {</span>
+<span class="lineNum">     173 </span>                :<span class="lineNoCov">          0 :     const std::array&lt; std::size_t, 4 &gt; N{{ m_inpoel[e*4+0], m_inpoel[e*4+1],</span>
+<span class="lineNum">     174 </span>                :<span class="lineNoCov">          0 :                                            m_inpoel[e*4+2], m_inpoel[e*4+3] }};</span>
+<span class="lineNum">     175 </span>                :            :     // compute element Jacobi determinant * 5/120 = element volume / 4
+<span class="lineNum">     176 </span>                :            :     const std::array&lt; tk::real, 3 &gt;
+<span class="lineNum">     177 </span>                :<span class="lineNoCov">          0 :       ba{{ x[N[1]]-x[N[0]], y[N[1]]-y[N[0]], z[N[1]]-z[N[0]] }},</span>
+<span class="lineNum">     178 </span>                :<span class="lineNoCov">          0 :       ca{{ x[N[2]]-x[N[0]], y[N[2]]-y[N[0]], z[N[2]]-z[N[0]] }},</span>
+<span class="lineNum">     179 </span>                :<span class="lineNoCov">          0 :       da{{ x[N[3]]-x[N[0]], y[N[3]]-y[N[0]], z[N[3]]-z[N[0]] }};</span>
+<span class="lineNum">     180 </span>                :<span class="lineNoCov">          0 :     const auto J = tk::triple( ba, ca, da ) * 5.0 / 120.0;</span>
+<span class="lineNum">     181 </span>                :<span class="lineNoCov">          0 :     ErrChk( J &gt; 0, &quot;Element Jacobian non-positive: PE:&quot; +</span>
+<span class="lineNum">     182 </span>                :            :                    std::to_string(CkMyPe()) + &quot;, node IDs: &quot; +
+<span class="lineNum">     183 </span>                :            :                    std::to_string(m_gid[N[0]]) + ',' +
+<span class="lineNum">     184 </span>                :            :                    std::to_string(m_gid[N[1]]) + ',' +
+<span class="lineNum">     185 </span>                :            :                    std::to_string(m_gid[N[2]]) + ',' +
+<span class="lineNum">     186 </span>                :            :                    std::to_string(m_gid[N[3]]) + &quot;, coords: (&quot; +
+<span class="lineNum">     187 </span>                :            :                    std::to_string(x[N[0]]) + &quot;, &quot; +
+<span class="lineNum">     188 </span>                :            :                    std::to_string(y[N[0]]) + &quot;, &quot; +
+<span class="lineNum">     189 </span>                :            :                    std::to_string(z[N[0]]) + &quot;), (&quot; +
+<span class="lineNum">     190 </span>                :            :                    std::to_string(x[N[1]]) + &quot;, &quot; +
+<span class="lineNum">     191 </span>                :            :                    std::to_string(y[N[1]]) + &quot;, &quot; +
+<span class="lineNum">     192 </span>                :            :                    std::to_string(z[N[1]]) + &quot;), (&quot; +
+<span class="lineNum">     193 </span>                :            :                    std::to_string(x[N[2]]) + &quot;, &quot; +
+<span class="lineNum">     194 </span>                :            :                    std::to_string(y[N[2]]) + &quot;, &quot; +
+<span class="lineNum">     195 </span>                :            :                    std::to_string(z[N[2]]) + &quot;), (&quot; +
+<span class="lineNum">     196 </span>                :            :                    std::to_string(x[N[3]]) + &quot;, &quot; +
+<span class="lineNum">     197 </span>                :            :                    std::to_string(y[N[3]]) + &quot;, &quot; +
+<span class="lineNum">     198 </span>                :<span class="lineNoCov">          0 :                    std::to_string(z[N[3]]) + ')' );</span>
+<span class="lineNum">     199 </span>                :            :     // scatter add V/4 to nodes
+<span class="lineNum">     200 </span>                :<span class="lineNoCov">          0 :     for (std::size_t j=0; j&lt;4; ++j) m_vol[N[j]] += J;</span>
+<span class="lineNum">     201 </span>                :            :   }
 <span class="lineNum">     202 </span>                :            : 
-<span class="lineNum">     203 </span>                :            :   // Send our nodal volume contributions to neighbor chares
-<span class="lineNum">     204 </span>                :<span class="lineNoCov">          0 :   if (m_msum.empty())</span>
-<span class="lineNum">     205 </span>                :<span class="lineNoCov">          0 :     contribute( CkCallback(CkReductionTarget(Transporter,vol), m_transporter) );</span>
-<span class="lineNum">     206 </span>                :            :   else
-<span class="lineNum">     207 </span>                :<span class="lineNoCov">          0 :     for (const auto&amp; n : m_msum) {</span>
-<span class="lineNum">     208 </span>                :<span class="lineNoCov">          0 :       std::vector&lt; tk::real &gt; v;</span>
-<span class="lineNum">     209 </span>                :<span class="lineNoCov">          0 :       for (auto i : n.second) v.push_back( m_vol[ tk::cref_find(m_lid,i) ] );</span>
-<span class="lineNum">     210 </span>                :<span class="lineNoCov">          0 :       thisProxy[ n.first ].comvol( n.second, v );</span>
-<span class="lineNum">     211 </span>                :<span class="lineNoCov">          0 :     }</span>
-<span class="lineNum">     212 </span>                :<span class="lineNoCov">          0 : }</span>
-<a name="213"><span class="lineNum">     213 </span>                :            : </a>
-<span class="lineNum">     214 </span>                :            : void
-<span class="lineNum">     215 </span>                :<span class="lineNoCov">          0 : Discretization::comvol( const std::vector&lt; std::size_t &gt;&amp; gid,</span>
-<span class="lineNum">     216 </span>                :            :                         const std::vector&lt; tk::real &gt;&amp; nodevol )
-<span class="lineNum">     217 </span>                :            : // *****************************************************************************
-<span class="lineNum">     218 </span>                :            : //  Receive nodal volumes on chare-boundaries
-<span class="lineNum">     219 </span>                :            : //! \param[in] gid Global mesh node IDs at which we receive volume contributions
-<span class="lineNum">     220 </span>                :            : //! \param[in] nodevol Partial sums of nodal volume contributions to
-<span class="lineNum">     221 </span>                :            : //!    chare-boundary nodes
-<span class="lineNum">     222 </span>                :            : //! \details This function receives contributions to m_vol, which stores the
-<span class="lineNum">     223 </span>                :            : //!   nodal volumes. While m_vol stores own contributions, m_volc collects the
-<span class="lineNum">     224 </span>                :            : //!   neighbor chare contributions during communication. This way work on m_vol
-<span class="lineNum">     225 </span>                :            : //!   and m_volc is overlapped. The two are combined in totalvol().
-<span class="lineNum">     226 </span>                :            : // *****************************************************************************
-<span class="lineNum">     227 </span>                :            : {
-<span class="lineNum">     228 </span>                :<span class="lineNoCov">          0 :   Assert( nodevol.size() == gid.size(), &quot;Size mismatch&quot; );</span>
-<span class="lineNum">     229 </span>                :            : 
-<span class="lineNum">     230 </span>                :<span class="lineNoCov">          0 :   for (std::size_t i=0; i&lt;gid.size(); ++i) {</span>
-<span class="lineNum">     231 </span>                :<span class="lineNoCov">          0 :     auto bid = tk::cref_find( m_bid, gid[i] );</span>
-<span class="lineNum">     232 </span>                :<span class="lineNoCov">          0 :     Assert( bid &lt; m_volc.size(), &quot;Indexing out of bounds&quot; );</span>
-<span class="lineNum">     233 </span>                :<span class="lineNoCov">          0 :     m_volc[ bid ] += nodevol[i];</span>
-<span class="lineNum">     234 </span>                :            :   }
-<span class="lineNum">     235 </span>                :            : 
-<span class="lineNum">     236 </span>                :<span class="lineNoCov">          0 :   if (++m_nvol == m_msum.size()) {</span>
-<span class="lineNum">     237 </span>                :<span class="lineNoCov">          0 :     m_nvol = 0;</span>
-<span class="lineNum">     238 </span>                :<span class="lineNoCov">          0 :     contribute( CkCallback(CkReductionTarget(Transporter,vol), m_transporter) );</span>
-<span class="lineNum">     239 </span>                :            :   }
-<span class="lineNum">     240 </span>                :<span class="lineNoCov">          0 : }</span>
-<a name="241"><span class="lineNum">     241 </span>                :            : </a>
-<span class="lineNum">     242 </span>                :            : void
-<span class="lineNum">     243 </span>                :<span class="lineNoCov">          0 : Discretization::totalvol()</span>
-<span class="lineNum">     244 </span>                :            : // *****************************************************************************
-<span class="lineNum">     245 </span>                :            : // Sum mesh volumes and contribute own mesh volume to total volume
-<span class="lineNum">     246 </span>                :            : // *****************************************************************************
-<span class="lineNum">     247 </span>                :            : {
-<span class="lineNum">     248 </span>                :            :   // Combine own and communicated contributions of nodal volumes
-<span class="lineNum">     249 </span>                :<span class="lineNoCov">          0 :   for (const auto&amp; b : m_bid) {</span>
-<span class="lineNum">     250 </span>                :<span class="lineNoCov">          0 :     auto lid = tk::cref_find( m_lid, b.first );</span>
-<span class="lineNum">     251 </span>                :<span class="lineNoCov">          0 :     m_vol[ lid ] += m_volc[ b.second ];</span>
-<span class="lineNum">     252 </span>                :            :   }
-<span class="lineNum">     253 </span>                :            : 
-<span class="lineNum">     254 </span>                :            :   // Sum mesh volume to host
-<span class="lineNum">     255 </span>                :<span class="lineNoCov">          0 :   tk::real tvol = 0.0;</span>
-<span class="lineNum">     256 </span>                :<span class="lineNoCov">          0 :   for (auto v : m_v) tvol += v;</span>
-<span class="lineNum">     257 </span>                :            :   contribute( sizeof(tk::real), &amp;tvol, CkReduction::sum_double,
-<span class="lineNum">     258 </span>                :<span class="lineNoCov">          0 :     CkCallback(CkReductionTarget(Transporter,totalvol), m_transporter) );</span>
-<span class="lineNum">     259 </span>                :<span class="lineNoCov">          0 : }</span>
-<a name="260"><span class="lineNum">     260 </span>                :            : </a>
-<span class="lineNum">     261 </span>                :            : void
-<span class="lineNum">     262 </span>                :<span class="lineNoCov">          0 : Discretization::stat()</span>
-<span class="lineNum">     263 </span>                :            : // *****************************************************************************
-<span class="lineNum">     264 </span>                :            : // Compute mesh cell statistics
-<span class="lineNum">     265 </span>                :            : // *****************************************************************************
-<span class="lineNum">     266 </span>                :            : {
-<span class="lineNum">     267 </span>                :<span class="lineNoCov">          0 :   const auto&amp; x = m_coord[0];</span>
-<span class="lineNum">     268 </span>                :<span class="lineNoCov">          0 :   const auto&amp; y = m_coord[1];</span>
-<span class="lineNum">     269 </span>                :<span class="lineNoCov">          0 :   const auto&amp; z = m_coord[2];</span>
-<span class="lineNum">     270 </span>                :            : 
-<span class="lineNum">     271 </span>                :<span class="lineNoCov">          0 :   auto MIN = -std::numeric_limits&lt; tk::real &gt;::max();</span>
-<span class="lineNum">     272 </span>                :<span class="lineNoCov">          0 :   auto MAX = std::numeric_limits&lt; tk::real &gt;::max();</span>
-<span class="lineNum">     273 </span>                :<span class="lineNoCov">          0 :   std::vector&lt; tk::real &gt; min{ MAX, MAX };</span>
-<span class="lineNum">     274 </span>                :<span class="lineNoCov">          0 :   std::vector&lt; tk::real &gt; max{ MIN, MIN };</span>
-<span class="lineNum">     275 </span>                :<span class="lineNoCov">          0 :   std::vector&lt; tk::real &gt; sum{ 0.0, 0.0, 0.0, 0.0 };</span>
-<span class="lineNum">     276 </span>                :<span class="lineNoCov">          0 :   tk::UniPDF edgePDF( 1e-4 );</span>
-<span class="lineNum">     277 </span>                :<span class="lineNoCov">          0 :   tk::UniPDF volPDF( 1e-4 );</span>
-<span class="lineNum">     278 </span>                :            : 
-<span class="lineNum">     279 </span>                :            :   // Compute edge length statistics
-<span class="lineNum">     280 </span>                :            :   // Note that while the min and max edge lengths are independent of the number
-<span class="lineNum">     281 </span>                :            :   // of CPUs (by the time they are aggregated across all chares), the sum of
-<span class="lineNum">     282 </span>                :            :   // the edge lengths and the edge length PDF are not. This is because the
-<span class="lineNum">     283 </span>                :            :   // edges on the chare-boundary are counted multiple times and we
-<span class="lineNum">     284 </span>                :            :   // conscientiously do not make an effort to precisely compute this, because
-<span class="lineNum">     285 </span>                :            :   // that would require communication and more complex logic. Since these
-<span class="lineNum">     286 </span>                :            :   // statistics are intended as simple average diagnostics, we ignore these
-<span class="lineNum">     287 </span>                :            :   // small differences. For reproducible average edge lengths and edge length
-<span class="lineNum">     288 </span>                :            :   // PDFs, run the mesh in serial.
-<span class="lineNum">     289 </span>                :<span class="lineNoCov">          0 :   for (std::size_t p=0; p&lt;m_gid.size(); ++p)</span>
-<span class="lineNum">     290 </span>                :<span class="lineNoCov">          0 :     for (auto i=m_psup.second[p]+1; i&lt;=m_psup.second[p+1]; ++i) {</span>
-<span class="lineNum">     291 </span>                :<span class="lineNoCov">          0 :        const auto dx = x[ m_psup.first[i] ] - x[ p ];</span>
-<span class="lineNum">     292 </span>                :<span class="lineNoCov">          0 :        const auto dy = y[ m_psup.first[i] ] - y[ p ];</span>
-<span class="lineNum">     293 </span>                :<span class="lineNoCov">          0 :        const auto dz = z[ m_psup.first[i] ] - z[ p ];</span>
-<span class="lineNum">     294 </span>                :<span class="lineNoCov">          0 :        const auto length = std::sqrt( dx*dx + dy*dy + dz*dz );</span>
-<span class="lineNum">     295 </span>                :<span class="lineNoCov">          0 :        if (length &lt; min[0]) min[0] = length;</span>
-<span class="lineNum">     296 </span>                :<span class="lineNoCov">          0 :        if (length &gt; max[0]) max[0] = length;</span>
-<span class="lineNum">     297 </span>                :<span class="lineNoCov">          0 :        sum[0] += 1.0;</span>
-<span class="lineNum">     298 </span>                :<span class="lineNoCov">          0 :        sum[1] += length;</span>
-<span class="lineNum">     299 </span>                :<span class="lineNoCov">          0 :        edgePDF.add( length );</span>
-<span class="lineNum">     300 </span>                :            :     }
-<span class="lineNum">     301 </span>                :            : 
-<span class="lineNum">     302 </span>                :            :   // Compute mesh cell volume statistics
-<span class="lineNum">     303 </span>                :<span class="lineNoCov">          0 :   for (std::size_t e=0; e&lt;m_inpoel.size()/4; ++e) {</span>
-<span class="lineNum">     304 </span>                :<span class="lineNoCov">          0 :     const std::array&lt; std::size_t, 4 &gt; N{{ m_inpoel[e*4+0], m_inpoel[e*4+1],</span>
-<span class="lineNum">     305 </span>                :<span class="lineNoCov">          0 :                                            m_inpoel[e*4+2], m_inpoel[e*4+3] }};</span>
-<span class="lineNum">     306 </span>                :            :     const std::array&lt; tk::real, 3 &gt;
-<span class="lineNum">     307 </span>                :<span class="lineNoCov">          0 :       ba{{ x[N[1]]-x[N[0]], y[N[1]]-y[N[0]], z[N[1]]-z[N[0]] }},</span>
-<span class="lineNum">     308 </span>                :<span class="lineNoCov">          0 :       ca{{ x[N[2]]-x[N[0]], y[N[2]]-y[N[0]], z[N[2]]-z[N[0]] }},</span>
-<span class="lineNum">     309 </span>                :<span class="lineNoCov">          0 :       da{{ x[N[3]]-x[N[0]], y[N[3]]-y[N[0]], z[N[3]]-z[N[0]] }};</span>
-<span class="lineNum">     310 </span>                :<span class="lineNoCov">          0 :     const auto L = std::cbrt( tk::triple( ba, ca, da ) / 6.0 );</span>
-<span class="lineNum">     311 </span>                :<span class="lineNoCov">          0 :     if (L &lt; min[1]) min[1] = L;</span>
-<span class="lineNum">     312 </span>                :<span class="lineNoCov">          0 :     if (L &gt; max[1]) max[1] = L;</span>
-<span class="lineNum">     313 </span>                :<span class="lineNoCov">          0 :     sum[2] += 1.0;</span>
-<span class="lineNum">     314 </span>                :<span class="lineNoCov">          0 :     sum[3] += L;</span>
-<span class="lineNum">     315 </span>                :<span class="lineNoCov">          0 :     volPDF.add( L );</span>
-<span class="lineNum">     316 </span>                :            :   }
-<span class="lineNum">     317 </span>                :            : 
-<span class="lineNum">     318 </span>                :            :   // Contribute to mesh statistics across all Discretization chares
-<span class="lineNum">     319 </span>                :            :   contribute( min, CkReduction::min_double,
-<span class="lineNum">     320 </span>                :<span class="lineNoCov">          0 :     CkCallback(CkReductionTarget(Transporter,minstat), m_transporter) );</span>
-<span class="lineNum">     321 </span>                :            :   contribute( max, CkReduction::max_double,
-<span class="lineNum">     322 </span>                :<span class="lineNoCov">          0 :     CkCallback(CkReductionTarget(Transporter,maxstat), m_transporter) );</span>
-<span class="lineNum">     323 </span>                :            :   contribute( sum, CkReduction::sum_double,
-<span class="lineNum">     324 </span>                :<span class="lineNoCov">          0 :     CkCallback(CkReductionTarget(Transporter,sumstat), m_transporter) );</span>
-<span class="lineNum">     325 </span>                :            : 
-<span class="lineNum">     326 </span>                :            :   // Serialize PDFs to raw stream
-<span class="lineNum">     327 </span>                :<span class="lineNoCov">          0 :   auto stream = tk::serialize( { edgePDF, volPDF } );</span>
-<span class="lineNum">     328 </span>                :            :   // Create Charm++ callback function for reduction of PDFs with
-<span class="lineNum">     329 </span>                :            :   // Transporter::pdfstat() as the final target where the results will appear.
-<span class="lineNum">     330 </span>                :<span class="lineNoCov">          0 :   CkCallback cb( CkIndex_Transporter::pdfstat(nullptr), m_transporter );</span>
-<span class="lineNum">     331 </span>                :            :   // Contribute serialized PDF of partial sums to host via Charm++ reduction
-<span class="lineNum">     332 </span>                :<span class="lineNoCov">          0 :   contribute( stream.first, stream.second.get(), PDFMerger, cb );</span>
-<span class="lineNum">     333 </span>                :<span class="lineNoCov">          0 : }</span>
-<a name="334"><span class="lineNum">     334 </span>                :            : </a>
-<span class="lineNum">     335 </span>                :            : void
-<span class="lineNum">     336 </span>                :<span class="lineNoCov">          0 : Discretization::readCoords()</span>
-<span class="lineNum">     337 </span>                :            : // *****************************************************************************
-<span class="lineNum">     338 </span>                :            : //  Read coordinates of mesh nodes from file
-<span class="lineNum">     339 </span>                :            : // *****************************************************************************
-<span class="lineNum">     340 </span>                :            : {
-<span class="lineNum">     341 </span>                :            :   tk::ExodusIIMeshReader
-<span class="lineNum">     342 </span>                :<span class="lineNoCov">          0 :     er( g_inputdeck.get&lt; tag::cmd, tag::io, tag::input &gt;() );</span>
-<span class="lineNum">     343 </span>                :            : 
-<span class="lineNum">     344 </span>                :<span class="lineNoCov">          0 :   auto nnode = er.readHeader();</span>
-<span class="lineNum">     345 </span>                :            : 
-<span class="lineNum">     346 </span>                :<span class="lineNoCov">          0 :   auto&amp; x = m_coord[0];</span>
-<span class="lineNum">     347 </span>                :<span class="lineNoCov">          0 :   auto&amp; y = m_coord[1];</span>
-<span class="lineNum">     348 </span>                :<span class="lineNoCov">          0 :   auto&amp; z = m_coord[2];</span>
+<span class="lineNum">     203 </span>                :            :   // Store nodal volumes without contributions from other chares on
+<span class="lineNum">     204 </span>                :            :   // chare-boundaries
+<span class="lineNum">     205 </span>                :<span class="lineNoCov">          0 :   m_v = m_vol;</span>
+<span class="lineNum">     206 </span>                :            : 
+<span class="lineNum">     207 </span>                :            :   // Send our nodal volume contributions to neighbor chares
+<span class="lineNum">     208 </span>                :<span class="lineNoCov">          0 :   if (m_msum.empty())</span>
+<span class="lineNum">     209 </span>                :<span class="lineNoCov">          0 :     contribute( CkCallback(CkReductionTarget(Transporter,vol), m_transporter) );</span>
+<span class="lineNum">     210 </span>                :            :   else
+<span class="lineNum">     211 </span>                :<span class="lineNoCov">          0 :     for (const auto&amp; n : m_msum) {</span>
+<span class="lineNum">     212 </span>                :<span class="lineNoCov">          0 :       std::vector&lt; tk::real &gt; v;</span>
+<span class="lineNum">     213 </span>                :<span class="lineNoCov">          0 :       for (auto i : n.second) v.push_back( m_vol[ tk::cref_find(m_lid,i) ] );</span>
+<span class="lineNum">     214 </span>                :<span class="lineNoCov">          0 :       thisProxy[ n.first ].comvol( n.second, v );</span>
+<span class="lineNum">     215 </span>                :<span class="lineNoCov">          0 :     }</span>
+<span class="lineNum">     216 </span>                :<span class="lineNoCov">          0 : }</span>
+<a name="217"><span class="lineNum">     217 </span>                :            : </a>
+<span class="lineNum">     218 </span>                :            : void
+<span class="lineNum">     219 </span>                :<span class="lineNoCov">          0 : Discretization::comvol( const std::vector&lt; std::size_t &gt;&amp; gid,</span>
+<span class="lineNum">     220 </span>                :            :                         const std::vector&lt; tk::real &gt;&amp; nodevol )
+<span class="lineNum">     221 </span>                :            : // *****************************************************************************
+<span class="lineNum">     222 </span>                :            : //  Receive nodal volumes on chare-boundaries
+<span class="lineNum">     223 </span>                :            : //! \param[in] gid Global mesh node IDs at which we receive volume contributions
+<span class="lineNum">     224 </span>                :            : //! \param[in] nodevol Partial sums of nodal volume contributions to
+<span class="lineNum">     225 </span>                :            : //!    chare-boundary nodes
+<span class="lineNum">     226 </span>                :            : //! \details This function receives contributions to m_vol, which stores the
+<span class="lineNum">     227 </span>                :            : //!   nodal volumes. While m_vol stores own contributions, m_volc collects the
+<span class="lineNum">     228 </span>                :            : //!   neighbor chare contributions during communication. This way work on m_vol
+<span class="lineNum">     229 </span>                :            : //!   and m_volc is overlapped. The two are combined in totalvol().
+<span class="lineNum">     230 </span>                :            : // *****************************************************************************
+<span class="lineNum">     231 </span>                :            : {
+<span class="lineNum">     232 </span>                :<span class="lineNoCov">          0 :   Assert( nodevol.size() == gid.size(), &quot;Size mismatch&quot; );</span>
+<span class="lineNum">     233 </span>                :            : 
+<span class="lineNum">     234 </span>                :<span class="lineNoCov">          0 :   for (std::size_t i=0; i&lt;gid.size(); ++i) {</span>
+<span class="lineNum">     235 </span>                :<span class="lineNoCov">          0 :     auto bid = tk::cref_find( m_bid, gid[i] );</span>
+<span class="lineNum">     236 </span>                :<span class="lineNoCov">          0 :     Assert( bid &lt; m_volc.size(), &quot;Indexing out of bounds&quot; );</span>
+<span class="lineNum">     237 </span>                :<span class="lineNoCov">          0 :     m_volc[ bid ] += nodevol[i];</span>
+<span class="lineNum">     238 </span>                :            :   }
+<span class="lineNum">     239 </span>                :            : 
+<span class="lineNum">     240 </span>                :<span class="lineNoCov">          0 :   if (++m_nvol == m_msum.size()) {</span>
+<span class="lineNum">     241 </span>                :<span class="lineNoCov">          0 :     m_nvol = 0;</span>
+<span class="lineNum">     242 </span>                :<span class="lineNoCov">          0 :     contribute( CkCallback(CkReductionTarget(Transporter,vol), m_transporter) );</span>
+<span class="lineNum">     243 </span>                :            :   }
+<span class="lineNum">     244 </span>                :<span class="lineNoCov">          0 : }</span>
+<a name="245"><span class="lineNum">     245 </span>                :            : </a>
+<span class="lineNum">     246 </span>                :            : void
+<span class="lineNum">     247 </span>                :<span class="lineNoCov">          0 : Discretization::totalvol()</span>
+<span class="lineNum">     248 </span>                :            : // *****************************************************************************
+<span class="lineNum">     249 </span>                :            : // Sum mesh volumes and contribute own mesh volume to total volume
+<span class="lineNum">     250 </span>                :            : // *****************************************************************************
+<span class="lineNum">     251 </span>                :            : {
+<span class="lineNum">     252 </span>                :            :   // Combine own and communicated contributions of nodal volumes
+<span class="lineNum">     253 </span>                :<span class="lineNoCov">          0 :   for (const auto&amp; b : m_bid) {</span>
+<span class="lineNum">     254 </span>                :<span class="lineNoCov">          0 :     auto lid = tk::cref_find( m_lid, b.first );</span>
+<span class="lineNum">     255 </span>                :<span class="lineNoCov">          0 :     m_vol[ lid ] += m_volc[ b.second ];</span>
+<span class="lineNum">     256 </span>                :            :   }
+<span class="lineNum">     257 </span>                :            : 
+<span class="lineNum">     258 </span>                :            :   // Sum mesh volume to host
+<span class="lineNum">     259 </span>                :<span class="lineNoCov">          0 :   tk::real tvol = 0.0;</span>
+<span class="lineNum">     260 </span>                :<span class="lineNoCov">          0 :   for (auto v : m_v) tvol += v;</span>
+<span class="lineNum">     261 </span>                :            :   contribute( sizeof(tk::real), &amp;tvol, CkReduction::sum_double,
+<span class="lineNum">     262 </span>                :<span class="lineNoCov">          0 :     CkCallback(CkReductionTarget(Transporter,totalvol), m_transporter) );</span>
+<span class="lineNum">     263 </span>                :<span class="lineNoCov">          0 : }</span>
+<a name="264"><span class="lineNum">     264 </span>                :            : </a>
+<span class="lineNum">     265 </span>                :            : void
+<span class="lineNum">     266 </span>                :<span class="lineNoCov">          0 : Discretization::stat()</span>
+<span class="lineNum">     267 </span>                :            : // *****************************************************************************
+<span class="lineNum">     268 </span>                :            : // Compute mesh cell statistics
+<span class="lineNum">     269 </span>                :            : // *****************************************************************************
+<span class="lineNum">     270 </span>                :            : {
+<span class="lineNum">     271 </span>                :<span class="lineNoCov">          0 :   const auto&amp; x = m_coord[0];</span>
+<span class="lineNum">     272 </span>                :<span class="lineNoCov">          0 :   const auto&amp; y = m_coord[1];</span>
+<span class="lineNum">     273 </span>                :<span class="lineNoCov">          0 :   const auto&amp; z = m_coord[2];</span>
+<span class="lineNum">     274 </span>                :            : 
+<span class="lineNum">     275 </span>                :<span class="lineNoCov">          0 :   auto MIN = -std::numeric_limits&lt; tk::real &gt;::max();</span>
+<span class="lineNum">     276 </span>                :<span class="lineNoCov">          0 :   auto MAX = std::numeric_limits&lt; tk::real &gt;::max();</span>
+<span class="lineNum">     277 </span>                :<span class="lineNoCov">          0 :   std::vector&lt; tk::real &gt; min{ MAX, MAX };</span>
+<span class="lineNum">     278 </span>                :<span class="lineNoCov">          0 :   std::vector&lt; tk::real &gt; max{ MIN, MIN };</span>
+<span class="lineNum">     279 </span>                :<span class="lineNoCov">          0 :   std::vector&lt; tk::real &gt; sum{ 0.0, 0.0, 0.0, 0.0 };</span>
+<span class="lineNum">     280 </span>                :<span class="lineNoCov">          0 :   tk::UniPDF edgePDF( 1e-4 );</span>
+<span class="lineNum">     281 </span>                :<span class="lineNoCov">          0 :   tk::UniPDF volPDF( 1e-4 );</span>
+<span class="lineNum">     282 </span>                :            : 
+<span class="lineNum">     283 </span>                :            :   // Compute edge length statistics
+<span class="lineNum">     284 </span>                :            :   // Note that while the min and max edge lengths are independent of the number
+<span class="lineNum">     285 </span>                :            :   // of CPUs (by the time they are aggregated across all chares), the sum of
+<span class="lineNum">     286 </span>                :            :   // the edge lengths and the edge length PDF are not. This is because the
+<span class="lineNum">     287 </span>                :            :   // edges on the chare-boundary are counted multiple times and we
+<span class="lineNum">     288 </span>                :            :   // conscientiously do not make an effort to precisely compute this, because
+<span class="lineNum">     289 </span>                :            :   // that would require communication and more complex logic. Since these
+<span class="lineNum">     290 </span>                :            :   // statistics are intended as simple average diagnostics, we ignore these
+<span class="lineNum">     291 </span>                :            :   // small differences. For reproducible average edge lengths and edge length
+<span class="lineNum">     292 </span>                :            :   // PDFs, run the mesh in serial.
+<span class="lineNum">     293 </span>                :<span class="lineNoCov">          0 :   for (std::size_t p=0; p&lt;m_gid.size(); ++p)</span>
+<span class="lineNum">     294 </span>                :<span class="lineNoCov">          0 :     for (auto i=m_psup.second[p]+1; i&lt;=m_psup.second[p+1]; ++i) {</span>
+<span class="lineNum">     295 </span>                :<span class="lineNoCov">          0 :        const auto dx = x[ m_psup.first[i] ] - x[ p ];</span>
+<span class="lineNum">     296 </span>                :<span class="lineNoCov">          0 :        const auto dy = y[ m_psup.first[i] ] - y[ p ];</span>
+<span class="lineNum">     297 </span>                :<span class="lineNoCov">          0 :        const auto dz = z[ m_psup.first[i] ] - z[ p ];</span>
+<span class="lineNum">     298 </span>                :<span class="lineNoCov">          0 :        const auto length = std::sqrt( dx*dx + dy*dy + dz*dz );</span>
+<span class="lineNum">     299 </span>                :<span class="lineNoCov">          0 :        if (length &lt; min[0]) min[0] = length;</span>
+<span class="lineNum">     300 </span>                :<span class="lineNoCov">          0 :        if (length &gt; max[0]) max[0] = length;</span>
+<span class="lineNum">     301 </span>                :<span class="lineNoCov">          0 :        sum[0] += 1.0;</span>
+<span class="lineNum">     302 </span>                :<span class="lineNoCov">          0 :        sum[1] += length;</span>
+<span class="lineNum">     303 </span>                :<span class="lineNoCov">          0 :        edgePDF.add( length );</span>
+<span class="lineNum">     304 </span>                :            :     }
+<span class="lineNum">     305 </span>                :            : 
+<span class="lineNum">     306 </span>                :            :   // Compute mesh cell volume statistics
+<span class="lineNum">     307 </span>                :<span class="lineNoCov">          0 :   for (std::size_t e=0; e&lt;m_inpoel.size()/4; ++e) {</span>
+<span class="lineNum">     308 </span>                :<span class="lineNoCov">          0 :     const std::array&lt; std::size_t, 4 &gt; N{{ m_inpoel[e*4+0], m_inpoel[e*4+1],</span>
+<span class="lineNum">     309 </span>                :<span class="lineNoCov">          0 :                                            m_inpoel[e*4+2], m_inpoel[e*4+3] }};</span>
+<span class="lineNum">     310 </span>                :            :     const std::array&lt; tk::real, 3 &gt;
+<span class="lineNum">     311 </span>                :<span class="lineNoCov">          0 :       ba{{ x[N[1]]-x[N[0]], y[N[1]]-y[N[0]], z[N[1]]-z[N[0]] }},</span>
+<span class="lineNum">     312 </span>                :<span class="lineNoCov">          0 :       ca{{ x[N[2]]-x[N[0]], y[N[2]]-y[N[0]], z[N[2]]-z[N[0]] }},</span>
+<span class="lineNum">     313 </span>                :<span class="lineNoCov">          0 :       da{{ x[N[3]]-x[N[0]], y[N[3]]-y[N[0]], z[N[3]]-z[N[0]] }};</span>
+<span class="lineNum">     314 </span>                :<span class="lineNoCov">          0 :     const auto L = std::cbrt( tk::triple( ba, ca, da ) / 6.0 );</span>
+<span class="lineNum">     315 </span>                :<span class="lineNoCov">          0 :     if (L &lt; min[1]) min[1] = L;</span>
+<span class="lineNum">     316 </span>                :<span class="lineNoCov">          0 :     if (L &gt; max[1]) max[1] = L;</span>
+<span class="lineNum">     317 </span>                :<span class="lineNoCov">          0 :     sum[2] += 1.0;</span>
+<span class="lineNum">     318 </span>                :<span class="lineNoCov">          0 :     sum[3] += L;</span>
+<span class="lineNum">     319 </span>                :<span class="lineNoCov">          0 :     volPDF.add( L );</span>
+<span class="lineNum">     320 </span>                :            :   }
+<span class="lineNum">     321 </span>                :            : 
+<span class="lineNum">     322 </span>                :            :   // Contribute to mesh statistics across all Discretization chares
+<span class="lineNum">     323 </span>                :            :   contribute( min, CkReduction::min_double,
+<span class="lineNum">     324 </span>                :<span class="lineNoCov">          0 :     CkCallback(CkReductionTarget(Transporter,minstat), m_transporter) );</span>
+<span class="lineNum">     325 </span>                :            :   contribute( max, CkReduction::max_double,
+<span class="lineNum">     326 </span>                :<span class="lineNoCov">          0 :     CkCallback(CkReductionTarget(Transporter,maxstat), m_transporter) );</span>
+<span class="lineNum">     327 </span>                :            :   contribute( sum, CkReduction::sum_double,
+<span class="lineNum">     328 </span>                :<span class="lineNoCov">          0 :     CkCallback(CkReductionTarget(Transporter,sumstat), m_transporter) );</span>
+<span class="lineNum">     329 </span>                :            : 
+<span class="lineNum">     330 </span>                :            :   // Serialize PDFs to raw stream
+<span class="lineNum">     331 </span>                :<span class="lineNoCov">          0 :   auto stream = tk::serialize( { edgePDF, volPDF } );</span>
+<span class="lineNum">     332 </span>                :            :   // Create Charm++ callback function for reduction of PDFs with
+<span class="lineNum">     333 </span>                :            :   // Transporter::pdfstat() as the final target where the results will appear.
+<span class="lineNum">     334 </span>                :<span class="lineNoCov">          0 :   CkCallback cb( CkIndex_Transporter::pdfstat(nullptr), m_transporter );</span>
+<span class="lineNum">     335 </span>                :            :   // Contribute serialized PDF of partial sums to host via Charm++ reduction
+<span class="lineNum">     336 </span>                :<span class="lineNoCov">          0 :   contribute( stream.first, stream.second.get(), PDFMerger, cb );</span>
+<span class="lineNum">     337 </span>                :<span class="lineNoCov">          0 : }</span>
+<a name="338"><span class="lineNum">     338 </span>                :            : </a>
+<span class="lineNum">     339 </span>                :            : void
+<span class="lineNum">     340 </span>                :<span class="lineNoCov">          0 : Discretization::writeMesh()</span>
+<span class="lineNum">     341 </span>                :            : // *****************************************************************************
+<span class="lineNum">     342 </span>                :            : // Output chare element blocks to file
+<span class="lineNum">     343 </span>                :            : // *****************************************************************************
+<span class="lineNum">     344 </span>                :            : {
+<span class="lineNum">     345 </span>                :<span class="lineNoCov">          0 :   if (!g_inputdeck.get&lt; tag::cmd, tag::benchmark &gt;()) {</span>
+<span class="lineNum">     346 </span>                :            : 
+<span class="lineNum">     347 </span>                :            :     #ifdef HAS_ROOT
+<span class="lineNum">     348 </span>                :<span class="lineNoCov">          0 :     auto filetype = g_inputdeck.get&lt; tag::selected, tag::filetype &gt;();</span>
 <span class="lineNum">     349 </span>                :            : 
-<span class="lineNum">     350 </span>                :<span class="lineNoCov">          0 :   auto nn = m_lid.size();</span>
-<span class="lineNum">     351 </span>                :<span class="lineNoCov">          0 :   x.resize( nn );</span>
-<span class="lineNum">     352 </span>                :<span class="lineNoCov">          0 :   y.resize( nn );</span>
-<span class="lineNum">     353 </span>                :<span class="lineNoCov">          0 :   z.resize( nn );</span>
+<span class="lineNum">     350 </span>                :<span class="lineNoCov">          0 :     if (filetype == tk::ctr::FieldFileType::ROOT) {</span>
+<span class="lineNum">     351 </span>                :            : 
+<span class="lineNum">     352 </span>                :<span class="lineNoCov">          0 :       tk::RootMeshWriter rmw( m_outFilename, 0 );</span>
+<span class="lineNum">     353 </span>                :<span class="lineNoCov">          0 :       rmw.writeMesh( tk::UnsMesh( m_inpoel, m_coord ) );</span>
 <span class="lineNum">     354 </span>                :            : 
-<span class="lineNum">     355 </span>                :<span class="lineNoCov">          0 :   for (auto p : m_gid) {</span>
-<span class="lineNum">     356 </span>                :<span class="lineNoCov">          0 :     auto n = m_filenodes.find(p);</span>
-<span class="lineNum">     357 </span>                :<span class="lineNoCov">          0 :     if (n != end(m_filenodes) &amp;&amp; n-&gt;second &lt; nnode)</span>
-<span class="lineNum">     358 </span>                :<span class="lineNoCov">          0 :       er.readNode( n-&gt;second, tk::cref_find(m_lid,n-&gt;first), x, y, z );</span>
-<span class="lineNum">     359 </span>                :<span class="lineNoCov">          0 :   }</span>
-<span class="lineNum">     360 </span>                :<span class="lineNoCov">          0 : }</span>
-<a name="361"><span class="lineNum">     361 </span>                :            : </a>
-<span class="lineNum">     362 </span>                :            : void
-<span class="lineNum">     363 </span>                :<span class="lineNoCov">          0 : Discretization::addEdgeNodeCoords()</span>
-<span class="lineNum">     364 </span>                :            : // *****************************************************************************
-<span class="lineNum">     365 </span>                :            : //  Add coordinates of mesh nodes newly generated to edge-mid points during
-<span class="lineNum">     366 </span>                :            : //  initial refinement
-<span class="lineNum">     367 </span>                :            : // *****************************************************************************
-<span class="lineNum">     368 </span>                :            : {
-<span class="lineNum">     369 </span>                :<span class="lineNoCov">          0 :   if (m_edgenodes.empty()) return;</span>
-<span class="lineNum">     370 </span>                :            : 
-<span class="lineNum">     371 </span>                :<span class="lineNoCov">          0 :   auto&amp; x = m_coord[0];</span>
-<span class="lineNum">     372 </span>                :<span class="lineNoCov">          0 :   auto&amp; y = m_coord[1];</span>
-<span class="lineNum">     373 </span>                :<span class="lineNoCov">          0 :   auto&amp; z = m_coord[2];</span>
-<span class="lineNum">     374 </span>                :<span class="lineNoCov">          0 :   Assert( x.size() == y.size() &amp;&amp; x.size() == z.size(), &quot;Size mismatch&quot; );</span>
-<span class="lineNum">     375 </span>                :            : 
-<a name="376"><span class="lineNum">     376 </span>                :            :   // Lambda to add coordinates for a single new node on an edge</a>
-<span class="lineNum">     377 </span>                :            :   auto addnode = [ this, &amp;x, &amp;y, &amp;z ]
-<span class="lineNum">     378 </span>                :<span class="lineNoCov">          0 :                  ( const decltype(m_edgenodes)::value_type&amp; e )</span>
-<span class="lineNum">     379 </span>                :            :   {
-<span class="lineNum">     380 </span>                :<span class="lineNoCov">          0 :     auto p = tk::cref_find( m_lid, e.first[0] );</span>
-<span class="lineNum">     381 </span>                :<span class="lineNoCov">          0 :     auto q = tk::cref_find( m_lid, e.first[1] );</span>
-<span class="lineNum">     382 </span>                :<span class="lineNoCov">          0 :     auto i = tk::cref_find( m_lid, e.second );</span>
-<span class="lineNum">     383 </span>                :<span class="lineNoCov">          0 :     Assert( p &lt; x.size(), &quot;Discretization chare &quot; + std::to_string(thisIndex) +</span>
-<span class="lineNum">     384 </span>                :            :                           &quot; indexing out of bounds: &quot; + std::to_string(p)
-<span class="lineNum">     385 </span>                :<span class="lineNoCov">          0 :                           + &quot; must be lower than &quot; + std::to_string(x.size()) );</span>
-<span class="lineNum">     386 </span>                :<span class="lineNoCov">          0 :     Assert( q &lt; x.size(), &quot;Discretization chare &quot; + std::to_string(thisIndex) +</span>
-<span class="lineNum">     387 </span>                :            :                           &quot; indexing out of bounds: &quot; + std::to_string(q)
-<span class="lineNum">     388 </span>                :<span class="lineNoCov">          0 :                           + &quot; must be lower than &quot; + std::to_string(x.size()) );</span>
-<span class="lineNum">     389 </span>                :<span class="lineNoCov">          0 :     Assert( i &lt; x.size(), &quot;Discretization chare &quot; + std::to_string(thisIndex) +</span>
-<span class="lineNum">     390 </span>                :            :                           &quot; indexing out of bounds: &quot; + std::to_string(i)
-<span class="lineNum">     391 </span>                :<span class="lineNoCov">          0 :                           + &quot; must be lower than &quot; + std::to_string(x.size()) );</span>
-<span class="lineNum">     392 </span>                :<span class="lineNoCov">          0 :     x[i] = (x[p]+x[q])/2.0;</span>
-<span class="lineNum">     393 </span>                :<span class="lineNoCov">          0 :     y[i] = (y[p]+y[q])/2.0;</span>
-<span class="lineNum">     394 </span>                :<span class="lineNoCov">          0 :     z[i] = (z[p]+z[q])/2.0;</span>
-<span class="lineNum">     395 </span>                :<span class="lineNoCov">          0 :   };</span>
-<span class="lineNum">     396 </span>                :            : 
-<span class="lineNum">     397 </span>                :            :   // add new nodes
-<span class="lineNum">     398 </span>                :<span class="lineNoCov">          0 :   for (const auto&amp; e : m_edgenodes) addnode( e );</span>
-<span class="lineNum">     399 </span>                :            : }
-<a name="400"><span class="lineNum">     400 </span>                :            : </a>
-<span class="lineNum">     401 </span>                :            : void
-<span class="lineNum">     402 </span>                :<span class="lineNoCov">          0 : Discretization::writeMesh()</span>
-<span class="lineNum">     403 </span>                :            : // *****************************************************************************
-<span class="lineNum">     404 </span>                :            : // Output chare element blocks to file
-<span class="lineNum">     405 </span>                :            : // *****************************************************************************
-<span class="lineNum">     406 </span>                :            : {
-<span class="lineNum">     407 </span>                :<span class="lineNoCov">          0 :   if (!g_inputdeck.get&lt; tag::cmd, tag::benchmark &gt;()) {</span>
-<span class="lineNum">     408 </span>                :            : 
-<span class="lineNum">     409 </span>                :            :     #ifdef HAS_ROOT
-<span class="lineNum">     410 </span>                :<span class="lineNoCov">          0 :     auto filetype = g_inputdeck.get&lt; tag::selected, tag::filetype &gt;();</span>
-<span class="lineNum">     411 </span>                :            : 
-<span class="lineNum">     412 </span>                :<span class="lineNoCov">          0 :     if (filetype == tk::ctr::FieldFileType::ROOT) {</span>
-<span class="lineNum">     413 </span>                :            : 
-<span class="lineNum">     414 </span>                :<span class="lineNoCov">          0 :       tk::RootMeshWriter rmw( m_outFilename, 0 );</span>
-<span class="lineNum">     415 </span>                :<span class="lineNoCov">          0 :       rmw.writeMesh( tk::UnsMesh( m_inpoel, m_coord ) );</span>
-<span class="lineNum">     416 </span>                :            : 
-<span class="lineNum">     417 </span>                :            :     } else
-<span class="lineNum">     418 </span>                :            :     #endif
-<span class="lineNum">     419 </span>                :            :     {
-<span class="lineNum">     420 </span>                :            : 
-<span class="lineNum">     421 </span>                :            :       // Create ExodusII writer
-<span class="lineNum">     422 </span>                :<span class="lineNoCov">          0 :       tk::ExodusIIMeshWriter ew( m_outFilename, tk::ExoWriter::CREATE );</span>
-<span class="lineNum">     423 </span>                :            :       // Write chare mesh initializing element connectivity and point coords
-<span class="lineNum">     424 </span>                :<span class="lineNoCov">          0 :       ew.writeMesh( tk::UnsMesh( m_inpoel, m_coord ) );</span>
-<span class="lineNum">     425 </span>                :            :     
-<span class="lineNum">     426 </span>                :            :     }    
-<span class="lineNum">     427 </span>                :            :   }
-<span class="lineNum">     428 </span>                :<span class="lineNoCov">          0 : }</span>
-<a name="429"><span class="lineNum">     429 </span>                :            : </a>
-<span class="lineNum">     430 </span>                :            : void
-<span class="lineNum">     431 </span>                :<span class="lineNoCov">          0 : Discretization::writeNodeSolution(</span>
-<span class="lineNum">     432 </span>                :            :   const tk::ExodusIIMeshWriter&amp; ew,
-<span class="lineNum">     433 </span>                :            :   uint64_t it,
-<span class="lineNum">     434 </span>                :            :   const std::vector&lt; std::vector&lt; tk::real &gt; &gt;&amp; u ) const
-<span class="lineNum">     435 </span>                :            : // *****************************************************************************
-<span class="lineNum">     436 </span>                :            : // Output solution to file
-<span class="lineNum">     437 </span>                :            : //! \param[in] ew ExodusII mesh-based writer object
-<span class="lineNum">     438 </span>                :            : //! \param[in] it Iteration count
-<span class="lineNum">     439 </span>                :            : //! \param[in] u Vector of fields to write to file
-<span class="lineNum">     440 </span>                :            : // *****************************************************************************
-<span class="lineNum">     441 </span>                :            : {
-<span class="lineNum">     442 </span>                :<span class="lineNoCov">          0 :   int varid = 0;</span>
-<span class="lineNum">     443 </span>                :<span class="lineNoCov">          0 :   for (const auto&amp; f : u) ew.writeNodeScalar( it, ++varid, f );</span>
-<span class="lineNum">     444 </span>                :<span class="lineNoCov">          0 : }</span>
-<span class="lineNum">     445 </span>                :            : 
-<a name="446"><span class="lineNum">     446 </span>                :            : #ifdef HAS_ROOT</a>
-<span class="lineNum">     447 </span>                :            : void
-<span class="lineNum">     448 </span>                :<span class="lineNoCov">          0 : Discretization::writeNodeSolution(</span>
-<span class="lineNum">     449 </span>                :            :   const tk::RootMeshWriter&amp; rmw,
-<span class="lineNum">     450 </span>                :            :   uint64_t it,
-<span class="lineNum">     451 </span>                :            :   const std::vector&lt; std::vector&lt; tk::real &gt; &gt;&amp; u ) const
-<span class="lineNum">     452 </span>                :            : // *****************************************************************************
-<span class="lineNum">     453 </span>                :            : // Output solution to file
-<span class="lineNum">     454 </span>                :            : //! \param[in] rmw Root mesh-based writer object
-<span class="lineNum">     455 </span>                :            : //! \param[in] it Iteration count
-<span class="lineNum">     456 </span>                :            : //! \param[in] u Vector of fields to write to file
-<span class="lineNum">     457 </span>                :            : // *****************************************************************************
-<span class="lineNum">     458 </span>                :            : {
-<span class="lineNum">     459 </span>                :<span class="lineNoCov">          0 :   int varid = 0;</span>
-<span class="lineNum">     460 </span>                :<span class="lineNoCov">          0 :   for (const auto&amp; f : u) rmw.writeNodeScalar( it, ++varid, f );</span>
-<span class="lineNum">     461 </span>                :<span class="lineNoCov">          0 : }</span>
-<span class="lineNum">     462 </span>                :            : #endif
+<span class="lineNum">     355 </span>                :            :     } else
+<span class="lineNum">     356 </span>                :            :     #endif
+<span class="lineNum">     357 </span>                :            :     {
+<span class="lineNum">     358 </span>                :            : 
+<span class="lineNum">     359 </span>                :            :       // Create ExodusII writer
+<span class="lineNum">     360 </span>                :<span class="lineNoCov">          0 :       tk::ExodusIIMeshWriter ew( m_outFilename, tk::ExoWriter::CREATE );</span>
+<span class="lineNum">     361 </span>                :            :       // Write chare mesh initializing element connectivity and point coords
+<span class="lineNum">     362 </span>                :<span class="lineNoCov">          0 :       ew.writeMesh( tk::UnsMesh( m_inpoel, m_coord ) );</span>
+<span class="lineNum">     363 </span>                :            :     
+<span class="lineNum">     364 </span>                :            :     }    
+<span class="lineNum">     365 </span>                :            :   }
+<span class="lineNum">     366 </span>                :<span class="lineNoCov">          0 : }</span>
+<a name="367"><span class="lineNum">     367 </span>                :            : </a>
+<span class="lineNum">     368 </span>                :            : void
+<span class="lineNum">     369 </span>                :<span class="lineNoCov">          0 : Discretization::writeNodeSolution(</span>
+<span class="lineNum">     370 </span>                :            :   const tk::ExodusIIMeshWriter&amp; ew,
+<span class="lineNum">     371 </span>                :            :   uint64_t it,
+<span class="lineNum">     372 </span>                :            :   const std::vector&lt; std::vector&lt; tk::real &gt; &gt;&amp; u ) const
+<span class="lineNum">     373 </span>                :            : // *****************************************************************************
+<span class="lineNum">     374 </span>                :            : // Output solution to file
+<span class="lineNum">     375 </span>                :            : //! \param[in] ew ExodusII mesh-based writer object
+<span class="lineNum">     376 </span>                :            : //! \param[in] it Iteration count
+<span class="lineNum">     377 </span>                :            : //! \param[in] u Vector of fields to write to file
+<span class="lineNum">     378 </span>                :            : // *****************************************************************************
+<span class="lineNum">     379 </span>                :            : {
+<span class="lineNum">     380 </span>                :<span class="lineNoCov">          0 :   int varid = 0;</span>
+<span class="lineNum">     381 </span>                :<span class="lineNoCov">          0 :   for (const auto&amp; f : u) ew.writeNodeScalar( it, ++varid, f );</span>
+<span class="lineNum">     382 </span>                :<span class="lineNoCov">          0 : }</span>
+<span class="lineNum">     383 </span>                :            : 
+<a name="384"><span class="lineNum">     384 </span>                :            : #ifdef HAS_ROOT</a>
+<span class="lineNum">     385 </span>                :            : void
+<span class="lineNum">     386 </span>                :<span class="lineNoCov">          0 : Discretization::writeNodeSolution(</span>
+<span class="lineNum">     387 </span>                :            :   const tk::RootMeshWriter&amp; rmw,
+<span class="lineNum">     388 </span>                :            :   uint64_t it,
+<span class="lineNum">     389 </span>                :            :   const std::vector&lt; std::vector&lt; tk::real &gt; &gt;&amp; u ) const
+<span class="lineNum">     390 </span>                :            : // *****************************************************************************
+<span class="lineNum">     391 </span>                :            : // Output solution to file
+<span class="lineNum">     392 </span>                :            : //! \param[in] rmw Root mesh-based writer object
+<span class="lineNum">     393 </span>                :            : //! \param[in] it Iteration count
+<span class="lineNum">     394 </span>                :            : //! \param[in] u Vector of fields to write to file
+<span class="lineNum">     395 </span>                :            : // *****************************************************************************
+<span class="lineNum">     396 </span>                :            : {
+<span class="lineNum">     397 </span>                :<span class="lineNoCov">          0 :   int varid = 0;</span>
+<span class="lineNum">     398 </span>                :<span class="lineNoCov">          0 :   for (const auto&amp; f : u) rmw.writeNodeScalar( it, ++varid, f );</span>
+<span class="lineNum">     399 </span>                :<span class="lineNoCov">          0 : }</span>
+<span class="lineNum">     400 </span>                :            : #endif
+<a name="401"><span class="lineNum">     401 </span>                :            : </a>
+<span class="lineNum">     402 </span>                :            : void
+<span class="lineNum">     403 </span>                :<span class="lineNoCov">          0 : Discretization::writeElemSolution(</span>
+<span class="lineNum">     404 </span>                :            :   const tk::ExodusIIMeshWriter&amp; ew,
+<span class="lineNum">     405 </span>                :            :   uint64_t it,
+<span class="lineNum">     406 </span>                :            :   const std::vector&lt; std::vector&lt; tk::real &gt; &gt;&amp; u ) const
+<span class="lineNum">     407 </span>                :            : // *****************************************************************************
+<span class="lineNum">     408 </span>                :            : // Output solution to file
+<span class="lineNum">     409 </span>                :            : //! \param[in] ew ExodusII mesh-based writer object
+<span class="lineNum">     410 </span>                :            : //! \param[in] it Iteration count
+<span class="lineNum">     411 </span>                :            : //! \param[in] u Vector of element fields to write to file
+<span class="lineNum">     412 </span>                :            : // *****************************************************************************
+<span class="lineNum">     413 </span>                :            : {
+<span class="lineNum">     414 </span>                :<span class="lineNoCov">          0 :   int varid = 0;</span>
+<span class="lineNum">     415 </span>                :<span class="lineNoCov">          0 :   for (const auto&amp; f : u) ew.writeElemScalar( it, ++varid, f );</span>
+<span class="lineNum">     416 </span>                :<span class="lineNoCov">          0 : }</span>
+<a name="417"><span class="lineNum">     417 </span>                :            : </a>
+<span class="lineNum">     418 </span>                :            : void
+<span class="lineNum">     419 </span>                :<span class="lineNoCov">          0 : Discretization::writeNodeMeta() const</span>
+<span class="lineNum">     420 </span>                :            : // *****************************************************************************
+<span class="lineNum">     421 </span>                :            : // Output mesh-based fields metadata to file
+<span class="lineNum">     422 </span>                :            : // *****************************************************************************
+<span class="lineNum">     423 </span>                :            : {
+<span class="lineNum">     424 </span>                :<span class="lineNoCov">          0 :   if (!g_inputdeck.get&lt; tag::cmd, tag::benchmark &gt;()) {</span>
+<span class="lineNum">     425 </span>                :            : 
+<span class="lineNum">     426 </span>                :            :     #ifdef HAS_ROOT
+<span class="lineNum">     427 </span>                :<span class="lineNoCov">          0 :     auto filetype = g_inputdeck.get&lt; tag::selected, tag::filetype &gt;();</span>
+<span class="lineNum">     428 </span>                :            : 
+<span class="lineNum">     429 </span>                :<span class="lineNoCov">          0 :     if (filetype == tk::ctr::FieldFileType::ROOT) {</span>
+<span class="lineNum">     430 </span>                :            :  
+<span class="lineNum">     431 </span>                :<span class="lineNoCov">          0 :       tk::RootMeshWriter rmw( m_outFilename, 1 );</span>
+<span class="lineNum">     432 </span>                :            : 
+<span class="lineNum">     433 </span>                :            :       // Collect nodal field output names from all PDEs
+<span class="lineNum">     434 </span>                :<span class="lineNoCov">          0 :       std::vector&lt; std::string &gt; names;</span>
+<span class="lineNum">     435 </span>                :<span class="lineNoCov">          0 :       for (const auto&amp; eq : g_cgpde) {</span>
+<span class="lineNum">     436 </span>                :<span class="lineNoCov">          0 :         auto n = eq.fieldNames();</span>
+<span class="lineNum">     437 </span>                :<span class="lineNoCov">          0 :         names.insert( end(names), begin(n), end(n) );</span>
+<span class="lineNum">     438 </span>                :<span class="lineNoCov">          0 :       }</span>
+<span class="lineNum">     439 </span>                :            : 
+<span class="lineNum">     440 </span>                :            :       // Write node field names
+<span class="lineNum">     441 </span>                :<span class="lineNoCov">          0 :       rmw.writeNodeVarNames( names );</span>
+<span class="lineNum">     442 </span>                :            : 
+<span class="lineNum">     443 </span>                :            :     } else
+<span class="lineNum">     444 </span>                :            :     #endif
+<span class="lineNum">     445 </span>                :            :     {
+<span class="lineNum">     446 </span>                :            : 
+<span class="lineNum">     447 </span>                :            :       // Create ExodusII writer
+<span class="lineNum">     448 </span>                :<span class="lineNoCov">          0 :       tk::ExodusIIMeshWriter ew( m_outFilename, tk::ExoWriter::OPEN );</span>
+<span class="lineNum">     449 </span>                :            : 
+<span class="lineNum">     450 </span>                :            :       // Collect nodal field output names from all PDEs
+<span class="lineNum">     451 </span>                :<span class="lineNoCov">          0 :       std::vector&lt; std::string &gt; names;</span>
+<span class="lineNum">     452 </span>                :<span class="lineNoCov">          0 :       for (const auto&amp; eq : g_cgpde) {</span>
+<span class="lineNum">     453 </span>                :<span class="lineNoCov">          0 :         auto n = eq.fieldNames();</span>
+<span class="lineNum">     454 </span>                :<span class="lineNoCov">          0 :         names.insert( end(names), begin(n), end(n) );</span>
+<span class="lineNum">     455 </span>                :<span class="lineNoCov">          0 :       }</span>
+<span class="lineNum">     456 </span>                :            : 
+<span class="lineNum">     457 </span>                :            :       // Write node field names
+<span class="lineNum">     458 </span>                :<span class="lineNoCov">          0 :       ew.writeNodeVarNames( names );</span>
+<span class="lineNum">     459 </span>                :            :     }
+<span class="lineNum">     460 </span>                :            : 
+<span class="lineNum">     461 </span>                :            :   }
+<span class="lineNum">     462 </span>                :<span class="lineNoCov">          0 : }</span>
 <a name="463"><span class="lineNum">     463 </span>                :            : </a>
 <span class="lineNum">     464 </span>                :            : void
-<span class="lineNum">     465 </span>                :<span class="lineNoCov">          0 : Discretization::writeElemSolution(</span>
-<span class="lineNum">     466 </span>                :            :   const tk::ExodusIIMeshWriter&amp; ew,
-<span class="lineNum">     467 </span>                :            :   uint64_t it,
-<span class="lineNum">     468 </span>                :            :   const std::vector&lt; std::vector&lt; tk::real &gt; &gt;&amp; u ) const
-<span class="lineNum">     469 </span>                :            : // *****************************************************************************
-<span class="lineNum">     470 </span>                :            : // Output solution to file
-<span class="lineNum">     471 </span>                :            : //! \param[in] ew ExodusII mesh-based writer object
-<span class="lineNum">     472 </span>                :            : //! \param[in] it Iteration count
-<span class="lineNum">     473 </span>                :            : //! \param[in] u Vector of element fields to write to file
-<span class="lineNum">     474 </span>                :            : // *****************************************************************************
-<span class="lineNum">     475 </span>                :            : {
-<span class="lineNum">     476 </span>                :<span class="lineNoCov">          0 :   int varid = 0;</span>
-<span class="lineNum">     477 </span>                :<span class="lineNoCov">          0 :   for (const auto&amp; f : u) ew.writeElemScalar( it, ++varid, f );</span>
-<span class="lineNum">     478 </span>                :<span class="lineNoCov">          0 : }</span>
-<a name="479"><span class="lineNum">     479 </span>                :            : </a>
-<span class="lineNum">     480 </span>                :            : void
-<span class="lineNum">     481 </span>                :<span class="lineNoCov">          0 : Discretization::writeNodeMeta() const</span>
-<span class="lineNum">     482 </span>                :            : // *****************************************************************************
-<span class="lineNum">     483 </span>                :            : // Output mesh-based fields metadata to file
-<span class="lineNum">     484 </span>                :            : // *****************************************************************************
-<span class="lineNum">     485 </span>                :            : {
-<span class="lineNum">     486 </span>                :<span class="lineNoCov">          0 :   if (!g_inputdeck.get&lt; tag::cmd, tag::benchmark &gt;()) {</span>
-<span class="lineNum">     487 </span>                :            : 
-<span class="lineNum">     488 </span>                :            :     #ifdef HAS_ROOT
-<span class="lineNum">     489 </span>                :<span class="lineNoCov">          0 :     auto filetype = g_inputdeck.get&lt; tag::selected, tag::filetype &gt;();</span>
-<span class="lineNum">     490 </span>                :            : 
-<span class="lineNum">     491 </span>                :<span class="lineNoCov">          0 :     if (filetype == tk::ctr::FieldFileType::ROOT) {</span>
-<span class="lineNum">     492 </span>                :            :  
-<span class="lineNum">     493 </span>                :<span class="lineNoCov">          0 :       tk::RootMeshWriter rmw( m_outFilename, 1 );</span>
-<span class="lineNum">     494 </span>                :            : 
-<span class="lineNum">     495 </span>                :            :       // Collect nodal field output names from all PDEs
-<span class="lineNum">     496 </span>                :<span class="lineNoCov">          0 :       std::vector&lt; std::string &gt; names;</span>
-<span class="lineNum">     497 </span>                :<span class="lineNoCov">          0 :       for (const auto&amp; eq : g_cgpde) {</span>
-<span class="lineNum">     498 </span>                :<span class="lineNoCov">          0 :         auto n = eq.fieldNames();</span>
-<span class="lineNum">     499 </span>                :<span class="lineNoCov">          0 :         names.insert( end(names), begin(n), end(n) );</span>
-<span class="lineNum">     500 </span>                :<span class="lineNoCov">          0 :       }</span>
-<span class="lineNum">     501 </span>                :            : 
-<span class="lineNum">     502 </span>                :            :       // Write node field names
-<span class="lineNum">     503 </span>                :<span class="lineNoCov">          0 :       rmw.writeNodeVarNames( names );</span>
-<span class="lineNum">     504 </span>                :            : 
-<span class="lineNum">     505 </span>                :            :     } else
-<span class="lineNum">     506 </span>                :            :     #endif
-<span class="lineNum">     507 </span>                :            :     {
-<span class="lineNum">     508 </span>                :            : 
-<span class="lineNum">     509 </span>                :            :       // Create ExodusII writer
-<span class="lineNum">     510 </span>                :<span class="lineNoCov">          0 :       tk::ExodusIIMeshWriter ew( m_outFilename, tk::ExoWriter::OPEN );</span>
-<span class="lineNum">     511 </span>                :            : 
-<span class="lineNum">     512 </span>                :            :       // Collect nodal field output names from all PDEs
-<span class="lineNum">     513 </span>                :<span class="lineNoCov">          0 :       std::vector&lt; std::string &gt; names;</span>
-<span class="lineNum">     514 </span>                :<span class="lineNoCov">          0 :       for (const auto&amp; eq : g_cgpde) {</span>
-<span class="lineNum">     515 </span>                :<span class="lineNoCov">          0 :         auto n = eq.fieldNames();</span>
-<span class="lineNum">     516 </span>                :<span class="lineNoCov">          0 :         names.insert( end(names), begin(n), end(n) );</span>
-<span class="lineNum">     517 </span>                :<span class="lineNoCov">          0 :       }</span>
-<span class="lineNum">     518 </span>                :            : 
-<span class="lineNum">     519 </span>                :            :       // Write node field names
-<span class="lineNum">     520 </span>                :<span class="lineNoCov">          0 :       ew.writeNodeVarNames( names );</span>
-<span class="lineNum">     521 </span>                :            :     }
-<span class="lineNum">     522 </span>                :            : 
-<span class="lineNum">     523 </span>                :            :   }
-<span class="lineNum">     524 </span>                :<span class="lineNoCov">          0 : }</span>
-<a name="525"><span class="lineNum">     525 </span>                :            : </a>
-<span class="lineNum">     526 </span>                :            : void
-<span class="lineNum">     527 </span>                :<span class="lineNoCov">          0 : Discretization::writeElemMeta() const</span>
-<span class="lineNum">     528 </span>                :            : // *****************************************************************************
-<span class="lineNum">     529 </span>                :            : // Output mesh-based element fields metadata to file
-<span class="lineNum">     530 </span>                :            : // *****************************************************************************
-<span class="lineNum">     531 </span>                :            : {
-<span class="lineNum">     532 </span>                :<span class="lineNoCov">          0 :   if (!g_inputdeck.get&lt; tag::cmd, tag::benchmark &gt;())</span>
-<span class="lineNum">     533 </span>                :            :   {
-<span class="lineNum">     534 </span>                :            :     // Create ExodusII writer
-<span class="lineNum">     535 </span>                :<span class="lineNoCov">          0 :     tk::ExodusIIMeshWriter ew( m_outFilename, tk::ExoWriter::OPEN );</span>
-<span class="lineNum">     536 </span>                :            : 
-<span class="lineNum">     537 </span>                :            :     // Collect elemental field output names from all PDEs
-<span class="lineNum">     538 </span>                :<span class="lineNoCov">          0 :     std::vector&lt; std::string &gt; names;</span>
-<span class="lineNum">     539 </span>                :<span class="lineNoCov">          0 :     for (const auto&amp; eq : g_dgpde) {</span>
-<span class="lineNum">     540 </span>                :<span class="lineNoCov">          0 :       auto n = eq.fieldNames();</span>
-<span class="lineNum">     541 </span>                :<span class="lineNoCov">          0 :       names.insert( end(names), begin(n), end(n) );</span>
-<span class="lineNum">     542 </span>                :<span class="lineNoCov">          0 :     }</span>
-<span class="lineNum">     543 </span>                :            : 
-<span class="lineNum">     544 </span>                :            :     // Write element field names
-<span class="lineNum">     545 </span>                :<span class="lineNoCov">          0 :     ew.writeElemVarNames( names );</span>
-<span class="lineNum">     546 </span>                :            :   }
-<span class="lineNum">     547 </span>                :<span class="lineNoCov">          0 : }</span>
-<a name="548"><span class="lineNum">     548 </span>                :            : </a>
-<span class="lineNum">     549 </span>                :            : void
-<span class="lineNum">     550 </span>                :<span class="lineNoCov">          0 : Discretization::setdt( tk::real newdt )</span>
-<span class="lineNum">     551 </span>                :            : // *****************************************************************************
-<span class="lineNum">     552 </span>                :            : // Set time step size
-<span class="lineNum">     553 </span>                :            : //! \param[in] newdt Size of the new time step
-<span class="lineNum">     554 </span>                :            : // *****************************************************************************
-<span class="lineNum">     555 </span>                :            : {
-<span class="lineNum">     556 </span>                :<span class="lineNoCov">          0 :   m_dt = newdt;</span>
-<span class="lineNum">     557 </span>                :            : 
-<span class="lineNum">     558 </span>                :            :   // Truncate the size of last time step
-<span class="lineNum">     559 </span>                :<span class="lineNoCov">          0 :   const auto term = g_inputdeck.get&lt; tag::discr, tag::term &gt;();</span>
-<span class="lineNum">     560 </span>                :<span class="lineNoCov">          0 :   if (m_t+m_dt &gt; term) m_dt = term - m_t;;</span>
-<span class="lineNum">     561 </span>                :<span class="lineNoCov">          0 : }</span>
-<a name="562"><span class="lineNum">     562 </span>                :            : </a>
-<span class="lineNum">     563 </span>                :            : void
-<span class="lineNum">     564 </span>                :<span class="lineNoCov">          0 : Discretization::next()</span>
-<span class="lineNum">     565 </span>                :            : // *****************************************************************************
-<span class="lineNum">     566 </span>                :            : // Prepare for next step
-<span class="lineNum">     567 </span>                :            : // *****************************************************************************
-<span class="lineNum">     568 </span>                :            : {
-<span class="lineNum">     569 </span>                :<span class="lineNoCov">          0 :   ++m_it;</span>
-<span class="lineNum">     570 </span>                :<span class="lineNoCov">          0 :   m_t += m_dt;</span>
-<span class="lineNum">     571 </span>                :<span class="lineNoCov">          0 : }</span>
-<a name="572"><span class="lineNum">     572 </span>                :            : </a>
-<span class="lineNum">     573 </span>                :            : void
-<span class="lineNum">     574 </span>                :<span class="lineNoCov">          0 : Discretization::status()</span>
-<span class="lineNum">     575 </span>                :            : // *****************************************************************************
-<span class="lineNum">     576 </span>                :            : // Output one-liner status report
-<span class="lineNum">     577 </span>                :            : // *****************************************************************************
-<span class="lineNum">     578 </span>                :            : {
-<span class="lineNum">     579 </span>                :            :   // Query after how many time steps user wants TTY dump
-<span class="lineNum">     580 </span>                :<span class="lineNoCov">          0 :   const auto tty = g_inputdeck.get&lt; tag::interval, tag::tty &gt;();</span>
-<span class="lineNum">     581 </span>                :            : 
-<span class="lineNum">     582 </span>                :<span class="lineNoCov">          0 :   if (thisIndex==0 &amp;&amp; !(m_it%tty)) {</span>
-<span class="lineNum">     583 </span>                :            : 
-<span class="lineNum">     584 </span>                :<span class="lineNoCov">          0 :     const auto term = g_inputdeck.get&lt; tag::discr, tag::term &gt;();</span>
-<span class="lineNum">     585 </span>                :<span class="lineNoCov">          0 :     const auto t0 = g_inputdeck.get&lt; tag::discr, tag::t0 &gt;();</span>
-<span class="lineNum">     586 </span>                :<span class="lineNoCov">          0 :     const auto nstep = g_inputdeck.get&lt; tag::discr, tag::nstep &gt;();</span>
-<span class="lineNum">     587 </span>                :<span class="lineNoCov">          0 :     const auto field = g_inputdeck.get&lt; tag::interval,tag::field &gt;();</span>
-<span class="lineNum">     588 </span>                :<span class="lineNoCov">          0 :     const auto diag = g_inputdeck.get&lt; tag::interval, tag::diag &gt;();</span>
-<span class="lineNum">     589 </span>                :<span class="lineNoCov">          0 :     const auto verbose = g_inputdeck.get&lt; tag::cmd, tag::verbose &gt;();</span>
-<span class="lineNum">     590 </span>                :            : 
-<span class="lineNum">     591 </span>                :            :     // estimate time elapsed and time for accomplishment
-<span class="lineNum">     592 </span>                :<span class="lineNoCov">          0 :     tk::Timer::Watch ete, eta;</span>
-<span class="lineNum">     593 </span>                :<span class="lineNoCov">          0 :     m_timer.eta( term-t0, m_t-t0, nstep, m_it, ete, eta );</span>
-<span class="lineNum">     594 </span>                :            :  
-<span class="lineNum">     595 </span>                :<span class="lineNoCov">          0 :     tk::Print print( verbose ? std::cout : std::clog );</span>
-<span class="lineNum">     596 </span>                :            :  
-<span class="lineNum">     597 </span>                :            :     // Output one-liner
-<span class="lineNum">     598 </span>                :<span class="lineNoCov">          0 :     print &lt;&lt; std::setfill(' ') &lt;&lt; std::setw(8) &lt;&lt; m_it &lt;&lt; &quot;  &quot;</span>
-<span class="lineNum">     599 </span>                :<span class="lineNoCov">          0 :           &lt;&lt; std::scientific &lt;&lt; std::setprecision(6)</span>
-<span class="lineNum">     600 </span>                :<span class="lineNoCov">          0 :           &lt;&lt; std::setw(12) &lt;&lt; m_t &lt;&lt; &quot;  &quot;</span>
-<span class="lineNum">     601 </span>                :<span class="lineNoCov">          0 :           &lt;&lt; m_dt &lt;&lt; &quot;  &quot;</span>
-<span class="lineNum">     602 </span>                :<span class="lineNoCov">          0 :           &lt;&lt; std::setfill('0')</span>
-<span class="lineNum">     603 </span>                :<span class="lineNoCov">          0 :           &lt;&lt; std::setw(3) &lt;&lt; ete.hrs.count() &lt;&lt; &quot;:&quot;</span>
-<span class="lineNum">     604 </span>                :<span class="lineNoCov">          0 :           &lt;&lt; std::setw(2) &lt;&lt; ete.min.count() &lt;&lt; &quot;:&quot;</span>
-<span class="lineNum">     605 </span>                :<span class="lineNoCov">          0 :           &lt;&lt; std::setw(2) &lt;&lt; ete.sec.count() &lt;&lt; &quot;  &quot;</span>
-<span class="lineNum">     606 </span>                :<span class="lineNoCov">          0 :           &lt;&lt; std::setw(3) &lt;&lt; eta.hrs.count() &lt;&lt; &quot;:&quot;</span>
-<span class="lineNum">     607 </span>                :<span class="lineNoCov">          0 :           &lt;&lt; std::setw(2) &lt;&lt; eta.min.count() &lt;&lt; &quot;:&quot;</span>
-<span class="lineNum">     608 </span>                :<span class="lineNoCov">          0 :           &lt;&lt; std::setw(2) &lt;&lt; eta.sec.count() &lt;&lt; &quot;  &quot;;</span>
-<span class="lineNum">     609 </span>                :            :   
-<span class="lineNum">     610 </span>                :            :     // Augment one-liner with output indicators
-<span class="lineNum">     611 </span>                :<span class="lineNoCov">          0 :     if (!(m_it % field)) print &lt;&lt; 'F';</span>
-<span class="lineNum">     612 </span>                :<span class="lineNoCov">          0 :     if (!(m_it % diag)) print &lt;&lt; 'D';</span>
-<span class="lineNum">     613 </span>                :            :   
-<span class="lineNum">     614 </span>                :<span class="lineNoCov">          0 :     print &lt;&lt; std::endl;</span>
-<span class="lineNum">     615 </span>                :            :   }
-<span class="lineNum">     616 </span>                :<span class="lineNoCov">          0 : }</span>
-<span class="lineNum">     617 </span>                :            : 
-<span class="lineNum">     618 </span>                :            : #include &quot;NoWarning/discretization.def.h&quot;
+<span class="lineNum">     465 </span>                :<span class="lineNoCov">          0 : Discretization::writeElemMeta() const</span>
+<span class="lineNum">     466 </span>                :            : // *****************************************************************************
+<span class="lineNum">     467 </span>                :            : // Output mesh-based element fields metadata to file
+<span class="lineNum">     468 </span>                :            : // *****************************************************************************
+<span class="lineNum">     469 </span>                :            : {
+<span class="lineNum">     470 </span>                :<span class="lineNoCov">          0 :   if (!g_inputdeck.get&lt; tag::cmd, tag::benchmark &gt;())</span>
+<span class="lineNum">     471 </span>                :            :   {
+<span class="lineNum">     472 </span>                :            :     // Create ExodusII writer
+<span class="lineNum">     473 </span>                :<span class="lineNoCov">          0 :     tk::ExodusIIMeshWriter ew( m_outFilename, tk::ExoWriter::OPEN );</span>
+<span class="lineNum">     474 </span>                :            : 
+<span class="lineNum">     475 </span>                :            :     // Collect elemental field output names from all PDEs
+<span class="lineNum">     476 </span>                :<span class="lineNoCov">          0 :     std::vector&lt; std::string &gt; names;</span>
+<span class="lineNum">     477 </span>                :<span class="lineNoCov">          0 :     for (const auto&amp; eq : g_dgpde) {</span>
+<span class="lineNum">     478 </span>                :<span class="lineNoCov">          0 :       auto n = eq.fieldNames();</span>
+<span class="lineNum">     479 </span>                :<span class="lineNoCov">          0 :       names.insert( end(names), begin(n), end(n) );</span>
+<span class="lineNum">     480 </span>                :<span class="lineNoCov">          0 :     }</span>
+<span class="lineNum">     481 </span>                :            : 
+<span class="lineNum">     482 </span>                :            :     // Write element field names
+<span class="lineNum">     483 </span>                :<span class="lineNoCov">          0 :     ew.writeElemVarNames( names );</span>
+<span class="lineNum">     484 </span>                :            :   }
+<span class="lineNum">     485 </span>                :<span class="lineNoCov">          0 : }</span>
+<a name="486"><span class="lineNum">     486 </span>                :            : </a>
+<span class="lineNum">     487 </span>                :            : void
+<span class="lineNum">     488 </span>                :<span class="lineNoCov">          0 : Discretization::setdt( tk::real newdt )</span>
+<span class="lineNum">     489 </span>                :            : // *****************************************************************************
+<span class="lineNum">     490 </span>                :            : // Set time step size
+<span class="lineNum">     491 </span>                :            : //! \param[in] newdt Size of the new time step
+<span class="lineNum">     492 </span>                :            : // *****************************************************************************
+<span class="lineNum">     493 </span>                :            : {
+<span class="lineNum">     494 </span>                :<span class="lineNoCov">          0 :   m_dt = newdt;</span>
+<span class="lineNum">     495 </span>                :            : 
+<span class="lineNum">     496 </span>                :            :   // Truncate the size of last time step
+<span class="lineNum">     497 </span>                :<span class="lineNoCov">          0 :   const auto term = g_inputdeck.get&lt; tag::discr, tag::term &gt;();</span>
+<span class="lineNum">     498 </span>                :<span class="lineNoCov">          0 :   if (m_t+m_dt &gt; term) m_dt = term - m_t;;</span>
+<span class="lineNum">     499 </span>                :<span class="lineNoCov">          0 : }</span>
+<a name="500"><span class="lineNum">     500 </span>                :            : </a>
+<span class="lineNum">     501 </span>                :            : void
+<span class="lineNum">     502 </span>                :<span class="lineNoCov">          0 : Discretization::next()</span>
+<span class="lineNum">     503 </span>                :            : // *****************************************************************************
+<span class="lineNum">     504 </span>                :            : // Prepare for next step
+<span class="lineNum">     505 </span>                :            : // *****************************************************************************
+<span class="lineNum">     506 </span>                :            : {
+<span class="lineNum">     507 </span>                :<span class="lineNoCov">          0 :   ++m_it;</span>
+<span class="lineNum">     508 </span>                :<span class="lineNoCov">          0 :   m_t += m_dt;</span>
+<span class="lineNum">     509 </span>                :<span class="lineNoCov">          0 : }</span>
+<a name="510"><span class="lineNum">     510 </span>                :            : </a>
+<span class="lineNum">     511 </span>                :            : void
+<span class="lineNum">     512 </span>                :<span class="lineNoCov">          0 : Discretization::status()</span>
+<span class="lineNum">     513 </span>                :            : // *****************************************************************************
+<span class="lineNum">     514 </span>                :            : // Output one-liner status report
+<span class="lineNum">     515 </span>                :            : // *****************************************************************************
+<span class="lineNum">     516 </span>                :            : {
+<span class="lineNum">     517 </span>                :            :   // Query after how many time steps user wants TTY dump
+<span class="lineNum">     518 </span>                :<span class="lineNoCov">          0 :   const auto tty = g_inputdeck.get&lt; tag::interval, tag::tty &gt;();</span>
+<span class="lineNum">     519 </span>                :            : 
+<span class="lineNum">     520 </span>                :<span class="lineNoCov">          0 :   if (thisIndex==0 &amp;&amp; !(m_it%tty)) {</span>
+<span class="lineNum">     521 </span>                :            : 
+<span class="lineNum">     522 </span>                :<span class="lineNoCov">          0 :     const auto term = g_inputdeck.get&lt; tag::discr, tag::term &gt;();</span>
+<span class="lineNum">     523 </span>                :<span class="lineNoCov">          0 :     const auto t0 = g_inputdeck.get&lt; tag::discr, tag::t0 &gt;();</span>
+<span class="lineNum">     524 </span>                :<span class="lineNoCov">          0 :     const auto nstep = g_inputdeck.get&lt; tag::discr, tag::nstep &gt;();</span>
+<span class="lineNum">     525 </span>                :<span class="lineNoCov">          0 :     const auto field = g_inputdeck.get&lt; tag::interval,tag::field &gt;();</span>
+<span class="lineNum">     526 </span>                :<span class="lineNoCov">          0 :     const auto diag = g_inputdeck.get&lt; tag::interval, tag::diag &gt;();</span>
+<span class="lineNum">     527 </span>                :<span class="lineNoCov">          0 :     const auto verbose = g_inputdeck.get&lt; tag::cmd, tag::verbose &gt;();</span>
+<span class="lineNum">     528 </span>                :            : 
+<span class="lineNum">     529 </span>                :            :     // estimate time elapsed and time for accomplishment
+<span class="lineNum">     530 </span>                :<span class="lineNoCov">          0 :     tk::Timer::Watch ete, eta;</span>
+<span class="lineNum">     531 </span>                :<span class="lineNoCov">          0 :     m_timer.eta( term-t0, m_t-t0, nstep, m_it, ete, eta );</span>
+<span class="lineNum">     532 </span>                :            :  
+<span class="lineNum">     533 </span>                :<span class="lineNoCov">          0 :     tk::Print print( verbose ? std::cout : std::clog );</span>
+<span class="lineNum">     534 </span>                :            :  
+<span class="lineNum">     535 </span>                :            :     // Output one-liner
+<span class="lineNum">     536 </span>                :<span class="lineNoCov">          0 :     print &lt;&lt; std::setfill(' ') &lt;&lt; std::setw(8) &lt;&lt; m_it &lt;&lt; &quot;  &quot;</span>
+<span class="lineNum">     537 </span>                :<span class="lineNoCov">          0 :           &lt;&lt; std::scientific &lt;&lt; std::setprecision(6)</span>
+<span class="lineNum">     538 </span>                :<span class="lineNoCov">          0 :           &lt;&lt; std::setw(12) &lt;&lt; m_t &lt;&lt; &quot;  &quot;</span>
+<span class="lineNum">     539 </span>                :<span class="lineNoCov">          0 :           &lt;&lt; m_dt &lt;&lt; &quot;  &quot;</span>
+<span class="lineNum">     540 </span>                :<span class="lineNoCov">          0 :           &lt;&lt; std::setfill('0')</span>
+<span class="lineNum">     541 </span>                :<span class="lineNoCov">          0 :           &lt;&lt; std::setw(3) &lt;&lt; ete.hrs.count() &lt;&lt; &quot;:&quot;</span>
+<span class="lineNum">     542 </span>                :<span class="lineNoCov">          0 :           &lt;&lt; std::setw(2) &lt;&lt; ete.min.count() &lt;&lt; &quot;:&quot;</span>
+<span class="lineNum">     543 </span>                :<span class="lineNoCov">          0 :           &lt;&lt; std::setw(2) &lt;&lt; ete.sec.count() &lt;&lt; &quot;  &quot;</span>
+<span class="lineNum">     544 </span>                :<span class="lineNoCov">          0 :           &lt;&lt; std::setw(3) &lt;&lt; eta.hrs.count() &lt;&lt; &quot;:&quot;</span>
+<span class="lineNum">     545 </span>                :<span class="lineNoCov">          0 :           &lt;&lt; std::setw(2) &lt;&lt; eta.min.count() &lt;&lt; &quot;:&quot;</span>
+<span class="lineNum">     546 </span>                :<span class="lineNoCov">          0 :           &lt;&lt; std::setw(2) &lt;&lt; eta.sec.count() &lt;&lt; &quot;  &quot;;</span>
+<span class="lineNum">     547 </span>                :            :   
+<span class="lineNum">     548 </span>                :            :     // Augment one-liner with output indicators
+<span class="lineNum">     549 </span>                :<span class="lineNoCov">          0 :     if (!(m_it % field)) print &lt;&lt; 'F';</span>
+<span class="lineNum">     550 </span>                :<span class="lineNoCov">          0 :     if (!(m_it % diag)) print &lt;&lt; 'D';</span>
+<span class="lineNum">     551 </span>                :            :   
+<span class="lineNum">     552 </span>                :<span class="lineNoCov">          0 :     print &lt;&lt; std::endl;</span>
+<span class="lineNum">     553 </span>                :            :   }
+<span class="lineNum">     554 </span>                :<span class="lineNoCov">          0 : }</span>
+<span class="lineNum">     555 </span>                :            : 
+<span class="lineNum">     556 </span>                :            : #include &quot;NoWarning/discretization.def.h&quot;
 </pre>
       </td>
     </tr>

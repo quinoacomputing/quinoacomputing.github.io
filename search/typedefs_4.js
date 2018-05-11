@@ -1,13 +1,14 @@
 var searchData=
 [
   ['edge',['Edge',['../classtk_1_1_uns_mesh.html#a622c34bab099c772650f046b848346d7',1,'tk::UnsMesh']]],
-  ['edge_5f',['edge_',['../classedge__t.html#ab67760b669a1938ab90f3a5572469406',1,'edge_t']]],
+  ['edge_5f',['edge_',['../classedge__t.html#a78b4ea4d702c9d5812d30a5cf9f30a2a',1,'edge_t']]],
   ['edge_5flist_5fids_5ft',['edge_list_ids_t',['../_a_m_r__types_8h.html#a0e0a879e7a89ead2491c94095b48aa4b',1,'AMR_types.h']]],
   ['edge_5flist_5ft',['edge_list_t',['../_a_m_r__types_8h.html#ae2ec394d1b4534c8913fae0c6dff1f41',1,'AMR_types.h']]],
   ['edgechares',['EdgeChares',['../classtk_1_1_uns_mesh.html#a11a7aae0f8c2d3292b9b7e3f5ea50c9c',1,'tk::UnsMesh']]],
+  ['edgenodecoord',['EdgeNodeCoord',['../classtk_1_1_uns_mesh.html#a7ad1f185e755943972c23fb884b06b5d',1,'tk::UnsMesh']]],
   ['edgenodes',['EdgeNodes',['../classtk_1_1_uns_mesh.html#a839b6c15c42461bb067924eb8fb95b42',1,'tk::UnsMesh']]],
-  ['edges',['Edges',['../classtk_1_1_uns_mesh.html#a11894f8b13b973c0e30146023fe88123',1,'tk::UnsMesh']]],
   ['edges_5ft',['edges_t',['../_a_m_r__types_8h.html#a4284a8fd5db8dcc7883cae47f9c78fb8',1,'AMR_types.h']]],
+  ['edgeset',['EdgeSet',['../classtk_1_1_uns_mesh.html#a9b201ee5ec18aa6deddbca2a680dec2b',1,'tk::UnsMesh']]],
   ['entitytopologytype',['EntityTopologyType',['../classtk_1_1zoltan_1_1_geometric_mesh_elem_adapter.html#a54328b93eee2df96a6d9a64d9086f10b',1,'tk::zoltan::GeometricMeshElemAdapter']]],
   ['enumtype',['EnumType',['../classtk_1_1_toggle.html#ac7968f1f6da0197c265dbae3e60cbace',1,'tk::Toggle']]],
   ['eqs',['eqs',['../structtut_1_1_system_components__common.html#a511864bfc59eda9066d0610c4d6916d4',1,'tut::SystemComponents_common']]],

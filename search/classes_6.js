@@ -9,6 +9,8 @@ var searchData=
   ['generalizeddirichlet',['GeneralizedDirichlet',['../classwalker_1_1_generalized_dirichlet.html',1,'walker']]],
   ['generalizeddirichletcoeffconst',['GeneralizedDirichletCoeffConst',['../classwalker_1_1_generalized_dirichlet_coeff_const.html',1,'walker']]],
   ['generator',['generator',['../structtag_1_1generator.html',1,'tag']]],
+  ['genncompmap',['genNcompMap',['../structtk_1_1ctr_1_1ncomponents_1_1gen_ncomp_map.html',1,'tk::ctr::ncomponents']]],
+  ['genoffsetmap',['genOffsetMap',['../structtk_1_1ctr_1_1ncomponents_1_1gen_offset_map.html',1,'tk::ctr::ncomponents']]],
   ['geometricmeshelemadapter',['GeometricMeshElemAdapter',['../classtk_1_1zoltan_1_1_geometric_mesh_elem_adapter.html',1,'tk::zoltan']]],
   ['gid',['gid',['../structtag_1_1gid.html',1,'tag']]],
   ['glm',['glm',['../structtag_1_1glm.html',1,'tag']]],
