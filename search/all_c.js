@@ -245,7 +245,6 @@ var searchData=
   ['m_5fnpe',['m_npe',['../classinciter_1_1_partitioner.html#aa6450dbbf36bf5cb36088bdcec7a4445',1,'inciter::Partitioner']]],
   ['m_5fnpedist',['m_npeDist',['../classinciter_1_1_partitioner.html#a014b468e68f031bd2adbc78a7819e531',1,'inciter::Partitioner']]],
   ['m_5fnperow',['m_nperow',['../classtk_1_1_solver.html#a4e3671da52361509cca6781a7aab834c',1,'tk::Solver']]],
-  ['m_5fnpoin',['m_npoin',['../classinciter_1_1_transporter.html#a36524410046880b316588557cf51a0a1',1,'inciter::Transporter']]],
   ['m_5fnprop',['m_nprop',['../classtk_1_1_data.html#a3420a6524c2d9e08c6d555c93f21b6b5',1,'tk::Data::m_nprop()'],['../structtk_1_1ctr_1_1ncomponents_1_1addncomp.html#a05b514d7903dd23982200a6d295d776e',1,'tk::ctr::ncomponents::addncomp::m_nprop()']]],
   ['m_5fnpval',['m_npval',['../classrngtest_1_1_test_u01_suite.html#a7834ed40d048640cb7007bb113bf977f',1,'rngtest::TestU01Suite']]],
   ['m_5fnquery',['m_nquery',['../classinciter_1_1_partitioner.html#a14f06d050b2bce8637646757de64ea87',1,'inciter::Partitioner']]],
