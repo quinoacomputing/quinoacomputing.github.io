@@ -10,7 +10,7 @@ var searchData=
   ['mesh_5fobject',['Mesh_object',['../namespacetut.html#abc803910df9fd38620424770a84b1358',1,'tut']]],
   ['meshentitytype',['MeshEntityType',['../classtk_1_1zoltan_1_1_geometric_mesh_elem_adapter.html#abf081726cc387df6d327e4c8ecaf9870',1,'tk::zoltan::GeometricMeshElemAdapter']]],
   ['minutes',['minutes',['../classtk_1_1_timer.html#a81ac34834fa52666ca09d0d4183af94d',1,'tk::Timer']]],
-  ['mixmassfracbetacoeffpolicies',['MixMassFracBetaCoeffPolicies',['../namespacewalker.html#a344a6ad9bf81266f7751ab656ca21bd3',1,'walker']]],
+  ['mixmassfracbetacoeffpolicies',['MixMassFracBetaCoeffPolicies',['../namespacewalker.html#a0130e0e7ed77827c5192c4909c524028',1,'walker']]],
   ['mixmassfractionbetaparameters',['MixMassFractionBetaParameters',['../namespacewalker_1_1ctr.html#a07bcdfa571ccdd0773e01a6574148a68',1,'walker::ctr']]],
   ['mixnumberfractionbetaparameters',['MixNumberFractionBetaParameters',['../namespacewalker_1_1ctr.html#a2e82acb9fb4be90e23d639f4b4c26bd3',1,'walker::ctr']]],
   ['mixnumfracbetacoeffpolicies',['MixNumFracBetaCoeffPolicies',['../namespacewalker.html#a308f46d7c38c119b4a5700e44f59b80f',1,'walker']]],

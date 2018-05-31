@@ -30,7 +30,7 @@ var searchData=
   ['check_5fcompflow',['check_compflow',['../structtk_1_1grm_1_1check__compflow.html',1,'tk::grm']]],
   ['check_5fdt',['check_dt',['../structtk_1_1grm_1_1check__dt.html',1,'tk::grm']]],
   ['check_5feq',['check_eq',['../structtk_1_1grm_1_1check__eq.html',1,'tk::grm']]],
-  ['check_5ferrors',['check_errors',['../structinciter_1_1deck_1_1check__errors.html',1,'inciter::deck::check_errors&lt; eq, eqchecker &gt;'],['../structwalker_1_1deck_1_1check__errors.html',1,'walker::deck::check_errors&lt; eq, extra_checks &gt;']]],
+  ['check_5ferrors',['check_errors',['../structwalker_1_1deck_1_1check__errors.html',1,'walker::deck::check_errors&lt; eq, extra_checks &gt;'],['../structinciter_1_1deck_1_1check__errors.html',1,'inciter::deck::check_errors&lt; eq, eqchecker &gt;']]],
   ['check_5fexpectation',['check_expectation',['../structtk_1_1grm_1_1check__expectation.html',1,'tk::grm']]],
   ['check_5fextents',['check_extents',['../structtk_1_1grm_1_1check__extents.html',1,'tk::grm']]],
   ['check_5finit',['check_init',['../structtk_1_1grm_1_1check__init.html',1,'tk::grm']]],

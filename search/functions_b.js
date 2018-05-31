@@ -42,7 +42,7 @@ var searchData=
   ['minstat',['minstat',['../classinciter_1_1_transporter.html#aab45f7e66b7b8bf5b6ed0b0c08ca4e3c',1,'inciter::Transporter']]],
   ['mixmassfracbetacoeffdecay',['MixMassFracBetaCoeffDecay',['../classwalker_1_1_mix_mass_frac_beta_coeff_decay.html#ace0b2ff54e515185e6b7fe9a0871b06c',1,'walker::MixMassFracBetaCoeffDecay']]],
   ['mixmassfracbetacoeffhomdecay',['MixMassFracBetaCoeffHomDecay',['../classwalker_1_1_mix_mass_frac_beta_coeff_hom_decay.html#a5825d1038a3f3322b06508dfee9df999',1,'walker::MixMassFracBetaCoeffHomDecay']]],
-  ['mixmassfracbetacoeffhydrotimescalehomdecay',['MixMassFracBetaCoeffHydroTimeScaleHomDecay',['../classwalker_1_1_mix_mass_frac_beta_coeff_hydro_time_scale_hom_decay.html#a970726261ab318c7b04685d54f860ddb',1,'walker::MixMassFracBetaCoeffHydroTimeScaleHomDecay']]],
+  ['mixmassfracbetacoeffhydrotimescale',['MixMassFracBetaCoeffHydroTimeScale',['../classwalker_1_1_mix_mass_frac_beta_coeff_hydro_time_scale.html#abfe7fbafd1a28babd8724e0475798d59',1,'walker::MixMassFracBetaCoeffHydroTimeScale']]],
   ['mixmassfracbetacoeffmontecarlohomdecay',['MixMassFracBetaCoeffMonteCarloHomDecay',['../classwalker_1_1_mix_mass_frac_beta_coeff_monte_carlo_hom_decay.html#ae10327a483709c643ccc37b2d927a801',1,'walker::MixMassFracBetaCoeffMonteCarloHomDecay']]],
   ['mixmassfractionbeta',['MixMassFractionBeta',['../classwalker_1_1_mix_mass_fraction_beta.html#a984591041b8dcf7734369c7f5dd65ef6',1,'walker::MixMassFractionBeta']]],
   ['mixnumberfractionbeta',['MixNumberFractionBeta',['../classwalker_1_1_mix_number_fraction_beta.html#ad1bfccde402aee62ace104979642e41b',1,'walker::MixNumberFractionBeta']]],

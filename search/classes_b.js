@@ -31,7 +31,7 @@ var searchData=
   ['mixmassfracbeta',['mixmassfracbeta',['../structwalker_1_1deck_1_1mixmassfracbeta.html',1,'walker::deck::mixmassfracbeta'],['../structtag_1_1mixmassfracbeta.html',1,'tag::mixmassfracbeta']]],
   ['mixmassfracbetacoeffdecay',['MixMassFracBetaCoeffDecay',['../classwalker_1_1_mix_mass_frac_beta_coeff_decay.html',1,'walker']]],
   ['mixmassfracbetacoeffhomdecay',['MixMassFracBetaCoeffHomDecay',['../classwalker_1_1_mix_mass_frac_beta_coeff_hom_decay.html',1,'walker']]],
-  ['mixmassfracbetacoeffhydrotimescalehomdecay',['MixMassFracBetaCoeffHydroTimeScaleHomDecay',['../classwalker_1_1_mix_mass_frac_beta_coeff_hydro_time_scale_hom_decay.html',1,'walker']]],
+  ['mixmassfracbetacoeffhydrotimescale',['MixMassFracBetaCoeffHydroTimeScale',['../classwalker_1_1_mix_mass_frac_beta_coeff_hydro_time_scale.html',1,'walker']]],
   ['mixmassfracbetacoeffmontecarlohomdecay',['MixMassFracBetaCoeffMonteCarloHomDecay',['../classwalker_1_1_mix_mass_frac_beta_coeff_monte_carlo_hom_decay.html',1,'walker']]],
   ['mixmassfractionbeta',['MixMassFractionBeta',['../classwalker_1_1_mix_mass_fraction_beta.html',1,'walker']]],
   ['mixnumberfractionbeta',['MixNumberFractionBeta',['../classwalker_1_1_mix_number_fraction_beta.html',1,'walker']]],

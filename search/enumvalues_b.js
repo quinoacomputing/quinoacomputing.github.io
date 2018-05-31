@@ -3,6 +3,7 @@ var searchData=
   ['l2',['L2',['../namespacetk_1_1ctr.html#a51317efa1294f22c138627871f7d5920a7e6aa2d53f6ee2b1a34b017fa403cb76',1,'tk::ctr']]],
   ['l2err',['L2ERR',['../namespaceinciter.html#a831376c2317ac9b64b896e6c7c5213fda8351c527d28ae36bf4597e70ad2b1314',1,'inciter']]],
   ['l2sol',['L2SOL',['../namespaceinciter.html#a831376c2317ac9b64b896e6c7c5213fda19a8bd9b79a75b7c0865353b1f00582f',1,'inciter']]],
+  ['langevin',['LANGEVIN',['../namespacewalker_1_1ctr.html#a4592cfa71c6e4c64a71c5691df56c79fa03670bba2dda8c1f3ebdbaddb99a7c7f',1,'walker::ctr']]],
   ['laxfriedrichs',['LaxFriedrichs',['../namespaceinciter_1_1ctr.html#ad03f0cd2ce483aefb8c19fa8dc7af1d2aed47604fc3e8751ed09bacd0a0754a71',1,'inciter::ctr']]],
   ['lin',['LIN',['../namespacetk.html#a85016961456a798f65e4e5a451e44242a59c586aa6ae7233e39e6b9c67c5d363d',1,'tk']]],
   ['linf',['LINF',['../namespacetk_1_1ctr.html#a51317efa1294f22c138627871f7d5920a38b6015d873e96433844072ccea5c553',1,'tk::ctr']]],

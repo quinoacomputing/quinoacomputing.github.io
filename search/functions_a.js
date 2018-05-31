@@ -1,5 +1,7 @@
 var searchData=
 [
+  ['langevin',['Langevin',['../classwalker_1_1_langevin.html#a4b58cd51aebe345849b2044f43b0ec36',1,'walker::Langevin']]],
+  ['langevincoeffhydrotimescale',['LangevinCoeffHydroTimeScale',['../classwalker_1_1_langevin_coeff_hydro_time_scale.html#ab18bb28f6b987ec4b4a1ebbd21044bf2',1,'walker::LangevinCoeffHydroTimeScale']]],
   ['lastfieldwritetime',['LastFieldWriteTime',['../classinciter_1_1_discretization.html#ae974f7576160f1217ed0694244a0352f',1,'inciter::Discretization::LastFieldWriteTime() const'],['../classinciter_1_1_discretization.html#a19915a108e3466ca32ddbcf7d62d39db',1,'inciter::Discretization::LastFieldWriteTime()']]],
   ['layout',['layout',['../classtk_1_1_data.html#a81743d43dfcb14ead9a73ef0e31daa6b',1,'tk::Data::layout()'],['../classtk_1_1_data.html#a210953988f982e446415920d0e15d2d0',1,'tk::Data::layout(int2type&lt; UnkEqComp &gt;)'],['../classtk_1_1_data.html#a46c685dd151f3518c0db73eb36559f26',1,'tk::Data::layout(int2type&lt; EqCompUnk &gt;)']]],
   ['leakyadjacency',['leakyAdjacency',['../classinciter_1_1_d_g.html#a6021bf395a57064c247df142762cf3ba',1,'inciter::DG']]],
