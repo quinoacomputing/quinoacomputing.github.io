@@ -1,9 +1,9 @@
 var searchData=
 [
   ['gammacoeffpolicies',['GammaCoeffPolicies',['../namespacewalker.html#ad0a37c0727b9fe731deca7e90cb143fb',1,'walker']]],
-  ['gammaparameters',['GammaParameters',['../namespacewalker_1_1ctr.html#a97fefcbc9fbcb8ae906950bad8d2bf8d',1,'walker::ctr']]],
+  ['gammaparameters',['GammaParameters',['../namespacewalker_1_1ctr.html#a55177b1000bdc0a1c4d3c5ab82f10eee',1,'walker::ctr']]],
   ['gen01ptr',['Gen01Ptr',['../namespacerngtest.html#acfe86a5d54dc25c89d8b42a048cc978f',1,'rngtest']]],
-  ['gendirichletparameters',['GenDirichletParameters',['../namespacewalker_1_1ctr.html#aff55866d28aab3c5d7f4a48714b6e3d3',1,'walker::ctr']]],
+  ['gendirichletparameters',['GenDirichletParameters',['../namespacewalker_1_1ctr.html#acd3f25dc7583027c1fcddcd341196d46',1,'walker::ctr']]],
   ['generalizeddirichletcoeffpolicies',['GeneralizedDirichletCoeffPolicies',['../namespacewalker.html#abc90d99c3d12096898b0a80648ed1673',1,'walker']]],
   ['ghostdata',['GhostData',['../namespaceinciter.html#a2d8ca117c014659a20ddebd604490f4a',1,'inciter']]],
   ['gno_5ft',['gno_t',['../classtk_1_1zoltan_1_1_geometric_mesh_elem_adapter.html#afa9c629a02c6d3576d1287a3a43e2d9d',1,'tk::zoltan::GeometricMeshElemAdapter']]],

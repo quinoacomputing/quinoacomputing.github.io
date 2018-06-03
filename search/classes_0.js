@@ -11,6 +11,7 @@ var searchData=
   ['action_3c_20check_5feq_3c_20eq_20_3e_20_3e',['action&lt; check_eq&lt; eq &gt; &gt;',['../structtk_1_1grm_1_1action_3_01check__eq_3_01eq_01_4_01_4.html',1,'tk::grm']]],
   ['action_3c_20check_5fexpectation_20_3e',['action&lt; check_expectation &gt;',['../structtk_1_1grm_1_1action_3_01check__expectation_01_4.html',1,'tk::grm']]],
   ['action_3c_20check_5fextents_20_3e',['action&lt; check_extents &gt;',['../structtk_1_1grm_1_1action_3_01check__extents_01_4.html',1,'tk::grm']]],
+  ['action_3c_20check_5fgaussians_3c_20eq_2c_20param_20_3e_20_3e',['action&lt; check_gaussians&lt; eq, param &gt; &gt;',['../structtk_1_1grm_1_1action_3_01check__gaussians_3_01eq_00_01param_01_4_01_4.html',1,'tk::grm']]],
   ['action_3c_20check_5finit_3c_20eq_20_3e_20_3e',['action&lt; check_init&lt; eq &gt; &gt;',['../structtk_1_1grm_1_1action_3_01check__init_3_01eq_01_4_01_4.html',1,'tk::grm']]],
   ['action_3c_20check_5fsamples_20_3e',['action&lt; check_samples &gt;',['../structtk_1_1grm_1_1action_3_01check__samples_01_4.html',1,'tk::grm']]],
   ['action_3c_20check_5fspikes_3c_20eq_2c_20param_20_3e_20_3e',['action&lt; check_spikes&lt; eq, param &gt; &gt;',['../structtk_1_1grm_1_1action_3_01check__spikes_3_01eq_00_01param_01_4_01_4.html',1,'tk::grm']]],

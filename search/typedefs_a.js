@@ -1,7 +1,7 @@
 var searchData=
 [
   ['langevincoeffpolicies',['LangevinCoeffPolicies',['../namespacewalker.html#af10425335de003263dedf73be7da4dd4',1,'walker']]],
-  ['langevinparameters',['LangevinParameters',['../namespacewalker_1_1ctr.html#ab168d65d6382d8872ca27b18aea8f60f',1,'walker::ctr']]],
+  ['langevinparameters',['LangevinParameters',['../namespacewalker_1_1ctr.html#a87b7f7215502458a6421f23140bc09a0',1,'walker::ctr']]],
   ['libtype',['LibType',['../classtk_1_1ctr_1_1_r_n_g.html#af773ab5c4704d00eaa709a8c86842190',1,'tk::ctr::RNG']]],
   ['linearmap_5fgroup',['LinearMap_group',['../namespacetut.html#a6626a94a3230b4f2f53cddac120fdd86',1,'tut']]],
   ['linearmap_5fobject',['LinearMap_object',['../namespacetut.html#af93ae7e304c3677f06155b2f36ff88b4',1,'tut']]],

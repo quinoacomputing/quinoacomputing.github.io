@@ -10,7 +10,7 @@ var searchData=
   ['langevincoeffhydrotimescale',['LangevinCoeffHydroTimeScale',['../classwalker_1_1_langevin_coeff_hydro_time_scale.html',1,'walker::LangevinCoeffHydroTimeScale'],['../classwalker_1_1_langevin_coeff_hydro_time_scale.html#ab18bb28f6b987ec4b4a1ebbd21044bf2',1,'walker::LangevinCoeffHydroTimeScale::LangevinCoeffHydroTimeScale()']]],
   ['langevincoeffpolicies',['LangevinCoeffPolicies',['../namespacewalker.html#af10425335de003263dedf73be7da4dd4',1,'walker']]],
   ['langevincoeffpolicy_2eh',['LangevinCoeffPolicy.h',['../_langevin_coeff_policy_8h.html',1,'']]],
-  ['langevinparameters',['LangevinParameters',['../namespacewalker_1_1ctr.html#ab168d65d6382d8872ca27b18aea8f60f',1,'walker::ctr']]],
+  ['langevinparameters',['LangevinParameters',['../namespacewalker_1_1ctr.html#a87b7f7215502458a6421f23140bc09a0',1,'walker::ctr']]],
   ['lapack_20license',['LAPACK license',['../_l_a_p_a_c_k_license.html',1,'licenses']]],
   ['lapack_5flicense_2edox',['LAPACK_license.dox',['../_l_a_p_a_c_k__license_8dox.html',1,'']]],
   ['lapacke_2eh',['lapacke.h',['../lapacke_8h.html',1,'']]],

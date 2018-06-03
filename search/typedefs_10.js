@@ -8,7 +8,7 @@ var searchData=
   ['selects',['selects',['../namespaceinciter_1_1ctr.html#a90012153fdcac944467d27a10c9fbba5',1,'inciter::ctr::selects()'],['../namespacerngtest_1_1ctr.html#a6ea2dcabba811ebb1af9a318753d6b3b',1,'rngtest::ctr::selects()'],['../namespacewalker_1_1ctr.html#ab92b4dfff21d7034e148076c43758f45',1,'walker::ctr::selects()']]],
   ['siloerrorhandler',['SiloErrorHandler',['../namespacetk.html#a40ff0a76887b93164712b9ce9192fdd2',1,'tk']]],
   ['skewnormalcoeffpolicies',['SkewNormalCoeffPolicies',['../namespacewalker.html#a05fd510a5493bf8e33ca138f4334e39e',1,'walker']]],
-  ['skewnormalparameters',['SkewNormalParameters',['../namespacewalker_1_1ctr.html#a1b5039f6a7ee8944dabfcb3c9c525ee4',1,'walker::ctr']]],
+  ['skewnormalparameters',['SkewNormalParameters',['../namespacewalker_1_1ctr.html#ac51add233891b75b561be786f30500d2',1,'walker::ctr']]],
   ['strconvutil_5fgroup',['StrConvUtil_group',['../namespacetut.html#a53e6805397d9560e47d933efdee0e09c',1,'tut']]],
   ['strconvutil_5fobject',['StrConvUtil_object',['../namespacetut.html#ab8b4e2631ca49dbe7c7f97a784cf6276',1,'tut']]],
   ['stringparser_5fgroup',['StringParser_group',['../namespacetut.html#a8bbf5c6ec7def44e2b17ca8786bffa49',1,'tut']]],

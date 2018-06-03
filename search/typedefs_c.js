@@ -9,5 +9,5 @@ var searchData=
   ['nt',['nT',['../structtk_1_1tuple_1_1tt__impl_3_01typelist_3_01_ss_8_8_8_01_4_00_01typelist_3_01_ts_8_8_8_01_4_01_4.html#a8f76951c9926caad61d286abb38184f7',1,'tk::tuple::tt_impl&lt; typelist&lt; Ss... &gt;, typelist&lt; Ts... &gt; &gt;']]],
   ['nth',['nth',['../namespacetk_1_1tuple.html#a501a33234d859e33ff594210c5ef70f5',1,'tk::tuple']]],
   ['numberfractionbetacoeffpolicies',['NumberFractionBetaCoeffPolicies',['../namespacewalker.html#a01c240cf104ffe62affb48ed4c2ff862',1,'walker']]],
-  ['numberfractionbetaparameters',['NumberFractionBetaParameters',['../namespacewalker_1_1ctr.html#a541006cd46370010ea0e475f2a74c5e2',1,'walker::ctr']]]
+  ['numberfractionbetaparameters',['NumberFractionBetaParameters',['../namespacewalker_1_1ctr.html#a800680eb9d9f4599423eb0b3b100e162',1,'walker::ctr']]]
 ];
