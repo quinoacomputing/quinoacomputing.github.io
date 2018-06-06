@@ -1,6 +1,7 @@
 var searchData=
 [
   ['echopolicies',['echoPolicies',['../structtk_1_1_print_1_1echo_policies.html',1,'tk::Print']]],
+  ['edge',['edge',['../structtag_1_1edge.html',1,'tag']]],
   ['edge_5frefinement',['Edge_Refinement',['../struct_a_m_r_1_1_edge___refinement.html',1,'AMR']]],
   ['edge_5fstore_5ft',['edge_store_t',['../class_a_m_r_1_1edge__store__t.html',1,'AMR']]],
   ['edge_5ft',['edge_t',['../classedge__t.html',1,'']]],

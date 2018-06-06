@@ -8,7 +8,7 @@ var searchData=
   ['echorngsseparams',['echoRNGSSEParams',['../classtk_1_1_r_n_g_print.html#ac04793aaa10bea6aad905869e8cc5a37',1,'tk::RNGPrint']]],
   ['echorunenv',['echoRunEnv',['../namespacetk.html#a991ea7a4015fef3262bdb056f840bf82',1,'tk']]],
   ['echotrace',['echoTrace',['../classtk_1_1_exception.html#a98bc4bc0d8ef380a2b90c5815a80f53a',1,'tk::Exception']]],
-  ['edge',['Edge',['../classtk_1_1_uns_mesh.html#a622c34bab099c772650f046b848346d7',1,'tk::UnsMesh']]],
+  ['edge',['edge',['../structtag_1_1edge.html',1,'tag::edge'],['../classtk_1_1_uns_mesh.html#a622c34bab099c772650f046b848346d7',1,'tk::UnsMesh::Edge()']]],
   ['edge_2ec',['edge.C',['../edge_8_c.html',1,'']]],
   ['edge_2eh',['edge.h',['../edge_8h.html',1,'']]],
   ['edge_5f',['edge_',['../classedge__t.html#a78b4ea4d702c9d5812d30a5cf9f30a2a',1,'edge_t']]],

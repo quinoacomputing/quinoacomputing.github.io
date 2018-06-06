@@ -76,6 +76,8 @@ var searchData=
   ['initpolicy_2eh',['InitPolicy.h',['../_control_2_walker_2_options_2_init_policy_8h.html',1,'(Global Namespace)'],['../_diff_eq_2_init_policy_8h.html',1,'(Global Namespace)']]],
   ['initpolicytype',['InitPolicyType',['../namespacewalker_1_1ctr.html#a073db7656ce7d82e9ef0321698253b57',1,'walker::ctr']]],
   ['initraw',['InitRaw',['../structwalker_1_1_init_raw.html',1,'walker']]],
+  ['initref',['initref',['../structinciter_1_1deck_1_1initref.html',1,'inciter::deck::initref'],['../classinciter_1_1_inciter_print.html#a759e731485cfbb125ed37ce92eb93b15',1,'inciter::InciterPrint::initref()']]],
+  ['initrefodd',['INITREFODD',['../namespacetk_1_1grm.html#a86dbe384e8ce31796b7eb5f6ac87e1a3aabf2b86a690fd6cea0ba0818e8b8fce8',1,'tk::grm']]],
   ['initzero',['InitZero',['../structwalker_1_1_init_zero.html',1,'walker']]],
   ['inlet',['Inlet',['../structinciter_1_1dg_1_1_transport_1_1_inlet.html',1,'inciter::dg::Transport&lt; Physics, Problem &gt;::Inlet'],['../namespaceinciter_1_1ctr.html#af39f430acfc8f1aafa85f65aa3f44a89a688d48a51e0e8024b35e4b744862b523',1,'inciter::ctr::INLET()']]],
   ['inpoel',['inpoel',['../structtut_1_1_a_m_r_error__common.html#ab2279f810712a91ea120adf58dfc154c',1,'tut::AMRError_common::inpoel()'],['../structtut_1_1_around__common.html#a57a6f38f75928fcb20ef925b83c6f803',1,'tut::Around_common::inpoel()'],['../structtut_1_1_gradients__common.html#ab066b186c90fd448e4b4d9011061002a',1,'tut::Gradients_common::inpoel()'],['../classinciter_1_1_discretization.html#a9ac5a80ee6094101055e11381c6d97b1',1,'inciter::Discretization::Inpoel() const'],['../classinciter_1_1_discretization.html#a43446e5ac22aa066796975fbd097f70a',1,'inciter::Discretization::Inpoel()']]],

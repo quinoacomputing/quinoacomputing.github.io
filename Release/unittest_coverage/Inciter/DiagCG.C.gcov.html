@@ -24,20 +24,20 @@
           </tr>
           <tr>
             <td class="headerItem">Commit:</td>
-            <td class="headerValue"><a href="https://github.com/quinoacomputing/quinoa/commit/1be2056">Quinoa_v0.2-739-g1be2056</a></td>
+            <td class="headerValue"><a href="https://github.com/quinoacomputing/quinoa/commit/01ef53b">Quinoa_v0.2-792-g01ef53b</a></td>
             <td></td>
             <td class="headerItem">Lines:</td>
             <td class="headerCovTableEntry">0</td>
-            <td class="headerCovTableEntry">214</td>
+            <td class="headerCovTableEntry">203</td>
             <td class="headerCovTableEntryLo">0.0 %</td>
           </tr>
           <tr>
             <td class="headerItem">Date:</td>
-            <td class="headerValue">2018-06-02 12:37:03</td>
+            <td class="headerValue">2018-06-05 21:52:57</td>
             <td></td>
             <td class="headerItem">Functions:</td>
             <td class="headerCovTableEntry">0</td>
-            <td class="headerCovTableEntry">12</td>
+            <td class="headerCovTableEntry">11</td>
             <td class="headerCovTableEntryLo">0.0 %</td>
           </tr>
           <tr>
@@ -104,7 +104,7 @@
 <span class="lineNum">      30 </span>                :            : #include &quot;Discretization.h&quot;
 <span class="lineNum">      31 </span>                :            : #include &quot;DistFCT.h&quot;
 <span class="lineNum">      32 </span>                :            : #include &quot;DiagReducer.h&quot;
-<span class="lineNum">      33 </span>                :            : #include &quot;BoundaryConditions.h&quot;
+<span class="lineNum">      33 </span>                :            : #include &quot;NodeBC.h&quot;
 <span class="lineNum">      34 </span>                :            : 
 <span class="lineNum">      35 </span>                :            : #ifdef HAS_ROOT
 <span class="lineNum">      36 </span>                :            :   #include &quot;RootMeshWriter.h&quot;
@@ -122,14 +122,14 @@
 <span class="lineNum">      48 </span>                :            : 
 <span class="lineNum">      49 </span>                :<span class="lineNoCov">          0 : DiagCG::DiagCG( const CProxy_Discretization&amp; disc,</span>
 <span class="lineNum">      50 </span>                :            :                 const tk::CProxy_Solver&amp; solver,
-<span class="lineNum">      51 </span>                :            :                 const FaceData&amp; ) :
+<span class="lineNum">      51 </span>                :            :                 const FaceData&amp; fd ) :
 <span class="lineNum">      52 </span>                :            :   m_itf( 0 ),
 <span class="lineNum">      53 </span>                :            :   m_nsol( 0 ),
 <span class="lineNum">      54 </span>                :            :   m_nlhs( 0 ),
 <span class="lineNum">      55 </span>                :            :   m_nrhs( 0 ),
 <span class="lineNum">      56 </span>                :            :   m_ndif( 0 ),
 <span class="lineNum">      57 </span>                :            :   m_disc( disc ),
-<span class="lineNum">      58 </span>                :<span class="lineNoCov">          0 :   m_side( Disc()-&gt;BC()-&gt;sideNodes( Disc()-&gt;Filenodes(), Disc()-&gt;Lid() ) ),</span>
+<span class="lineNum">      58 </span>                :            :   m_fd( fd ),
 <span class="lineNum">      59 </span>                :<span class="lineNoCov">          0 :   m_u( m_disc[thisIndex].ckLocal()-&gt;Gid().size(),</span>
 <span class="lineNum">      60 </span>                :            :        g_inputdeck.get&lt; tag::component &gt;().nprop() ),
 <span class="lineNum">      61 </span>                :            :   m_ul( m_u.nunk(), m_u.nprop() ),
@@ -444,8 +444,8 @@
 <span class="lineNum">     370 </span>                :<span class="lineNoCov">          0 :   auto d = Disc();</span>
 <span class="lineNum">     371 </span>                :            : 
 <span class="lineNum">     372 </span>                :            :   // Match user-specified boundary conditions to side sets
-<span class="lineNum">     373 </span>                :<span class="lineNoCov">          0 :   m_bc = d-&gt;BC()-&gt;match( m_u.nprop(), d-&gt;T(), d-&gt;Dt(), d-&gt;Coord(), d-&gt;Gid(),</span>
-<span class="lineNum">     374 </span>                :            :                          m_side );
+<span class="lineNum">     373 </span>                :<span class="lineNoCov">          0 :   m_bc = match( m_u.nprop(), d-&gt;T(), d-&gt;Dt(), d-&gt;Coord(), d-&gt;Gid(),</span>
+<span class="lineNum">     374 </span>                :<span class="lineNoCov">          0 :                 d-&gt;Lid(), m_fd.Bnode() );</span>
 <span class="lineNum">     375 </span>                :<span class="lineNoCov">          0 : }</span>
 <span class="lineNum">     376 </span>                :            : 
 <span class="lineNum">     377 </span>                :            : void
@@ -501,202 +501,164 @@
 <span class="lineNum">     427 </span>                :<span class="lineNoCov">          0 :   d-&gt;FCT()-&gt;alw( m_u, m_ul, m_dul, thisProxy );  </span>
 <span class="lineNum">     428 </span>                :<span class="lineNoCov">          0 : }</span>
 <a name="429"><span class="lineNum">     429 </span>                :            : </a>
-<span class="lineNum">     430 </span>                :            : bool
-<span class="lineNum">     431 </span>                :<span class="lineNoCov">          0 : DiagCG::correctBC( const tk::Fields&amp; a )</span>
+<span class="lineNum">     430 </span>                :            : void
+<span class="lineNum">     431 </span>                :<span class="lineNoCov">          0 : DiagCG::writeFields( tk::real time )</span>
 <span class="lineNum">     432 </span>                :            : // *****************************************************************************
-<span class="lineNum">     433 </span>                :            : //  Verify that the change in the solution at those nodes where Dirichlet
-<span class="lineNum">     434 </span>                :            : //  boundary conditions are set is exactly the amount the BCs prescribe
-<span class="lineNum">     435 </span>                :            : //! \param[in] a Limited antidiffusive element contributions
-<span class="lineNum">     436 </span>                :            : //! \return True if the solution is correct at Dirichlet boundary condition
-<span class="lineNum">     437 </span>                :            : //!   nodes
-<span class="lineNum">     438 </span>                :            : // *****************************************************************************
-<span class="lineNum">     439 </span>                :            : {
-<span class="lineNum">     440 </span>                :<span class="lineNoCov">          0 :   if (m_bc.empty()) return true;</span>
-<span class="lineNum">     441 </span>                :            : 
-<span class="lineNum">     442 </span>                :<span class="lineNoCov">          0 :   auto d = Disc();</span>
+<span class="lineNum">     433 </span>                :            : // Output mesh-based fields to file
+<span class="lineNum">     434 </span>                :            : //! \param[in] time Physical time
+<span class="lineNum">     435 </span>                :            : // *****************************************************************************
+<span class="lineNum">     436 </span>                :            : {
+<span class="lineNum">     437 </span>                :<span class="lineNoCov">          0 :   auto d = Disc();</span>
+<span class="lineNum">     438 </span>                :            : 
+<span class="lineNum">     439 </span>                :            :   // Only write if the last time is different than the current one
+<span class="lineNum">     440 </span>                :<span class="lineNoCov">          0 :   if (std::abs(d-&gt;LastFieldWriteTime() - time) &lt;</span>
+<span class="lineNum">     441 </span>                :            :       std::numeric_limits&lt; tk::real &gt;::epsilon() )
+<span class="lineNum">     442 </span>                :<span class="lineNoCov">          0 :     return;</span>
 <span class="lineNum">     443 </span>                :            : 
-<span class="lineNum">     444 </span>                :            :   // We loop through the map that associates a vector of local node IDs to side
-<span class="lineNum">     445 </span>                :            :   // set IDs for all side sets read from mesh file. Then for each side set for
-<span class="lineNum">     446 </span>                :            :   // all mesh nodes on a given side set we attempt to find the global node ID in
-<span class="lineNum">     447 </span>                :            :   // m_bc, which stores only those nodes (and BC settings) at which the user has
-<span class="lineNum">     448 </span>                :            :   // configured Dirichlet BCs to be set. Then for all scalar components of all
-<span class="lineNum">     449 </span>                :            :   // system of systems of PDEs integrated if a BC is to be set for a given
-<span class="lineNum">     450 </span>                :            :   // component, we compute the low order solution increment + the anti-diffusive
-<span class="lineNum">     451 </span>                :            :   // element contributions, which is the current solution increment (to be used
-<span class="lineNum">     452 </span>                :            :   // to update the solution at time n) at that node. This solution increment
-<span class="lineNum">     453 </span>                :            :   // must equal the BC prescribed at the given node as we solve for solution
-<span class="lineNum">     454 </span>                :            :   // increments. If not, the BCs are not set correctly, which is an error.
-<span class="lineNum">     455 </span>                :<span class="lineNoCov">          0 :   for (const auto&amp; s : m_side)</span>
-<span class="lineNum">     456 </span>                :<span class="lineNoCov">          0 :     for (auto i : s.second) {</span>
-<span class="lineNum">     457 </span>                :<span class="lineNoCov">          0 :       auto u = m_bc.find( d-&gt;Gid()[i] );</span>
-<span class="lineNum">     458 </span>                :<span class="lineNoCov">          0 :       if (u != end(m_bc)) {</span>
-<span class="lineNum">     459 </span>                :<span class="lineNoCov">          0 :         const auto&amp; b = u-&gt;second;</span>
-<span class="lineNum">     460 </span>                :            :         Assert( b.size() == m_u.nprop(), &quot;Size mismatch&quot; );
-<span class="lineNum">     461 </span>                :<span class="lineNoCov">          0 :         for (std::size_t c=0; c&lt;b.size(); ++c)</span>
-<span class="lineNum">     462 </span>                :<span class="lineNoCov">          0 :           if ( b[c].first &amp;&amp;</span>
-<span class="lineNum">     463 </span>                :<span class="lineNoCov">          0 :                std::abs( m_dul(i,c,0) + a(i,c,0) - b[c].second ) &gt;</span>
-<span class="lineNum">     464 </span>                :            :                  std::numeric_limits&lt; tk::real &gt;::epsilon() ) {
-<span class="lineNum">     465 </span>                :            :              return false;
-<span class="lineNum">     466 </span>                :            :           }
-<span class="lineNum">     467 </span>                :            :       }
-<span class="lineNum">     468 </span>                :            :   }
-<span class="lineNum">     469 </span>                :            : 
-<span class="lineNum">     470 </span>                :            :   return true;
-<span class="lineNum">     471 </span>                :            : }
-<a name="472"><span class="lineNum">     472 </span>                :            : </a>
-<span class="lineNum">     473 </span>                :            : void
-<span class="lineNum">     474 </span>                :<span class="lineNoCov">          0 : DiagCG::writeFields( tk::real time )</span>
-<span class="lineNum">     475 </span>                :            : // *****************************************************************************
-<span class="lineNum">     476 </span>                :            : // Output mesh-based fields to file
-<span class="lineNum">     477 </span>                :            : //! \param[in] time Physical time
-<span class="lineNum">     478 </span>                :            : // *****************************************************************************
-<span class="lineNum">     479 </span>                :            : {
-<span class="lineNum">     480 </span>                :<span class="lineNoCov">          0 :   auto d = Disc();</span>
-<span class="lineNum">     481 </span>                :            : 
-<span class="lineNum">     482 </span>                :            :   // Only write if the last time is different than the current one
-<span class="lineNum">     483 </span>                :<span class="lineNoCov">          0 :   if (std::abs(d-&gt;LastFieldWriteTime() - time) &lt;</span>
-<span class="lineNum">     484 </span>                :            :       std::numeric_limits&lt; tk::real &gt;::epsilon() )
-<span class="lineNum">     485 </span>                :<span class="lineNoCov">          0 :     return;</span>
-<span class="lineNum">     486 </span>                :            : 
-<span class="lineNum">     487 </span>                :            :   // Save time stamp at which the last field write happened
-<span class="lineNum">     488 </span>                :<span class="lineNoCov">          0 :   d-&gt;LastFieldWriteTime() = time;</span>
-<span class="lineNum">     489 </span>                :            : 
-<span class="lineNum">     490 </span>                :            :   // Increase field output iteration count
-<span class="lineNum">     491 </span>                :<span class="lineNoCov">          0 :   ++m_itf;</span>
-<span class="lineNum">     492 </span>                :            : 
-<span class="lineNum">     493 </span>                :            :   // Lambda to collect node fields output from all PDEs
-<span class="lineNum">     494 </span>                :<span class="lineNoCov">          0 :   auto nodefields = [&amp;]() {</span>
-<span class="lineNum">     495 </span>                :<span class="lineNoCov">          0 :     auto u = m_u;   // make a copy as eq::output() may overwrite its arg</span>
-<span class="lineNum">     496 </span>                :            :     std::vector&lt; std::vector&lt; tk::real &gt; &gt; output;
-<span class="lineNum">     497 </span>                :<span class="lineNoCov">          0 :     for (const auto&amp; eq : g_cgpde) {</span>
-<span class="lineNum">     498 </span>                :<span class="lineNoCov">          0 :       auto o = eq.fieldOutput( time, m_vol, d-&gt;Coord(), d-&gt;V(), u );</span>
-<span class="lineNum">     499 </span>                :<span class="lineNoCov">          0 :       output.insert( end(output), begin(o), end(o) );</span>
-<span class="lineNum">     500 </span>                :<span class="lineNoCov">          0 :     }</span>
-<span class="lineNum">     501 </span>                :<span class="lineNoCov">          0 :     return output;</span>
-<span class="lineNum">     502 </span>                :<span class="lineNoCov">          0 :   };</span>
-<span class="lineNum">     503 </span>                :            : 
-<span class="lineNum">     504 </span>                :            :   #ifdef HAS_ROOT
-<span class="lineNum">     505 </span>                :<span class="lineNoCov">          0 :   auto filetype = g_inputdeck.get&lt; tag::selected, tag::filetype &gt;();</span>
-<span class="lineNum">     506 </span>                :            : 
-<span class="lineNum">     507 </span>                :<span class="lineNoCov">          0 :   if (filetype == tk::ctr::FieldFileType::ROOT) {</span>
-<span class="lineNum">     508 </span>                :            : 
-<span class="lineNum">     509 </span>                :            :     // Create Root writer
-<span class="lineNum">     510 </span>                :<span class="lineNoCov">          0 :     tk::RootMeshWriter rmw( d-&gt;OutFilename(), 1 );</span>
-<span class="lineNum">     511 </span>                :            :     // Write time stamp
-<span class="lineNum">     512 </span>                :<span class="lineNoCov">          0 :     rmw.writeTimeStamp( m_itf, time );</span>
-<span class="lineNum">     513 </span>                :            :     // Write node fields to file
-<span class="lineNum">     514 </span>                :<span class="lineNoCov">          0 :     d-&gt;writeNodeSolution( rmw, m_itf, nodefields() );</span>
-<span class="lineNum">     515 </span>                :            : 
-<span class="lineNum">     516 </span>                :            :   } else
-<span class="lineNum">     517 </span>                :            :   #endif
-<span class="lineNum">     518 </span>                :            :   {
-<span class="lineNum">     519 </span>                :            : 
-<span class="lineNum">     520 </span>                :            :     // Create ExodusII writer
-<span class="lineNum">     521 </span>                :<span class="lineNoCov">          0 :     tk::ExodusIIMeshWriter ew( d-&gt;OutFilename(), tk::ExoWriter::OPEN );</span>
-<span class="lineNum">     522 </span>                :            :     // Write time stamp
-<span class="lineNum">     523 </span>                :<span class="lineNoCov">          0 :     ew.writeTimeStamp( m_itf, time );</span>
-<span class="lineNum">     524 </span>                :            :     // Write node fields to file
-<span class="lineNum">     525 </span>                :<span class="lineNoCov">          0 :     d-&gt;writeNodeSolution( ew, m_itf, nodefields() );</span>
-<span class="lineNum">     526 </span>                :            : 
-<span class="lineNum">     527 </span>                :            :   }
-<span class="lineNum">     528 </span>                :            : }
-<a name="529"><span class="lineNum">     529 </span>                :            : </a>
-<span class="lineNum">     530 </span>                :            : void
-<span class="lineNum">     531 </span>                :<span class="lineNoCov">          0 : DiagCG::out()</span>
-<span class="lineNum">     532 </span>                :            : // *****************************************************************************
-<span class="lineNum">     533 </span>                :            : // Output mesh field data
-<span class="lineNum">     534 </span>                :            : // *****************************************************************************
-<span class="lineNum">     535 </span>                :            : {
-<span class="lineNum">     536 </span>                :<span class="lineNoCov">          0 :   auto d = Disc();</span>
-<span class="lineNum">     537 </span>                :            : 
-<span class="lineNum">     538 </span>                :            :   // Optionally output field and particle data
-<span class="lineNum">     539 </span>                :<span class="lineNoCov">          0 :   if ( !((d-&gt;It()+1) % g_inputdeck.get&lt; tag::interval, tag::field &gt;()) &amp;&amp;</span>
-<span class="lineNum">     540 </span>                :<span class="lineNoCov">          0 :        !g_inputdeck.get&lt; tag::cmd, tag::benchmark &gt;() )</span>
-<span class="lineNum">     541 </span>                :            :   {
-<span class="lineNum">     542 </span>                :<span class="lineNoCov">          0 :     writeFields( d-&gt;T()+d-&gt;Dt() );</span>
-<span class="lineNum">     543 </span>                :            :   }
-<span class="lineNum">     544 </span>                :            : 
-<span class="lineNum">     545 </span>                :            :   // Output final field data to file (regardless of whether it was requested)
-<span class="lineNum">     546 </span>                :<span class="lineNoCov">          0 :   const auto term = g_inputdeck.get&lt; tag::discr, tag::term &gt;();</span>
-<span class="lineNum">     547 </span>                :            :   const auto eps = std::numeric_limits&lt; tk::real &gt;::epsilon();
-<span class="lineNum">     548 </span>                :<span class="lineNoCov">          0 :   const auto nstep = g_inputdeck.get&lt; tag::discr, tag::nstep &gt;();</span>
-<span class="lineNum">     549 </span>                :<span class="lineNoCov">          0 :   if ( (std::fabs(d-&gt;T() + d-&gt;Dt()-term) &lt; eps || (d-&gt;It()+1) &gt;= nstep) &amp;&amp;</span>
-<span class="lineNum">     550 </span>                :<span class="lineNoCov">          0 :        (!g_inputdeck.get&lt; tag::cmd, tag::benchmark &gt;()) )</span>
-<span class="lineNum">     551 </span>                :            :   {
-<span class="lineNum">     552 </span>                :<span class="lineNoCov">          0 :     writeFields( d-&gt;T()+d-&gt;Dt() );</span>
-<span class="lineNum">     553 </span>                :            :   }
-<span class="lineNum">     554 </span>                :<span class="lineNoCov">          0 : }</span>
-<a name="555"><span class="lineNum">     555 </span>                :            : </a>
-<span class="lineNum">     556 </span>                :            : void
-<span class="lineNum">     557 </span>                :<span class="lineNoCov">          0 : DiagCG::advance( tk::real newdt )</span>
-<span class="lineNum">     558 </span>                :            : // *****************************************************************************
-<span class="lineNum">     559 </span>                :            : // Advance equations to next time step
-<span class="lineNum">     560 </span>                :            : //! \param[in] newdt Size of this new time step
-<span class="lineNum">     561 </span>                :            : // *****************************************************************************
-<span class="lineNum">     562 </span>                :            : {
-<span class="lineNum">     563 </span>                :<span class="lineNoCov">          0 :   auto d = Disc();</span>
-<span class="lineNum">     564 </span>                :            : 
-<span class="lineNum">     565 </span>                :            :   // Set new time step size
-<span class="lineNum">     566 </span>                :<span class="lineNoCov">          0 :   d-&gt;setdt( newdt );</span>
-<span class="lineNum">     567 </span>                :            : 
-<span class="lineNum">     568 </span>                :            :   // Activate SDAG-waits for FCT
-<span class="lineNum">     569 </span>                :<span class="lineNoCov">          0 :   d-&gt;FCT()-&gt;next();</span>
-<span class="lineNum">     570 </span>                :            : 
-<span class="lineNum">     571 </span>                :            :   // Actiavate SDAG waits for time step
-<span class="lineNum">     572 </span>                :<span class="lineNoCov">          0 :   thisProxy[ thisIndex ].wait4rhs();</span>
-<span class="lineNum">     573 </span>                :            : 
-<span class="lineNum">     574 </span>                :            :   // Compute rhs for next time step
-<span class="lineNum">     575 </span>                :<span class="lineNoCov">          0 :   rhs();</span>
-<span class="lineNum">     576 </span>                :<span class="lineNoCov">          0 : }</span>
-<span class="lineNum">     577 </span>                :            : 
-<span class="lineNum">     578 </span>                :            : void
-<span class="lineNum">     579 </span>                :<span class="lineNoCov">          0 : DiagCG::next( const tk::Fields&amp; a )</span>
-<span class="lineNum">     580 </span>                :            : // *****************************************************************************
-<span class="lineNum">     581 </span>                :            : // Prepare for next step
-<span class="lineNum">     582 </span>                :            : //! \param[in] a Limited antidiffusive element contributions
-<span class="lineNum">     583 </span>                :            : // *****************************************************************************
-<span class="lineNum">     584 </span>                :            : {
-<span class="lineNum">     585 </span>                :            :   // Apply limited antidiffusive element contributions to low order solution
-<span class="lineNum">     586 </span>                :<span class="lineNoCov">          0 :   if (g_inputdeck.get&lt; tag::discr, tag::fct &gt;())</span>
-<span class="lineNum">     587 </span>                :<span class="lineNoCov">          0 :     m_u = m_ul + a;</span>
-<span class="lineNum">     588 </span>                :            :   else
-<span class="lineNum">     589 </span>                :<span class="lineNoCov">          0 :     m_u = m_u + m_du;</span>
-<span class="lineNum">     590 </span>                :            : 
-<span class="lineNum">     591 </span>                :<span class="lineNoCov">          0 :   auto d = Disc();</span>
-<span class="lineNum">     592 </span>                :            : 
-<span class="lineNum">     593 </span>                :            :   // Output field data to file
-<span class="lineNum">     594 </span>                :<span class="lineNoCov">          0 :   out();</span>
-<span class="lineNum">     595 </span>                :            :   // Compute diagnostics, e.g., residuals
-<span class="lineNum">     596 </span>                :<span class="lineNoCov">          0 :   auto diag =  m_diag.compute( *d, m_u );</span>
-<span class="lineNum">     597 </span>                :            :   // Increase number of iterations and physical time
-<span class="lineNum">     598 </span>                :<span class="lineNoCov">          0 :   d-&gt;next();</span>
-<span class="lineNum">     599 </span>                :            :   // Output one-liner status report
-<span class="lineNum">     600 </span>                :<span class="lineNoCov">          0 :   d-&gt;status();</span>
-<span class="lineNum">     601 </span>                :            : 
-<span class="lineNum">     602 </span>                :            :   // Evaluate whether to continue with next step
-<span class="lineNum">     603 </span>                :<span class="lineNoCov">          0 :   if (!diag) eval();</span>
-<span class="lineNum">     604 </span>                :<span class="lineNoCov">          0 : }</span>
-<a name="605"><span class="lineNum">     605 </span>                :            : </a>
-<span class="lineNum">     606 </span>                :            : void
-<span class="lineNum">     607 </span>                :<span class="lineNoCov">          0 : DiagCG::eval()</span>
-<span class="lineNum">     608 </span>                :            : // *****************************************************************************
-<span class="lineNum">     609 </span>                :            : // Evaluate whether to continue with next step
-<span class="lineNum">     610 </span>                :            : // *****************************************************************************
-<span class="lineNum">     611 </span>                :            : {
-<span class="lineNum">     612 </span>                :<span class="lineNoCov">          0 :   auto d = Disc();</span>
-<span class="lineNum">     613 </span>                :            : 
-<span class="lineNum">     614 </span>                :<span class="lineNoCov">          0 :   const auto term = g_inputdeck.get&lt; tag::discr, tag::term &gt;();</span>
-<span class="lineNum">     615 </span>                :<span class="lineNoCov">          0 :   const auto nstep = g_inputdeck.get&lt; tag::discr, tag::nstep &gt;();</span>
-<span class="lineNum">     616 </span>                :            :   const auto eps = std::numeric_limits&lt; tk::real &gt;::epsilon();
-<span class="lineNum">     617 </span>                :            : 
-<span class="lineNum">     618 </span>                :            :   // If neither max iterations nor max time reached, continue, otherwise finish
-<span class="lineNum">     619 </span>                :<span class="lineNoCov">          0 :   if (std::fabs(d-&gt;T()-term) &gt; eps &amp;&amp; d-&gt;It() &lt; nstep)</span>
-<span class="lineNum">     620 </span>                :<span class="lineNoCov">          0 :     dt();</span>
-<span class="lineNum">     621 </span>                :            :   else
-<span class="lineNum">     622 </span>                :<span class="lineNoCov">          0 :     contribute( CkCallback( CkReductionTarget(Transporter,finish), d-&gt;Tr() ) );</span>
-<span class="lineNum">     623 </span>                :<span class="lineNoCov">          0 : }</span>
-<span class="lineNum">     624 </span>                :            : 
-<span class="lineNum">     625 </span>                :            : #include &quot;NoWarning/diagcg.def.h&quot;
+<span class="lineNum">     444 </span>                :            :   // Save time stamp at which the last field write happened
+<span class="lineNum">     445 </span>                :<span class="lineNoCov">          0 :   d-&gt;LastFieldWriteTime() = time;</span>
+<span class="lineNum">     446 </span>                :            : 
+<span class="lineNum">     447 </span>                :            :   // Increase field output iteration count
+<span class="lineNum">     448 </span>                :<span class="lineNoCov">          0 :   ++m_itf;</span>
+<span class="lineNum">     449 </span>                :            : 
+<span class="lineNum">     450 </span>                :            :   // Lambda to collect node fields output from all PDEs
+<span class="lineNum">     451 </span>                :<span class="lineNoCov">          0 :   auto nodefields = [&amp;]() {</span>
+<span class="lineNum">     452 </span>                :<span class="lineNoCov">          0 :     auto u = m_u;   // make a copy as eq::output() may overwrite its arg</span>
+<span class="lineNum">     453 </span>                :            :     std::vector&lt; std::vector&lt; tk::real &gt; &gt; output;
+<span class="lineNum">     454 </span>                :<span class="lineNoCov">          0 :     for (const auto&amp; eq : g_cgpde) {</span>
+<span class="lineNum">     455 </span>                :<span class="lineNoCov">          0 :       auto o = eq.fieldOutput( time, m_vol, d-&gt;Coord(), d-&gt;V(), u );</span>
+<span class="lineNum">     456 </span>                :<span class="lineNoCov">          0 :       output.insert( end(output), begin(o), end(o) );</span>
+<span class="lineNum">     457 </span>                :<span class="lineNoCov">          0 :     }</span>
+<span class="lineNum">     458 </span>                :<span class="lineNoCov">          0 :     return output;</span>
+<span class="lineNum">     459 </span>                :<span class="lineNoCov">          0 :   };</span>
+<span class="lineNum">     460 </span>                :            : 
+<span class="lineNum">     461 </span>                :            :   #ifdef HAS_ROOT
+<span class="lineNum">     462 </span>                :<span class="lineNoCov">          0 :   auto filetype = g_inputdeck.get&lt; tag::selected, tag::filetype &gt;();</span>
+<span class="lineNum">     463 </span>                :            : 
+<span class="lineNum">     464 </span>                :<span class="lineNoCov">          0 :   if (filetype == tk::ctr::FieldFileType::ROOT) {</span>
+<span class="lineNum">     465 </span>                :            : 
+<span class="lineNum">     466 </span>                :            :     // Create Root writer
+<span class="lineNum">     467 </span>                :<span class="lineNoCov">          0 :     tk::RootMeshWriter rmw( d-&gt;OutFilename(), 1 );</span>
+<span class="lineNum">     468 </span>                :            :     // Write time stamp
+<span class="lineNum">     469 </span>                :<span class="lineNoCov">          0 :     rmw.writeTimeStamp( m_itf, time );</span>
+<span class="lineNum">     470 </span>                :            :     // Write node fields to file
+<span class="lineNum">     471 </span>                :<span class="lineNoCov">          0 :     d-&gt;writeNodeSolution( rmw, m_itf, nodefields() );</span>
+<span class="lineNum">     472 </span>                :            : 
+<span class="lineNum">     473 </span>                :            :   } else
+<span class="lineNum">     474 </span>                :            :   #endif
+<span class="lineNum">     475 </span>                :            :   {
+<span class="lineNum">     476 </span>                :            : 
+<span class="lineNum">     477 </span>                :            :     // Create ExodusII writer
+<span class="lineNum">     478 </span>                :<span class="lineNoCov">          0 :     tk::ExodusIIMeshWriter ew( d-&gt;OutFilename(), tk::ExoWriter::OPEN );</span>
+<span class="lineNum">     479 </span>                :            :     // Write time stamp
+<span class="lineNum">     480 </span>                :<span class="lineNoCov">          0 :     ew.writeTimeStamp( m_itf, time );</span>
+<span class="lineNum">     481 </span>                :            :     // Write node fields to file
+<span class="lineNum">     482 </span>                :<span class="lineNoCov">          0 :     d-&gt;writeNodeSolution( ew, m_itf, nodefields() );</span>
+<span class="lineNum">     483 </span>                :            : 
+<span class="lineNum">     484 </span>                :            :   }
+<span class="lineNum">     485 </span>                :            : }
+<a name="486"><span class="lineNum">     486 </span>                :            : </a>
+<span class="lineNum">     487 </span>                :            : void
+<span class="lineNum">     488 </span>                :<span class="lineNoCov">          0 : DiagCG::out()</span>
+<span class="lineNum">     489 </span>                :            : // *****************************************************************************
+<span class="lineNum">     490 </span>                :            : // Output mesh field data
+<span class="lineNum">     491 </span>                :            : // *****************************************************************************
+<span class="lineNum">     492 </span>                :            : {
+<span class="lineNum">     493 </span>                :<span class="lineNoCov">          0 :   auto d = Disc();</span>
+<span class="lineNum">     494 </span>                :            : 
+<span class="lineNum">     495 </span>                :            :   // Optionally output field and particle data
+<span class="lineNum">     496 </span>                :<span class="lineNoCov">          0 :   if ( !((d-&gt;It()+1) % g_inputdeck.get&lt; tag::interval, tag::field &gt;()) &amp;&amp;</span>
+<span class="lineNum">     497 </span>                :<span class="lineNoCov">          0 :        !g_inputdeck.get&lt; tag::cmd, tag::benchmark &gt;() )</span>
+<span class="lineNum">     498 </span>                :            :   {
+<span class="lineNum">     499 </span>                :<span class="lineNoCov">          0 :     writeFields( d-&gt;T()+d-&gt;Dt() );</span>
+<span class="lineNum">     500 </span>                :            :   }
+<span class="lineNum">     501 </span>                :            : 
+<span class="lineNum">     502 </span>                :            :   // Output final field data to file (regardless of whether it was requested)
+<span class="lineNum">     503 </span>                :<span class="lineNoCov">          0 :   const auto term = g_inputdeck.get&lt; tag::discr, tag::term &gt;();</span>
+<span class="lineNum">     504 </span>                :            :   const auto eps = std::numeric_limits&lt; tk::real &gt;::epsilon();
+<span class="lineNum">     505 </span>                :<span class="lineNoCov">          0 :   const auto nstep = g_inputdeck.get&lt; tag::discr, tag::nstep &gt;();</span>
+<span class="lineNum">     506 </span>                :<span class="lineNoCov">          0 :   if ( (std::fabs(d-&gt;T() + d-&gt;Dt()-term) &lt; eps || (d-&gt;It()+1) &gt;= nstep) &amp;&amp;</span>
+<span class="lineNum">     507 </span>                :<span class="lineNoCov">          0 :        (!g_inputdeck.get&lt; tag::cmd, tag::benchmark &gt;()) )</span>
+<span class="lineNum">     508 </span>                :            :   {
+<span class="lineNum">     509 </span>                :<span class="lineNoCov">          0 :     writeFields( d-&gt;T()+d-&gt;Dt() );</span>
+<span class="lineNum">     510 </span>                :            :   }
+<span class="lineNum">     511 </span>                :<span class="lineNoCov">          0 : }</span>
+<a name="512"><span class="lineNum">     512 </span>                :            : </a>
+<span class="lineNum">     513 </span>                :            : void
+<span class="lineNum">     514 </span>                :<span class="lineNoCov">          0 : DiagCG::advance( tk::real newdt )</span>
+<span class="lineNum">     515 </span>                :            : // *****************************************************************************
+<span class="lineNum">     516 </span>                :            : // Advance equations to next time step
+<span class="lineNum">     517 </span>                :            : //! \param[in] newdt Size of this new time step
+<span class="lineNum">     518 </span>                :            : // *****************************************************************************
+<span class="lineNum">     519 </span>                :            : {
+<span class="lineNum">     520 </span>                :<span class="lineNoCov">          0 :   auto d = Disc();</span>
+<span class="lineNum">     521 </span>                :            : 
+<span class="lineNum">     522 </span>                :            :   // Set new time step size
+<span class="lineNum">     523 </span>                :<span class="lineNoCov">          0 :   d-&gt;setdt( newdt );</span>
+<span class="lineNum">     524 </span>                :            : 
+<span class="lineNum">     525 </span>                :            :   // Activate SDAG-waits for FCT
+<span class="lineNum">     526 </span>                :<span class="lineNoCov">          0 :   d-&gt;FCT()-&gt;next();</span>
+<span class="lineNum">     527 </span>                :            : 
+<span class="lineNum">     528 </span>                :            :   // Actiavate SDAG waits for time step
+<span class="lineNum">     529 </span>                :<span class="lineNoCov">          0 :   thisProxy[ thisIndex ].wait4rhs();</span>
+<span class="lineNum">     530 </span>                :            : 
+<span class="lineNum">     531 </span>                :            :   // Compute rhs for next time step
+<span class="lineNum">     532 </span>                :<span class="lineNoCov">          0 :   rhs();</span>
+<span class="lineNum">     533 </span>                :<span class="lineNoCov">          0 : }</span>
+<span class="lineNum">     534 </span>                :            : 
+<span class="lineNum">     535 </span>                :            : void
+<span class="lineNum">     536 </span>                :<span class="lineNoCov">          0 : DiagCG::next( const tk::Fields&amp; a )</span>
+<span class="lineNum">     537 </span>                :            : // *****************************************************************************
+<span class="lineNum">     538 </span>                :            : // Prepare for next step
+<span class="lineNum">     539 </span>                :            : //! \param[in] a Limited antidiffusive element contributions
+<span class="lineNum">     540 </span>                :            : // *****************************************************************************
+<span class="lineNum">     541 </span>                :            : {
+<span class="lineNum">     542 </span>                :<span class="lineNoCov">          0 :   auto d = Disc();</span>
+<span class="lineNum">     543 </span>                :            : 
+<span class="lineNum">     544 </span>                :            :   // Verify that the change in the solution at those nodes where Dirichlet
+<span class="lineNum">     545 </span>                :            :   // boundary conditions are set is exactly the amount the BCs prescribe
+<span class="lineNum">     546 </span>                :            :   Assert( correctBC( a, m_dul, m_fd.Bnode(), m_bc, d-&gt;Lid() ),
+<span class="lineNum">     547 </span>                :            :           &quot;Dirichlet boundary condition incorrect&quot; );
+<span class="lineNum">     548 </span>                :            : 
+<span class="lineNum">     549 </span>                :            :   // Apply limited antidiffusive element contributions to low order solution
+<span class="lineNum">     550 </span>                :<span class="lineNoCov">          0 :   if (g_inputdeck.get&lt; tag::discr, tag::fct &gt;())</span>
+<span class="lineNum">     551 </span>                :<span class="lineNoCov">          0 :     m_u = m_ul + a;</span>
+<span class="lineNum">     552 </span>                :            :   else
+<span class="lineNum">     553 </span>                :<span class="lineNoCov">          0 :     m_u = m_u + m_du;</span>
+<span class="lineNum">     554 </span>                :            : 
+<span class="lineNum">     555 </span>                :            :   // Output field data to file
+<span class="lineNum">     556 </span>                :<span class="lineNoCov">          0 :   out();</span>
+<span class="lineNum">     557 </span>                :            :   // Compute diagnostics, e.g., residuals
+<span class="lineNum">     558 </span>                :<span class="lineNoCov">          0 :   auto diag =  m_diag.compute( *d, m_u );</span>
+<span class="lineNum">     559 </span>                :            :   // Increase number of iterations and physical time
+<span class="lineNum">     560 </span>                :<span class="lineNoCov">          0 :   d-&gt;next();</span>
+<span class="lineNum">     561 </span>                :            :   // Output one-liner status report
+<span class="lineNum">     562 </span>                :<span class="lineNoCov">          0 :   d-&gt;status();</span>
+<span class="lineNum">     563 </span>                :            : 
+<span class="lineNum">     564 </span>                :            :   // Evaluate whether to continue with next step
+<span class="lineNum">     565 </span>                :<span class="lineNoCov">          0 :   if (!diag) eval();</span>
+<span class="lineNum">     566 </span>                :<span class="lineNoCov">          0 : }</span>
+<a name="567"><span class="lineNum">     567 </span>                :            : </a>
+<span class="lineNum">     568 </span>                :            : void
+<span class="lineNum">     569 </span>                :<span class="lineNoCov">          0 : DiagCG::eval()</span>
+<span class="lineNum">     570 </span>                :            : // *****************************************************************************
+<span class="lineNum">     571 </span>                :            : // Evaluate whether to continue with next step
+<span class="lineNum">     572 </span>                :            : // *****************************************************************************
+<span class="lineNum">     573 </span>                :            : {
+<span class="lineNum">     574 </span>                :<span class="lineNoCov">          0 :   auto d = Disc();</span>
+<span class="lineNum">     575 </span>                :            : 
+<span class="lineNum">     576 </span>                :<span class="lineNoCov">          0 :   const auto term = g_inputdeck.get&lt; tag::discr, tag::term &gt;();</span>
+<span class="lineNum">     577 </span>                :<span class="lineNoCov">          0 :   const auto nstep = g_inputdeck.get&lt; tag::discr, tag::nstep &gt;();</span>
+<span class="lineNum">     578 </span>                :            :   const auto eps = std::numeric_limits&lt; tk::real &gt;::epsilon();
+<span class="lineNum">     579 </span>                :            : 
+<span class="lineNum">     580 </span>                :            :   // If neither max iterations nor max time reached, continue, otherwise finish
+<span class="lineNum">     581 </span>                :<span class="lineNoCov">          0 :   if (std::fabs(d-&gt;T()-term) &gt; eps &amp;&amp; d-&gt;It() &lt; nstep)</span>
+<span class="lineNum">     582 </span>                :<span class="lineNoCov">          0 :     dt();</span>
+<span class="lineNum">     583 </span>                :            :   else
+<span class="lineNum">     584 </span>                :<span class="lineNoCov">          0 :     contribute( CkCallback( CkReductionTarget(Transporter,finish), d-&gt;Tr() ) );</span>
+<span class="lineNum">     585 </span>                :<span class="lineNoCov">          0 : }</span>
+<span class="lineNum">     586 </span>                :            : 
+<span class="lineNum">     587 </span>                :            : #include &quot;NoWarning/diagcg.def.h&quot;
 </pre>
       </td>
     </tr>

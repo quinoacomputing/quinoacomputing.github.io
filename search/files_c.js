@@ -8,6 +8,8 @@ var searchData=
   ['nlenergygrowth_2eh',['NLEnergyGrowth.h',['../_n_l_energy_growth_8h.html',1,'']]],
   ['node_5fconnectivity_2eh',['node_connectivity.h',['../node__connectivity_8h.html',1,'']]],
   ['node_5fstore_2eh',['node_store.h',['../node__store_8h.html',1,'']]],
+  ['nodebc_2ec',['NodeBC.C',['../_node_b_c_8_c.html',1,'']]],
+  ['nodebc_2eh',['NodeBC.h',['../_node_b_c_8h.html',1,'']]],
   ['nodediagnostics_2ec',['NodeDiagnostics.C',['../_node_diagnostics_8_c.html',1,'']]],
   ['nodediagnostics_2eh',['NodeDiagnostics.h',['../_node_diagnostics_8h.html',1,'']]],
   ['numberfractionbeta_2eh',['NumberFractionBeta.h',['../_number_fraction_beta_8h.html',1,'']]],

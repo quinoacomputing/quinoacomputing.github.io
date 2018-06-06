@@ -23,6 +23,7 @@ var searchData=
   ['initgaussian',['InitGaussian',['../structwalker_1_1_init_gaussian.html',1,'walker']]],
   ['initpolicy',['InitPolicy',['../classwalker_1_1ctr_1_1_init_policy.html',1,'walker::ctr::InitPolicy'],['../structtag_1_1initpolicy.html',1,'tag::initpolicy']]],
   ['initraw',['InitRaw',['../structwalker_1_1_init_raw.html',1,'walker']]],
+  ['initref',['initref',['../structinciter_1_1deck_1_1initref.html',1,'inciter::deck']]],
   ['initzero',['InitZero',['../structwalker_1_1_init_zero.html',1,'walker']]],
   ['inlet',['Inlet',['../structinciter_1_1dg_1_1_transport_1_1_inlet.html',1,'inciter::dg::Transport']]],
   ['input',['input',['../structtag_1_1input.html',1,'tag']]],

@@ -4,6 +4,7 @@ var searchData=
   ['action',['action',['../structtk_1_1grm_1_1action.html',1,'tk::grm']]],
   ['action_3c_20act_3c_20rule_2c_20actions_2e_2e_2e_20_3e_20_3e',['action&lt; act&lt; rule, actions... &gt; &gt;',['../structtk_1_1grm_1_1action_3_01act_3_01rule_00_01actions_8_8_8_01_4_01_4.html',1,'tk::grm']]],
   ['action_3c_20add_5fdepvar_20_3e',['action&lt; add_depvar &gt;',['../structtk_1_1grm_1_1action_3_01add__depvar_01_4.html',1,'tk::grm']]],
+  ['action_3c_20check_5famr_5ferrors_20_3e',['action&lt; check_amr_errors &gt;',['../structtk_1_1grm_1_1action_3_01check__amr__errors_01_4.html',1,'tk::grm']]],
   ['action_3c_20check_5fbetapdfs_3c_20eq_2c_20param_20_3e_20_3e',['action&lt; check_betapdfs&lt; eq, param &gt; &gt;',['../structtk_1_1grm_1_1action_3_01check__betapdfs_3_01eq_00_01param_01_4_01_4.html',1,'tk::grm']]],
   ['action_3c_20check_5fbinsizes_20_3e',['action&lt; check_binsizes &gt;',['../structtk_1_1grm_1_1action_3_01check__binsizes_01_4.html',1,'tk::grm']]],
   ['action_3c_20check_5fcompflow_3c_20eq_20_3e_20_3e',['action&lt; check_compflow&lt; eq &gt; &gt;',['../structtk_1_1grm_1_1action_3_01check__compflow_3_01eq_01_4_01_4.html',1,'tk::grm']]],
@@ -68,7 +69,7 @@ var searchData=
   ['around',['Around',['../classtk_1_1_around.html',1,'tk']]],
   ['around_5fcommon',['Around_common',['../structtut_1_1_around__common.html',1,'tut']]],
   ['ascmeshreader',['ASCMeshReader',['../classtk_1_1_a_s_c_mesh_reader.html',1,'tk']]],
-  ['assertpolicycodes',['assertPolicyCodes',['../structwalker_1_1ctr_1_1_coeff_policy_1_1assert_policy_codes.html',1,'walker::ctr::CoeffPolicy::assertPolicyCodes'],['../structwalker_1_1ctr_1_1_init_policy_1_1assert_policy_codes.html',1,'walker::ctr::InitPolicy::assertPolicyCodes'],['../structinciter_1_1ctr_1_1_a_m_r_initial_1_1assert_policy_codes.html',1,'inciter::ctr::AMRInitial::assertPolicyCodes'],['../structinciter_1_1ctr_1_1_problem_1_1assert_policy_codes.html',1,'inciter::ctr::Problem::assertPolicyCodes'],['../structinciter_1_1ctr_1_1_physics_1_1assert_policy_codes.html',1,'inciter::ctr::Physics::assertPolicyCodes']]],
+  ['assertpolicycodes',['assertPolicyCodes',['../structwalker_1_1ctr_1_1_coeff_policy_1_1assert_policy_codes.html',1,'walker::ctr::CoeffPolicy::assertPolicyCodes'],['../structwalker_1_1ctr_1_1_init_policy_1_1assert_policy_codes.html',1,'walker::ctr::InitPolicy::assertPolicyCodes'],['../structinciter_1_1ctr_1_1_physics_1_1assert_policy_codes.html',1,'inciter::ctr::Physics::assertPolicyCodes'],['../structinciter_1_1ctr_1_1_a_m_r_initial_1_1assert_policy_codes.html',1,'inciter::ctr::AMRInitial::assertPolicyCodes'],['../structinciter_1_1ctr_1_1_problem_1_1assert_policy_codes.html',1,'inciter::ctr::Problem::assertPolicyCodes']]],
   ['atwood',['atwood',['../structtag_1_1atwood.html',1,'tag']]],
   ['autocorr',['AutoCorr',['../structtag_1_1_auto_corr.html',1,'tag']]],
   ['avecost',['avecost',['../structtag_1_1avecost.html',1,'tag']]]
