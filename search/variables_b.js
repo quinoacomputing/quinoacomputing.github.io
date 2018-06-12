@@ -324,6 +324,7 @@ var searchData=
   ['m_5fsection_5funderline_5ffmt',['m_section_underline_fmt',['../classtk_1_1_print.html#a0867ef7e3fc7eae2253d17bc1442364e',1,'tk::Print']]],
   ['m_5fseed',['m_seed',['../classtk_1_1_m_k_l_r_n_g.html#a928b0886e43852a72aa67ce9a9aeb9b5',1,'tk::MKLRNG']]],
   ['m_5fshadow',['m_shadow',['../classtk_1_1_solver.html#ae670c687250b64158b4adec9e1b9cb0f',1,'tk::Solver']]],
+  ['m_5fsidenodes',['m_sidenodes',['../classinciter_1_1_partitioner.html#a717e79e56cb5f8bea96c92dc51159f51',1,'inciter::Partitioner']]],
   ['m_5fsigma',['m_sigma',['../classwalker_1_1_ornstein_uhlenbeck.html#a301f15e6f242f9b0cf7ab4f58a65f3a8',1,'walker::OrnsteinUhlenbeck']]],
   ['m_5fsigmasq',['m_sigmasq',['../classwalker_1_1_diag_ornstein_uhlenbeck.html#affc198b2dfc17093f3405fb7213d366c',1,'walker::DiagOrnsteinUhlenbeck::m_sigmasq()'],['../classwalker_1_1_skew_normal.html#aa27840d9643cba509c3a93af95b872f2',1,'walker::SkewNormal::m_sigmasq()']]],
   ['m_5fsignal',['m_signal',['../class_main.html#a1998c8bb6e42892feddcb11df2009a62',1,'Main']]],
