@@ -15,7 +15,7 @@ var searchData=
   ['noexpectchoices',['noExpectChoices',['../structtut_1_1_has__common_1_1no_expect_choices.html',1,'tut::Has_common']]],
   ['noexpectdescription',['noExpectDescription',['../structtut_1_1_has__common_1_1no_expect_description.html',1,'tut::Has_common']]],
   ['noexpecttype',['noExpectType',['../structtut_1_1_has__common_1_1no_expect_type.html',1,'tut::Has_common']]],
-  ['noproxy',['noProxy',['../structtut_1_1_has__common_1_1no_proxy.html',1,'tut::Has_common::noProxy'],['../structtut_1_1_charm_util__common_1_1no_proxy.html',1,'tut::CharmUtil_common::noProxy']]],
+  ['noproxy',['noProxy',['../structtut_1_1_charm_util__common_1_1no_proxy.html',1,'tut::CharmUtil_common::noProxy'],['../structtut_1_1_has__common_1_1no_proxy.html',1,'tut::Has_common::noProxy']]],
   ['npar',['npar',['../structtag_1_1npar.html',1,'tag']]],
   ['nstep',['nstep',['../structtag_1_1nstep.html',1,'tag']]],
   ['nth_5fimpl',['nth_impl',['../structtk_1_1tuple_1_1nth__impl.html',1,'tk::tuple']]],

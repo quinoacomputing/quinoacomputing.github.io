@@ -11,6 +11,7 @@ var searchData=
   ['edge_5frefinement',['Edge_Refinement',['../struct_a_m_r_1_1_edge___refinement.html#a785527979121b2b25d14df3ddd48ac8f',1,'AMR::Edge_Refinement::Edge_Refinement()'],['../struct_a_m_r_1_1_edge___refinement.html#a8cfcf78cd17ef681ab3d088ae9d4f281',1,'AMR::Edge_Refinement::Edge_Refinement(size_t A_in, size_t B_in, real_t refinement_criteria_in, bool needs_refining_in, bool needs_derefining_in, bool is_dead_in, Edge_Lock_Case lock_case_in)']]],
   ['edge_5ft',['edge_t',['../classedge__t.html#a63963ccdf0847dd04274e6563f32602a',1,'edge_t::edge_t()'],['../classedge__t.html#a551faa426683992ddffd0e395a94ab8a',1,'edge_t::edge_t(size_t A, size_t B)']]],
   ['edgegrad',['edgegrad',['../namespacetk.html#a8deceeef86846672dd872bb7e975bb13',1,'tk']]],
+  ['elem_5fmap',['elem_map',['../classtk_1_1_uns_mesh.html#a0ce5c8811061b29f9dac0adc29575225',1,'tk::UnsMesh::elem_map() const noexcept'],['../classtk_1_1_uns_mesh.html#a7865f5ac7d9f5f6340e1a37d5380ccd1',1,'tk::UnsMesh::elem_map() noexcept']]],
   ['elemcommmaps',['elemCommMaps',['../namespacetk.html#a5983201a427244339722ca9a4e809f48',1,'tk']]],
   ['element',['element',['../namespacetk.html#a928d7dd976738fc1e3de5f4ee6147140',1,'tk']]],
   ['end',['end',['../classtk_1_1_progress.html#a8e18e9fbd65b6afee1bd75d50f14cd00',1,'tk::Progress::end()'],['../classtk_1_1_around.html#a95229c569a99b5737fa68bcfce201cdf',1,'tk::Around::end()']]],

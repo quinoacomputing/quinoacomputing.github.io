@@ -40,6 +40,7 @@ var searchData=
   ['writeparticles',['writeParticles',['../classtk_1_1_tracker.html#ae573b715e9b64f058bea66838d84f05f',1,'tk::Tracker']]],
   ['writephysicalnames',['writePhysicalNames',['../classtk_1_1_gmsh_mesh_writer.html#a45af20052806d361134761331d241965',1,'tk::GmshMeshWriter']]],
   ['writer',['Writer',['../classtk_1_1_writer.html#aef3aa87f2664248c5c63887d4ab15436',1,'tk::Writer::Writer()'],['../namespacetut.html#a566ff6db6fd83f10f55afd9f11e04fde',1,'tut::Writer()']]],
+  ['writesidesets',['writeSidesets',['../classtk_1_1_exodus_i_i_mesh_writer.html#a9d1a58deaf47a2a3a996c18f82f8820d',1,'tk::ExodusIIMeshWriter']]],
   ['writetimestamp',['writeTimeStamp',['../classtk_1_1_exodus_i_i_mesh_writer.html#ac00c01f016eeecb129cee2d13000bfe8',1,'tk::ExodusIIMeshWriter::writeTimeStamp()'],['../classtk_1_1_root_mesh_writer.html#a213c355b623b75e4051ebe0b06824bf4',1,'tk::RootMeshWriter::writeTimeStamp()']]],
   ['writetripdf',['writeTriPDF',['../classwalker_1_1_distributor.html#a0d4405085b37764c3879c7647a806bc5',1,'walker::Distributor']]],
   ['writetxt',['writeTxt',['../classtk_1_1_p_d_f_writer.html#abe52447b7951fe4abffbbcf0286ba570',1,'tk::PDFWriter::writeTxt(const UniPDF &amp;pdf, const tk::ctr::PDFInfo &amp;info) const'],['../classtk_1_1_p_d_f_writer.html#afdb20d0b7f99436b525dcc9b62200699',1,'tk::PDFWriter::writeTxt(const BiPDF &amp;pdf, const tk::ctr::PDFInfo &amp;info) const'],['../classtk_1_1_p_d_f_writer.html#adeb094f16f7a6625c11dbd220cdb25dd',1,'tk::PDFWriter::writeTxt(const TriPDF &amp;pdf, const tk::ctr::PDFInfo &amp;info) const']]],

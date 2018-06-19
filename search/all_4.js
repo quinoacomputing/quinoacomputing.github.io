@@ -30,6 +30,7 @@ var searchData=
   ['edges_5ft',['edges_t',['../_a_m_r__types_8h.html#a4284a8fd5db8dcc7883cae47f9c78fb8',1,'AMR_types.h']]],
   ['edgeset',['EdgeSet',['../classtk_1_1_uns_mesh.html#a9b201ee5ec18aa6deddbca2a680dec2b',1,'tk::UnsMesh']]],
   ['elem',['elem',['../structtag_1_1elem.html',1,'tag::elem'],['../namespacetk_1_1ctr.html#a62dbe24719817137376179bca05d0112ad3e3387a4f355276d41eefead65395c5',1,'tk::ctr::ELEM()']]],
+  ['elem_5fmap',['elem_map',['../classtk_1_1_uns_mesh.html#a0ce5c8811061b29f9dac0adc29575225',1,'tk::UnsMesh::elem_map() const noexcept'],['../classtk_1_1_uns_mesh.html#a7865f5ac7d9f5f6340e1a37d5380ccd1',1,'tk::UnsMesh::elem_map() noexcept']]],
   ['elemcommmaps',['elemCommMaps',['../namespacetk.html#a5983201a427244339722ca9a4e809f48',1,'tk']]],
   ['elemdiagnostics',['ElemDiagnostics',['../classinciter_1_1_elem_diagnostics.html',1,'inciter']]],
   ['elemdiagnostics_2ec',['ElemDiagnostics.C',['../_elem_diagnostics_8_c.html',1,'']]],

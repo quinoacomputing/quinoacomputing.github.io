@@ -79,6 +79,7 @@ var searchData=
   ['writer_5fcommon',['Writer_common',['../structtut_1_1_writer__common.html',1,'tut']]],
   ['writer_5fgroup',['Writer_group',['../namespacetut.html#a39865b074f2092b4646e0ead18b93e16',1,'tut']]],
   ['writer_5fobject',['Writer_object',['../namespacetut.html#a1a897ed74a170fe0664c1dc8ab90facc',1,'tut']]],
+  ['writesidesets',['writeSidesets',['../classtk_1_1_exodus_i_i_mesh_writer.html#a9d1a58deaf47a2a3a996c18f82f8820d',1,'tk::ExodusIIMeshWriter']]],
   ['writetimestamp',['writeTimeStamp',['../classtk_1_1_exodus_i_i_mesh_writer.html#ac00c01f016eeecb129cee2d13000bfe8',1,'tk::ExodusIIMeshWriter::writeTimeStamp()'],['../classtk_1_1_root_mesh_writer.html#a213c355b623b75e4051ebe0b06824bf4',1,'tk::RootMeshWriter::writeTimeStamp()']]],
   ['writetripdf',['writeTriPDF',['../classwalker_1_1_distributor.html#a0d4405085b37764c3879c7647a806bc5',1,'walker::Distributor']]],
   ['writetxt',['writeTxt',['../classtk_1_1_p_d_f_writer.html#abe52447b7951fe4abffbbcf0286ba570',1,'tk::PDFWriter::writeTxt(const UniPDF &amp;pdf, const tk::ctr::PDFInfo &amp;info) const'],['../classtk_1_1_p_d_f_writer.html#afdb20d0b7f99436b525dcc9b62200699',1,'tk::PDFWriter::writeTxt(const BiPDF &amp;pdf, const tk::ctr::PDFInfo &amp;info) const'],['../classtk_1_1_p_d_f_writer.html#adeb094f16f7a6625c11dbd220cdb25dd',1,'tk::PDFWriter::writeTxt(const TriPDF &amp;pdf, const tk::ctr::PDFInfo &amp;info) const']]],

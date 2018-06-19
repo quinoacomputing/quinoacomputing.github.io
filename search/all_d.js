@@ -72,7 +72,7 @@ var searchData=
   ['none',['none',['../namespace_a_m_r.html#aff53dc457ce57f50f7af28ccff2e8ceba334c4a4c42fdb79d7ebc3e73b517e6f8',1,'AMR']]],
   ['nooption',['NOOPTION',['../namespacetk_1_1grm.html#a86dbe384e8ce31796b7eb5f6ac87e1a3ae4a0814c024a470edc9841424ccd8989',1,'tk::grm']]],
   ['noproblem',['NOPROBLEM',['../namespacetk_1_1grm.html#a86dbe384e8ce31796b7eb5f6ac87e1a3a15c7e870262beaa74148eb67bdd7895b',1,'tk::grm']]],
-  ['noproxy',['noProxy',['../structtut_1_1_has__common_1_1no_proxy.html',1,'tut::Has_common::noProxy'],['../structtut_1_1_charm_util__common_1_1no_proxy.html',1,'tut::CharmUtil_common::noProxy']]],
+  ['noproxy',['noProxy',['../structtut_1_1_charm_util__common_1_1no_proxy.html',1,'tut::CharmUtil_common::noProxy'],['../structtut_1_1_has__common_1_1no_proxy.html',1,'tut::Has_common::noProxy']]],
   ['normal',['normal',['../namespacetk.html#a33792d596875801d33c16acc28eb497f',1,'tk']]],
   ['norng',['NORNG',['../namespacetk_1_1grm.html#a86dbe384e8ce31796b7eb5f6ac87e1a3a61cb7af456776a7f26a0cb9330b2ce55',1,'tk::grm']]],
   ['nosamples',['NOSAMPLES',['../namespacetk_1_1grm.html#a86dbe384e8ce31796b7eb5f6ac87e1a3a2ebfecee2e107ad86ffe68012c3c3042',1,'tk::grm']]],
