@@ -1,6 +1,6 @@
 var searchData=
 [
-  ['gamma',['Gamma',['../classwalker_1_1_gamma.html#abce1f689559ebedf63a867cb0d05828c',1,'walker::Gamma']]],
+  ['gamma',['gamma',['../classtk_1_1_m_k_l_r_n_g.html#acb96489a4b00f47876e4c634b9bd9916',1,'tk::MKLRNG::gamma()'],['../classtk_1_1_random123.html#a896c6ccbc81db16f58ae9bf2989bed90',1,'tk::Random123::gamma()'],['../classtk_1_1_r_n_g.html#af646ddae6cba0d3cb08d56a236d6d073',1,'tk::RNG::gamma()'],['../structtk_1_1_r_n_g_1_1_concept.html#a045c8ed0eac3cfcf478e43a905e3322c',1,'tk::RNG::Concept::gamma()'],['../structtk_1_1_r_n_g_1_1_model.html#aba8cbb370a8f3c7174fc2f2767c4a8df',1,'tk::RNG::Model::gamma()'],['../classtk_1_1_r_n_g_s_s_e.html#a31f21d8e82b63563a5cb019624fd1c4c',1,'tk::RNGSSE::gamma()'],['../classwalker_1_1_gamma.html#abce1f689559ebedf63a867cb0d05828c',1,'walker::Gamma::Gamma()']]],
   ['gammacoeffconst',['GammaCoeffConst',['../classwalker_1_1_gamma_coeff_const.html#af943dd2fd7bec2b4454354cbd27d2523',1,'walker::GammaCoeffConst']]],
   ['gap',['Gap',['../classrngtest_1_1_test_u01_stack.html#a4a11cec60eac843206f8df755981f54e',1,'rngtest::TestU01Stack']]],
   ['gather',['gather',['../classinciter_1_1_partitioner.html#ad334fe5a4acd071eaeedd859533e4857',1,'inciter::Partitioner']]],
@@ -63,6 +63,7 @@ var searchData=
   ['gety',['gety',['../classtk_1_1_s_t_l_mesh.html#aabfcf8ad50719b2941a800b63b0435e5',1,'tk::STLMesh']]],
   ['getz',['getz',['../classtk_1_1_s_t_l_mesh.html#a82f450145448fc21eff273a99c8258e1',1,'tk::STLMesh']]],
   ['gid',['Gid',['../classinciter_1_1_discretization.html#a68e2b3932d7adb34e199cca1f85be7d1',1,'inciter::Discretization::Gid() const'],['../classinciter_1_1_discretization.html#a4cb106596668266e045f13d67afa7d82',1,'inciter::Discretization::Gid()']]],
+  ['glm',['glm',['../namespacewalker.html#a4cd3988218f738abd740f9b2ffe744a5',1,'walker']]],
   ['global2local',['global2local',['../namespacetk.html#a0ee7abd71123782d48e2ec04906fe982',1,'tk']]],
   ['gmshmeshreader',['GmshMeshReader',['../classtk_1_1_gmsh_mesh_reader.html#a456604e8eb840f033cee46dc46552f3c',1,'tk::GmshMeshReader']]],
   ['gmshmeshwriter',['GmshMeshWriter',['../classtk_1_1_gmsh_mesh_writer.html#a57f5e08fcdebc8c4f1cad2fe5d5deaa9',1,'tk::GmshMeshWriter']]],

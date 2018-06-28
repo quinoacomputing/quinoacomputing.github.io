@@ -5,5 +5,7 @@ var searchData=
   ['variant',['Variant',['../namespacetut_1_1charm.html#a6f3647c0b354eb1d70e2e825ab180bf2',1,'tut::charm']]],
   ['vector',['Vector',['../namespacetut_1_1charm.html#a39fb28d2f7a7819f994f695e9c3ba668',1,'tut::charm']]],
   ['vector_5fgroup',['Vector_group',['../namespacetut.html#a6639060b94fd784286113aeb8de5721b',1,'tut']]],
-  ['vector_5fobject',['Vector_object',['../namespacetut.html#abde3e9adad859352bdeee6222117fb53',1,'tut']]]
+  ['vector_5fobject',['Vector_object',['../namespacetut.html#abde3e9adad859352bdeee6222117fb53',1,'tut']]],
+  ['velocitycoeffpolicies',['VelocityCoeffPolicies',['../namespacewalker.html#a6b9ccd8758cbe1d84b696635d2b42e62',1,'walker']]],
+  ['velocityparameters',['VelocityParameters',['../namespacewalker_1_1ctr.html#a3fe0118858f0351195dde538fbc748f2',1,'walker::ctr']]]
 ];

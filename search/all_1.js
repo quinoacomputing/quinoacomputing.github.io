@@ -32,7 +32,7 @@ var searchData=
   ['betacoeffconst',['BetaCoeffConst',['../classwalker_1_1_beta_coeff_const.html',1,'walker::BetaCoeffConst'],['../classwalker_1_1_beta_coeff_const.html#afc952f452bba08db104f559f5d229803',1,'walker::BetaCoeffConst::BetaCoeffConst()']]],
   ['betacoeffpolicies',['BetaCoeffPolicies',['../namespacewalker.html#af9ae6258ad44a778afd53cdbe4b668fd',1,'walker']]],
   ['betacoeffpolicy_2eh',['BetaCoeffPolicy.h',['../_beta_coeff_policy_8h.html',1,'']]],
-  ['betaparameters',['BetaParameters',['../namespacewalker_1_1ctr.html#aed0c34fee4b51ce651b6cfcc0c48a471',1,'walker::ctr']]],
+  ['betaparameters',['BetaParameters',['../namespacewalker_1_1ctr.html#a4ff97fe7eb616c1e73f786118999700d',1,'walker::ctr']]],
   ['betapdf',['betapdf',['../structtag_1_1betapdf.html',1,'tag']]],
   ['betapdfs',['betapdfs',['../classwalker_1_1_diff_eq_stack.html#afb606646f3e80ee1635342306b2136d1',1,'walker::DiffEqStack']]],
   ['betax',['betax',['../structtag_1_1betax.html',1,'tag']]],

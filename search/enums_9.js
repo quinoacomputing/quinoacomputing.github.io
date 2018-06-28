@@ -3,6 +3,7 @@ var searchData=
   ['meshreader',['MeshReader',['../namespacetk.html#a748833535365d6e320da5fcb7d213c30',1,'tk']]],
   ['meshwriter',['MeshWriter',['../namespacetk.html#a43d2f365ad601e02c8d64479adfd4a7f',1,'tk']]],
   ['mklbetamethodtype',['MKLBetaMethodType',['../namespacetk_1_1ctr.html#acc4d0d1a1c27c555f100b137a98895b8',1,'tk::ctr']]],
+  ['mklgammamethodtype',['MKLGammaMethodType',['../namespacetk_1_1ctr.html#a7942156950b5fd7849d385b4b4d432a1',1,'tk::ctr']]],
   ['mklgaussianmethodtype',['MKLGaussianMethodType',['../namespacetk_1_1ctr.html#a5c32a2a00d2f2262ecc598c3a3582985',1,'tk::ctr']]],
   ['mkluniformmethodtype',['MKLUniformMethodType',['../namespacetk_1_1ctr.html#a32cbd869b3835233c5cedfae50138c2f',1,'tk::ctr']]],
   ['moment',['Moment',['../namespacetk_1_1ctr.html#ad8f59bc1d2814d96060f4ba652bc08bf',1,'tk::ctr']]],

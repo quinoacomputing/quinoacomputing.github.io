@@ -1,6 +1,7 @@
 var searchData=
 [
   ['gamma',['gamma',['../structwalker_1_1deck_1_1gamma.html',1,'walker::deck::gamma'],['../classwalker_1_1_gamma.html',1,'walker::Gamma&lt; Init, Coefficients &gt;'],['../structtag_1_1gamma.html',1,'tag::gamma']]],
+  ['gamma_5fmethod',['gamma_method',['../structtk_1_1mkl_1_1gamma__method.html',1,'tk::mkl::gamma_method&lt; use, sel, vec, tags &gt;'],['../structtag_1_1gamma__method.html',1,'tag::gamma_method']]],
   ['gammacoeffconst',['GammaCoeffConst',['../classwalker_1_1_gamma_coeff_const.html',1,'walker']]],
   ['gap',['Gap',['../structtag_1_1_gap.html',1,'tag']]],
   ['gaussian',['gaussian',['../structtag_1_1gaussian.html',1,'tag']]],

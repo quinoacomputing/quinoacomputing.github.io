@@ -45,7 +45,7 @@ var searchData=
   ['wrightfishercoeffconst',['WrightFisherCoeffConst',['../classwalker_1_1_wright_fisher_coeff_const.html',1,'walker::WrightFisherCoeffConst'],['../classwalker_1_1_wright_fisher_coeff_const.html#aebaf8fad249e7e469a8a880ae0e53378',1,'walker::WrightFisherCoeffConst::WrightFisherCoeffConst()']]],
   ['wrightfishercoeffpolicies',['WrightFisherCoeffPolicies',['../namespacewalker.html#a1aa1f1b033c55d88dffdfaf724785654',1,'walker']]],
   ['wrightfishercoeffpolicy_2eh',['WrightFisherCoeffPolicy.h',['../_wright_fisher_coeff_policy_8h.html',1,'']]],
-  ['wrightfisherparameters',['WrightFisherParameters',['../namespacewalker_1_1ctr.html#a454c707a07310d269ef614f2f4846ae6',1,'walker::ctr']]],
+  ['wrightfisherparameters',['WrightFisherParameters',['../namespacewalker_1_1ctr.html#a1004298669771eb5887e147d6fed1c8b',1,'walker::ctr']]],
   ['write',['write',['../classtk_1_1_writer.html#a182f5fe55cee4995185f2eff702801e8',1,'tk::Writer::write()'],['../classtk_1_1_silo_writer.html#af86f4d36286b68d1b957116e452c3b3d',1,'tk::SiloWriter::write()']]],
   ['writebipdf',['writeBiPDF',['../classwalker_1_1_distributor.html#af2f852e0b52208f1cb8d45a94eab816c',1,'walker::Distributor']]],
   ['writeconnectivity',['writeConnectivity',['../classtk_1_1_file_conv_writer.html#aaee40d57b78d553f8b8b034df5465753',1,'tk::FileConvWriter']]],
@@ -87,6 +87,7 @@ var searchData=
   ['writeunsmesh',['writeUnsMesh',['../namespacetk.html#a92ff858133bdb654de9b95c279427325',1,'tk']]],
   ['writevarnames',['writeVarNames',['../classtk_1_1_file_conv_writer.html#a65137bb75e7d5c58df3bb2ad8b01049d',1,'tk::FileConvWriter']]],
   ['wrongbetapdf',['WRONGBETAPDF',['../namespacetk_1_1grm.html#a86dbe384e8ce31796b7eb5f6ac87e1a3a4b9466042bf22f34f65e5bc33559ada3',1,'tk::grm']]],
+  ['wronggammapdf',['WRONGGAMMAPDF',['../namespacetk_1_1grm.html#a86dbe384e8ce31796b7eb5f6ac87e1a3ac57f805ff1dbfc471b7ff8060c831563',1,'tk::grm']]],
   ['wronggaussian',['WRONGGAUSSIAN',['../namespacetk_1_1grm.html#a86dbe384e8ce31796b7eb5f6ac87e1a3aa16255a463cb78de1e4b9d8d97febb32',1,'tk::grm']]],
   ['wrongsize',['WRONGSIZE',['../namespacetk_1_1grm.html#a86dbe384e8ce31796b7eb5f6ac87e1a3aebcad5d28c278b92b3cd13463222f424',1,'tk::grm']]]
 ];

@@ -16,7 +16,7 @@ var searchData=
   ['eq2',['eq2',['../structtut_1_1eq2.html',1,'tut']]],
   ['equations',['equations',['../structinciter_1_1deck_1_1equations.html',1,'inciter::deck']]],
   ['eraser',['Eraser',['../structrngtest_1_1_eraser.html',1,'rngtest']]],
-  ['error',['Error',['../class_a_m_r_1_1_error.html',1,'AMR::Error'],['../classtk_1_1ctr_1_1_error.html',1,'tk::ctr::Error'],['../structtag_1_1error.html',1,'tag::error']]],
+  ['error',['Error',['../classtk_1_1ctr_1_1_error.html',1,'tk::ctr::Error'],['../class_a_m_r_1_1_error.html',1,'AMR::Error'],['../structtag_1_1error.html',1,'tag::error']]],
   ['escaper',['escaper',['../structkw_1_1escaper.html',1,'kw']]],
   ['escaper_3c_20c_2c_20cs_20_2e_2e_2e_20_3e',['escaper&lt; C, Cs ... &gt;',['../structkw_1_1escaper_3_01_c_00_01_cs_01_8_8_8_01_4.html',1,'kw']]],
   ['escaper_3c_3e',['escaper&lt;&gt;',['../structkw_1_1escaper_3_4.html',1,'kw']]],

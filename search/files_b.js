@@ -38,6 +38,7 @@ var searchData=
   ['mkl_5flicense_2edox',['MKL_license.dox',['../_m_k_l__license_8dox.html',1,'']]],
   ['mkl_5fvsl_2eh',['mkl_vsl.h',['../mkl__vsl_8h.html',1,'']]],
   ['mklbetamethod_2eh',['MKLBetaMethod.h',['../_m_k_l_beta_method_8h.html',1,'']]],
+  ['mklgammamethod_2eh',['MKLGammaMethod.h',['../_m_k_l_gamma_method_8h.html',1,'']]],
   ['mklgaussianmethod_2eh',['MKLGaussianMethod.h',['../_m_k_l_gaussian_method_8h.html',1,'']]],
   ['mklgrammar_2eh',['MKLGrammar.h',['../_m_k_l_grammar_8h.html',1,'']]],
   ['mklrng_2eh',['MKLRNG.h',['../_m_k_l_r_n_g_8h.html',1,'']]],

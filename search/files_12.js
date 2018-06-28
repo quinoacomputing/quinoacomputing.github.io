@@ -28,6 +28,7 @@ var searchData=
   ['testmake_5flist_2eh',['TestMake_list.h',['../_test_make__list_8h.html',1,'']]],
   ['testmesh_2eh',['TestMesh.h',['../_test_mesh_8h.html',1,'']]],
   ['testmklbetamethod_2eh',['TestMKLBetaMethod.h',['../_test_m_k_l_beta_method_8h.html',1,'']]],
+  ['testmklgammamethod_2eh',['TestMKLGammaMethod.h',['../_test_m_k_l_gamma_method_8h.html',1,'']]],
   ['testmklgaussianmethod_2eh',['TestMKLGaussianMethod.h',['../_test_m_k_l_gaussian_method_8h.html',1,'']]],
   ['testmklrng_2eh',['TestMKLRNG.h',['../_test_m_k_l_r_n_g_8h.html',1,'']]],
   ['testmkluniformmethod_2eh',['TestMKLUniformMethod.h',['../_test_m_k_l_uniform_method_8h.html',1,'']]],

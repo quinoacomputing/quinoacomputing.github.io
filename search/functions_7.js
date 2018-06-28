@@ -20,7 +20,7 @@ var searchData=
   ['hx',['hx',['../classinciter_1_1_comp_flow_problem_n_l_energy_growth.html#a66f958b2c4722c94fd2223b6baf411ed',1,'inciter::CompFlowProblemNLEnergyGrowth']]],
   ['hydroproduction',['hydroproduction',['../classwalker_1_1_mix_mass_frac_beta_coeff_hydro_time_scale.html#a4eb9f09b5eeacdb0d89d96c51803b9e5',1,'walker::MixMassFracBetaCoeffHydroTimeScale']]],
   ['hydroproductions',['HydroProductions',['../classwalker_1_1ctr_1_1_hydro_productions.html#ab3eb662c6575d108bf6c64d78481fec7',1,'walker::ctr::HydroProductions']]],
-  ['hydrotimescale',['hydrotimescale',['../classwalker_1_1_langevin_coeff_hydro_time_scale.html#ac6e9a322091270ed339baf010d63d442',1,'walker::LangevinCoeffHydroTimeScale::hydrotimescale()'],['../classwalker_1_1_mix_mass_frac_beta_coeff_hydro_time_scale.html#a8379ae5767d501cb5533f3c5766820c8',1,'walker::MixMassFracBetaCoeffHydroTimeScale::hydrotimescale()']]],
+  ['hydrotimescale',['hydrotimescale',['../classwalker_1_1_mix_mass_frac_beta_coeff_hydro_time_scale.html#a8379ae5767d501cb5533f3c5766820c8',1,'walker::MixMassFracBetaCoeffHydroTimeScale::hydrotimescale()'],['../classwalker_1_1_velocity___hydro_time_scale.html#a4706051dc298e5293b1d9087252917c3',1,'walker::Velocity_HydroTimeScale::hydrotimescale()']]],
   ['hydrotimescales',['HydroTimeScales',['../classwalker_1_1ctr_1_1_hydro_time_scales.html#a9b14429e3ce1ebfea5324adc5d6d1f1a',1,'walker::ctr::HydroTimeScales']]],
   ['hypermeshreader',['HyperMeshReader',['../classtk_1_1_hyper_mesh_reader.html#a1fba3f8990e827119822d3306dcfea7c',1,'tk::HyperMeshReader']]],
   ['hyprelhs',['hyprelhs',['../classtk_1_1_solver.html#af9cb98d033677aaf8e1f9cd56e443f42',1,'tk::Solver']]],

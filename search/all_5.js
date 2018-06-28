@@ -81,6 +81,7 @@ var searchData=
   ['flip_5fmap_5fobject',['Flip_map_object',['../namespacetut.html#a45e932cb73352f7abca675437aaac32d',1,'tut']]],
   ['flip_5fpair',['flip_pair',['../namespacetk.html#ac2323b3c43edbcc32d55d91100ffc3a6',1,'tk']]],
   ['floatformat',['floatformat',['../namespaceinciter_1_1ctr.html#a0e5df03a596602a16898435242c6b502',1,'inciter::ctr::floatformat()'],['../namespacewalker_1_1ctr.html#a56d1ca1b75a04216d7435a51b8d79201',1,'walker::ctr::floatformat()']]],
+  ['fluctuation',['FLUCTUATION',['../namespacewalker_1_1ctr.html#a38e4dce0dcacfb18bfb1336cf670ab2ca36920fcfe937677b46e6ddfa5b3f3f1b',1,'walker::ctr']]],
   ['flux',['flux',['../structtag_1_1flux.html',1,'tag::flux'],['../classinciter_1_1ctr_1_1_flux.html',1,'inciter::ctr::Flux'],['../structinciter_1_1_h_l_l_c.html#abd03813b2d62153e4cb440981d3289c7',1,'inciter::HLLC::flux()'],['../structinciter_1_1_lax_friedrichs.html#a301d4f19eb44867dfd20f421c2098501',1,'inciter::LaxFriedrichs::flux()'],['../classinciter_1_1_riemann_solver.html#a2ccb30bd5b997c16cdcf7d62088ce01a',1,'inciter::RiemannSolver::flux()'],['../structinciter_1_1_riemann_solver_1_1_concept.html#ad2d23eb8ccfa581e9887e694b0bc0f30',1,'inciter::RiemannSolver::Concept::flux()'],['../structinciter_1_1_riemann_solver_1_1_model.html#a4413e2b44749b2c6d394e5c27f801d45',1,'inciter::RiemannSolver::Model::flux()'],['../classinciter_1_1ctr_1_1_flux.html#aa82dd63653f912bc0bcf7a1dabe91835',1,'inciter::ctr::Flux::Flux()']]],
   ['flux_2eh',['Flux.h',['../_flux_8h.html',1,'']]],
   ['fluxcorrector',['FluxCorrector',['../classinciter_1_1_flux_corrector.html',1,'inciter::FluxCorrector'],['../classinciter_1_1_flux_corrector.html#a260166f8f83463a9b99c260d525ef8cd',1,'inciter::FluxCorrector::FluxCorrector()']]],
@@ -95,5 +96,6 @@ var searchData=
   ['four_5fto_5feight',['four_to_eight',['../namespace_a_m_r.html#aff53dc457ce57f50f7af28ccff2e8ceba423413bbbaee6e823a063cb6cef0aaf7',1,'AMR']]],
   ['fourier3',['Fourier3',['../structtag_1_1_fourier3.html',1,'tag::Fourier3'],['../classrngtest_1_1_test_u01_stack.html#adbd1ef96e568cb8fa4b42e2d319c2019',1,'rngtest::TestU01Stack::Fourier3()']]],
   ['frequency',['frequency',['../structtag_1_1frequency.html',1,'tag']]],
+  ['fullvar',['FULLVAR',['../namespacewalker_1_1ctr.html#a38e4dce0dcacfb18bfb1336cf670ab2ca2c8c6989da0696836433cadd2ba35758',1,'walker::ctr']]],
   ['func',['func',['../classtk_1_1_exception.html#a219a7caf05e53633886d7959cd324155',1,'tk::Exception']]]
 ];

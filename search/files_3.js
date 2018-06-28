@@ -1,6 +1,7 @@
 var searchData=
 [
   ['data_2eh',['Data.h',['../_data_8h.html',1,'']]],
+  ['depvar_2eh',['Depvar.h',['../_depvar_8h.html',1,'']]],
   ['deriveddata_2ec',['DerivedData.C',['../_derived_data_8_c.html',1,'']]],
   ['deriveddata_2eh',['DerivedData.h',['../_derived_data_8h.html',1,'']]],
   ['dg_2ec',['DG.C',['../_d_g_8_c.html',1,'']]],
@@ -39,6 +40,8 @@ var searchData=
   ['discretization_2edecl_2eh',['discretization.decl.h',['../discretization_8decl_8h.html',1,'']]],
   ['discretization_2edef_2eh',['discretization.def.h',['../discretization_8def_8h.html',1,'']]],
   ['discretization_2eh',['Discretization.h',['../_discretization_8h.html',1,'']]],
+  ['dissipation_2eh',['Dissipation.h',['../_dissipation_8h.html',1,'']]],
+  ['dissipationcoeffpolicy_2eh',['DissipationCoeffPolicy.h',['../_dissipation_coeff_policy_8h.html',1,'']]],
   ['distfct_2ec',['DistFCT.C',['../_dist_f_c_t_8_c.html',1,'']]],
   ['distfct_2eci',['distfct.ci',['../distfct_8ci.html',1,'']]],
   ['distfct_2edecl_2eh',['distfct.decl.h',['../distfct_8decl_8h.html',1,'']]],

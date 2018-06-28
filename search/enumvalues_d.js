@@ -1,7 +1,7 @@
 var searchData=
 [
   ['navierstokes',['NAVIERSTOKES',['../namespaceinciter_1_1ctr.html#a05792aa346ef778c24407416c5560d14ac74d97ca4e839b2b3d2f80e8054a3c3e',1,'inciter::ctr']]],
-  ['negativevar',['NEGATIVEVAR',['../namespacetk_1_1grm.html#a86dbe384e8ce31796b7eb5f6ac87e1a3a7f96ce3f1d9b9e6dc94906e96bd44bc8',1,'tk::grm']]],
+  ['negativeparam',['NEGATIVEPARAM',['../namespacetk_1_1grm.html#a86dbe384e8ce31796b7eb5f6ac87e1a3a7bedc62145904720053fffafd6c7dfea',1,'tk::grm']]],
   ['netgen',['NETGEN',['../namespacetk.html#a748833535365d6e320da5fcb7d213c30a8d2dc7a7e41c392a0da416ec0626e676',1,'tk::NETGEN()'],['../namespacetk.html#a43d2f365ad601e02c8d64479adfd4a7fa8d2dc7a7e41c392a0da416ec0626e676',1,'tk::NETGEN()']]],
   ['nl_5fenergy_5fgrowth',['NL_ENERGY_GROWTH',['../namespaceinciter_1_1ctr.html#a6233f49244094f9b305675039fe62482a141fe4c7195b7b4eb9badc8e0115adae',1,'inciter::ctr']]],
   ['no_5fbattery',['NO_BATTERY',['../namespacerngtest_1_1ctr.html#a151ceec1487ba03f04e1bcf5b3d10194a012d5205bceecda00a3dab4df16d49bd',1,'rngtest::ctr']]],
@@ -15,6 +15,7 @@ var searchData=
   ['nodelta',['NODELTA',['../namespacetk_1_1grm.html#a86dbe384e8ce31796b7eb5f6ac87e1a3ac776d74d34bf27fa1ad5f3d233d84933',1,'tk::grm']]],
   ['nodepvar',['NODEPVAR',['../namespacetk_1_1grm.html#a86dbe384e8ce31796b7eb5f6ac87e1a3ab8e701c43b5336ceaf0a59fe36831f86',1,'tk::grm']]],
   ['nodt',['NODT',['../namespacetk_1_1grm.html#a86dbe384e8ce31796b7eb5f6ac87e1a3a725e7394d50e3101784998ece8051240',1,'tk::grm']]],
+  ['nogamma',['NOGAMMA',['../namespacetk_1_1grm.html#a86dbe384e8ce31796b7eb5f6ac87e1a3aa4bf421850330a0a9ce591852de54adc',1,'tk::grm']]],
   ['noinit',['NOINIT',['../namespacetk_1_1grm.html#a86dbe384e8ce31796b7eb5f6ac87e1a3a77b3e8da86a70a357f25d04608341734',1,'tk::grm']]],
   ['noncomp',['NONCOMP',['../namespacetk_1_1grm.html#a86dbe384e8ce31796b7eb5f6ac87e1a3ac727e3ca4f9464113e8bc6aa5ca6fc2e',1,'tk::grm']]],
   ['none',['none',['../namespace_a_m_r.html#aff53dc457ce57f50f7af28ccff2e8ceba334c4a4c42fdb79d7ebc3e73b517e6f8',1,'AMR']]],
@@ -22,6 +23,7 @@ var searchData=
   ['noproblem',['NOPROBLEM',['../namespacetk_1_1grm.html#a86dbe384e8ce31796b7eb5f6ac87e1a3a15c7e870262beaa74148eb67bdd7895b',1,'tk::grm']]],
   ['norng',['NORNG',['../namespacetk_1_1grm.html#a86dbe384e8ce31796b7eb5f6ac87e1a3a61cb7af456776a7f26a0cb9330b2ce55',1,'tk::grm']]],
   ['nosamples',['NOSAMPLES',['../namespacetk_1_1grm.html#a86dbe384e8ce31796b7eb5f6ac87e1a3a2ebfecee2e107ad86ffe68012c3c3042',1,'tk::grm']]],
+  ['nosolve',['NOSOLVE',['../namespacetk_1_1grm.html#a86dbe384e8ce31796b7eb5f6ac87e1a3a13326e86d92963ab896aea5a701f946d',1,'tk::grm']]],
   ['nosuchcomponent',['NOSUCHCOMPONENT',['../namespacetk_1_1grm.html#a86dbe384e8ce31796b7eb5f6ac87e1a3af5ee66ba0a1b413beed642c6060c4f44',1,'tk::grm']]],
   ['nosuchdepvar',['NOSUCHDEPVAR',['../namespacetk_1_1grm.html#a86dbe384e8ce31796b7eb5f6ac87e1a3af4de0c0702a4cc7588415726715ce109',1,'tk::grm']]],
   ['notalpha',['NOTALPHA',['../namespacetk_1_1grm.html#a86dbe384e8ce31796b7eb5f6ac87e1a3ab07a89e04fea61fb4a1f0d4ed7d3ae17',1,'tk::grm']]],
