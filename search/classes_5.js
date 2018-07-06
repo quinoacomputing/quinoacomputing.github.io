@@ -1,8 +1,6 @@
 var searchData=
 [
   ['facedata',['FaceData',['../classinciter_1_1_face_data.html',1,'inciter']]],
-  ['faceeq',['FaceEq',['../structtk_1_1_uns_mesh_1_1_face_eq.html',1,'tk::UnsMesh']]],
-  ['facehasher',['FaceHasher',['../structtk_1_1_uns_mesh_1_1_face_hasher.html',1,'tk::UnsMesh']]],
   ['factory_5fcommon',['Factory_common',['../structtut_1_1_factory__common.html',1,'tut']]],
   ['failed',['Failed',['../structrngtest_1_1_test_u01_suite_1_1_failed.html',1,'rngtest::TestU01Suite']]],
   ['fct',['fct',['../structtag_1_1fct.html',1,'tag']]],

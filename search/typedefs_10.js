@@ -9,6 +9,8 @@ var searchData=
   ['siloerrorhandler',['SiloErrorHandler',['../namespacetk.html#a40ff0a76887b93164712b9ce9192fdd2',1,'tk']]],
   ['skewnormalcoeffpolicies',['SkewNormalCoeffPolicies',['../namespacewalker.html#a05fd510a5493bf8e33ca138f4334e39e',1,'walker']]],
   ['skewnormalparameters',['SkewNormalParameters',['../namespacewalker_1_1ctr.html#a6c392c7a2ab2954f184c5d0301a7ef17',1,'walker::ctr']]],
+  ['solvercallback',['SolverCallback',['../namespacetk.html#aa55097e47b3fcb9c11d69fcfbbf12b0f',1,'tk']]],
+  ['sortercallback',['SorterCallback',['../namespacetk.html#aee5e81a51fe8734df54d70ab33b1b8d0',1,'tk']]],
   ['strconvutil_5fgroup',['StrConvUtil_group',['../namespacetut.html#a53e6805397d9560e47d933efdee0e09c',1,'tut']]],
   ['strconvutil_5fobject',['StrConvUtil_object',['../namespacetut.html#ab8b4e2631ca49dbe7c7f97a784cf6276',1,'tut']]],
   ['stringparser_5fgroup',['StringParser_group',['../namespacetut.html#a8bbf5c6ec7def44e2b17ca8786bffa49',1,'tut']]],

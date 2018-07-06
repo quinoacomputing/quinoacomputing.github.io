@@ -8,6 +8,7 @@ var searchData=
   ['real',['real',['../namespacetk.html#a1a96ada94b7e2911ecca0a360f305575',1,'tk']]],
   ['real_5ft',['real_t',['../_a_m_r__types_8h.html#a184e5e2c3beae403ddda73642028cd62',1,'real_t():&#160;AMR_types.h'],['../namespace_a_m_r.html#ab861e63955cb52c2101a9fcbf6adb816',1,'AMR::real_t()']]],
   ['record',['record',['../structtut_1_1_tagged_tuple__common.html#a086d3107158b9a6d5b308ce0a0317495',1,'tut::TaggedTuple_common']]],
+  ['refinercallback',['RefinerCallback',['../namespacetk.html#a14349512cb39672c145c692e522ff28f',1,'tk']]],
   ['reorder_5fgroup',['Reorder_group',['../namespacetut.html#a8c3373bcef20439dcd4c09971db0d4b3',1,'tut']]],
   ['reorder_5fobject',['Reorder_object',['../namespacetut.html#a1f42c954b42231279681c06a4b3b97fa',1,'tut']]],
   ['result_5ftype',['result_type',['../structtk_1_1_random123_1_1_adaptor.html#a9707d7296112f2f7e2bfd31f9286c6aa',1,'tk::Random123::Adaptor::result_type()'],['../structtk_1_1_r_n_g_s_s_e_1_1_adaptor.html#a45ae6fc6f56f9c86dbdcd4232eb13c09',1,'tk::RNGSSE::Adaptor::result_type()']]],

@@ -19,6 +19,7 @@ var searchData=
   ['index_3c_20t_2c_20u_2c_20ts_2e_2e_2e_20_3e',['index&lt; T, U, Ts... &gt;',['../structtk_1_1tuple_1_1index_3_01_t_00_01_u_00_01_ts_8_8_8_01_4.html',1,'tk::tuple']]],
   ['info',['Info',['../structtk_1_1ctr_1_1_info.html',1,'tk::ctr']]],
   ['init',['init',['../structtag_1_1init.html',1,'tag']]],
+  ['initamr',['initamr',['../structtag_1_1initamr.html',1,'tag']]],
   ['initbeta',['InitBeta',['../structwalker_1_1_init_beta.html',1,'walker']]],
   ['initdelta',['InitDelta',['../structwalker_1_1_init_delta.html',1,'walker']]],
   ['initgamma',['InitGamma',['../structwalker_1_1_init_gamma.html',1,'walker']]],

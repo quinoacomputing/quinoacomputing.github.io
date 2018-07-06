@@ -1,7 +1,6 @@
 var searchData=
 [
   ['gamma',['GAMMA',['../namespacewalker_1_1ctr.html#a4592cfa71c6e4c64a71c5691df56c79fa469bb22a9f1f560331b06cd6ef0da944',1,'walker::ctr']]],
-  ['gather',['GATHER',['../classinciter_1_1_transporter.html#a11f61738f161e53f5dfd8bc5a2bf73afa08a9a63609abb6d5b33950799ccbbd4e',1,'inciter::Transporter']]],
   ['gauss_5fhump',['GAUSS_HUMP',['../namespaceinciter_1_1ctr.html#a6233f49244094f9b305675039fe62482a31c5cb9bb92eb8c1c0ea98ff7c9afefb',1,'inciter::ctr']]],
   ['gendir',['GENDIR',['../namespacewalker_1_1ctr.html#a4592cfa71c6e4c64a71c5691df56c79fa8bc09cf45a230c1727b84bc3bb985dd6',1,'walker::ctr']]],
   ['glm',['GLM',['../namespacewalker_1_1ctr.html#a68ab22f535a30f2cd39b6e3b3a75d661ac28f02184fc6a61a80c9f40ab26b1d2a',1,'walker::ctr']]],

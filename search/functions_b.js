@@ -13,7 +13,7 @@ var searchData=
   ['mark_5fone_5fto_5ftwo',['mark_one_to_two',['../class_a_m_r_1_1tet__store__t.html#a3984344d498fb5c57241a20e1ec88391',1,'AMR::tet_store_t']]],
   ['mark_5frefinement',['mark_refinement',['../class_a_m_r_1_1mesh__adapter__t.html#a9da50292691cefc869902a6dc0a2f78e',1,'AMR::mesh_adapter_t']]],
   ['mark_5ftwo_5fto_5feight',['mark_two_to_eight',['../class_a_m_r_1_1tet__store__t.html#accdabb4ba8aaa8abf4acdb3269e88ab4',1,'AMR::tet_store_t']]],
-  ['mask',['mask',['../classinciter_1_1_partitioner.html#aa810ee137b21edb02e356fe94ccfede4',1,'inciter::Partitioner']]],
+  ['mask',['mask',['../classinciter_1_1_sorter.html#ae2a1cb405d957571f0f2fea901809bae',1,'inciter::Sorter']]],
   ['massfractionbeta',['MassFractionBeta',['../classwalker_1_1_mass_fraction_beta.html#ab0719d732bbb310417ae8b5cd83bddc0',1,'walker::MassFractionBeta']]],
   ['massfractionbetacoeffconst',['MassFractionBetaCoeffConst',['../classwalker_1_1_mass_fraction_beta_coeff_const.html#a93a1b4536f67b09e1ec3c0ce8dd81d46',1,'walker::MassFractionBetaCoeffConst']]],
   ['matcg',['MatCG',['../classinciter_1_1_mat_c_g.html#a9274efb43bb030255a56ee73013a2606',1,'inciter::MatCG::MatCG(const CProxy_Discretization &amp;disc, const tk::CProxy_Solver &amp;solver, const FaceData &amp;fd)'],['../classinciter_1_1_mat_c_g.html#a8fe43727681308c2ef5a5788654e4a52',1,'inciter::MatCG::MatCG(CkMigrateMessage *)']]],

@@ -13,7 +13,7 @@ var searchData=
   ['diffeqkey',['DiffEqKey',['../namespacewalker_1_1ctr.html#ab452f8fe7a986b01b99b58d2c16554d0',1,'walker::ctr']]],
   ['dirichletcoeffpolicies',['DirichletCoeffPolicies',['../namespacewalker.html#affe17f2d7f33918861c5a982d2097bf4',1,'walker']]],
   ['dirichletparameters',['DirichletParameters',['../namespacewalker_1_1ctr.html#ad39511cf5f1b91168192b4a2f369afa4',1,'walker::ctr']]],
-  ['discretization',['discretization',['../namespaceinciter_1_1ctr.html#a32b54b7dd7bdfe2bd08a927059d6d0dc',1,'inciter::ctr::discretization()'],['../namespacewalker_1_1ctr.html#a2dec00532bc48e95d36a806b3eae1495',1,'walker::ctr::discretization()']]],
+  ['discretization',['discretization',['../namespaceinciter_1_1ctr.html#a8f7796727662e86cf6fe3c91ddc8c096',1,'inciter::ctr::discretization()'],['../namespacewalker_1_1ctr.html#a2dec00532bc48e95d36a806b3eae1495',1,'walker::ctr::discretization()']]],
   ['dissipationcoeffpolicies',['DissipationCoeffPolicies',['../namespacewalker.html#af72f6b3e7c972189f8e7d34e07119e25',1,'walker']]],
   ['dissipationparameters',['DissipationParameters',['../namespacewalker_1_1ctr.html#a4fc75920222968e56acc9cbee404e162',1,'walker::ctr']]],
   ['dsec',['Dsec',['../classtk_1_1_timer.html#ac1e4b53f806eeb46879f9d0acec4c68b',1,'tk::Timer']]]

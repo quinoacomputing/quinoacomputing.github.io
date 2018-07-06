@@ -7,7 +7,5 @@ var searchData=
   ['pdfpolicytype',['PDFPolicyType',['../namespacetk_1_1ctr.html#a92959a7765e502343d1a9b7eba034a6c',1,'tk::ctr']]],
   ['physicstype',['PhysicsType',['../namespaceinciter_1_1ctr.html#a05792aa346ef778c24407416c5560d14',1,'inciter::ctr']]],
   ['problemtype',['ProblemType',['../namespaceinciter_1_1ctr.html#a6233f49244094f9b305675039fe62482',1,'inciter::ctr']]],
-  ['progmesh',['ProgMesh',['../classinciter_1_1_transporter.html#abc3946777879e5187f583131c54ee6c0',1,'inciter::Transporter']]],
-  ['progpart',['ProgPart',['../classinciter_1_1_transporter.html#ae1a6913106efc8b037a403e4e75f4845',1,'inciter::Transporter']]],
-  ['progreord',['ProgReord',['../classinciter_1_1_transporter.html#a11f61738f161e53f5dfd8bc5a2bf73af',1,'inciter::Transporter']]]
+  ['progmesh',['ProgMesh',['../classinciter_1_1_transporter.html#abc3946777879e5187f583131c54ee6c0',1,'inciter::Transporter']]]
 ];

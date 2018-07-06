@@ -6,6 +6,7 @@ var searchData=
   ['bcconf_5ft',['bcconf_t',['../classinciter_1_1dg_1_1_comp_flow.html#a64bb6fa8566af9080ce1294a66b7c7d5',1,'inciter::dg::CompFlow::bcconf_t()'],['../classinciter_1_1dg_1_1_transport.html#a1f8ec62dd9d0d2a7a482c0856422192f',1,'inciter::dg::Transport::bcconf_t()']]],
   ['betacoeffpolicies',['BetaCoeffPolicies',['../namespacewalker.html#af9ae6258ad44a778afd53cdbe4b668fd',1,'walker']]],
   ['betaparameters',['BetaParameters',['../namespacewalker_1_1ctr.html#a4ff97fe7eb616c1e73f786118999700d',1,'walker::ctr']]],
+  ['bndfaces',['BndFaces',['../classinciter_1_1_refiner.html#a3a8ba2c58baf8faa11dfb175967e7b2b',1,'inciter::Refiner']]],
   ['boostoptionalint',['BoostOptionalInt',['../namespacetut_1_1charm.html#a752469d4174512553107b86c859315ce',1,'tut::charm']]],
   ['boostoptionalstr',['BoostOptionalStr',['../namespacetut_1_1charm.html#a635d0a9cbfb0c2038b684c9c54991393',1,'tut::charm']]]
 ];

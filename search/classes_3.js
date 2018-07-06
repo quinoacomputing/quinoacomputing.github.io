@@ -19,6 +19,8 @@ var searchData=
   ['dir',['Dir',['../structinciter_1_1dg_1_1_comp_flow_1_1_dir.html',1,'inciter::dg::CompFlow']]],
   ['dirichlet',['dirichlet',['../structwalker_1_1deck_1_1dirichlet.html',1,'walker::deck::dirichlet'],['../classwalker_1_1_dirichlet.html',1,'walker::Dirichlet&lt; Init, Coefficients &gt;'],['../structtag_1_1dirichlet.html',1,'tag::dirichlet']]],
   ['dirichletcoeffconst',['DirichletCoeffConst',['../classwalker_1_1_dirichlet_coeff_const.html',1,'walker']]],
+  ['disccreated',['disccreated',['../structtag_1_1disccreated.html',1,'tag']]],
+  ['discinserted',['discinserted',['../structtag_1_1discinserted.html',1,'tag']]],
   ['discr',['discr',['../structtag_1_1discr.html',1,'tag']]],
   ['discretization',['discretization',['../structinciter_1_1deck_1_1discretization.html',1,'inciter::deck::discretization'],['../classinciter_1_1_discretization.html',1,'inciter::Discretization']]],
   ['discretization_5fparameters',['discretization_parameters',['../structwalker_1_1deck_1_1discretization__parameters.html',1,'walker::deck']]],
