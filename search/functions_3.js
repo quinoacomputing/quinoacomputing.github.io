@@ -17,7 +17,7 @@ var searchData=
   ['description',['description',['../structtut_1_1_has__common_1_1yes_expect_description_1_1expect.html#abfff66afc66ae27e9e20121aa1181be3',1,'tut::Has_common::yesExpectDescription::expect']]],
   ['destroy',['destroy',['../namespacetk.html#a9140b408dcbd2eaef58f9c3a54fa104a',1,'tk']]],
   ['detect_5fcompatibility',['detect_compatibility',['../class_a_m_r_1_1mesh__adapter__t.html#a74c65af6a6675ec8854a7c937a2c9e1f',1,'AMR::mesh_adapter_t']]],
-  ['detectinput',['detectInput',['../namespacetk.html#a08e7ddf794b944c7d2095c1222f4244a',1,'tk']]],
+  ['detectinput',['detectInput',['../namespacetk.html#a485fc849f142f0ee38055fad224206d6',1,'tk']]],
   ['dg',['DG',['../classinciter_1_1_d_g.html#ae9ff9db477480b88f863ed6c01fcba9e',1,'inciter::DG::DG(const CProxy_Discretization &amp;disc, const tk::CProxy_Solver &amp;solver, const FaceData &amp;fd)'],['../classinciter_1_1_d_g.html#aea0ffdec153e752c89c28122bdcf7c65',1,'inciter::DG::DG(CkMigrateMessage *)']]],
   ['dgpde',['DGPDE',['../classinciter_1_1_d_g_p_d_e.html#a5b238fa9da0d0471a83d6d72df535965',1,'inciter::DGPDE::DGPDE(T x)'],['../classinciter_1_1_d_g_p_d_e.html#aa3e70569f22a74a2f4e2e7a5144e8899',1,'inciter::DGPDE::DGPDE(std::function&lt; T(Args...)&gt; x, Args &amp;&amp;... args)'],['../classinciter_1_1_d_g_p_d_e.html#abe596d984e7d43d3cd753127615db860',1,'inciter::DGPDE::DGPDE(const DGPDE &amp;x)'],['../classinciter_1_1_d_g_p_d_e.html#ae4b2ae731e0455cf4dae9b25446e99bb',1,'inciter::DGPDE::DGPDE(DGPDE &amp;&amp;) noexcept=default']]],
   ['diag',['diag',['../classtk_1_1_print.html#a14a1afdf9dfabe05f87fbeeefc10541d',1,'tk::Print::diag()'],['../classtk_1_1_diag_writer.html#a59b59976b0d8e6fdef8753c590afc68c',1,'tk::DiagWriter::diag()']]],

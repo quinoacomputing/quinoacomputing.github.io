@@ -1,6 +1,7 @@
 var searchData=
 [
   ['oddspikes',['ODDSPIKES',['../namespacetk_1_1grm.html#a86dbe384e8ce31796b7eb5f6ac87e1a3aac50cd5afc48049810d93c5a816dbe04',1,'tk::grm']]],
+  ['omega_5fh',['OMEGA_H',['../namespacetk.html#a8e37e8d13562df3379a730217f735255ae29e9370fcc76113c2afa7c1ab1289c2',1,'tk']]],
   ['one_5fto_5feight',['one_to_eight',['../namespace_a_m_r.html#aff53dc457ce57f50f7af28ccff2e8ceba459b8ba95c3eeca09501b2ece96be987',1,'AMR']]],
   ['one_5fto_5ffour',['one_to_four',['../namespace_a_m_r.html#aff53dc457ce57f50f7af28ccff2e8ceba2c9fb568849a00c0f67eb84189655620',1,'AMR']]],
   ['one_5fto_5ftwo',['one_to_two',['../namespace_a_m_r.html#aff53dc457ce57f50f7af28ccff2e8ceba61a763afd88364decf986e0c79de85bc',1,'AMR']]],

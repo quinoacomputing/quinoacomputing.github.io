@@ -24,16 +24,16 @@
           </tr>
           <tr>
             <td class="headerItem">Commit:</td>
-            <td class="headerValue"><a href="https://github.com/quinoacomputing/quinoa/commit/d8c3c42">Quinoa_v0.2-850-gd8c3c42</a></td>
+            <td class="headerValue"><a href="https://github.com/quinoacomputing/quinoa/commit/f37ab9f">Quinoa_v0.2-874-gf37ab9f</a></td>
             <td></td>
             <td class="headerItem">Lines:</td>
             <td class="headerCovTableEntry">0</td>
-            <td class="headerCovTableEntry">292</td>
+            <td class="headerCovTableEntry">290</td>
             <td class="headerCovTableEntryLo">0.0 %</td>
           </tr>
           <tr>
             <td class="headerItem">Date:</td>
-            <td class="headerValue">2018-07-06 08:07:53</td>
+            <td class="headerValue">2018-07-09 15:11:55</td>
             <td></td>
             <td class="headerItem">Functions:</td>
             <td class="headerCovTableEntry">0</td>
@@ -101,7 +101,7 @@
 <span class="lineNum">      27 </span>                :            : #include &quot;PDFWriter.h&quot;
 <span class="lineNum">      28 </span>                :            : #include &quot;ContainerUtil.h&quot;
 <span class="lineNum">      29 </span>                :            : #include &quot;LoadDistributor.h&quot;
-<span class="lineNum">      30 </span>                :            : #include &quot;ExodusIIMeshReader.h&quot;
+<span class="lineNum">      30 </span>                :            : #include &quot;MeshReader.h&quot;
 <span class="lineNum">      31 </span>                :            : #include &quot;Inciter/InputDeck/InputDeck.h&quot;
 <span class="lineNum">      32 </span>                :            : #include &quot;NodeDiagnostics.h&quot;
 <span class="lineNum">      33 </span>                :            : #include &quot;ElemDiagnostics.h&quot;
@@ -289,8 +289,8 @@
 <span class="lineNum">     215 </span>                :            : // Create mesh partitioner AND boundary conditions group
 <span class="lineNum">     216 </span>                :            : // *****************************************************************************
 <span class="lineNum">     217 </span>                :            : {
-<span class="lineNum">     218 </span>                :            :   // Create ExodusII reader for reading side sets from file
-<span class="lineNum">     219 </span>                :<span class="lineNoCov">          0 :   tk::ExodusIIMeshReader er(g_inputdeck.get&lt; tag::cmd, tag::io, tag::input &gt;());</span>
+<span class="lineNum">     218 </span>                :            :   // Create mesh reader for reading side sets from file
+<span class="lineNum">     219 </span>                :<span class="lineNoCov">          0 :   tk::MeshReader mr( g_inputdeck.get&lt; tag::cmd, tag::io, tag::input &gt;() );</span>
 <span class="lineNum">     220 </span>                :            : 
 <span class="lineNum">     221 </span>                :<span class="lineNoCov">          0 :   std::map&lt; int, std::vector&lt; std::size_t &gt; &gt; bface;</span>
 <span class="lineNum">     222 </span>                :<span class="lineNoCov">          0 :   std::vector&lt; std::size_t &gt; triinpoel;</span>
@@ -301,84 +301,84 @@
 <span class="lineNum">     227 </span>                :<span class="lineNoCov">          0 :   const auto scheme = g_inputdeck.get&lt; tag::discr, tag::scheme &gt;();</span>
 <span class="lineNum">     228 </span>                :<span class="lineNoCov">          0 :   if (scheme == ctr::SchemeType::DG) {</span>
 <span class="lineNum">     229 </span>                :            :     // Read boundary-face connectivity on side sets
-<span class="lineNum">     230 </span>                :<span class="lineNoCov">          0 :     auto nbfac = er.readSidesetFaces( bface, faceid );</span>
-<span class="lineNum">     231 </span>                :<span class="lineNoCov">          0 :     er.readFaces( nbfac, triinpoel );</span>
-<span class="lineNum">     232 </span>                :<span class="lineNoCov">          0 :     Assert( nbfac &gt; 0, &quot;DG must have boundary faces (and side sets) defined&quot; );</span>
-<span class="lineNum">     233 </span>                :            :   } else {
-<span class="lineNum">     234 </span>                :            :     // Read node lists on side sets
-<span class="lineNum">     235 </span>                :<span class="lineNoCov">          0 :     bnode = er.readSidesets();</span>
-<span class="lineNum">     236 </span>                :            :     // Note that it is okay bnode to be empty if no boundary conditions needed
-<span class="lineNum">     237 </span>                :            :   }
-<span class="lineNum">     238 </span>                :            : 
-<span class="lineNum">     239 </span>                :            :   // Verify boundarty condition (BC) side sets used exist in mesh file
-<span class="lineNum">     240 </span>                :<span class="lineNoCov">          0 :   verifyBCsExist( g_cgpde, er );</span>
-<span class="lineNum">     241 </span>                :<span class="lineNoCov">          0 :   verifyBCsExist( g_dgpde, er );</span>
-<span class="lineNum">     242 </span>                :            : 
-<span class="lineNum">     243 </span>                :            :   // Create partitioner callbacks (order matters)
-<span class="lineNum">     244 </span>                :            :   tk::PartitionerCallback cbp {
-<span class="lineNum">     245 </span>                :<span class="lineNoCov">          0 :       CkCallback( CkReductionTarget(Transporter,load), thisProxy )</span>
-<span class="lineNum">     246 </span>                :<span class="lineNoCov">          0 :     , CkCallback( CkReductionTarget(Transporter,distributed), thisProxy )</span>
-<span class="lineNum">     247 </span>                :<span class="lineNoCov">          0 :     , CkCallback( CkReductionTarget(Transporter,refinserted), thisProxy )</span>
-<span class="lineNum">     248 </span>                :<span class="lineNoCov">          0 :     , CkCallback( CkReductionTarget(Transporter,refined), thisProxy )</span>
-<span class="lineNum">     249 </span>                :<span class="lineNoCov">          0 :     , CkCallback( CkReductionTarget(Transporter,flattened), thisProxy )</span>
-<span class="lineNum">     250 </span>                :<span class="lineNoCov">          0 :   };</span>
-<span class="lineNum">     251 </span>                :            : 
-<span class="lineNum">     252 </span>                :            :   // Create refiner callbacks (order matters)
-<span class="lineNum">     253 </span>                :            :   tk::RefinerCallback cbr {
-<span class="lineNum">     254 </span>                :<span class="lineNoCov">          0 :       CkCallback( CkReductionTarget(Transporter,matched), thisProxy )</span>
-<span class="lineNum">     255 </span>                :<span class="lineNoCov">          0 :     , CkCallback( CkReductionTarget(Transporter,refined), thisProxy )</span>
-<span class="lineNum">     256 </span>                :<span class="lineNoCov">          0 :   };</span>
-<span class="lineNum">     257 </span>                :            : 
-<span class="lineNum">     258 </span>                :            :   // Create sorter callbacks (order matters)
-<span class="lineNum">     259 </span>                :            :   tk::SorterCallback cbs {
-<span class="lineNum">     260 </span>                :<span class="lineNoCov">          0 :       CkCallback( CkReductionTarget(Transporter,flattened), thisProxy )</span>
-<span class="lineNum">     261 </span>                :<span class="lineNoCov">          0 :     , CkCallback( CkReductionTarget(Transporter,discinserted), thisProxy )</span>
-<span class="lineNum">     262 </span>                :<span class="lineNoCov">          0 :     , CkCallback( CkReductionTarget(Transporter,workinserted), thisProxy )</span>
-<span class="lineNum">     263 </span>                :<span class="lineNoCov">          0 :   };</span>
-<span class="lineNum">     264 </span>                :            : 
-<span class="lineNum">     265 </span>                :            :   // Start timer measuring preparation of the mesh for partitioning
-<span class="lineNum">     266 </span>                :<span class="lineNoCov">          0 :   m_timer[ TimerTag::MESH_READ ];</span>
-<span class="lineNum">     267 </span>                :            : 
-<span class="lineNum">     268 </span>                :            :   // Create mesh partitioner Charm++ chare group and start preparing mesh
-<span class="lineNum">     269 </span>                :<span class="lineNoCov">          0 :   m_print.diag( &quot;Reading mesh&quot; );</span>
-<span class="lineNum">     270 </span>                :            : 
-<span class="lineNum">     271 </span>                :            :   // Create empty mesh sorter Chare chare array
-<span class="lineNum">     272 </span>                :<span class="lineNoCov">          0 :   m_sorter = CProxy_Sorter::ckNew();</span>
-<span class="lineNum">     273 </span>                :            : 
-<span class="lineNum">     274 </span>                :            :   // Create empty mesh refiner Chare chare array
-<span class="lineNum">     275 </span>                :<span class="lineNoCov">          0 :   m_refiner = CProxy_Refiner::ckNew();</span>
-<span class="lineNum">     276 </span>                :            : 
-<span class="lineNum">     277 </span>                :            :   // Create mesh partitioner Charm++ chare group
-<span class="lineNum">     278 </span>                :<span class="lineNoCov">          0 :   m_partitioner =</span>
-<span class="lineNum">     279 </span>                :            :     CProxy_Partitioner::ckNew( cbp, cbr, cbs, thisProxy, m_solver, m_refiner,
-<span class="lineNum">     280 </span>                :<span class="lineNoCov">          0 :                                m_sorter, m_scheme, bface, triinpoel, bnode );</span>
-<span class="lineNum">     281 </span>                :<span class="lineNoCov">          0 : }</span>
-<a name="282"><span class="lineNum">     282 </span>                :            : </a>
-<span class="lineNum">     283 </span>                :            : void
-<span class="lineNum">     284 </span>                :<span class="lineNoCov">          0 : Transporter::load( uint64_t nelem )</span>
-<span class="lineNum">     285 </span>                :            : // *****************************************************************************
-<span class="lineNum">     286 </span>                :            : // Reduction target: the mesh has been read from file on all PEs
-<span class="lineNum">     287 </span>                :            : //! \param[in] nelem Total number of mesh elements (summed across all PEs)
-<span class="lineNum">     288 </span>                :            : // *****************************************************************************
-<span class="lineNum">     289 </span>                :            : {
-<span class="lineNum">     290 </span>                :            :   // Compute load distribution given total work (nelem) and user-specified
-<span class="lineNum">     291 </span>                :            :   // virtualization
-<span class="lineNum">     292 </span>                :            :   m_nchare = static_cast&lt;int&gt;(
-<span class="lineNum">     293 </span>                :            :                tk::linearLoadDistributor(
-<span class="lineNum">     294 </span>                :<span class="lineNoCov">          0 :                  g_inputdeck.get&lt; tag::cmd, tag::virtualization &gt;(),</span>
-<span class="lineNum">     295 </span>                :<span class="lineNoCov">          0 :                  nelem, CkNumPes(), m_chunksize, m_remainder ) );</span>
-<span class="lineNum">     296 </span>                :            : 
-<span class="lineNum">     297 </span>                :            :   // Send total number of chares to all linear solver PEs
-<span class="lineNum">     298 </span>                :<span class="lineNoCov">          0 :   m_solver.nchare( m_nchare );</span>
-<span class="lineNum">     299 </span>                :            : 
-<span class="lineNum">     300 </span>                :            :   // Start timer measuring preparation of the mesh for partitioning
-<span class="lineNum">     301 </span>                :<span class="lineNoCov">          0 :   const auto&amp; timer = tk::cref_find( m_timer, TimerTag::MESH_READ );</span>
-<span class="lineNum">     302 </span>                :<span class="lineNoCov">          0 :   m_print.diag( &quot;Mesh read time: &quot; + std::to_string( timer.dsec() ) + &quot; sec&quot; );</span>
-<span class="lineNum">     303 </span>                :            : 
-<span class="lineNum">     304 </span>                :            :   // Print out mesh graph stats
-<span class="lineNum">     305 </span>                :<span class="lineNoCov">          0 :   m_print.section( &quot;Input mesh graph statistics&quot; );</span>
-<span class="lineNum">     306 </span>                :<span class="lineNoCov">          0 :   tk::ExodusIIMeshReader er(g_inputdeck.get&lt; tag::cmd, tag::io, tag::input &gt;());</span>
-<span class="lineNum">     307 </span>                :<span class="lineNoCov">          0 :   auto npoin = er.readHeader();</span>
+<span class="lineNum">     230 </span>                :<span class="lineNoCov">          0 :     auto nbfac = mr.readSidesetFaces( bface, faceid );</span>
+<span class="lineNum">     231 </span>                :<span class="lineNoCov">          0 :     mr.readFaces( nbfac, triinpoel );</span>
+<span class="lineNum">     232 </span>                :            :     // Note that it is NOT okay bface to be empty; boundary conditions required
+<span class="lineNum">     233 </span>                :<span class="lineNoCov">          0 :     Assert( nbfac &gt; 0, &quot;DG must have boundary faces (and side sets) defined&quot; );</span>
+<span class="lineNum">     234 </span>                :            :     // Verify boundarty condition (BC) side sets used exist in mesh file
+<span class="lineNum">     235 </span>                :<span class="lineNoCov">          0 :     verifyBCsExist( g_dgpde, bface );</span>
+<span class="lineNum">     236 </span>                :            :   } else {
+<span class="lineNum">     237 </span>                :            :     // Read node lists on side sets
+<span class="lineNum">     238 </span>                :<span class="lineNoCov">          0 :     bnode = mr.readSidesets();</span>
+<span class="lineNum">     239 </span>                :            :     // Verify boundarty condition (BC) side sets used exist in mesh file
+<span class="lineNum">     240 </span>                :<span class="lineNoCov">          0 :     verifyBCsExist( g_cgpde, bnode );</span>
+<span class="lineNum">     241 </span>                :            :     // Note that it is okay bnode to be empty if no boundary conditions needed
+<span class="lineNum">     242 </span>                :            :   }
+<span class="lineNum">     243 </span>                :            : 
+<span class="lineNum">     244 </span>                :            :   // Create partitioner callbacks (order matters)
+<span class="lineNum">     245 </span>                :            :   tk::PartitionerCallback cbp {
+<span class="lineNum">     246 </span>                :<span class="lineNoCov">          0 :       CkCallback( CkReductionTarget(Transporter,load), thisProxy )</span>
+<span class="lineNum">     247 </span>                :<span class="lineNoCov">          0 :     , CkCallback( CkReductionTarget(Transporter,distributed), thisProxy )</span>
+<span class="lineNum">     248 </span>                :<span class="lineNoCov">          0 :     , CkCallback( CkReductionTarget(Transporter,refinserted), thisProxy )</span>
+<span class="lineNum">     249 </span>                :<span class="lineNoCov">          0 :     , CkCallback( CkReductionTarget(Transporter,refined), thisProxy )</span>
+<span class="lineNum">     250 </span>                :<span class="lineNoCov">          0 :     , CkCallback( CkReductionTarget(Transporter,flattened), thisProxy )</span>
+<span class="lineNum">     251 </span>                :<span class="lineNoCov">          0 :   };</span>
+<span class="lineNum">     252 </span>                :            : 
+<span class="lineNum">     253 </span>                :            :   // Create refiner callbacks (order matters)
+<span class="lineNum">     254 </span>                :            :   tk::RefinerCallback cbr {
+<span class="lineNum">     255 </span>                :<span class="lineNoCov">          0 :       CkCallback( CkReductionTarget(Transporter,matched), thisProxy )</span>
+<span class="lineNum">     256 </span>                :<span class="lineNoCov">          0 :     , CkCallback( CkReductionTarget(Transporter,refined), thisProxy )</span>
+<span class="lineNum">     257 </span>                :<span class="lineNoCov">          0 :   };</span>
+<span class="lineNum">     258 </span>                :            : 
+<span class="lineNum">     259 </span>                :            :   // Create sorter callbacks (order matters)
+<span class="lineNum">     260 </span>                :            :   tk::SorterCallback cbs {
+<span class="lineNum">     261 </span>                :<span class="lineNoCov">          0 :       CkCallback( CkReductionTarget(Transporter,flattened), thisProxy )</span>
+<span class="lineNum">     262 </span>                :<span class="lineNoCov">          0 :     , CkCallback( CkReductionTarget(Transporter,discinserted), thisProxy )</span>
+<span class="lineNum">     263 </span>                :<span class="lineNoCov">          0 :     , CkCallback( CkReductionTarget(Transporter,workinserted), thisProxy )</span>
+<span class="lineNum">     264 </span>                :<span class="lineNoCov">          0 :   };</span>
+<span class="lineNum">     265 </span>                :            : 
+<span class="lineNum">     266 </span>                :            :   // Start timer measuring preparation of the mesh for partitioning
+<span class="lineNum">     267 </span>                :<span class="lineNoCov">          0 :   m_timer[ TimerTag::MESH_READ ];</span>
+<span class="lineNum">     268 </span>                :            : 
+<span class="lineNum">     269 </span>                :            :   // Create mesh partitioner Charm++ chare group and start preparing mesh
+<span class="lineNum">     270 </span>                :<span class="lineNoCov">          0 :   m_print.diag( &quot;Reading mesh&quot; );</span>
+<span class="lineNum">     271 </span>                :            : 
+<span class="lineNum">     272 </span>                :            :   // Create empty mesh sorter Chare chare array
+<span class="lineNum">     273 </span>                :<span class="lineNoCov">          0 :   m_sorter = CProxy_Sorter::ckNew();</span>
+<span class="lineNum">     274 </span>                :            : 
+<span class="lineNum">     275 </span>                :            :   // Create empty mesh refiner Chare chare array
+<span class="lineNum">     276 </span>                :<span class="lineNoCov">          0 :   m_refiner = CProxy_Refiner::ckNew();</span>
+<span class="lineNum">     277 </span>                :            : 
+<span class="lineNum">     278 </span>                :            :   // Create mesh partitioner Charm++ chare group
+<span class="lineNum">     279 </span>                :<span class="lineNoCov">          0 :   m_partitioner =</span>
+<span class="lineNum">     280 </span>                :            :     CProxy_Partitioner::ckNew( cbp, cbr, cbs, thisProxy, m_solver, m_refiner,
+<span class="lineNum">     281 </span>                :<span class="lineNoCov">          0 :                                m_sorter, m_scheme, bface, triinpoel, bnode );</span>
+<span class="lineNum">     282 </span>                :<span class="lineNoCov">          0 : }</span>
+<a name="283"><span class="lineNum">     283 </span>                :            : </a>
+<span class="lineNum">     284 </span>                :            : void
+<span class="lineNum">     285 </span>                :<span class="lineNoCov">          0 : Transporter::load( uint64_t nelem, uint64_t npoin )</span>
+<span class="lineNum">     286 </span>                :            : // *****************************************************************************
+<span class="lineNum">     287 </span>                :            : // Reduction target: the mesh has been read from file on all PEs
+<span class="lineNum">     288 </span>                :            : //! \param[in] nelem Total number of mesh elements (summed across all PEs)
+<span class="lineNum">     289 </span>                :            : //! \param[in] npoin Total number of mesh points (summed across all PEs)
+<span class="lineNum">     290 </span>                :            : // *****************************************************************************
+<span class="lineNum">     291 </span>                :            : {
+<span class="lineNum">     292 </span>                :            :   // Compute load distribution given total work (nelem) and user-specified
+<span class="lineNum">     293 </span>                :            :   // virtualization
+<span class="lineNum">     294 </span>                :            :   m_nchare = static_cast&lt;int&gt;(
+<span class="lineNum">     295 </span>                :            :                tk::linearLoadDistributor(
+<span class="lineNum">     296 </span>                :<span class="lineNoCov">          0 :                  g_inputdeck.get&lt; tag::cmd, tag::virtualization &gt;(),</span>
+<span class="lineNum">     297 </span>                :<span class="lineNoCov">          0 :                  nelem, CkNumPes(), m_chunksize, m_remainder ) );</span>
+<span class="lineNum">     298 </span>                :            : 
+<span class="lineNum">     299 </span>                :            :   // Send total number of chares to all linear solver PEs
+<span class="lineNum">     300 </span>                :<span class="lineNoCov">          0 :   m_solver.nchare( m_nchare );</span>
+<span class="lineNum">     301 </span>                :            : 
+<span class="lineNum">     302 </span>                :            :   // Start timer measuring preparation of the mesh for partitioning
+<span class="lineNum">     303 </span>                :<span class="lineNoCov">          0 :   const auto&amp; timer = tk::cref_find( m_timer, TimerTag::MESH_READ );</span>
+<span class="lineNum">     304 </span>                :<span class="lineNoCov">          0 :   m_print.diag( &quot;Mesh read time: &quot; + std::to_string( timer.dsec() ) + &quot; sec&quot; );</span>
+<span class="lineNum">     305 </span>                :            : 
+<span class="lineNum">     306 </span>                :            :   // Print out mesh graph stats
+<span class="lineNum">     307 </span>                :<span class="lineNoCov">          0 :   m_print.section( &quot;Input mesh graph statistics&quot; );</span>
 <span class="lineNum">     308 </span>                :<span class="lineNoCov">          0 :   m_print.item( &quot;Number of tetrahedra&quot;, nelem );</span>
 <span class="lineNum">     309 </span>                :<span class="lineNoCov">          0 :   m_print.item( &quot;Number of nodes&quot;, npoin );</span>
 <span class="lineNum">     310 </span>                :            : 
