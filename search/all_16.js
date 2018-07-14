@@ -44,7 +44,7 @@ var searchData=
   ['wrightfisher',['wrightfisher',['../structtag_1_1wrightfisher.html',1,'tag::wrightfisher'],['../classwalker_1_1_wright_fisher.html',1,'walker::WrightFisher&lt; Init, Coefficients &gt;'],['../classwalker_1_1_wright_fisher.html#adae9d27fca3a694548ffc8ca3c27aec5',1,'walker::WrightFisher::WrightFisher()'],['../namespacewalker_1_1ctr.html#a4592cfa71c6e4c64a71c5691df56c79fa54c1a814984538454d1edc7062702658',1,'walker::ctr::WRIGHTFISHER()']]],
   ['wrightfisher_2eh',['WrightFisher.h',['../_wright_fisher_8h.html',1,'']]],
   ['wrightfishercoeffconst',['WrightFisherCoeffConst',['../classwalker_1_1_wright_fisher_coeff_const.html',1,'walker::WrightFisherCoeffConst'],['../classwalker_1_1_wright_fisher_coeff_const.html#aebaf8fad249e7e469a8a880ae0e53378',1,'walker::WrightFisherCoeffConst::WrightFisherCoeffConst()']]],
-  ['wrightfishercoeffpolicies',['WrightFisherCoeffPolicies',['../namespacewalker.html#a1aa1f1b033c55d88dffdfaf724785654',1,'walker']]],
+  ['wrightfishercoeffpolicies',['WrightFisherCoeffPolicies',['../namespacewalker.html#addc36f181e5180b310ff71548a39d89b',1,'walker']]],
   ['wrightfishercoeffpolicy_2eh',['WrightFisherCoeffPolicy.h',['../_wright_fisher_coeff_policy_8h.html',1,'']]],
   ['wrightfisherparameters',['WrightFisherParameters',['../namespacewalker_1_1ctr.html#a1004298669771eb5887e147d6fed1c8b',1,'walker::ctr']]],
   ['write',['write',['../classtk_1_1_writer.html#a182f5fe55cee4995185f2eff702801e8',1,'tk::Writer::write()'],['../classtk_1_1_silo_writer.html#af86f4d36286b68d1b957116e452c3b3d',1,'tk::SiloWriter::write()']]],

@@ -14,6 +14,7 @@ var searchData=
   ['refiner_2edecl_2eh',['refiner.decl.h',['../refiner_8decl_8h.html',1,'']]],
   ['refiner_2edef_2eh',['refiner.def.h',['../refiner_8def_8h.html',1,'']]],
   ['refiner_2eh',['Refiner.h',['../_refiner_8h.html',1,'']]],
+  ['remove_2eh',['remove.h',['../remove_8h.html',1,'']]],
   ['reorder_2ec',['Reorder.C',['../_reorder_8_c.html',1,'']]],
   ['reorder_2eh',['Reorder.h',['../_reorder_8h.html',1,'']]],
   ['replace_2eh',['replace.h',['../replace_8h.html',1,'']]],

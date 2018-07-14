@@ -21,7 +21,6 @@ var searchData=
   ['charesol',['charesol',['../classtk_1_1_solver.html#ab8f9ed3f6abc92f43b34c70a7d832a1d',1,'tk::Solver']]],
   ['charmchild',['CharmChild',['../classtut_1_1_charm_child.html#af79f9a3ee54668164de1bbca387f1a63',1,'tut::CharmChild::CharmChild()'],['../classtut_1_1_charm_child.html#a8f8b8297fa3b941fa0409de2eb8495d3',1,'tut::CharmChild::CharmChild(tk::real)']]],
   ['charmtimer',['CharmTimer',['../classtut_1_1_charm_timer.html#a6c269f3a240945c76ac9d9ecdf8c9bcd',1,'tut::CharmTimer']]],
-  ['charmutil',['CharmUtil',['../namespacetut.html#adcc14bcc1f4d4c241a2add64cb515e6d',1,'tut']]],
   ['chbnd',['chbnd',['../classinciter_1_1_transporter.html#a3fa8cf8151c61f54bcf2fb0c2d19e701',1,'inciter::Transporter']]],
   ['chbounds',['chbounds',['../classinciter_1_1_transporter.html#a046ff85d932e261a09fde3f566bea7e8',1,'inciter::Transporter::chbounds()'],['../classtk_1_1_solver.html#aedd3e59c30f06ba1371d368e25cee0c5',1,'tk::Solver::chbounds()']]],
   ['chcomm',['chcomm',['../classinciter_1_1_transporter.html#a3b44f2cd33ed277abcab134624a314d2',1,'inciter::Transporter']]],

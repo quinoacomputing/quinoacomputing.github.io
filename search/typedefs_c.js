@@ -8,6 +8,6 @@ var searchData=
   ['node_5fpair_5ft',['node_pair_t',['../_a_m_r__types_8h.html#af2a8bcba56305127d8f99bb451f2a3ef',1,'AMR_types.h']]],
   ['nt',['nT',['../structtk_1_1tuple_1_1tt__impl_3_01typelist_3_01_ss_8_8_8_01_4_00_01typelist_3_01_ts_8_8_8_01_4_01_4.html#a8f76951c9926caad61d286abb38184f7',1,'tk::tuple::tt_impl&lt; typelist&lt; Ss... &gt;, typelist&lt; Ts... &gt; &gt;']]],
   ['nth',['nth',['../namespacetk_1_1tuple.html#a501a33234d859e33ff594210c5ef70f5',1,'tk::tuple']]],
-  ['numberfractionbetacoeffpolicies',['NumberFractionBetaCoeffPolicies',['../namespacewalker.html#a01c240cf104ffe62affb48ed4c2ff862',1,'walker']]],
+  ['numberfractionbetacoeffpolicies',['NumberFractionBetaCoeffPolicies',['../namespacewalker.html#a15188f3f7dcd5fc3706ed1fbbc1c2d40',1,'walker']]],
   ['numberfractionbetaparameters',['NumberFractionBetaParameters',['../namespacewalker_1_1ctr.html#ac5fed8b82ea351ad7c71390613aff1da',1,'walker::ctr']]]
 ];

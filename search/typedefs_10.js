@@ -7,7 +7,7 @@ var searchData=
   ['seconds',['seconds',['../classtk_1_1_timer.html#a145a8a0c1287ad2eb5347c22c08860a4',1,'tk::Timer']]],
   ['selects',['selects',['../namespaceinciter_1_1ctr.html#a90012153fdcac944467d27a10c9fbba5',1,'inciter::ctr::selects()'],['../namespacerngtest_1_1ctr.html#a6ea2dcabba811ebb1af9a318753d6b3b',1,'rngtest::ctr::selects()'],['../namespacewalker_1_1ctr.html#ab92b4dfff21d7034e148076c43758f45',1,'walker::ctr::selects()']]],
   ['siloerrorhandler',['SiloErrorHandler',['../namespacetk.html#a40ff0a76887b93164712b9ce9192fdd2',1,'tk']]],
-  ['skewnormalcoeffpolicies',['SkewNormalCoeffPolicies',['../namespacewalker.html#a05fd510a5493bf8e33ca138f4334e39e',1,'walker']]],
+  ['skewnormalcoeffpolicies',['SkewNormalCoeffPolicies',['../namespacewalker.html#a210949e711476b6c8425c535f51f268e',1,'walker']]],
   ['skewnormalparameters',['SkewNormalParameters',['../namespacewalker_1_1ctr.html#a6c392c7a2ab2954f184c5d0301a7ef17',1,'walker::ctr']]],
   ['solvercallback',['SolverCallback',['../namespacetk.html#aa55097e47b3fcb9c11d69fcfbbf12b0f',1,'tk']]],
   ['sortercallback',['SorterCallback',['../namespacetk.html#aee5e81a51fe8734df54d70ab33b1b8d0',1,'tk']]],

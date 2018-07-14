@@ -4,7 +4,7 @@ var searchData=
   ['base_5fadapter_5ft',['base_adapter_t',['../classtk_1_1zoltan_1_1_geometric_mesh_elem_adapter.html#ad0f9a5717e64db6d8f4e3b14b9214658',1,'tk::zoltan::GeometricMeshElemAdapter']]],
   ['batteryfactory',['BatteryFactory',['../namespacerngtest.html#a27f5b52643c9bffce647cde2438d33c1',1,'rngtest']]],
   ['bcconf_5ft',['bcconf_t',['../classinciter_1_1dg_1_1_comp_flow.html#a64bb6fa8566af9080ce1294a66b7c7d5',1,'inciter::dg::CompFlow::bcconf_t()'],['../classinciter_1_1dg_1_1_transport.html#a1f8ec62dd9d0d2a7a482c0856422192f',1,'inciter::dg::Transport::bcconf_t()']]],
-  ['betacoeffpolicies',['BetaCoeffPolicies',['../namespacewalker.html#af9ae6258ad44a778afd53cdbe4b668fd',1,'walker']]],
+  ['betacoeffpolicies',['BetaCoeffPolicies',['../namespacewalker.html#a9afafb7318cd7481d68a75291eaae06f',1,'walker']]],
   ['betaparameters',['BetaParameters',['../namespacewalker_1_1ctr.html#a4ff97fe7eb616c1e73f786118999700d',1,'walker::ctr']]],
   ['bndfaces',['BndFaces',['../classinciter_1_1_refiner.html#a3a8ba2c58baf8faa11dfb175967e7b2b',1,'inciter::Refiner']]],
   ['boostoptionalint',['BoostOptionalInt',['../namespacetut_1_1charm.html#a752469d4174512553107b86c859315ce',1,'tut::charm']]],

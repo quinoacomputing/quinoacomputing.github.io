@@ -24,7 +24,7 @@
           </tr>
           <tr>
             <td class="headerItem">Commit:</td>
-            <td class="headerValue"><a href="https://github.com/quinoacomputing/quinoa/commit/f37ab9f">Quinoa_v0.2-874-gf37ab9f</a></td>
+            <td class="headerValue"><a href="https://github.com/quinoacomputing/quinoa/commit/acd8b4d">Quinoa_v0.2-952-gacd8b4d</a></td>
             <td></td>
             <td class="headerItem">Lines:</td>
             <td class="headerCovTableEntry">0</td>
@@ -33,7 +33,7 @@
           </tr>
           <tr>
             <td class="headerItem">Date:</td>
-            <td class="headerValue">2018-07-09 15:11:55</td>
+            <td class="headerValue">2018-07-13 19:37:56</td>
             <td></td>
             <td class="headerItem">Functions:</td>
             <td class="headerCovTableEntry">0</td>
@@ -88,290 +88,288 @@
 <span class="lineNum">      14 </span>                :            : #include &lt;string&gt;
 <span class="lineNum">      15 </span>                :            : #include &lt;unordered_set&gt;
 <span class="lineNum">      16 </span>                :            : 
-<span class="lineNum">      17 </span>                :            : #include &lt;boost/mpl/vector.hpp&gt;
-<span class="lineNum">      18 </span>                :            : 
-<span class="lineNum">      19 </span>                :            : #include &quot;Types.h&quot;
-<span class="lineNum">      20 </span>                :            : #include &quot;Inciter/Options/Problem.h&quot;
+<span class="lineNum">      17 </span>                :            : #include &quot;Types.h&quot;
+<span class="lineNum">      18 </span>                :            : #include &quot;Inciter/Options/Problem.h&quot;
+<span class="lineNum">      19 </span>                :            : 
+<span class="lineNum">      20 </span>                :            : namespace inciter {
 <span class="lineNum">      21 </span>                :            : 
-<span class="lineNum">      22 </span>                :            : namespace inciter {
-<span class="lineNum">      23 </span>                :            : 
-<span class="lineNum">      24 </span>                :            : //! CompFlow system of PDEs problem: Rayleigh-Taylor
-<span class="lineNum">      25 </span>                :            : //! \see Waltz, et. al, &quot;Manufactured solutions for the three-dimensional Euler
-<span class="lineNum">      26 </span>                :            : //!   equations with relevance to Inertial Confinement Fusion&quot;, Journal of
-<span class="lineNum">      27 </span>                :            : //!   Computational Physics 267 (2014) 196-209.
-<span class="lineNum">      28 </span>                :            : class CompFlowProblemRayleighTaylor {
-<span class="lineNum">      29 </span>                :            : 
-<span class="lineNum">      30 </span>                :            :   public:
-<span class="lineNum">      31 </span>                :            :     //! Evaluate analytical solution at (x,y,z,t) for all components
-<span class="lineNum">      32 </span>                :            :     //! \param[in] e Equation system index, i.e., which compressible
-<span class="lineNum">      33 </span>                :            :     //!   flow equation system we operate on among the systems of PDEs
-<span class="lineNum">      34 </span>                :            :     //! \param[in] x X coordinate where to evaluate the solution
-<span class="lineNum">      35 </span>                :            :     //! \param[in] y Y coordinate where to evaluate the solution
-<span class="lineNum">      36 </span>                :            :     //! \param[in] z Z coordinate where to evaluate the solution
-<span class="lineNum">      37 </span>                :            :     //! \param[in] t Time where to evaluate the solution
-<a name="38"><span class="lineNum">      38 </span>                :            :     //! \return Values of all components evaluated at (x,y,z,t)</a>
-<span class="lineNum">      39 </span>                :            :     static std::array&lt; tk::real, 5 &gt;
-<span class="lineNum">      40 </span>                :<span class="lineNoCov">          0 :     solution( tk::ctr::ncomp_type e,</span>
-<span class="lineNum">      41 </span>                :            :               tk::real x, tk::real y, tk::real z, tk::real t )
-<span class="lineNum">      42 </span>                :            :     {
-<span class="lineNum">      43 </span>                :            :       using tag::param; using tag::compflow; using std::sin; using std::cos;
-<span class="lineNum">      44 </span>                :            :       // manufactured solution parameters
-<span class="lineNum">      45 </span>                :<span class="lineNoCov">          0 :       const auto a = g_inputdeck.get&lt; param, compflow, tag::alpha &gt;()[e];</span>
-<span class="lineNum">      46 </span>                :<span class="lineNoCov">          0 :       const auto bx = g_inputdeck.get&lt; param, compflow, tag::betax &gt;()[e];</span>
-<span class="lineNum">      47 </span>                :<span class="lineNoCov">          0 :       const auto by = g_inputdeck.get&lt; param, compflow, tag::betay &gt;()[e];</span>
-<span class="lineNum">      48 </span>                :<span class="lineNoCov">          0 :       const auto bz = g_inputdeck.get&lt; param, compflow, tag::betaz &gt;()[e];</span>
-<span class="lineNum">      49 </span>                :<span class="lineNoCov">          0 :       const auto p0 = g_inputdeck.get&lt; param, compflow, tag::p0 &gt;()[e];</span>
-<span class="lineNum">      50 </span>                :<span class="lineNoCov">          0 :       const auto r0 = g_inputdeck.get&lt; param, compflow, tag::r0 &gt;()[e];</span>
-<span class="lineNum">      51 </span>                :<span class="lineNoCov">          0 :       const auto k = g_inputdeck.get&lt; param, compflow, tag::kappa &gt;()[e];</span>
-<span class="lineNum">      52 </span>                :            :       // ratio of specific heats
-<span class="lineNum">      53 </span>                :<span class="lineNoCov">          0 :       const tk::real g = g_inputdeck.get&lt; param, compflow, tag::gamma &gt;()[e];</span>
-<span class="lineNum">      54 </span>                :            :       // spatial component of density and pressure fields
-<span class="lineNum">      55 </span>                :<span class="lineNoCov">          0 :       const tk::real gx = bx*x*x + by*y*y + bz*z*z;</span>
-<span class="lineNum">      56 </span>                :            :       // density
-<span class="lineNum">      57 </span>                :<span class="lineNoCov">          0 :       const tk::real r = r0 - gx;</span>
-<span class="lineNum">      58 </span>                :            :       // pressure
-<span class="lineNum">      59 </span>                :<span class="lineNoCov">          0 :       const tk::real p = p0 + a*gx;</span>
-<span class="lineNum">      60 </span>                :            :       // velocity
-<span class="lineNum">      61 </span>                :<span class="lineNoCov">          0 :       const tk::real ft = cos(k*M_PI*t);</span>
-<span class="lineNum">      62 </span>                :<span class="lineNoCov">          0 :       const tk::real u = ft*z*sin(M_PI*x);</span>
-<span class="lineNum">      63 </span>                :<span class="lineNoCov">          0 :       const tk::real v = ft*z*cos(M_PI*y);</span>
-<span class="lineNum">      64 </span>                :<span class="lineNoCov">          0 :       const tk::real w = ft*(-0.5*M_PI*z*z*(cos(M_PI*x)-sin(M_PI*y)));</span>
-<span class="lineNum">      65 </span>                :            :       // total specific energy
-<span class="lineNum">      66 </span>                :<span class="lineNoCov">          0 :       const tk::real rE = p/(g-1.0) + 0.5*r*(u*u + v*v + w*w);</span>
-<span class="lineNum">      67 </span>                :<span class="lineNoCov">          0 :       return {{ r, r*u, r*v, r*w, rE }};</span>
-<span class="lineNum">      68 </span>                :            :     }
-<span class="lineNum">      69 </span>                :            : 
-<span class="lineNum">      70 </span>                :            :     //! \brief Evaluate the increment from t to t+dt of the analytical solution
-<span class="lineNum">      71 </span>                :            :     //!   at (x,y,z) for all components
-<span class="lineNum">      72 </span>                :            :     //! \param[in] e Equation system index, i.e., which compressible
-<span class="lineNum">      73 </span>                :            :     //!   flow equation system we operate on among the systems of PDEs
-<span class="lineNum">      74 </span>                :            :     //! \param[in] x X coordinate where to evaluate the solution
-<span class="lineNum">      75 </span>                :            :     //! \param[in] y Y coordinate where to evaluate the solution
-<span class="lineNum">      76 </span>                :            :     //! \param[in] z Z coordinate where to evaluate the solution
-<span class="lineNum">      77 </span>                :            :     //! \param[in] t Time where to evaluate the solution increment starting from
-<span class="lineNum">      78 </span>                :            :     //! \param[in] dt Time increment at which evaluate the solution increment to
-<a name="79"><span class="lineNum">      79 </span>                :            :     //! \return Increment in values of all components evaluated at (x,y,z,t+dt)</a>
-<span class="lineNum">      80 </span>                :            :     static std::array&lt; tk::real, 5 &gt;
-<span class="lineNum">      81 </span>                :<span class="lineNoCov">          0 :     solinc( tk::ctr::ncomp_type e,</span>
-<span class="lineNum">      82 </span>                :            :             tk::real x, tk::real y, tk::real z, tk::real t, tk::real dt )
-<span class="lineNum">      83 </span>                :            :     {
-<span class="lineNum">      84 </span>                :<span class="lineNoCov">          0 :       auto st1 = solution( e, x, y, z, t );</span>
-<a name="85"><span class="lineNum">      85 </span>                :<span class="lineNoCov">          0 :       auto st2 = solution( e, x, y, z, t+dt );</span></a>
-<span class="lineNum">      86 </span>                :            :       std::transform( begin(st1), end(st1), begin(st2), begin(st2),
-<span class="lineNum">      87 </span>                :<span class="lineNoCov">          0 :                       []( tk::real s, tk::real&amp; d ){ return d -= s; } );</span>
-<span class="lineNum">      88 </span>                :<span class="lineNoCov">          0 :       return st2;</span>
-<span class="lineNum">      89 </span>                :            :     }
-<span class="lineNum">      90 </span>                :            : 
-<span class="lineNum">      91 </span>                :            :     //! Compute and return source term for Rayleigh-Taylor manufactured solution
-<span class="lineNum">      92 </span>                :            :     //! \param[in] e Equation system index, i.e., which compressible
-<span class="lineNum">      93 </span>                :            :     //!   flow equation system we operate on among the systems of PDEs
-<span class="lineNum">      94 </span>                :            :     //! \param[in] x X coordinate where to evaluate the solution
-<span class="lineNum">      95 </span>                :            :     //! \param[in] y Y coordinate where to evaluate the solution
-<span class="lineNum">      96 </span>                :            :     //! \param[in] z Z coordinate where to evaluate the solution
-<span class="lineNum">      97 </span>                :            :     //! \param[in] t Physical time at which to evaluate the source
-<a name="98"><span class="lineNum">      98 </span>                :            :     //! \return Array of reals containing the source for all components</a>
-<span class="lineNum">      99 </span>                :            :     static std::array&lt; tk::real, 5 &gt;
-<span class="lineNum">     100 </span>                :<span class="lineNoCov">          0 :     src( tk::ctr::ncomp_type e, tk::real x, tk::real y, tk::real z, tk::real t )</span>
-<span class="lineNum">     101 </span>                :            :     {
-<span class="lineNum">     102 </span>                :            :       using tag::param; using tag::compflow; using std::sin; using std::cos;
-<span class="lineNum">     103 </span>                :            : 
-<span class="lineNum">     104 </span>                :            :       // manufactured solution parameters
-<span class="lineNum">     105 </span>                :<span class="lineNoCov">          0 :       auto a = g_inputdeck.get&lt; param, compflow, tag::alpha &gt;()[e];</span>
-<span class="lineNum">     106 </span>                :<span class="lineNoCov">          0 :       auto bx = g_inputdeck.get&lt; param, compflow, tag::betax &gt;()[e];</span>
-<span class="lineNum">     107 </span>                :<span class="lineNoCov">          0 :       auto by = g_inputdeck.get&lt; param, compflow, tag::betay &gt;()[e];</span>
-<span class="lineNum">     108 </span>                :<span class="lineNoCov">          0 :       auto bz = g_inputdeck.get&lt; param, compflow, tag::betaz &gt;()[e];</span>
-<span class="lineNum">     109 </span>                :<span class="lineNoCov">          0 :       auto k = g_inputdeck.get&lt; param, compflow, tag::kappa &gt;()[e];</span>
-<span class="lineNum">     110 </span>                :<span class="lineNoCov">          0 :       auto p0 = g_inputdeck.get&lt; param, compflow, tag::p0 &gt;()[e];</span>
-<span class="lineNum">     111 </span>                :            :       // ratio of specific heats
-<span class="lineNum">     112 </span>                :<span class="lineNoCov">          0 :       tk::real g = g_inputdeck.get&lt; param, compflow, tag::gamma &gt;()[e];</span>
-<span class="lineNum">     113 </span>                :            : 
-<span class="lineNum">     114 </span>                :            :       // evaluate solution at x,y,z,t
-<span class="lineNum">     115 </span>                :<span class="lineNoCov">          0 :       auto s = solution( e, x, y, z, t );</span>
-<span class="lineNum">     116 </span>                :            : 
-<span class="lineNum">     117 </span>                :            :       // density, velocity, energy, pressure
-<span class="lineNum">     118 </span>                :<span class="lineNoCov">          0 :       auto rho = s[0];</span>
-<span class="lineNum">     119 </span>                :<span class="lineNoCov">          0 :       auto u = s[1]/s[0];</span>
-<span class="lineNum">     120 </span>                :<span class="lineNoCov">          0 :       auto v = s[2]/s[0];</span>
-<span class="lineNum">     121 </span>                :<span class="lineNoCov">          0 :       auto w = s[3]/s[0];</span>
-<span class="lineNum">     122 </span>                :<span class="lineNoCov">          0 :       auto E = s[4]/s[0];</span>
-<span class="lineNum">     123 </span>                :<span class="lineNoCov">          0 :       auto p = p0 + a*(bx*x*x + by*y*y + bz*z*z);</span>
-<span class="lineNum">     124 </span>                :            : 
-<span class="lineNum">     125 </span>                :            :       // spatial gradients
-<span class="lineNum">     126 </span>                :<span class="lineNoCov">          0 :       std::array&lt; tk::real, 3 &gt; drdx{{ -2.0*bx*x, -2.0*by*y, -2.0*bz*z }};</span>
-<span class="lineNum">     127 </span>                :<span class="lineNoCov">          0 :       std::array&lt; tk::real, 3 &gt; dpdx{{ 2.0*a*bx*x, 2.0*a*by*y, 2.0*a*bz*z }};</span>
-<span class="lineNum">     128 </span>                :<span class="lineNoCov">          0 :       tk::real ft = cos(k*M_PI*t);</span>
-<span class="lineNum">     129 </span>                :<span class="lineNoCov">          0 :       std::array&lt; tk::real, 3 &gt; dudx{{ ft*M_PI*z*cos(M_PI*x),</span>
-<span class="lineNum">     130 </span>                :            :                                        0.0,
-<span class="lineNum">     131 </span>                :<span class="lineNoCov">          0 :                                        ft*sin(M_PI*x) }};</span>
-<span class="lineNum">     132 </span>                :            :       std::array&lt; tk::real, 3 &gt; dvdx{{ 0.0,
-<span class="lineNum">     133 </span>                :<span class="lineNoCov">          0 :                                        -ft*M_PI*z*sin(M_PI*y),</span>
-<span class="lineNum">     134 </span>                :<span class="lineNoCov">          0 :                                        ft*cos(M_PI*y) }};</span>
-<span class="lineNum">     135 </span>                :<span class="lineNoCov">          0 :       std::array&lt; tk::real, 3 &gt; dwdx{{ ft*M_PI*0.5*M_PI*z*z*sin(M_PI*x),</span>
-<span class="lineNum">     136 </span>                :<span class="lineNoCov">          0 :                                        ft*M_PI*0.5*M_PI*z*z*cos(M_PI*y),</span>
-<span class="lineNum">     137 </span>                :<span class="lineNoCov">          0 :                                       -ft*M_PI*z*(cos(M_PI*x) - sin(M_PI*y)) }};</span>
-<span class="lineNum">     138 </span>                :            :       std::array&lt; tk::real, 3 &gt; dedx{{
-<span class="lineNum">     139 </span>                :<span class="lineNoCov">          0 :         dpdx[0]/rho/(g-1.0) - p/(g-1.0)/rho/rho*drdx[0]</span>
-<span class="lineNum">     140 </span>                :<span class="lineNoCov">          0 :         + u*dudx[0] + v*dvdx[0] + w*dwdx[0],</span>
-<span class="lineNum">     141 </span>                :<span class="lineNoCov">          0 :         dpdx[1]/rho/(g-1.0) - p/(g-1.0)/rho/rho*drdx[1]</span>
-<span class="lineNum">     142 </span>                :<span class="lineNoCov">          0 :         + u*dudx[1] + v*dvdx[1] + w*dwdx[1],</span>
-<span class="lineNum">     143 </span>                :<span class="lineNoCov">          0 :         dpdx[2]/rho/(g-1.0) - p/(g-1.0)/rho/rho*drdx[2]</span>
-<span class="lineNum">     144 </span>                :<span class="lineNoCov">          0 :         + u*dudx[2] + v*dvdx[2] + w*dwdx[2] }};</span>
-<span class="lineNum">     145 </span>                :            :       
-<span class="lineNum">     146 </span>                :            :       // time derivatives
-<span class="lineNum">     147 </span>                :<span class="lineNoCov">          0 :       auto dudt = -k*M_PI*sin(k*M_PI*t)*z*sin(M_PI*x);</span>
-<span class="lineNum">     148 </span>                :<span class="lineNoCov">          0 :       auto dvdt = -k*M_PI*sin(k*M_PI*t)*z*cos(M_PI*y);</span>
-<span class="lineNum">     149 </span>                :<span class="lineNoCov">          0 :       auto dwdt =  k*M_PI*sin(k*M_PI*t)/2*M_PI*z*z*(cos(M_PI*x) - sin(M_PI*y));</span>
-<span class="lineNum">     150 </span>                :<span class="lineNoCov">          0 :       auto dedt = u*dudt + v*dvdt + w*dwdt;</span>
-<span class="lineNum">     151 </span>                :            : 
-<span class="lineNum">     152 </span>                :            :       std::array&lt; tk::real, 5 &gt; r;
-<span class="lineNum">     153 </span>                :            :       // density source
-<span class="lineNum">     154 </span>                :<span class="lineNoCov">          0 :       r[0] = u*drdx[0] + v*drdx[1] + w*drdx[2];</span>
-<span class="lineNum">     155 </span>                :            :       // momentum source
-<span class="lineNum">     156 </span>                :<span class="lineNoCov">          0 :       r[1] = rho*dudt+u*r[0]+dpdx[0] + s[1]*dudx[0]+s[2]*dudx[1]+s[3]*dudx[2];</span>
-<span class="lineNum">     157 </span>                :<span class="lineNoCov">          0 :       r[2] = rho*dvdt+v*r[0]+dpdx[1] + s[1]*dvdx[0]+s[2]*dvdx[1]+s[3]*dvdx[2];</span>
-<span class="lineNum">     158 </span>                :<span class="lineNoCov">          0 :       r[3] = rho*dwdt+w*r[0]+dpdx[2] + s[1]*dwdx[0]+s[2]*dwdx[1]+s[3]*dwdx[2];</span>
-<span class="lineNum">     159 </span>                :            :       // energy source
-<span class="lineNum">     160 </span>                :<span class="lineNoCov">          0 :       r[4] = rho*dedt + E*r[0] + s[1]*dedx[0]+s[2]*dedx[1]+s[3]*dedx[2]</span>
-<span class="lineNum">     161 </span>                :<span class="lineNoCov">          0 :              + u*dpdx[0]+v*dpdx[1]+w*dpdx[2];</span>
-<span class="lineNum">     162 </span>                :            : 
-<span class="lineNum">     163 </span>                :<span class="lineNoCov">          0 :       return r;</span>
-<span class="lineNum">     164 </span>                :            :     }
-<span class="lineNum">     165 </span>                :            : 
-<span class="lineNum">     166 </span>                :            :     //! \brief Query all side set IDs the user has configured for all components
-<a name="167"><span class="lineNum">     167 </span>                :            :     //!   in this PDE system</a>
-<span class="lineNum">     168 </span>                :            :     //! \param[in,out] conf Set of unique side set IDs to add to
-<span class="lineNum">     169 </span>                :<span class="lineNoCov">          0 :     static void side( std::unordered_set&lt; int &gt;&amp; conf ) {</span>
-<span class="lineNum">     170 </span>                :            :       using tag::param; using tag::compflow; using tag::bcdir;
-<span class="lineNum">     171 </span>                :<span class="lineNoCov">          0 :       for (const auto&amp; s : g_inputdeck.get&lt; param, compflow, bcdir &gt;())</span>
-<span class="lineNum">     172 </span>                :<span class="lineNoCov">          0 :         for (const auto&amp; i : s)</span>
-<span class="lineNum">     173 </span>                :<span class="lineNoCov">          0 :           conf.insert( std::stoi(i) );</span>
-<span class="lineNum">     174 </span>                :<span class="lineNoCov">          0 :     }</span>
-<span class="lineNum">     175 </span>                :            : 
-<a name="176"><span class="lineNum">     176 </span>                :            :     //! Return field names to be output to file</a>
-<span class="lineNum">     177 </span>                :            :     //! \return Vector of strings labelling fields output in file
-<span class="lineNum">     178 </span>                :<span class="lineNoCov">          0 :     static std::vector&lt; std::string &gt; fieldNames() {</span>
-<span class="lineNum">     179 </span>                :<span class="lineNoCov">          0 :       std::vector&lt; std::string &gt; n;</span>
-<span class="lineNum">     180 </span>                :<span class="lineNoCov">          0 :       n.push_back( &quot;density_numerical&quot; );</span>
-<span class="lineNum">     181 </span>                :<span class="lineNoCov">          0 :       n.push_back( &quot;x-velocity_numerical&quot; );</span>
-<span class="lineNum">     182 </span>                :<span class="lineNoCov">          0 :       n.push_back( &quot;y-velocity_numerical&quot; );</span>
-<span class="lineNum">     183 </span>                :<span class="lineNoCov">          0 :       n.push_back( &quot;z-velocity_numerical&quot; );</span>
-<span class="lineNum">     184 </span>                :<span class="lineNoCov">          0 :       n.push_back( &quot;specific_total_energy_numerical&quot; );</span>
-<span class="lineNum">     185 </span>                :<span class="lineNoCov">          0 :       n.push_back( &quot;pressure_numerical&quot; );</span>
-<span class="lineNum">     186 </span>                :<span class="lineNoCov">          0 :       n.push_back( &quot;density_analytical&quot; );</span>
-<span class="lineNum">     187 </span>                :<span class="lineNoCov">          0 :       n.push_back( &quot;x-velocity_analytical&quot; );</span>
-<span class="lineNum">     188 </span>                :<span class="lineNoCov">          0 :       n.push_back( &quot;y-velocity_analytical&quot; );</span>
-<span class="lineNum">     189 </span>                :<span class="lineNoCov">          0 :       n.push_back( &quot;z-velocity_analytical&quot; );</span>
-<span class="lineNum">     190 </span>                :<span class="lineNoCov">          0 :       n.push_back( &quot;specific_total_energy_analytical&quot; );</span>
-<span class="lineNum">     191 </span>                :<span class="lineNoCov">          0 :       n.push_back( &quot;pressure_analytical&quot; );</span>
-<span class="lineNum">     192 </span>                :<span class="lineNoCov">          0 :       n.push_back( &quot;err(rho)&quot; );</span>
-<span class="lineNum">     193 </span>                :<span class="lineNoCov">          0 :       n.push_back( &quot;err(e)&quot; );</span>
-<span class="lineNum">     194 </span>                :<span class="lineNoCov">          0 :       n.push_back( &quot;err(p)&quot; );</span>
-<span class="lineNum">     195 </span>                :<span class="lineNoCov">          0 :       n.push_back( &quot;err(u)&quot; );</span>
-<span class="lineNum">     196 </span>                :<span class="lineNoCov">          0 :       n.push_back( &quot;err(v)&quot; );</span>
-<span class="lineNum">     197 </span>                :<span class="lineNoCov">          0 :       n.push_back( &quot;err(w)&quot; );</span>
-<span class="lineNum">     198 </span>                :<span class="lineNoCov">          0 :       return n;</span>
-<span class="lineNum">     199 </span>                :            :     }
-<span class="lineNum">     200 </span>                :            : 
-<span class="lineNum">     201 </span>                :            :     //! Return field output going to file
-<span class="lineNum">     202 </span>                :            :     //! \param[in] e Equation system index, i.e., which compressible
-<span class="lineNum">     203 </span>                :            :     //!   flow equation system we operate on among the systems of PDEs
-<span class="lineNum">     204 </span>                :            :     //! \param[in] offset System offset specifying the position of the system of
-<span class="lineNum">     205 </span>                :            :     //!   PDEs among other systems
-<span class="lineNum">     206 </span>                :            :     //! \param[in] t Physical time
-<span class="lineNum">     207 </span>                :            :     //! \param[in] coord Mesh node coordinates
-<span class="lineNum">     208 </span>                :            :     //! \param[in] U Solution vector at recent time step
-<a name="209"><span class="lineNum">     209 </span>                :            :     //! \return Vector of vectors to be output to file</a>
-<span class="lineNum">     210 </span>                :            :     static std::vector&lt; std::vector&lt; tk::real &gt; &gt;
-<span class="lineNum">     211 </span>                :<span class="lineNoCov">          0 :     fieldOutput( tk::ctr::ncomp_type e,</span>
-<span class="lineNum">     212 </span>                :            :                  tk::ctr::ncomp_type offset,
-<span class="lineNum">     213 </span>                :            :                  tk::real t,
-<span class="lineNum">     214 </span>                :            :                  tk::real V,
-<span class="lineNum">     215 </span>                :            :                  const std::vector&lt; tk::real &gt;&amp; vol,
-<span class="lineNum">     216 </span>                :            :                  const std::array&lt; std::vector&lt; tk::real &gt;, 3 &gt;&amp; coord,
-<span class="lineNum">     217 </span>                :            :                  tk::Fields&amp; U )
-<span class="lineNum">     218 </span>                :            :     {
-<span class="lineNum">     219 </span>                :            :       // ratio of specific heats
-<span class="lineNum">     220 </span>                :            :       tk::real g =
-<span class="lineNum">     221 </span>                :<span class="lineNoCov">          0 :         g_inputdeck.get&lt; tag::param, tag::compflow, tag::gamma &gt;()[e];</span>
-<span class="lineNum">     222 </span>                :            : 
-<span class="lineNum">     223 </span>                :<span class="lineNoCov">          0 :       std::vector&lt; std::vector&lt; tk::real &gt; &gt; out;</span>
-<span class="lineNum">     224 </span>                :<span class="lineNoCov">          0 :       auto r = U.extract( 0, offset );</span>
-<span class="lineNum">     225 </span>                :<span class="lineNoCov">          0 :       auto u = U.extract( 1, offset );</span>
-<span class="lineNum">     226 </span>                :<span class="lineNoCov">          0 :       auto v = U.extract( 2, offset );</span>
-<span class="lineNum">     227 </span>                :<span class="lineNoCov">          0 :       auto w = U.extract( 3, offset );</span>
-<span class="lineNum">     228 </span>                :<span class="lineNoCov">          0 :       auto E = U.extract( 4, offset );</span>
-<span class="lineNum">     229 </span>                :            : 
-<span class="lineNum">     230 </span>                :            :       // mesh node coordinates
-<span class="lineNum">     231 </span>                :<span class="lineNoCov">          0 :       const auto&amp; x = coord[0];</span>
-<span class="lineNum">     232 </span>                :<span class="lineNoCov">          0 :       const auto&amp; y = coord[1];</span>
-<span class="lineNum">     233 </span>                :<span class="lineNoCov">          0 :       const auto&amp; z = coord[2];</span>
-<span class="lineNum">     234 </span>                :            : 
-<a name="235"><span class="lineNum">     235 </span>                :<span class="lineNoCov">          0 :       out.push_back( r );</span></a>
-<span class="lineNum">     236 </span>                :            :       std::transform( r.begin(), r.end(), u.begin(), u.begin(),
-<span class="lineNum">     237 </span>                :<span class="lineNoCov">          0 :                       []( tk::real s, tk::real&amp; d ){ return d /= s; } );</span>
-<a name="238"><span class="lineNum">     238 </span>                :<span class="lineNoCov">          0 :       out.push_back( u );</span></a>
-<span class="lineNum">     239 </span>                :            :       std::transform( r.begin(), r.end(), v.begin(), v.begin(),
-<span class="lineNum">     240 </span>                :<span class="lineNoCov">          0 :                       []( tk::real s, tk::real&amp; d ){ return d /= s; } );</span>
-<a name="241"><span class="lineNum">     241 </span>                :<span class="lineNoCov">          0 :       out.push_back( v );</span></a>
-<span class="lineNum">     242 </span>                :            :       std::transform( r.begin(), r.end(), w.begin(), w.begin(),
-<span class="lineNum">     243 </span>                :<span class="lineNoCov">          0 :                       []( tk::real s, tk::real&amp; d ){ return d /= s; } );</span>
-<a name="244"><span class="lineNum">     244 </span>                :<span class="lineNoCov">          0 :       out.push_back( w );</span></a>
-<span class="lineNum">     245 </span>                :            :       std::transform( r.begin(), r.end(), E.begin(), E.begin(),
-<span class="lineNum">     246 </span>                :<span class="lineNoCov">          0 :                       []( tk::real s, tk::real&amp; d ){ return d /= s; } );</span>
-<span class="lineNum">     247 </span>                :<span class="lineNoCov">          0 :       out.push_back( E );</span>
-<span class="lineNum">     248 </span>                :            : 
-<span class="lineNum">     249 </span>                :<span class="lineNoCov">          0 :       auto p = r;</span>
-<span class="lineNum">     250 </span>                :<span class="lineNoCov">          0 :       for (std::size_t i=0; i&lt;r.size(); ++i)</span>
-<span class="lineNum">     251 </span>                :<span class="lineNoCov">          0 :         p[i] = (g-1.0)*r[i]*(E[i] - (u[i]*u[i] + v[i]*v[i] + w[i]*w[i])/2.0);</span>
-<span class="lineNum">     252 </span>                :<span class="lineNoCov">          0 :       out.push_back( p );</span>
-<span class="lineNum">     253 </span>                :            : 
-<span class="lineNum">     254 </span>                :<span class="lineNoCov">          0 :       auto er = r, ee = r, ep = r, eu = r, ev = r, ew = r;</span>
-<span class="lineNum">     255 </span>                :<span class="lineNoCov">          0 :       for (std::size_t i=0; i&lt;r.size(); ++i) {</span>
-<span class="lineNum">     256 </span>                :<span class="lineNoCov">          0 :         auto s = solution( e, x[i], y[i], z[i], t );</span>
-<span class="lineNum">     257 </span>                :<span class="lineNoCov">          0 :         er[i] = std::pow( r[i] - s[0], 2.0 ) * vol[i] / V;</span>
-<span class="lineNum">     258 </span>                :<span class="lineNoCov">          0 :         ee[i] = std::pow( E[i] - s[4]/s[0], 2.0 ) * vol[i] / V;</span>
-<span class="lineNum">     259 </span>                :<span class="lineNoCov">          0 :         eu[i] = std::pow( u[i] - s[1]/s[0], 2.0 ) * vol[i] / V;</span>
-<span class="lineNum">     260 </span>                :<span class="lineNoCov">          0 :         ev[i] = std::pow( v[i] - s[2]/s[0], 2.0 ) * vol[i] / V;</span>
-<span class="lineNum">     261 </span>                :<span class="lineNoCov">          0 :         ew[i] = std::pow( w[i] - s[3]/s[0], 2.0 ) * vol[i] / V;</span>
-<span class="lineNum">     262 </span>                :<span class="lineNoCov">          0 :         auto ap = (g-1.0)*(s[4] - (s[1]*s[1] + s[2]*s[2] + s[3]*s[3])/2.0/s[0]);</span>
-<span class="lineNum">     263 </span>                :<span class="lineNoCov">          0 :         r[i] = s[0];</span>
-<span class="lineNum">     264 </span>                :<span class="lineNoCov">          0 :         u[i] = s[1]/s[0];</span>
-<span class="lineNum">     265 </span>                :<span class="lineNoCov">          0 :         v[i] = s[2]/s[0];</span>
-<span class="lineNum">     266 </span>                :<span class="lineNoCov">          0 :         w[i] = s[3]/s[0];</span>
-<span class="lineNum">     267 </span>                :<span class="lineNoCov">          0 :         E[i] = s[4]/s[0];</span>
-<span class="lineNum">     268 </span>                :<span class="lineNoCov">          0 :         p[i] = (g-1.0)*r[i]*(E[i] - (u[i]*u[i] + v[i]*v[i] + w[i]*w[i])/2.0);</span>
-<span class="lineNum">     269 </span>                :<span class="lineNoCov">          0 :         ep[i] = std::pow( ap - p[i], 2.0 ) * vol[i] / V;</span>
-<span class="lineNum">     270 </span>                :            :       }
-<span class="lineNum">     271 </span>                :            : 
-<span class="lineNum">     272 </span>                :<span class="lineNoCov">          0 :       out.push_back( r );</span>
-<span class="lineNum">     273 </span>                :<span class="lineNoCov">          0 :       out.push_back( u );</span>
-<span class="lineNum">     274 </span>                :<span class="lineNoCov">          0 :       out.push_back( v );</span>
-<span class="lineNum">     275 </span>                :<span class="lineNoCov">          0 :       out.push_back( w );</span>
-<span class="lineNum">     276 </span>                :<span class="lineNoCov">          0 :       out.push_back( E );</span>
-<span class="lineNum">     277 </span>                :<span class="lineNoCov">          0 :       out.push_back( p );</span>
-<span class="lineNum">     278 </span>                :            : 
-<span class="lineNum">     279 </span>                :<span class="lineNoCov">          0 :       out.push_back( er );</span>
-<span class="lineNum">     280 </span>                :<span class="lineNoCov">          0 :       out.push_back( ee );</span>
-<span class="lineNum">     281 </span>                :<span class="lineNoCov">          0 :       out.push_back( ep );</span>
-<span class="lineNum">     282 </span>                :<span class="lineNoCov">          0 :       out.push_back( eu );</span>
-<span class="lineNum">     283 </span>                :<span class="lineNoCov">          0 :       out.push_back( ev );</span>
-<span class="lineNum">     284 </span>                :<span class="lineNoCov">          0 :       out.push_back( ew );</span>
-<span class="lineNum">     285 </span>                :            : 
-<span class="lineNum">     286 </span>                :<span class="lineNoCov">          0 :       return out;</span>
-<span class="lineNum">     287 </span>                :            :    }
-<span class="lineNum">     288 </span>                :            : 
-<a name="289"><span class="lineNum">     289 </span>                :            :     //! Return names of integral variables to be output to diagnostics file</a>
-<span class="lineNum">     290 </span>                :            :     //! \return Vector of strings labelling integral variables output
-<span class="lineNum">     291 </span>                :<span class="lineNoCov">          0 :     static std::vector&lt; std::string &gt; names()</span>
-<a name="292"><span class="lineNum">     292 </span>                :<span class="lineNoCov">          0 :     { return { &quot;r&quot;, &quot;ru&quot;, &quot;rv&quot;, &quot;rw&quot;, &quot;re&quot; }; }</span></a>
-<span class="lineNum">     293 </span>                :            : 
-<span class="lineNum">     294 </span>                :<span class="lineNoCov">          0 :     static ctr::ProblemType type() noexcept</span>
-<span class="lineNum">     295 </span>                :<span class="lineNoCov">          0 :     { return ctr::ProblemType::RAYLEIGH_TAYLOR; }</span>
-<span class="lineNum">     296 </span>                :            : };
+<span class="lineNum">      22 </span>                :            : //! CompFlow system of PDEs problem: Rayleigh-Taylor
+<span class="lineNum">      23 </span>                :            : //! \see Waltz, et. al, &quot;Manufactured solutions for the three-dimensional Euler
+<span class="lineNum">      24 </span>                :            : //!   equations with relevance to Inertial Confinement Fusion&quot;, Journal of
+<span class="lineNum">      25 </span>                :            : //!   Computational Physics 267 (2014) 196-209.
+<span class="lineNum">      26 </span>                :            : class CompFlowProblemRayleighTaylor {
+<span class="lineNum">      27 </span>                :            : 
+<span class="lineNum">      28 </span>                :            :   public:
+<span class="lineNum">      29 </span>                :            :     //! Evaluate analytical solution at (x,y,z,t) for all components
+<span class="lineNum">      30 </span>                :            :     //! \param[in] e Equation system index, i.e., which compressible
+<span class="lineNum">      31 </span>                :            :     //!   flow equation system we operate on among the systems of PDEs
+<span class="lineNum">      32 </span>                :            :     //! \param[in] x X coordinate where to evaluate the solution
+<span class="lineNum">      33 </span>                :            :     //! \param[in] y Y coordinate where to evaluate the solution
+<span class="lineNum">      34 </span>                :            :     //! \param[in] z Z coordinate where to evaluate the solution
+<span class="lineNum">      35 </span>                :            :     //! \param[in] t Time where to evaluate the solution
+<a name="36"><span class="lineNum">      36 </span>                :            :     //! \return Values of all components evaluated at (x,y,z,t)</a>
+<span class="lineNum">      37 </span>                :            :     static std::array&lt; tk::real, 5 &gt;
+<span class="lineNum">      38 </span>                :<span class="lineNoCov">          0 :     solution( tk::ctr::ncomp_type e,</span>
+<span class="lineNum">      39 </span>                :            :               tk::real x, tk::real y, tk::real z, tk::real t )
+<span class="lineNum">      40 </span>                :            :     {
+<span class="lineNum">      41 </span>                :            :       using tag::param; using tag::compflow; using std::sin; using std::cos;
+<span class="lineNum">      42 </span>                :            :       // manufactured solution parameters
+<span class="lineNum">      43 </span>                :<span class="lineNoCov">          0 :       const auto a = g_inputdeck.get&lt; param, compflow, tag::alpha &gt;()[e];</span>
+<span class="lineNum">      44 </span>                :<span class="lineNoCov">          0 :       const auto bx = g_inputdeck.get&lt; param, compflow, tag::betax &gt;()[e];</span>
+<span class="lineNum">      45 </span>                :<span class="lineNoCov">          0 :       const auto by = g_inputdeck.get&lt; param, compflow, tag::betay &gt;()[e];</span>
+<span class="lineNum">      46 </span>                :<span class="lineNoCov">          0 :       const auto bz = g_inputdeck.get&lt; param, compflow, tag::betaz &gt;()[e];</span>
+<span class="lineNum">      47 </span>                :<span class="lineNoCov">          0 :       const auto p0 = g_inputdeck.get&lt; param, compflow, tag::p0 &gt;()[e];</span>
+<span class="lineNum">      48 </span>                :<span class="lineNoCov">          0 :       const auto r0 = g_inputdeck.get&lt; param, compflow, tag::r0 &gt;()[e];</span>
+<span class="lineNum">      49 </span>                :<span class="lineNoCov">          0 :       const auto k = g_inputdeck.get&lt; param, compflow, tag::kappa &gt;()[e];</span>
+<span class="lineNum">      50 </span>                :            :       // ratio of specific heats
+<span class="lineNum">      51 </span>                :<span class="lineNoCov">          0 :       const tk::real g = g_inputdeck.get&lt; param, compflow, tag::gamma &gt;()[e];</span>
+<span class="lineNum">      52 </span>                :            :       // spatial component of density and pressure fields
+<span class="lineNum">      53 </span>                :<span class="lineNoCov">          0 :       const tk::real gx = bx*x*x + by*y*y + bz*z*z;</span>
+<span class="lineNum">      54 </span>                :            :       // density
+<span class="lineNum">      55 </span>                :<span class="lineNoCov">          0 :       const tk::real r = r0 - gx;</span>
+<span class="lineNum">      56 </span>                :            :       // pressure
+<span class="lineNum">      57 </span>                :<span class="lineNoCov">          0 :       const tk::real p = p0 + a*gx;</span>
+<span class="lineNum">      58 </span>                :            :       // velocity
+<span class="lineNum">      59 </span>                :<span class="lineNoCov">          0 :       const tk::real ft = cos(k*M_PI*t);</span>
+<span class="lineNum">      60 </span>                :<span class="lineNoCov">          0 :       const tk::real u = ft*z*sin(M_PI*x);</span>
+<span class="lineNum">      61 </span>                :<span class="lineNoCov">          0 :       const tk::real v = ft*z*cos(M_PI*y);</span>
+<span class="lineNum">      62 </span>                :<span class="lineNoCov">          0 :       const tk::real w = ft*(-0.5*M_PI*z*z*(cos(M_PI*x)-sin(M_PI*y)));</span>
+<span class="lineNum">      63 </span>                :            :       // total specific energy
+<span class="lineNum">      64 </span>                :<span class="lineNoCov">          0 :       const tk::real rE = p/(g-1.0) + 0.5*r*(u*u + v*v + w*w);</span>
+<span class="lineNum">      65 </span>                :<span class="lineNoCov">          0 :       return {{ r, r*u, r*v, r*w, rE }};</span>
+<span class="lineNum">      66 </span>                :            :     }
+<span class="lineNum">      67 </span>                :            : 
+<span class="lineNum">      68 </span>                :            :     //! \brief Evaluate the increment from t to t+dt of the analytical solution
+<span class="lineNum">      69 </span>                :            :     //!   at (x,y,z) for all components
+<span class="lineNum">      70 </span>                :            :     //! \param[in] e Equation system index, i.e., which compressible
+<span class="lineNum">      71 </span>                :            :     //!   flow equation system we operate on among the systems of PDEs
+<span class="lineNum">      72 </span>                :            :     //! \param[in] x X coordinate where to evaluate the solution
+<span class="lineNum">      73 </span>                :            :     //! \param[in] y Y coordinate where to evaluate the solution
+<span class="lineNum">      74 </span>                :            :     //! \param[in] z Z coordinate where to evaluate the solution
+<span class="lineNum">      75 </span>                :            :     //! \param[in] t Time where to evaluate the solution increment starting from
+<span class="lineNum">      76 </span>                :            :     //! \param[in] dt Time increment at which evaluate the solution increment to
+<a name="77"><span class="lineNum">      77 </span>                :            :     //! \return Increment in values of all components evaluated at (x,y,z,t+dt)</a>
+<span class="lineNum">      78 </span>                :            :     static std::array&lt; tk::real, 5 &gt;
+<span class="lineNum">      79 </span>                :<span class="lineNoCov">          0 :     solinc( tk::ctr::ncomp_type e,</span>
+<span class="lineNum">      80 </span>                :            :             tk::real x, tk::real y, tk::real z, tk::real t, tk::real dt )
+<span class="lineNum">      81 </span>                :            :     {
+<span class="lineNum">      82 </span>                :<span class="lineNoCov">          0 :       auto st1 = solution( e, x, y, z, t );</span>
+<a name="83"><span class="lineNum">      83 </span>                :<span class="lineNoCov">          0 :       auto st2 = solution( e, x, y, z, t+dt );</span></a>
+<span class="lineNum">      84 </span>                :            :       std::transform( begin(st1), end(st1), begin(st2), begin(st2),
+<span class="lineNum">      85 </span>                :<span class="lineNoCov">          0 :                       []( tk::real s, tk::real&amp; d ){ return d -= s; } );</span>
+<span class="lineNum">      86 </span>                :<span class="lineNoCov">          0 :       return st2;</span>
+<span class="lineNum">      87 </span>                :            :     }
+<span class="lineNum">      88 </span>                :            : 
+<span class="lineNum">      89 </span>                :            :     //! Compute and return source term for Rayleigh-Taylor manufactured solution
+<span class="lineNum">      90 </span>                :            :     //! \param[in] e Equation system index, i.e., which compressible
+<span class="lineNum">      91 </span>                :            :     //!   flow equation system we operate on among the systems of PDEs
+<span class="lineNum">      92 </span>                :            :     //! \param[in] x X coordinate where to evaluate the solution
+<span class="lineNum">      93 </span>                :            :     //! \param[in] y Y coordinate where to evaluate the solution
+<span class="lineNum">      94 </span>                :            :     //! \param[in] z Z coordinate where to evaluate the solution
+<span class="lineNum">      95 </span>                :            :     //! \param[in] t Physical time at which to evaluate the source
+<a name="96"><span class="lineNum">      96 </span>                :            :     //! \return Array of reals containing the source for all components</a>
+<span class="lineNum">      97 </span>                :            :     static std::array&lt; tk::real, 5 &gt;
+<span class="lineNum">      98 </span>                :<span class="lineNoCov">          0 :     src( tk::ctr::ncomp_type e, tk::real x, tk::real y, tk::real z, tk::real t )</span>
+<span class="lineNum">      99 </span>                :            :     {
+<span class="lineNum">     100 </span>                :            :       using tag::param; using tag::compflow; using std::sin; using std::cos;
+<span class="lineNum">     101 </span>                :            : 
+<span class="lineNum">     102 </span>                :            :       // manufactured solution parameters
+<span class="lineNum">     103 </span>                :<span class="lineNoCov">          0 :       auto a = g_inputdeck.get&lt; param, compflow, tag::alpha &gt;()[e];</span>
+<span class="lineNum">     104 </span>                :<span class="lineNoCov">          0 :       auto bx = g_inputdeck.get&lt; param, compflow, tag::betax &gt;()[e];</span>
+<span class="lineNum">     105 </span>                :<span class="lineNoCov">          0 :       auto by = g_inputdeck.get&lt; param, compflow, tag::betay &gt;()[e];</span>
+<span class="lineNum">     106 </span>                :<span class="lineNoCov">          0 :       auto bz = g_inputdeck.get&lt; param, compflow, tag::betaz &gt;()[e];</span>
+<span class="lineNum">     107 </span>                :<span class="lineNoCov">          0 :       auto k = g_inputdeck.get&lt; param, compflow, tag::kappa &gt;()[e];</span>
+<span class="lineNum">     108 </span>                :<span class="lineNoCov">          0 :       auto p0 = g_inputdeck.get&lt; param, compflow, tag::p0 &gt;()[e];</span>
+<span class="lineNum">     109 </span>                :            :       // ratio of specific heats
+<span class="lineNum">     110 </span>                :<span class="lineNoCov">          0 :       tk::real g = g_inputdeck.get&lt; param, compflow, tag::gamma &gt;()[e];</span>
+<span class="lineNum">     111 </span>                :            : 
+<span class="lineNum">     112 </span>                :            :       // evaluate solution at x,y,z,t
+<span class="lineNum">     113 </span>                :<span class="lineNoCov">          0 :       auto s = solution( e, x, y, z, t );</span>
+<span class="lineNum">     114 </span>                :            : 
+<span class="lineNum">     115 </span>                :            :       // density, velocity, energy, pressure
+<span class="lineNum">     116 </span>                :<span class="lineNoCov">          0 :       auto rho = s[0];</span>
+<span class="lineNum">     117 </span>                :<span class="lineNoCov">          0 :       auto u = s[1]/s[0];</span>
+<span class="lineNum">     118 </span>                :<span class="lineNoCov">          0 :       auto v = s[2]/s[0];</span>
+<span class="lineNum">     119 </span>                :<span class="lineNoCov">          0 :       auto w = s[3]/s[0];</span>
+<span class="lineNum">     120 </span>                :<span class="lineNoCov">          0 :       auto E = s[4]/s[0];</span>
+<span class="lineNum">     121 </span>                :<span class="lineNoCov">          0 :       auto p = p0 + a*(bx*x*x + by*y*y + bz*z*z);</span>
+<span class="lineNum">     122 </span>                :            : 
+<span class="lineNum">     123 </span>                :            :       // spatial gradients
+<span class="lineNum">     124 </span>                :<span class="lineNoCov">          0 :       std::array&lt; tk::real, 3 &gt; drdx{{ -2.0*bx*x, -2.0*by*y, -2.0*bz*z }};</span>
+<span class="lineNum">     125 </span>                :<span class="lineNoCov">          0 :       std::array&lt; tk::real, 3 &gt; dpdx{{ 2.0*a*bx*x, 2.0*a*by*y, 2.0*a*bz*z }};</span>
+<span class="lineNum">     126 </span>                :<span class="lineNoCov">          0 :       tk::real ft = cos(k*M_PI*t);</span>
+<span class="lineNum">     127 </span>                :<span class="lineNoCov">          0 :       std::array&lt; tk::real, 3 &gt; dudx{{ ft*M_PI*z*cos(M_PI*x),</span>
+<span class="lineNum">     128 </span>                :            :                                        0.0,
+<span class="lineNum">     129 </span>                :<span class="lineNoCov">          0 :                                        ft*sin(M_PI*x) }};</span>
+<span class="lineNum">     130 </span>                :            :       std::array&lt; tk::real, 3 &gt; dvdx{{ 0.0,
+<span class="lineNum">     131 </span>                :<span class="lineNoCov">          0 :                                        -ft*M_PI*z*sin(M_PI*y),</span>
+<span class="lineNum">     132 </span>                :<span class="lineNoCov">          0 :                                        ft*cos(M_PI*y) }};</span>
+<span class="lineNum">     133 </span>                :<span class="lineNoCov">          0 :       std::array&lt; tk::real, 3 &gt; dwdx{{ ft*M_PI*0.5*M_PI*z*z*sin(M_PI*x),</span>
+<span class="lineNum">     134 </span>                :<span class="lineNoCov">          0 :                                        ft*M_PI*0.5*M_PI*z*z*cos(M_PI*y),</span>
+<span class="lineNum">     135 </span>                :<span class="lineNoCov">          0 :                                       -ft*M_PI*z*(cos(M_PI*x) - sin(M_PI*y)) }};</span>
+<span class="lineNum">     136 </span>                :            :       std::array&lt; tk::real, 3 &gt; dedx{{
+<span class="lineNum">     137 </span>                :<span class="lineNoCov">          0 :         dpdx[0]/rho/(g-1.0) - p/(g-1.0)/rho/rho*drdx[0]</span>
+<span class="lineNum">     138 </span>                :<span class="lineNoCov">          0 :         + u*dudx[0] + v*dvdx[0] + w*dwdx[0],</span>
+<span class="lineNum">     139 </span>                :<span class="lineNoCov">          0 :         dpdx[1]/rho/(g-1.0) - p/(g-1.0)/rho/rho*drdx[1]</span>
+<span class="lineNum">     140 </span>                :<span class="lineNoCov">          0 :         + u*dudx[1] + v*dvdx[1] + w*dwdx[1],</span>
+<span class="lineNum">     141 </span>                :<span class="lineNoCov">          0 :         dpdx[2]/rho/(g-1.0) - p/(g-1.0)/rho/rho*drdx[2]</span>
+<span class="lineNum">     142 </span>                :<span class="lineNoCov">          0 :         + u*dudx[2] + v*dvdx[2] + w*dwdx[2] }};</span>
+<span class="lineNum">     143 </span>                :            :       
+<span class="lineNum">     144 </span>                :            :       // time derivatives
+<span class="lineNum">     145 </span>                :<span class="lineNoCov">          0 :       auto dudt = -k*M_PI*sin(k*M_PI*t)*z*sin(M_PI*x);</span>
+<span class="lineNum">     146 </span>                :<span class="lineNoCov">          0 :       auto dvdt = -k*M_PI*sin(k*M_PI*t)*z*cos(M_PI*y);</span>
+<span class="lineNum">     147 </span>                :<span class="lineNoCov">          0 :       auto dwdt =  k*M_PI*sin(k*M_PI*t)/2*M_PI*z*z*(cos(M_PI*x) - sin(M_PI*y));</span>
+<span class="lineNum">     148 </span>                :<span class="lineNoCov">          0 :       auto dedt = u*dudt + v*dvdt + w*dwdt;</span>
+<span class="lineNum">     149 </span>                :            : 
+<span class="lineNum">     150 </span>                :            :       std::array&lt; tk::real, 5 &gt; r;
+<span class="lineNum">     151 </span>                :            :       // density source
+<span class="lineNum">     152 </span>                :<span class="lineNoCov">          0 :       r[0] = u*drdx[0] + v*drdx[1] + w*drdx[2];</span>
+<span class="lineNum">     153 </span>                :            :       // momentum source
+<span class="lineNum">     154 </span>                :<span class="lineNoCov">          0 :       r[1] = rho*dudt+u*r[0]+dpdx[0] + s[1]*dudx[0]+s[2]*dudx[1]+s[3]*dudx[2];</span>
+<span class="lineNum">     155 </span>                :<span class="lineNoCov">          0 :       r[2] = rho*dvdt+v*r[0]+dpdx[1] + s[1]*dvdx[0]+s[2]*dvdx[1]+s[3]*dvdx[2];</span>
+<span class="lineNum">     156 </span>                :<span class="lineNoCov">          0 :       r[3] = rho*dwdt+w*r[0]+dpdx[2] + s[1]*dwdx[0]+s[2]*dwdx[1]+s[3]*dwdx[2];</span>
+<span class="lineNum">     157 </span>                :            :       // energy source
+<span class="lineNum">     158 </span>                :<span class="lineNoCov">          0 :       r[4] = rho*dedt + E*r[0] + s[1]*dedx[0]+s[2]*dedx[1]+s[3]*dedx[2]</span>
+<span class="lineNum">     159 </span>                :<span class="lineNoCov">          0 :              + u*dpdx[0]+v*dpdx[1]+w*dpdx[2];</span>
+<span class="lineNum">     160 </span>                :            : 
+<span class="lineNum">     161 </span>                :<span class="lineNoCov">          0 :       return r;</span>
+<span class="lineNum">     162 </span>                :            :     }
+<span class="lineNum">     163 </span>                :            : 
+<span class="lineNum">     164 </span>                :            :     //! \brief Query all side set IDs the user has configured for all components
+<a name="165"><span class="lineNum">     165 </span>                :            :     //!   in this PDE system</a>
+<span class="lineNum">     166 </span>                :            :     //! \param[in,out] conf Set of unique side set IDs to add to
+<span class="lineNum">     167 </span>                :<span class="lineNoCov">          0 :     static void side( std::unordered_set&lt; int &gt;&amp; conf ) {</span>
+<span class="lineNum">     168 </span>                :            :       using tag::param; using tag::compflow; using tag::bcdir;
+<span class="lineNum">     169 </span>                :<span class="lineNoCov">          0 :       for (const auto&amp; s : g_inputdeck.get&lt; param, compflow, bcdir &gt;())</span>
+<span class="lineNum">     170 </span>                :<span class="lineNoCov">          0 :         for (const auto&amp; i : s)</span>
+<span class="lineNum">     171 </span>                :<span class="lineNoCov">          0 :           conf.insert( std::stoi(i) );</span>
+<span class="lineNum">     172 </span>                :<span class="lineNoCov">          0 :     }</span>
+<span class="lineNum">     173 </span>                :            : 
+<a name="174"><span class="lineNum">     174 </span>                :            :     //! Return field names to be output to file</a>
+<span class="lineNum">     175 </span>                :            :     //! \return Vector of strings labelling fields output in file
+<span class="lineNum">     176 </span>                :<span class="lineNoCov">          0 :     static std::vector&lt; std::string &gt; fieldNames() {</span>
+<span class="lineNum">     177 </span>                :<span class="lineNoCov">          0 :       std::vector&lt; std::string &gt; n;</span>
+<span class="lineNum">     178 </span>                :<span class="lineNoCov">          0 :       n.push_back( &quot;density_numerical&quot; );</span>
+<span class="lineNum">     179 </span>                :<span class="lineNoCov">          0 :       n.push_back( &quot;x-velocity_numerical&quot; );</span>
+<span class="lineNum">     180 </span>                :<span class="lineNoCov">          0 :       n.push_back( &quot;y-velocity_numerical&quot; );</span>
+<span class="lineNum">     181 </span>                :<span class="lineNoCov">          0 :       n.push_back( &quot;z-velocity_numerical&quot; );</span>
+<span class="lineNum">     182 </span>                :<span class="lineNoCov">          0 :       n.push_back( &quot;specific_total_energy_numerical&quot; );</span>
+<span class="lineNum">     183 </span>                :<span class="lineNoCov">          0 :       n.push_back( &quot;pressure_numerical&quot; );</span>
+<span class="lineNum">     184 </span>                :<span class="lineNoCov">          0 :       n.push_back( &quot;density_analytical&quot; );</span>
+<span class="lineNum">     185 </span>                :<span class="lineNoCov">          0 :       n.push_back( &quot;x-velocity_analytical&quot; );</span>
+<span class="lineNum">     186 </span>                :<span class="lineNoCov">          0 :       n.push_back( &quot;y-velocity_analytical&quot; );</span>
+<span class="lineNum">     187 </span>                :<span class="lineNoCov">          0 :       n.push_back( &quot;z-velocity_analytical&quot; );</span>
+<span class="lineNum">     188 </span>                :<span class="lineNoCov">          0 :       n.push_back( &quot;specific_total_energy_analytical&quot; );</span>
+<span class="lineNum">     189 </span>                :<span class="lineNoCov">          0 :       n.push_back( &quot;pressure_analytical&quot; );</span>
+<span class="lineNum">     190 </span>                :<span class="lineNoCov">          0 :       n.push_back( &quot;err(rho)&quot; );</span>
+<span class="lineNum">     191 </span>                :<span class="lineNoCov">          0 :       n.push_back( &quot;err(e)&quot; );</span>
+<span class="lineNum">     192 </span>                :<span class="lineNoCov">          0 :       n.push_back( &quot;err(p)&quot; );</span>
+<span class="lineNum">     193 </span>                :<span class="lineNoCov">          0 :       n.push_back( &quot;err(u)&quot; );</span>
+<span class="lineNum">     194 </span>                :<span class="lineNoCov">          0 :       n.push_back( &quot;err(v)&quot; );</span>
+<span class="lineNum">     195 </span>                :<span class="lineNoCov">          0 :       n.push_back( &quot;err(w)&quot; );</span>
+<span class="lineNum">     196 </span>                :<span class="lineNoCov">          0 :       return n;</span>
+<span class="lineNum">     197 </span>                :            :     }
+<span class="lineNum">     198 </span>                :            : 
+<span class="lineNum">     199 </span>                :            :     //! Return field output going to file
+<span class="lineNum">     200 </span>                :            :     //! \param[in] e Equation system index, i.e., which compressible
+<span class="lineNum">     201 </span>                :            :     //!   flow equation system we operate on among the systems of PDEs
+<span class="lineNum">     202 </span>                :            :     //! \param[in] offset System offset specifying the position of the system of
+<span class="lineNum">     203 </span>                :            :     //!   PDEs among other systems
+<span class="lineNum">     204 </span>                :            :     //! \param[in] t Physical time
+<span class="lineNum">     205 </span>                :            :     //! \param[in] coord Mesh node coordinates
+<span class="lineNum">     206 </span>                :            :     //! \param[in] U Solution vector at recent time step
+<a name="207"><span class="lineNum">     207 </span>                :            :     //! \return Vector of vectors to be output to file</a>
+<span class="lineNum">     208 </span>                :            :     static std::vector&lt; std::vector&lt; tk::real &gt; &gt;
+<span class="lineNum">     209 </span>                :<span class="lineNoCov">          0 :     fieldOutput( tk::ctr::ncomp_type e,</span>
+<span class="lineNum">     210 </span>                :            :                  tk::ctr::ncomp_type offset,
+<span class="lineNum">     211 </span>                :            :                  tk::real t,
+<span class="lineNum">     212 </span>                :            :                  tk::real V,
+<span class="lineNum">     213 </span>                :            :                  const std::vector&lt; tk::real &gt;&amp; vol,
+<span class="lineNum">     214 </span>                :            :                  const std::array&lt; std::vector&lt; tk::real &gt;, 3 &gt;&amp; coord,
+<span class="lineNum">     215 </span>                :            :                  tk::Fields&amp; U )
+<span class="lineNum">     216 </span>                :            :     {
+<span class="lineNum">     217 </span>                :            :       // ratio of specific heats
+<span class="lineNum">     218 </span>                :            :       tk::real g =
+<span class="lineNum">     219 </span>                :<span class="lineNoCov">          0 :         g_inputdeck.get&lt; tag::param, tag::compflow, tag::gamma &gt;()[e];</span>
+<span class="lineNum">     220 </span>                :            : 
+<span class="lineNum">     221 </span>                :<span class="lineNoCov">          0 :       std::vector&lt; std::vector&lt; tk::real &gt; &gt; out;</span>
+<span class="lineNum">     222 </span>                :<span class="lineNoCov">          0 :       auto r = U.extract( 0, offset );</span>
+<span class="lineNum">     223 </span>                :<span class="lineNoCov">          0 :       auto u = U.extract( 1, offset );</span>
+<span class="lineNum">     224 </span>                :<span class="lineNoCov">          0 :       auto v = U.extract( 2, offset );</span>
+<span class="lineNum">     225 </span>                :<span class="lineNoCov">          0 :       auto w = U.extract( 3, offset );</span>
+<span class="lineNum">     226 </span>                :<span class="lineNoCov">          0 :       auto E = U.extract( 4, offset );</span>
+<span class="lineNum">     227 </span>                :            : 
+<span class="lineNum">     228 </span>                :            :       // mesh node coordinates
+<span class="lineNum">     229 </span>                :<span class="lineNoCov">          0 :       const auto&amp; x = coord[0];</span>
+<span class="lineNum">     230 </span>                :<span class="lineNoCov">          0 :       const auto&amp; y = coord[1];</span>
+<span class="lineNum">     231 </span>                :<span class="lineNoCov">          0 :       const auto&amp; z = coord[2];</span>
+<span class="lineNum">     232 </span>                :            : 
+<a name="233"><span class="lineNum">     233 </span>                :<span class="lineNoCov">          0 :       out.push_back( r );</span></a>
+<span class="lineNum">     234 </span>                :            :       std::transform( r.begin(), r.end(), u.begin(), u.begin(),
+<span class="lineNum">     235 </span>                :<span class="lineNoCov">          0 :                       []( tk::real s, tk::real&amp; d ){ return d /= s; } );</span>
+<a name="236"><span class="lineNum">     236 </span>                :<span class="lineNoCov">          0 :       out.push_back( u );</span></a>
+<span class="lineNum">     237 </span>                :            :       std::transform( r.begin(), r.end(), v.begin(), v.begin(),
+<span class="lineNum">     238 </span>                :<span class="lineNoCov">          0 :                       []( tk::real s, tk::real&amp; d ){ return d /= s; } );</span>
+<a name="239"><span class="lineNum">     239 </span>                :<span class="lineNoCov">          0 :       out.push_back( v );</span></a>
+<span class="lineNum">     240 </span>                :            :       std::transform( r.begin(), r.end(), w.begin(), w.begin(),
+<span class="lineNum">     241 </span>                :<span class="lineNoCov">          0 :                       []( tk::real s, tk::real&amp; d ){ return d /= s; } );</span>
+<a name="242"><span class="lineNum">     242 </span>                :<span class="lineNoCov">          0 :       out.push_back( w );</span></a>
+<span class="lineNum">     243 </span>                :            :       std::transform( r.begin(), r.end(), E.begin(), E.begin(),
+<span class="lineNum">     244 </span>                :<span class="lineNoCov">          0 :                       []( tk::real s, tk::real&amp; d ){ return d /= s; } );</span>
+<span class="lineNum">     245 </span>                :<span class="lineNoCov">          0 :       out.push_back( E );</span>
+<span class="lineNum">     246 </span>                :            : 
+<span class="lineNum">     247 </span>                :<span class="lineNoCov">          0 :       auto p = r;</span>
+<span class="lineNum">     248 </span>                :<span class="lineNoCov">          0 :       for (std::size_t i=0; i&lt;r.size(); ++i)</span>
+<span class="lineNum">     249 </span>                :<span class="lineNoCov">          0 :         p[i] = (g-1.0)*r[i]*(E[i] - (u[i]*u[i] + v[i]*v[i] + w[i]*w[i])/2.0);</span>
+<span class="lineNum">     250 </span>                :<span class="lineNoCov">          0 :       out.push_back( p );</span>
+<span class="lineNum">     251 </span>                :            : 
+<span class="lineNum">     252 </span>                :<span class="lineNoCov">          0 :       auto er = r, ee = r, ep = r, eu = r, ev = r, ew = r;</span>
+<span class="lineNum">     253 </span>                :<span class="lineNoCov">          0 :       for (std::size_t i=0; i&lt;r.size(); ++i) {</span>
+<span class="lineNum">     254 </span>                :<span class="lineNoCov">          0 :         auto s = solution( e, x[i], y[i], z[i], t );</span>
+<span class="lineNum">     255 </span>                :<span class="lineNoCov">          0 :         er[i] = std::pow( r[i] - s[0], 2.0 ) * vol[i] / V;</span>
+<span class="lineNum">     256 </span>                :<span class="lineNoCov">          0 :         ee[i] = std::pow( E[i] - s[4]/s[0], 2.0 ) * vol[i] / V;</span>
+<span class="lineNum">     257 </span>                :<span class="lineNoCov">          0 :         eu[i] = std::pow( u[i] - s[1]/s[0], 2.0 ) * vol[i] / V;</span>
+<span class="lineNum">     258 </span>                :<span class="lineNoCov">          0 :         ev[i] = std::pow( v[i] - s[2]/s[0], 2.0 ) * vol[i] / V;</span>
+<span class="lineNum">     259 </span>                :<span class="lineNoCov">          0 :         ew[i] = std::pow( w[i] - s[3]/s[0], 2.0 ) * vol[i] / V;</span>
+<span class="lineNum">     260 </span>                :<span class="lineNoCov">          0 :         auto ap = (g-1.0)*(s[4] - (s[1]*s[1] + s[2]*s[2] + s[3]*s[3])/2.0/s[0]);</span>
+<span class="lineNum">     261 </span>                :<span class="lineNoCov">          0 :         r[i] = s[0];</span>
+<span class="lineNum">     262 </span>                :<span class="lineNoCov">          0 :         u[i] = s[1]/s[0];</span>
+<span class="lineNum">     263 </span>                :<span class="lineNoCov">          0 :         v[i] = s[2]/s[0];</span>
+<span class="lineNum">     264 </span>                :<span class="lineNoCov">          0 :         w[i] = s[3]/s[0];</span>
+<span class="lineNum">     265 </span>                :<span class="lineNoCov">          0 :         E[i] = s[4]/s[0];</span>
+<span class="lineNum">     266 </span>                :<span class="lineNoCov">          0 :         p[i] = (g-1.0)*r[i]*(E[i] - (u[i]*u[i] + v[i]*v[i] + w[i]*w[i])/2.0);</span>
+<span class="lineNum">     267 </span>                :<span class="lineNoCov">          0 :         ep[i] = std::pow( ap - p[i], 2.0 ) * vol[i] / V;</span>
+<span class="lineNum">     268 </span>                :            :       }
+<span class="lineNum">     269 </span>                :            : 
+<span class="lineNum">     270 </span>                :<span class="lineNoCov">          0 :       out.push_back( r );</span>
+<span class="lineNum">     271 </span>                :<span class="lineNoCov">          0 :       out.push_back( u );</span>
+<span class="lineNum">     272 </span>                :<span class="lineNoCov">          0 :       out.push_back( v );</span>
+<span class="lineNum">     273 </span>                :<span class="lineNoCov">          0 :       out.push_back( w );</span>
+<span class="lineNum">     274 </span>                :<span class="lineNoCov">          0 :       out.push_back( E );</span>
+<span class="lineNum">     275 </span>                :<span class="lineNoCov">          0 :       out.push_back( p );</span>
+<span class="lineNum">     276 </span>                :            : 
+<span class="lineNum">     277 </span>                :<span class="lineNoCov">          0 :       out.push_back( er );</span>
+<span class="lineNum">     278 </span>                :<span class="lineNoCov">          0 :       out.push_back( ee );</span>
+<span class="lineNum">     279 </span>                :<span class="lineNoCov">          0 :       out.push_back( ep );</span>
+<span class="lineNum">     280 </span>                :<span class="lineNoCov">          0 :       out.push_back( eu );</span>
+<span class="lineNum">     281 </span>                :<span class="lineNoCov">          0 :       out.push_back( ev );</span>
+<span class="lineNum">     282 </span>                :<span class="lineNoCov">          0 :       out.push_back( ew );</span>
+<span class="lineNum">     283 </span>                :            : 
+<span class="lineNum">     284 </span>                :<span class="lineNoCov">          0 :       return out;</span>
+<span class="lineNum">     285 </span>                :            :    }
+<span class="lineNum">     286 </span>                :            : 
+<a name="287"><span class="lineNum">     287 </span>                :            :     //! Return names of integral variables to be output to diagnostics file</a>
+<span class="lineNum">     288 </span>                :            :     //! \return Vector of strings labelling integral variables output
+<span class="lineNum">     289 </span>                :<span class="lineNoCov">          0 :     static std::vector&lt; std::string &gt; names()</span>
+<a name="290"><span class="lineNum">     290 </span>                :<span class="lineNoCov">          0 :     { return { &quot;r&quot;, &quot;ru&quot;, &quot;rv&quot;, &quot;rw&quot;, &quot;re&quot; }; }</span></a>
+<span class="lineNum">     291 </span>                :            : 
+<span class="lineNum">     292 </span>                :<span class="lineNoCov">          0 :     static ctr::ProblemType type() noexcept</span>
+<span class="lineNum">     293 </span>                :<span class="lineNoCov">          0 :     { return ctr::ProblemType::RAYLEIGH_TAYLOR; }</span>
+<span class="lineNum">     294 </span>                :            : };
+<span class="lineNum">     295 </span>                :            : 
+<span class="lineNum">     296 </span>                :            : } // inciter::
 <span class="lineNum">     297 </span>                :            : 
-<span class="lineNum">     298 </span>                :            : } // inciter::
-<span class="lineNum">     299 </span>                :            : 
-<span class="lineNum">     300 </span>                :            : #endif // CompFlowProblemRayleighTaylor_h
+<span class="lineNum">     298 </span>                :            : #endif // CompFlowProblemRayleighTaylor_h
 </pre>
       </td>
     </tr>

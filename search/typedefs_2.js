@@ -1,14 +1,13 @@
 var searchData=
 [
+  ['cartesian_5fproduct',['cartesian_product',['../namespacetk.html#a30c00988310413e9b96e131f8332b2b0',1,'tk']]],
   ['cgfactory',['CGFactory',['../namespaceinciter.html#acc148fbf6c6cfb1be76e9ba0ba2d93f8',1,'inciter']]],
-  ['charmutil_5fgroup',['CharmUtil_group',['../namespacetut.html#a42c61e17739df8995c7b35edabc08bce',1,'tut']]],
-  ['charmutil_5fobject',['CharmUtil_object',['../namespacetut.html#a7e3702639262b1ed0bab40300cd54261',1,'tut']]],
   ['child_5fid_5flist_5ft',['child_id_list_t',['../_a_m_r__types_8h.html#ab3ec9bebb0d5f9982ae67134070b6351',1,'AMR_types.h']]],
   ['clock',['clock',['../classtk_1_1_timer.html#ae2820e459eee7cd63045a42f6bb9ec76',1,'tk::Timer']]],
   ['code',['code',['../structtut_1_1_has__common_1_1yes_code.html#a42faa414927fbd6c8f34b2cb1326c329',1,'tut::Has_common::yesCode']]],
   ['compflowpdeparameters',['CompFlowPDEParameters',['../namespaceinciter_1_1ctr.html#a28008ad41d5c6c3471e44374c1458781',1,'inciter::ctr']]],
-  ['compflowphysics',['CompFlowPhysics',['../namespaceinciter_1_1cg.html#a61f3f82cd82b930f41b1ad1c3ae688cc',1,'inciter::cg::CompFlowPhysics()'],['../namespaceinciter_1_1dg.html#a0f67a7116d03cf10d9bf83e5a98c73cf',1,'inciter::dg::CompFlowPhysics()']]],
-  ['compflowproblems',['CompFlowProblems',['../namespaceinciter.html#abef96ac95adbfa8e4f9b3523753a47a5',1,'inciter']]],
+  ['compflowphysics',['CompFlowPhysics',['../namespaceinciter_1_1cg.html#a3cf151f40e10b539ff81ddf4b8c20bfc',1,'inciter::cg::CompFlowPhysics()'],['../namespaceinciter_1_1dg.html#a48aae69578ff19b5349ae54803d9a018',1,'inciter::dg::CompFlowPhysics()']]],
+  ['compflowproblems',['CompFlowProblems',['../namespaceinciter.html#aa370216795c23b96f7e19da3c245dfd7',1,'inciter']]],
   ['connect_5fstore',['connect_store',['../classtk_1_1_root_mesh_writer.html#ac1cc4fab579d44cba37e50b93c33bbb3',1,'tk::RootMeshWriter']]],
   ['const_5fiterator',['const_iterator',['../classtk_1_1_around.html#aa478016f52c2044967020823fb0667d9',1,'tk::Around']]],
   ['containerutil_5fgroup',['ContainerUtil_group',['../namespacetut.html#a08071c20b2c608c7d400e6a874d3e29d',1,'tut']]],

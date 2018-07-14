@@ -1,11 +1,6 @@
 var searchData=
 [
   ['main',['Main',['../class_main.html',1,'']]],
-  ['make_5flist',['make_list',['../structtk_1_1make__list.html',1,'tk']]],
-  ['make_5flist_3c_20t_20_3e',['make_list&lt; T &gt;',['../structtk_1_1make__list_3_01_t_01_4.html',1,'tk']]],
-  ['make_5flist_3c_20t_2c_20args_2e_2e_2e_20_3e',['make_list&lt; T, Args... &gt;',['../structtk_1_1make__list_3_01_t_00_01_args_8_8_8_01_4.html',1,'tk']]],
-  ['make_5flist_3c_3e',['make_list&lt;&gt;',['../structtk_1_1make__list_3_4.html',1,'tk']]],
-  ['make_5flist_5fcommon',['Make_list_common',['../structtut_1_1_make__list__common.html',1,'tut']]],
   ['marked_5frefinements_5fstore_5ft',['marked_refinements_store_t',['../class_a_m_r_1_1marked__refinements__store__t.html',1,'AMR']]],
   ['mass',['mass',['../structtag_1_1mass.html',1,'tag']]],
   ['massfracbeta',['massfracbeta',['../structwalker_1_1deck_1_1massfracbeta.html',1,'walker::deck::massfracbeta'],['../structtag_1_1massfracbeta.html',1,'tag::massfracbeta']]],
@@ -49,7 +44,7 @@ var searchData=
   ['mklrng_5fcommon',['MKLRNG_common',['../structtut_1_1_m_k_l_r_n_g__common.html',1,'tut']]],
   ['mkluniformmethod',['MKLUniformMethod',['../classtk_1_1ctr_1_1_m_k_l_uniform_method.html',1,'tk::ctr']]],
   ['mkluniformmethod_5fcommon',['MKLUniformMethod_common',['../structtut_1_1_m_k_l_uniform_method__common.html',1,'tut']]],
-  ['model',['Model',['../structinciter_1_1_riemann_solver_1_1_model.html',1,'inciter::RiemannSolver::Model&lt; T &gt;'],['../structwalker_1_1_diff_eq_1_1_model.html',1,'walker::DiffEq::Model&lt; T &gt;'],['../structtk_1_1_mesh_reader_1_1_model.html',1,'tk::MeshReader::Model&lt; T &gt;'],['../structinciter_1_1_c_g_p_d_e_1_1_model.html',1,'inciter::CGPDE::Model&lt; T &gt;'],['../structinciter_1_1_d_g_p_d_e_1_1_model.html',1,'inciter::DGPDE::Model&lt; T &gt;'],['../structtk_1_1_r_n_g_1_1_model.html',1,'tk::RNG::Model&lt; T &gt;'],['../structrngtest_1_1_battery_1_1_model.html',1,'rngtest::Battery::Model&lt; T &gt;'],['../structrngtest_1_1_stat_test_1_1_model.html',1,'rngtest::StatTest::Model&lt; T &gt;'],['../structtut_1_1_factory__common_1_1_v_base_1_1_model.html',1,'tut::Factory_common::VBase::Model&lt; T &gt;'],['../structtut_1_1_v_base_1_1_model.html',1,'tut::VBase::Model&lt; T &gt;']]],
+  ['model',['Model',['../structtut_1_1_v_base_1_1_model.html',1,'tut::VBase::Model&lt; T &gt;'],['../structwalker_1_1_diff_eq_1_1_model.html',1,'walker::DiffEq::Model&lt; T &gt;'],['../structtk_1_1_mesh_reader_1_1_model.html',1,'tk::MeshReader::Model&lt; T &gt;'],['../structinciter_1_1_c_g_p_d_e_1_1_model.html',1,'inciter::CGPDE::Model&lt; T &gt;'],['../structinciter_1_1_riemann_solver_1_1_model.html',1,'inciter::RiemannSolver::Model&lt; T &gt;'],['../structinciter_1_1_d_g_p_d_e_1_1_model.html',1,'inciter::DGPDE::Model&lt; T &gt;'],['../structtk_1_1_r_n_g_1_1_model.html',1,'tk::RNG::Model&lt; T &gt;'],['../structrngtest_1_1_battery_1_1_model.html',1,'rngtest::Battery::Model&lt; T &gt;'],['../structrngtest_1_1_stat_test_1_1_model.html',1,'rngtest::StatTest::Model&lt; T &gt;'],['../structtut_1_1_factory__common_1_1_v_base_1_1_model.html',1,'tut::Factory_common::VBase::Model&lt; T &gt;']]],
   ['montecarlo',['montecarlo',['../structtag_1_1montecarlo.html',1,'tag']]],
   ['morton_5fid_5fgenerator_5ft',['morton_id_generator_t',['../class_a_m_r_1_1morton__id__generator__t.html',1,'AMR']]],
   ['msg',['Msg',['../structtk_1_1_msg.html',1,'tk::Msg&lt; T &gt;'],['../structtk_1_1grm_1_1msg.html',1,'tk::grm::msg&lt; MsgType, MsgKey &gt;']]],
