@@ -37,6 +37,7 @@ var searchData=
   ['check_5fgaussians',['check_gaussians',['../structtk_1_1grm_1_1check__gaussians.html',1,'tk::grm']]],
   ['check_5finciter',['check_inciter',['../structtk_1_1grm_1_1check__inciter.html',1,'tk::grm']]],
   ['check_5finit',['check_init',['../structtk_1_1grm_1_1check__init.html',1,'tk::grm']]],
+  ['check_5fmixmassfracbeta',['check_mixmassfracbeta',['../structtk_1_1grm_1_1check__mixmassfracbeta.html',1,'tk::grm']]],
   ['check_5fposition',['check_position',['../structtk_1_1grm_1_1check__position.html',1,'tk::grm']]],
   ['check_5fsamples',['check_samples',['../structtk_1_1grm_1_1check__samples.html',1,'tk::grm']]],
   ['check_5fspikes',['check_spikes',['../structtk_1_1grm_1_1check__spikes.html',1,'tk::grm']]],

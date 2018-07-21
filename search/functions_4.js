@@ -13,7 +13,6 @@ var searchData=
   ['edgegrad',['edgegrad',['../namespacetk.html#a8deceeef86846672dd872bb7e975bb13',1,'tk']]],
   ['edgeref',['edgeref',['../classinciter_1_1_inciter_print.html#a38ab0d7871719fe3c8129936f9229842',1,'inciter::InciterPrint']]],
   ['elem_5fmap',['elem_map',['../classtk_1_1_uns_mesh.html#a0ce5c8811061b29f9dac0adc29575225',1,'tk::UnsMesh::elem_map() const noexcept'],['../classtk_1_1_uns_mesh.html#a7865f5ac7d9f5f6340e1a37d5380ccd1',1,'tk::UnsMesh::elem_map() noexcept']]],
-  ['elemcommmaps',['elemCommMaps',['../namespacetk.html#a5983201a427244339722ca9a4e809f48',1,'tk']]],
   ['element',['element',['../namespacetk.html#a928d7dd976738fc1e3de5f4ee6147140',1,'tk']]],
   ['end',['end',['../classtk_1_1_progress.html#a8e18e9fbd65b6afee1bd75d50f14cd00',1,'tk::Progress::end()'],['../classtk_1_1_around.html#a95229c569a99b5737fa68bcfce201cdf',1,'tk::Around::end()']]],
   ['endpart',['endpart',['../classtk_1_1_print.html#af76e5891e1f0c5c908f9a6271e97362e',1,'tk::Print']]],

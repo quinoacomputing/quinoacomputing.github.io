@@ -28,7 +28,6 @@ var searchData=
   ['edgeset',['EdgeSet',['../classinciter_1_1_refiner.html#acc6b81c6f3ad0831d0f64739528fb212',1,'inciter::Refiner::EdgeSet()'],['../classtk_1_1_uns_mesh.html#a564c87d50c1611fff1c6d045bc07a3b4',1,'tk::UnsMesh::EdgeSet()']]],
   ['elem',['elem',['../structtag_1_1elem.html',1,'tag::elem'],['../namespacetk_1_1ctr.html#a62dbe24719817137376179bca05d0112ad3e3387a4f355276d41eefead65395c5',1,'tk::ctr::ELEM()']]],
   ['elem_5fmap',['elem_map',['../classtk_1_1_uns_mesh.html#a0ce5c8811061b29f9dac0adc29575225',1,'tk::UnsMesh::elem_map() const noexcept'],['../classtk_1_1_uns_mesh.html#a7865f5ac7d9f5f6340e1a37d5380ccd1',1,'tk::UnsMesh::elem_map() noexcept']]],
-  ['elemcommmaps',['elemCommMaps',['../namespacetk.html#a5983201a427244339722ca9a4e809f48',1,'tk']]],
   ['elemdiagnostics',['ElemDiagnostics',['../classinciter_1_1_elem_diagnostics.html',1,'inciter']]],
   ['elemdiagnostics_2ec',['ElemDiagnostics.C',['../_elem_diagnostics_8_c.html',1,'']]],
   ['elemdiagnostics_2eh',['ElemDiagnostics.h',['../_elem_diagnostics_8h.html',1,'']]],

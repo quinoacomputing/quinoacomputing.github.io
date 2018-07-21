@@ -25,8 +25,6 @@ var searchData=
   ['collector_2eci',['collector.ci',['../collector_8ci.html',1,'']]],
   ['collector_2edef_2eh',['collector.def.h',['../collector_8def_8h.html',1,'']]],
   ['collector_2eh',['Collector.h',['../_collector_8h.html',1,'']]],
-  ['commmap_2ec',['CommMap.C',['../_comm_map_8_c.html',1,'']]],
-  ['commmap_2eh',['CommMap.h',['../_comm_map_8h.html',1,'']]],
   ['commongrammar_2eh',['CommonGrammar.h',['../_common_grammar_8h.html',1,'']]],
   ['components_2eh',['Components.h',['../_inciter_2_components_8h.html',1,'(Global Namespace)'],['../_walker_2_components_8h.html',1,'(Global Namespace)']]],
   ['concurrency_2edox',['concurrency.dox',['../concurrency_8dox.html',1,'']]],
