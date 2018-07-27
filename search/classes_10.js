@@ -26,7 +26,7 @@ var searchData=
   ['register_5finciter_5feq',['register_inciter_eq',['../structtk_1_1grm_1_1register__inciter__eq.html',1,'tk::grm']]],
   ['registercg',['registerCG',['../structinciter_1_1_p_d_e_stack_1_1register_c_g.html',1,'inciter::PDEStack']]],
   ['registerdg',['registerDG',['../structinciter_1_1_p_d_e_stack_1_1register_d_g.html',1,'inciter::PDEStack']]],
-  ['registerdiffeq',['registerDiffEq',['../structwalker_1_1_diff_eq_stack_1_1register_diff_eq.html',1,'walker::DiffEqStack']]],
+  ['registerdiffeq',['registerDiffEq',['../structwalker_1_1register_diff_eq.html',1,'walker']]],
   ['registerpde',['registerPDE',['../structinciter_1_1_p_d_e_stack_1_1register_p_d_e.html',1,'inciter::PDEStack']]],
   ['registerpde_3c_20eq_2c_20cgfactory_2c_20cgpde_20_3e',['registerPDE&lt; Eq, CGFactory, CGPDE &gt;',['../structinciter_1_1_p_d_e_stack_1_1register_p_d_e.html',1,'inciter::PDEStack']]],
   ['registerpde_3c_20eq_2c_20dgfactory_2c_20dgpde_20_3e',['registerPDE&lt; Eq, DGFactory, DGPDE &gt;',['../structinciter_1_1_p_d_e_stack_1_1register_p_d_e.html',1,'inciter::PDEStack']]],

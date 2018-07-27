@@ -35,7 +35,7 @@ var searchData=
   ['betacoeffpolicy_2eh',['BetaCoeffPolicy.h',['../_beta_coeff_policy_8h.html',1,'']]],
   ['betaparameters',['BetaParameters',['../namespacewalker_1_1ctr.html#a4ff97fe7eb616c1e73f786118999700d',1,'walker::ctr']]],
   ['betapdf',['betapdf',['../structtag_1_1betapdf.html',1,'tag']]],
-  ['betapdfs',['betapdfs',['../classwalker_1_1_diff_eq_stack.html#afb606646f3e80ee1635342306b2136d1',1,'walker::DiffEqStack']]],
+  ['betapdfs',['betapdfs',['../namespacewalker.html#a26ae7267016e1e9a26c6bceeb130e970',1,'walker']]],
   ['betax',['betax',['../structtag_1_1betax.html',1,'tag']]],
   ['betay',['betay',['../structtag_1_1betay.html',1,'tag']]],
   ['betaz',['betaz',['../structtag_1_1betaz.html',1,'tag']]],

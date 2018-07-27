@@ -30,6 +30,7 @@ var searchData=
   ['diagwriter_2eh',['DiagWriter.h',['../_diag_writer_8h.html',1,'']]],
   ['diffeq_2edox',['diffeq.dox',['../diffeq_8dox.html',1,'']]],
   ['diffeq_2eh',['DiffEq.h',['../_control_2_walker_2_options_2_diff_eq_8h.html',1,'(Global Namespace)'],['../_diff_eq_2_diff_eq_8h.html',1,'(Global Namespace)']]],
+  ['diffeqfactory_2eh',['DiffEqFactory.h',['../_diff_eq_factory_8h.html',1,'']]],
   ['diffeqstack_2ec',['DiffEqStack.C',['../_diff_eq_stack_8_c.html',1,'']]],
   ['diffeqstack_2eh',['DiffEqStack.h',['../_diff_eq_stack_8h.html',1,'']]],
   ['dirichlet_2edox',['Dirichlet.dox',['../_dirichlet_8dox.html',1,'']]],
