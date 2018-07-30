@@ -24,7 +24,7 @@
           </tr>
           <tr>
             <td class="headerItem">Commit:</td>
-            <td class="headerValue"><a href="https://github.com/quinoacomputing/quinoa/commit/c41b2f7">Quinoa_v0.2-989-gc41b2f7</a></td>
+            <td class="headerValue"><a href="https://github.com/quinoacomputing/quinoa/commit/2407f23">Quinoa_v0.2-1023-g2407f23</a></td>
             <td></td>
             <td class="headerItem">Lines:</td>
             <td class="headerCovTableEntry">75</td>
@@ -33,7 +33,7 @@
           </tr>
           <tr>
             <td class="headerItem">Date:</td>
-            <td class="headerValue">2018-07-27 07:15:06</td>
+            <td class="headerValue">2018-07-29 13:44:44</td>
             <td></td>
             <td class="headerItem">Functions:</td>
             <td class="headerCovTableEntry">10</td>
@@ -83,228 +83,230 @@
 <span class="lineNum">       9 </span>                :            : #ifndef MKLRNG_h
 <span class="lineNum">      10 </span>                :            : #define MKLRNG_h
 <span class="lineNum">      11 </span>                :            : 
-<span class="lineNum">      12 </span>                :            : #include &lt;mkl_vsl_types.h&gt;
+<span class="lineNum">      12 </span>                :            : #include &lt;mkl_vsl.h&gt;
 <span class="lineNum">      13 </span>                :            : 
 <span class="lineNum">      14 </span>                :            : #include &quot;Exception.h&quot;
-<span class="lineNum">      15 </span>                :            : 
-<span class="lineNum">      16 </span>                :            : namespace tk {
+<span class="lineNum">      15 </span>                :            : #include &quot;Make_unique.h&quot;
+<span class="lineNum">      16 </span>                :            : #include &quot;Keywords.h&quot;
 <span class="lineNum">      17 </span>                :            : 
-<span class="lineNum">      18 </span>                :            : //! MKL-based random number generator used polymorphically with tk::RNG
-<span class="lineNum">      19 </span>                :            : class MKLRNG {
-<span class="lineNum">      20 </span>                :            : 
-<span class="lineNum">      21 </span>                :            :     using ncomp_t = kw::ncomp::info::expect::type;    
+<span class="lineNum">      18 </span>                :            : namespace tk {
+<span class="lineNum">      19 </span>                :            : 
+<span class="lineNum">      20 </span>                :            : //! MKL-based random number generator used polymorphically with tk::RNG
+<span class="lineNum">      21 </span>                :            : class MKLRNG {
 <span class="lineNum">      22 </span>                :            : 
-<span class="lineNum">      23 </span>                :            :   public:
-<span class="lineNum">      24 </span>                :            :     //! Constructor
-<span class="lineNum">      25 </span>                :            :     //! \param[in] n Initialize RNG using this many independent streams
-<span class="lineNum">      26 </span>                :            :     //! \param[in] brng Index of the basic generator to initialize the stream
-<span class="lineNum">      27 </span>                :            :     //! \param[in] seed RNG seed
-<span class="lineNum">      28 </span>                :            :     //! \param[in] uniform_method MKL ID of the method to use for uniform RNGs
-<span class="lineNum">      29 </span>                :            :     //! \param[in] gaussian_method MKL ID of the method to use for Gaussian RNGs
-<a name="30"><span class="lineNum">      30 </span>                :            :     //! \param[in] beta_method MKL ID of the method to use for beta RNGs</a>
-<span class="lineNum">      31 </span>                :            :     //! \param[in] gamma_method MKL ID of the method to use for gamma RNGs
-<span class="lineNum">      32 </span>                :<span class="lineCov">        100 :     explicit MKLRNG( int n = 1,</span>
-<span class="lineNum">      33 </span>                :            :                      int brng = VSL_BRNG_MCG59,
-<span class="lineNum">      34 </span>                :            :                      unsigned int seed = 0,
-<span class="lineNum">      35 </span>                :            :                      int uniform_method = VSL_RNG_METHOD_UNIFORM_STD,
-<span class="lineNum">      36 </span>                :            :                      int gaussian_method = VSL_RNG_METHOD_GAUSSIAN_BOXMULLER,
-<span class="lineNum">      37 </span>                :            :                      int beta_method = VSL_RNG_METHOD_BETA_CJA,
-<span class="lineNum">      38 </span>                :            :                      int gamma_method = VSL_RNG_METHOD_GAMMA_GNORM ) :
-<span class="lineNum">      39 </span>                :            :       m_brng( brng ),
-<span class="lineNum">      40 </span>                :            :       m_seed( seed ),
-<span class="lineNum">      41 </span>                :            :       m_uniform_method( uniform_method ),
-<span class="lineNum">      42 </span>                :            :       m_gaussian_method( gaussian_method ),
-<span class="lineNum">      43 </span>                :            :       m_beta_method( beta_method ),
-<span class="lineNum">      44 </span>                :            :       m_gamma_method( gamma_method ),
-<span class="lineNum">      45 </span>                :            :       m_nthreads( n ),
-<span class="lineNum">      46 </span>                :<span class="lineCov">        100 :       m_stream()</span>
-<span class="lineNum">      47 </span>                :            :     {
-<span class="lineNum">      48 </span>                :            :       Assert( n &gt; 0, &quot;Need at least one thread&quot; );
-<span class="lineNum">      49 </span>                :            :       Assert( brng &gt; 0, &quot;Basic RNG MKL parameter must be positive&quot; );
-<span class="lineNum">      50 </span>                :            :       // Allocate array of stream-pointers for threads
-<span class="lineNum">      51 </span>        [<span class="branchCov" title="Branch 1 was taken 100 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">        100 :       m_stream = tk::make_unique&lt; VSLStreamStatePtr[] &gt;(</span>
-<span class="lineNum">      52 </span>                :            :                    static_cast&lt;std::size_t&gt;(n) );
-<span class="lineNum">      53 </span>                :            :       // Initialize thread-streams for block-splitting. These MKL VSL functions
-<span class="lineNum">      54 </span>                :            :       // dynamically allocate memory, so these calls being in a constructor are
-<span class="lineNum">      55 </span>                :            :       // a potential memory leak hazard in the presence of exceptions. However,
-<span class="lineNum">      56 </span>                :            :       // thankfully, the MKL functions below only emit warnings if they
-<span class="lineNum">      57 </span>                :            :       // encounter errors and always continue. As a result, the constructor
-<span class="lineNum">      58 </span>                :            :       // finishes, the MKLRNG object gets created, so the destructor will also
-<span class="lineNum">      59 </span>                :            :       // get called when leaving scope.
-<span class="lineNum">      60 </span>        [<span class="branchCov" title="Branch 0 was taken 97 times"> + </span><span class="branchCov" title="Branch 1 was taken 3 times"> + </span>]:<span class="lineCov">        100 :       if (n == 1)</span>
-<span class="lineNum">      61 </span>[<span class="branchCov" title="Branch 1 was taken 3 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 4 was taken 3 times"> + </span><span class="branchNoCov" title="Branch 5 was not taken"> - </span>]:<span class="lineCov">          3 :         errchk( vslNewStream( &amp;m_stream[0], brng, seed ) );</span>
-<span class="lineNum">      62 </span>                :            :       else
-<span class="lineNum">      63 </span>        [<span class="branchCov" title="Branch 0 was taken 385 times"> + </span><span class="branchCov" title="Branch 1 was taken 96 times"> + </span>]:<span class="lineCov">        481 :         for (int i=0; i&lt;n; ++i) {</span>
-<span class="lineNum">      64 </span>                :<span class="lineCov">        385 :           auto I = static_cast&lt; std::size_t &gt;( i );</span>
-<span class="lineNum">      65 </span>[<span class="branchCov" title="Branch 1 was taken 385 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 4 was taken 385 times"> + </span><span class="branchNoCov" title="Branch 5 was not taken"> - </span>]:<span class="lineCov">        385 :           errchk( vslNewStream( &amp;m_stream[I], brng, seed ) );</span>
-<span class="lineNum">      66 </span>[<span class="branchCov" title="Branch 1 was taken 385 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 4 was taken 384 times"> + </span><span class="branchCov" title="Branch 5 was taken 1 time"> + </span>]:<span class="lineCov">        385 :           errchk( vslLeapfrogStream( m_stream[I], i, n ) );</span>
-<span class="lineNum">      67 </span>                :            :         }
-<span class="lineNum">      68 </span>                :<span class="lineCov">         99 :     }</span>
-<a name="69"><span class="lineNum">      69 </span>                :            : </a>
-<span class="lineNum">      70 </span>                :            :     //! Destructor
-<span class="lineNum">      71 </span>                :<span class="lineCov">        724 :     ~MKLRNG() noexcept { deleteStreams(); }</span>
-<span class="lineNum">      72 </span>                :            : 
-<span class="lineNum">      73 </span>                :            :     //! Uniform RNG: Generate uniform random numbers
-<span class="lineNum">      74 </span>                :            :     //! \param[in] tid Thread (or more precisely stream) ID
-<a name="75"><span class="lineNum">      75 </span>                :            :     //! \param[in] num Number of RNGs to generate</a>
-<span class="lineNum">      76 </span>                :            :     //! \param[in,out] r Pointer to memory to write the random numbers to
-<span class="lineNum">      77 </span>                :<span class="lineCov">         12 :     void uniform( int tid, ncomp_t num, double* r ) const {</span>
-<span class="lineNum">      78 </span>                :            :       vdRngUniform( m_uniform_method,
-<span class="lineNum">      79 </span>                :<span class="lineCov">         12 :                     m_stream[ static_cast&lt;std::size_t&gt;(tid) ],</span>
-<span class="lineNum">      80 </span>                :            :                     static_cast&lt; long long &gt;( num ),
-<span class="lineNum">      81 </span>                :            :                     r,
-<span class="lineNum">      82 </span>                :<span class="lineCov">         12 :                     0.0, 1.0 );</span>
-<span class="lineNum">      83 </span>                :<span class="lineCov">         12 :     }</span>
-<span class="lineNum">      84 </span>                :            : 
-<span class="lineNum">      85 </span>                :            :     //! Gaussian RNG: Generate Gaussian random numbers
-<span class="lineNum">      86 </span>                :            :     //! \param[in] tid Thread (or more precisely stream) ID
-<a name="87"><span class="lineNum">      87 </span>                :            :     //! \param[in] num Number of RNGs to generate</a>
-<span class="lineNum">      88 </span>                :            :     //! \param[in,out] r Pointer to memory to write the random numbers to
-<span class="lineNum">      89 </span>                :<span class="lineCov">         89 :     void gaussian( int tid, ncomp_t num, double* r ) const {</span>
-<span class="lineNum">      90 </span>                :            :       vdRngGaussian( m_gaussian_method,
-<span class="lineNum">      91 </span>                :<span class="lineCov">         89 :                      m_stream[ static_cast&lt;std::size_t&gt;(tid) ],</span>
-<span class="lineNum">      92 </span>                :            :                      static_cast&lt; long long &gt;( num ),
-<span class="lineNum">      93 </span>                :            :                      r,
-<span class="lineNum">      94 </span>                :<span class="lineCov">         89 :                      0.0, 1.0 );</span>
-<span class="lineNum">      95 </span>                :<span class="lineCov">         89 :     }</span>
-<span class="lineNum">      96 </span>                :            : 
-<span class="lineNum">      97 </span>                :            :     //! Beta RNG: Generate beta random numbers
-<span class="lineNum">      98 </span>                :            :     //! \param[in] tid Thread (or more precisely stream) ID
-<span class="lineNum">      99 </span>                :            :     //! \param[in] num Number of RNGs to generate
-<span class="lineNum">     100 </span>                :            :     //! \param[in] p First beta shape parameter
-<span class="lineNum">     101 </span>                :            :     //! \param[in] q Second beta shape parameter
-<span class="lineNum">     102 </span>                :            :     //! \param[in] a Beta displacement parameter
-<span class="lineNum">     103 </span>                :            :     //! \param[in] b Beta scale factor
-<span class="lineNum">     104 </span>                :            :     //! \param[in,out] r Pointer to memory to write the random numbers to
-<span class="lineNum">     105 </span>                :            :     void beta( int tid, ncomp_t num, double p, double q, double a, double b,
-<span class="lineNum">     106 </span>                :            :                double* r ) const
-<span class="lineNum">     107 </span>                :            :     {
-<span class="lineNum">     108 </span>                :            :       vdRngBeta( m_beta_method,
-<span class="lineNum">     109 </span>                :<span class="lineCov">         32 :                  m_stream[ static_cast&lt;std::size_t&gt;(tid) ],</span>
-<span class="lineNum">     110 </span>                :            :                  static_cast&lt; long long &gt;( num ),
-<span class="lineNum">     111 </span>                :            :                  r,
-<span class="lineNum">     112 </span>[<span class="branchCov" title="Branch 2 was taken 12 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>][<span class="branchCov" title="Branch 5 was taken 12 times"> + </span><span class="branchNoCov" title="Branch 6 was not taken"> - </span>]:<span class="lineCov">         32 :                  p, q, a, b );</span>
-<span class="lineNum">     113 </span>                :            :     }
-<span class="lineNum">     114 </span>                :            : 
-<span class="lineNum">     115 </span>                :            :     //! Gamma RNG: Generate gamma random numbers
-<span class="lineNum">     116 </span>                :            :     //! \param[in] tid Thread (or more precisely stream) ID
-<span class="lineNum">     117 </span>                :            :     //! \param[in] num Number of RNGs to generate
-<span class="lineNum">     118 </span>                :            :     //! \param[in] a Gamma shape parameter
-<span class="lineNum">     119 </span>                :            :     //! \param[in] b Gamma scale factor
-<span class="lineNum">     120 </span>                :            :     //! \param[in,out] r Pointer to memory to write the random numbers to
-<span class="lineNum">     121 </span>                :            :     void gamma( int tid, ncomp_t num, double a, double b, double* r ) const
-<span class="lineNum">     122 </span>                :            :     {
-<span class="lineNum">     123 </span>                :            :       vdRngGamma( m_beta_method,
-<span class="lineNum">     124 </span>                :<span class="lineNoCov">          0 :                   m_stream[ static_cast&lt;std::size_t&gt;(tid) ],</span>
-<span class="lineNum">     125 </span>                :            :                   static_cast&lt; long long &gt;( num ),
-<span class="lineNum">     126 </span>                :            :                   r,
-<span class="lineNum">     127 </span>                :<span class="lineNoCov">          0 :                   a, 0.0, b );  // displacement = 0.0</span>
-<span class="lineNum">     128 </span>                :            :     }
-<a name="129"><span class="lineNum">     129 </span>                :            : </a>
-<span class="lineNum">     130 </span>                :            :     //! Copy assignment
-<span class="lineNum">     131 </span>                :<span class="lineCov">         19 :     MKLRNG&amp; operator=( const MKLRNG&amp; x ) {</span>
-<span class="lineNum">     132 </span>                :<span class="lineCov">         19 :       m_brng = x.m_brng;</span>
-<span class="lineNum">     133 </span>                :<span class="lineCov">         19 :       m_seed = x.m_seed;</span>
-<span class="lineNum">     134 </span>                :<span class="lineCov">         19 :       m_uniform_method = x.m_uniform_method;</span>
-<span class="lineNum">     135 </span>                :<span class="lineCov">         19 :       m_gaussian_method = x.m_gaussian_method;</span>
-<span class="lineNum">     136 </span>                :<span class="lineCov">         19 :       m_beta_method = x.m_beta_method;</span>
-<span class="lineNum">     137 </span>                :<span class="lineCov">         19 :       m_gamma_method = x.m_gamma_method;</span>
-<span class="lineNum">     138 </span>                :<span class="lineCov">         19 :       m_nthreads = x.m_nthreads;</span>
-<span class="lineNum">     139 </span>                :<span class="lineCov">         19 :       m_stream = tk::make_unique&lt; VSLStreamStatePtr[] &gt;(</span>
-<span class="lineNum">     140 </span>                :            :                    static_cast&lt;std::size_t&gt;(x.m_nthreads) );
-<span class="lineNum">     141 </span>        [<span class="branchCov" title="Branch 0 was taken 15 times"> + </span><span class="branchCov" title="Branch 1 was taken 4 times"> + </span>]:<span class="lineCov">         19 :       if (m_nthreads == 1)</span>
-<span class="lineNum">     142 </span>                :<span class="lineCov">          4 :         errchk( vslNewStream( &amp;m_stream[0], x.m_brng, x.m_seed ) );</span>
-<span class="lineNum">     143 </span>                :            :       else
-<span class="lineNum">     144 </span>        [<span class="branchCov" title="Branch 0 was taken 60 times"> + </span><span class="branchCov" title="Branch 1 was taken 15 times"> + </span>]:<span class="lineCov">         75 :         for (int i=0; i&lt;x.m_nthreads; ++i) {</span>
-<span class="lineNum">     145 </span>                :<span class="lineCov">         60 :           auto I = static_cast&lt; std::size_t &gt;( i );</span>
-<span class="lineNum">     146 </span>                :<span class="lineCov">         60 :           errchk( vslNewStream( &amp;m_stream[I], x.m_brng, x.m_seed ) );</span>
-<span class="lineNum">     147 </span>                :<span class="lineCov">         60 :           errchk( vslLeapfrogStream( m_stream[I], i, x.m_nthreads ) );</span>
-<span class="lineNum">     148 </span>                :            :         }
-<span class="lineNum">     149 </span>                :<span class="lineCov">         19 :       return *this;</span>
-<span class="lineNum">     150 </span>                :            :     }
-<a name="151"><span class="lineNum">     151 </span>                :            : </a>
-<span class="lineNum">     152 </span>                :            :     //! Copy constructor: in terms of copy assignment
-<span class="lineNum">     153 </span>        [<span class="branchCov" title="Branch 1 was taken 16 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">         16 :     MKLRNG( const MKLRNG&amp; x ) { operator=(x); }</span>
-<a name="154"><span class="lineNum">     154 </span>                :            : </a>
-<span class="lineNum">     155 </span>                :            :     //! Move assignment
-<span class="lineNum">     156 </span>                :<span class="lineCov">        247 :     MKLRNG&amp; operator=( MKLRNG&amp;&amp; x ) {</span>
-<span class="lineNum">     157 </span>                :<span class="lineCov">        247 :       deleteStreams();</span>
-<span class="lineNum">     158 </span>                :<span class="lineCov">        247 :       m_brng = x.m_brng;</span>
-<span class="lineNum">     159 </span>                :<span class="lineCov">        247 :       m_seed = x.m_seed;</span>
-<span class="lineNum">     160 </span>                :<span class="lineCov">        247 :       m_uniform_method = x.m_uniform_method;</span>
-<span class="lineNum">     161 </span>                :<span class="lineCov">        247 :       m_gaussian_method = x.m_gaussian_method;</span>
-<span class="lineNum">     162 </span>                :<span class="lineCov">        247 :       m_beta_method = x.m_beta_method;</span>
-<span class="lineNum">     163 </span>                :<span class="lineCov">        247 :       m_gamma_method = x.m_gamma_method;</span>
-<span class="lineNum">     164 </span>                :<span class="lineCov">        247 :       m_nthreads = x.m_nthreads;</span>
-<span class="lineNum">     165 </span>                :<span class="lineCov">        247 :       m_stream = tk::make_unique&lt; VSLStreamStatePtr[] &gt;(</span>
-<span class="lineNum">     166 </span>                :            :                    static_cast&lt;std::size_t&gt;(x.m_nthreads) );
-<span class="lineNum">     167 </span>        [<span class="branchCov" title="Branch 0 was taken 985 times"> + </span><span class="branchCov" title="Branch 1 was taken 247 times"> + </span>]:<span class="lineCov">       1232 :       for (int i=0; i&lt;x.m_nthreads; ++i) {</span>
-<span class="lineNum">     168 </span>                :<span class="lineCov">        985 :         auto I = static_cast&lt; std::size_t &gt;( i );</span>
-<span class="lineNum">     169 </span>                :<span class="lineCov">        985 :         m_stream[I] = x.m_stream[I];</span>
-<span class="lineNum">     170 </span>                :<span class="lineCov">        985 :         x.m_stream[I] = nullptr;</span>
-<span class="lineNum">     171 </span>                :            :       }
-<span class="lineNum">     172 </span>                :<span class="lineCov">        247 :       x.m_brng = 0;</span>
-<span class="lineNum">     173 </span>                :<span class="lineCov">        247 :       x.m_seed = 0;</span>
-<span class="lineNum">     174 </span>                :<span class="lineCov">        247 :       x.m_uniform_method = 0;</span>
-<span class="lineNum">     175 </span>                :<span class="lineCov">        247 :       x.m_gaussian_method = 0;</span>
-<span class="lineNum">     176 </span>                :<span class="lineCov">        247 :       x.m_beta_method = 0;</span>
-<span class="lineNum">     177 </span>                :<span class="lineCov">        247 :       x.m_gamma_method = 0;</span>
-<span class="lineNum">     178 </span>                :<span class="lineCov">        247 :       x.m_nthreads = 0;</span>
-<span class="lineNum">     179 </span>                :            :       x.m_stream.reset( nullptr );
-<span class="lineNum">     180 </span>                :<span class="lineCov">        247 :       return *this;</span>
-<span class="lineNum">     181 </span>                :            :     }
-<a name="182"><span class="lineNum">     182 </span>                :            : </a>
-<span class="lineNum">     183 </span>                :            :     //! Move constructor: in terms of move assignment
-<span class="lineNum">     184 </span>                :<span class="lineCov">        247 :     MKLRNG( MKLRNG&amp;&amp; x ) :</span>
-<span class="lineNum">     185 </span>                :            :       m_brng( 0 ),
-<span class="lineNum">     186 </span>                :            :       m_seed( 0 ),
-<span class="lineNum">     187 </span>                :            :       m_uniform_method( 0 ),
-<span class="lineNum">     188 </span>                :            :       m_gaussian_method( 0 ),
-<span class="lineNum">     189 </span>                :            :       m_beta_method( 0 ),
-<span class="lineNum">     190 </span>                :            :       m_gamma_method( 0 ),
-<span class="lineNum">     191 </span>                :            :       m_nthreads( 0 ),
-<span class="lineNum">     192 </span>                :<span class="lineCov">        247 :       m_stream( nullptr )</span>
-<span class="lineNum">     193 </span>        [<span class="branchCov" title="Branch 1 was taken 247 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">        247 :     { *this = std::move(x); }</span>
-<a name="194"><span class="lineNum">     194 </span>                :            : </a>
-<span class="lineNum">     195 </span>                :            :     //! Accessor to the number of threads we operate on
-<span class="lineNum">     196 </span>                :<span class="lineNoCov">          0 :     std::size_t nthreads() const noexcept</span>
-<span class="lineNum">     197 </span>                :<span class="lineCov">         35 :     { return static_cast&lt; std::size_t &gt;( m_nthreads); }</span>
-<span class="lineNum">     198 </span>                :            : 
-<a name="199"><span class="lineNum">     199 </span>                :            :   private:</a>
-<span class="lineNum">     200 </span>                :            :     //! Delete all thread streams
-<span class="lineNum">     201 </span>                :<span class="lineCov">        609 :     void deleteStreams() {</span>
-<span class="lineNum">     202 </span>        [<span class="branchCov" title="Branch 0 was taken 442 times"> + </span><span class="branchCov" title="Branch 1 was taken 609 times"> + </span>]:<span class="lineCov">       1051 :       for (int i=0; i&lt;m_nthreads; ++i) {</span>
-<span class="lineNum">     203 </span>                :<span class="lineCov">        442 :         auto I = static_cast&lt; std::size_t &gt;( i );</span>
-<span class="lineNum">     204 </span>        [<span class="branchCov" title="Branch 0 was taken 442 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">        442 :         if (m_stream[I]) {</span>
-<span class="lineNum">     205 </span>                :<span class="lineCov">        442 :           errchk( vslDeleteStream( &amp;m_stream[I] ) );</span>
-<span class="lineNum">     206 </span>                :<span class="lineCov">        442 :           m_stream[I] = nullptr;</span>
-<span class="lineNum">     207 </span>                :            :         }
-<span class="lineNum">     208 </span>                :            :       }
-<span class="lineNum">     209 </span>                :<span class="lineCov">        609 :     }</span>
-<span class="lineNum">     210 </span>                :            : 
-<span class="lineNum">     211 </span>                :            :     //! MKL VSL error check
-<span class="lineNum">     212 </span>                :            :     //! \param[in] err MKL VSL error code as returned from MKL VSL functions
-<span class="lineNum">     213 </span>                :            :     //! \details This calls ErrChk(), i.e., it is not compiled away in Release
-<a name="214"><span class="lineNum">     214 </span>                :            :     //!   mode as an error here can result due to user input incompatible with</a>
-<span class="lineNum">     215 </span>                :            :     //!   the MKL library.
-<span class="lineNum">     216 </span>                :<span class="lineCov">       1339 :     void errchk( int err ) {</span>
-<span class="lineNum">     217 </span>[<span class="branchCov" title="Branch 2 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>][<span class="branchCov" title="Branch 5 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 6 was not taken"> - </span>]:<span class="lineCov">          3 :        ErrChk( err == VSL_STATUS_OK, &quot;MKL VSL Error Code: &quot; +</span>
-<span class="lineNum">     218 </span>        [<span class="branchCov" title="Branch 0 was taken 1 time"> + </span><span class="branchCov" title="Branch 1 was taken 1338 times"> + </span>]:<span class="lineCov">       1339 :                std::to_string(err) + &quot;, see mkl_vsl_defines.h for more info&quot; );</span>
-<span class="lineNum">     219 </span>                :<span class="lineCov">       1338 :     }</span>
-<span class="lineNum">     220 </span>                :            : 
-<span class="lineNum">     221 </span>                :            :     int m_brng;                                      //!&lt; MKL RNG id
-<span class="lineNum">     222 </span>                :            :     unsigned int m_seed;                             //!&lt; Seed
-<span class="lineNum">     223 </span>                :            :     int m_uniform_method;                            //!&lt; Uniform method to use
-<span class="lineNum">     224 </span>                :            :     int m_gaussian_method;                           //!&lt; Gaussian method to use
-<span class="lineNum">     225 </span>                :            :     int m_beta_method;                               //!&lt; Beta method to use
-<span class="lineNum">     226 </span>                :            :     int m_gamma_method;                              //!&lt; Gamma method to use
-<span class="lineNum">     227 </span>                :            :     int m_nthreads;                                  //!&lt; Number of threads
-<span class="lineNum">     228 </span>                :            :     std::unique_ptr&lt; VSLStreamStatePtr[] &gt; m_stream; //!&lt; Random number streams
-<span class="lineNum">     229 </span>                :            : };
-<span class="lineNum">     230 </span>                :            : 
-<span class="lineNum">     231 </span>                :            : } // tk::
+<span class="lineNum">      23 </span>                :            :     using ncomp_t = kw::ncomp::info::expect::type;    
+<span class="lineNum">      24 </span>                :            : 
+<span class="lineNum">      25 </span>                :            :   public:
+<span class="lineNum">      26 </span>                :            :     //! Constructor
+<span class="lineNum">      27 </span>                :            :     //! \param[in] n Initialize RNG using this many independent streams
+<span class="lineNum">      28 </span>                :            :     //! \param[in] brng Index of the basic generator to initialize the stream
+<span class="lineNum">      29 </span>                :            :     //! \param[in] seed RNG seed
+<span class="lineNum">      30 </span>                :            :     //! \param[in] uniform_method MKL ID of the method to use for uniform RNGs
+<span class="lineNum">      31 </span>                :            :     //! \param[in] gaussian_method MKL ID of the method to use for Gaussian RNGs
+<span class="lineNum">      32 </span>                :            :     //! \param[in] beta_method MKL ID of the method to use for beta RNGs
+<span class="lineNum">      33 </span>                :            :     //! \param[in] gamma_method MKL ID of the method to use for gamma RNGs
+<span class="lineNum">      34 </span>                :<span class="lineCov">        100 :     explicit MKLRNG( int n = 1,</span>
+<span class="lineNum">      35 </span>                :            :                      int brng = VSL_BRNG_MCG59,
+<span class="lineNum">      36 </span>                :            :                      unsigned int seed = 0,
+<span class="lineNum">      37 </span>                :            :                      int uniform_method = VSL_RNG_METHOD_UNIFORM_STD,
+<span class="lineNum">      38 </span>                :            :                      int gaussian_method = VSL_RNG_METHOD_GAUSSIAN_BOXMULLER,
+<span class="lineNum">      39 </span>                :            :                      int beta_method = VSL_RNG_METHOD_BETA_CJA,
+<span class="lineNum">      40 </span>                :            :                      int gamma_method = VSL_RNG_METHOD_GAMMA_GNORM ) :
+<span class="lineNum">      41 </span>                :            :       m_brng( brng ),
+<span class="lineNum">      42 </span>                :            :       m_seed( seed ),
+<span class="lineNum">      43 </span>                :            :       m_uniform_method( uniform_method ),
+<span class="lineNum">      44 </span>                :            :       m_gaussian_method( gaussian_method ),
+<span class="lineNum">      45 </span>                :            :       m_beta_method( beta_method ),
+<span class="lineNum">      46 </span>                :            :       m_gamma_method( gamma_method ),
+<span class="lineNum">      47 </span>                :            :       m_nthreads( n ),
+<span class="lineNum">      48 </span>                :<span class="lineCov">        100 :       m_stream()</span>
+<span class="lineNum">      49 </span>                :            :     {
+<span class="lineNum">      50 </span>                :            :       Assert( n &gt; 0, &quot;Need at least one thread&quot; );
+<span class="lineNum">      51 </span>                :            :       Assert( brng &gt; 0, &quot;Basic RNG MKL parameter must be positive&quot; );
+<span class="lineNum">      52 </span>                :            :       // Allocate array of stream-pointers for threads
+<span class="lineNum">      53 </span>        [<span class="branchCov" title="Branch 1 was taken 100 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">        100 :       m_stream = tk::make_unique&lt; VSLStreamStatePtr[] &gt;(</span>
+<span class="lineNum">      54 </span>                :            :                    static_cast&lt;std::size_t&gt;(n) );
+<span class="lineNum">      55 </span>                :            :       // Initialize thread-streams for block-splitting. These MKL VSL functions
+<span class="lineNum">      56 </span>                :            :       // dynamically allocate memory, so these calls being in a constructor are
+<span class="lineNum">      57 </span>                :            :       // a potential memory leak hazard in the presence of exceptions. However,
+<span class="lineNum">      58 </span>                :            :       // thankfully, the MKL functions below only emit warnings if they
+<span class="lineNum">      59 </span>                :            :       // encounter errors and always continue. As a result, the constructor
+<span class="lineNum">      60 </span>                :            :       // finishes, the MKLRNG object gets created, so the destructor will also
+<span class="lineNum">      61 </span>                :            :       // get called when leaving scope.
+<span class="lineNum">      62 </span>        [<span class="branchCov" title="Branch 0 was taken 97 times"> + </span><span class="branchCov" title="Branch 1 was taken 3 times"> + </span>]:<span class="lineCov">        100 :       if (n == 1)</span>
+<span class="lineNum">      63 </span>[<span class="branchCov" title="Branch 1 was taken 3 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 4 was taken 3 times"> + </span><span class="branchNoCov" title="Branch 5 was not taken"> - </span>]:<span class="lineCov">          3 :         errchk( vslNewStream( &amp;m_stream[0], brng, seed ) );</span>
+<span class="lineNum">      64 </span>                :            :       else
+<span class="lineNum">      65 </span>        [<span class="branchCov" title="Branch 0 was taken 385 times"> + </span><span class="branchCov" title="Branch 1 was taken 96 times"> + </span>]:<span class="lineCov">        481 :         for (int i=0; i&lt;n; ++i) {</span>
+<span class="lineNum">      66 </span>                :<span class="lineCov">        385 :           auto I = static_cast&lt; std::size_t &gt;( i );</span>
+<span class="lineNum">      67 </span>[<span class="branchCov" title="Branch 1 was taken 385 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 4 was taken 385 times"> + </span><span class="branchNoCov" title="Branch 5 was not taken"> - </span>]:<span class="lineCov">        385 :           errchk( vslNewStream( &amp;m_stream[I], brng, seed ) );</span>
+<span class="lineNum">      68 </span>[<span class="branchCov" title="Branch 1 was taken 385 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 4 was taken 384 times"> + </span><span class="branchCov" title="Branch 5 was taken 1 time"> + </span>]:<span class="lineCov">        385 :           errchk( vslLeapfrogStream( m_stream[I], i, n ) );</span>
+<span class="lineNum">      69 </span>                :            :         }
+<span class="lineNum">      70 </span>                :<span class="lineCov">         99 :     }</span>
+<a name="71"><span class="lineNum">      71 </span>                :            : </a>
+<span class="lineNum">      72 </span>                :            :     //! Destructor
+<span class="lineNum">      73 </span>                :<span class="lineCov">        724 :     ~MKLRNG() noexcept { deleteStreams(); }</span>
+<span class="lineNum">      74 </span>                :            : 
+<span class="lineNum">      75 </span>                :            :     //! Uniform RNG: Generate uniform random numbers
+<span class="lineNum">      76 </span>                :            :     //! \param[in] tid Thread (or more precisely stream) ID
+<a name="77"><span class="lineNum">      77 </span>                :            :     //! \param[in] num Number of RNGs to generate</a>
+<span class="lineNum">      78 </span>                :            :     //! \param[in,out] r Pointer to memory to write the random numbers to
+<span class="lineNum">      79 </span>                :<span class="lineCov">         12 :     void uniform( int tid, ncomp_t num, double* r ) const {</span>
+<span class="lineNum">      80 </span>                :            :       vdRngUniform( m_uniform_method,
+<span class="lineNum">      81 </span>                :<span class="lineCov">         12 :                     m_stream[ static_cast&lt;std::size_t&gt;(tid) ],</span>
+<span class="lineNum">      82 </span>                :            :                     static_cast&lt; long long &gt;( num ),
+<span class="lineNum">      83 </span>                :            :                     r,
+<span class="lineNum">      84 </span>                :<span class="lineCov">         12 :                     0.0, 1.0 );</span>
+<span class="lineNum">      85 </span>                :<span class="lineCov">         12 :     }</span>
+<span class="lineNum">      86 </span>                :            : 
+<span class="lineNum">      87 </span>                :            :     //! Gaussian RNG: Generate Gaussian random numbers
+<span class="lineNum">      88 </span>                :            :     //! \param[in] tid Thread (or more precisely stream) ID
+<a name="89"><span class="lineNum">      89 </span>                :            :     //! \param[in] num Number of RNGs to generate</a>
+<span class="lineNum">      90 </span>                :            :     //! \param[in,out] r Pointer to memory to write the random numbers to
+<span class="lineNum">      91 </span>                :<span class="lineCov">         89 :     void gaussian( int tid, ncomp_t num, double* r ) const {</span>
+<span class="lineNum">      92 </span>                :            :       vdRngGaussian( m_gaussian_method,
+<span class="lineNum">      93 </span>                :<span class="lineCov">         89 :                      m_stream[ static_cast&lt;std::size_t&gt;(tid) ],</span>
+<span class="lineNum">      94 </span>                :            :                      static_cast&lt; long long &gt;( num ),
+<span class="lineNum">      95 </span>                :            :                      r,
+<span class="lineNum">      96 </span>                :<span class="lineCov">         89 :                      0.0, 1.0 );</span>
+<span class="lineNum">      97 </span>                :<span class="lineCov">         89 :     }</span>
+<span class="lineNum">      98 </span>                :            : 
+<span class="lineNum">      99 </span>                :            :     //! Beta RNG: Generate beta random numbers
+<span class="lineNum">     100 </span>                :            :     //! \param[in] tid Thread (or more precisely stream) ID
+<span class="lineNum">     101 </span>                :            :     //! \param[in] num Number of RNGs to generate
+<span class="lineNum">     102 </span>                :            :     //! \param[in] p First beta shape parameter
+<span class="lineNum">     103 </span>                :            :     //! \param[in] q Second beta shape parameter
+<span class="lineNum">     104 </span>                :            :     //! \param[in] a Beta displacement parameter
+<span class="lineNum">     105 </span>                :            :     //! \param[in] b Beta scale factor
+<span class="lineNum">     106 </span>                :            :     //! \param[in,out] r Pointer to memory to write the random numbers to
+<span class="lineNum">     107 </span>                :            :     void beta( int tid, ncomp_t num, double p, double q, double a, double b,
+<span class="lineNum">     108 </span>                :            :                double* r ) const
+<span class="lineNum">     109 </span>                :            :     {
+<span class="lineNum">     110 </span>                :            :       vdRngBeta( m_beta_method,
+<span class="lineNum">     111 </span>                :<span class="lineCov">         32 :                  m_stream[ static_cast&lt;std::size_t&gt;(tid) ],</span>
+<span class="lineNum">     112 </span>                :            :                  static_cast&lt; long long &gt;( num ),
+<span class="lineNum">     113 </span>                :            :                  r,
+<span class="lineNum">     114 </span>[<span class="branchCov" title="Branch 2 was taken 12 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>][<span class="branchCov" title="Branch 5 was taken 12 times"> + </span><span class="branchNoCov" title="Branch 6 was not taken"> - </span>]:<span class="lineCov">         32 :                  p, q, a, b );</span>
+<span class="lineNum">     115 </span>                :            :     }
+<span class="lineNum">     116 </span>                :            : 
+<span class="lineNum">     117 </span>                :            :     //! Gamma RNG: Generate gamma random numbers
+<span class="lineNum">     118 </span>                :            :     //! \param[in] tid Thread (or more precisely stream) ID
+<span class="lineNum">     119 </span>                :            :     //! \param[in] num Number of RNGs to generate
+<span class="lineNum">     120 </span>                :            :     //! \param[in] a Gamma shape parameter
+<span class="lineNum">     121 </span>                :            :     //! \param[in] b Gamma scale factor
+<span class="lineNum">     122 </span>                :            :     //! \param[in,out] r Pointer to memory to write the random numbers to
+<span class="lineNum">     123 </span>                :            :     void gamma( int tid, ncomp_t num, double a, double b, double* r ) const
+<span class="lineNum">     124 </span>                :            :     {
+<span class="lineNum">     125 </span>                :            :       vdRngGamma( m_beta_method,
+<span class="lineNum">     126 </span>                :<span class="lineNoCov">          0 :                   m_stream[ static_cast&lt;std::size_t&gt;(tid) ],</span>
+<span class="lineNum">     127 </span>                :            :                   static_cast&lt; long long &gt;( num ),
+<span class="lineNum">     128 </span>                :            :                   r,
+<span class="lineNum">     129 </span>                :<span class="lineNoCov">          0 :                   a, 0.0, b );  // displacement = 0.0</span>
+<span class="lineNum">     130 </span>                :            :     }
+<a name="131"><span class="lineNum">     131 </span>                :            : </a>
+<span class="lineNum">     132 </span>                :            :     //! Copy assignment
+<span class="lineNum">     133 </span>                :<span class="lineCov">         19 :     MKLRNG&amp; operator=( const MKLRNG&amp; x ) {</span>
+<span class="lineNum">     134 </span>                :<span class="lineCov">         19 :       m_brng = x.m_brng;</span>
+<span class="lineNum">     135 </span>                :<span class="lineCov">         19 :       m_seed = x.m_seed;</span>
+<span class="lineNum">     136 </span>                :<span class="lineCov">         19 :       m_uniform_method = x.m_uniform_method;</span>
+<span class="lineNum">     137 </span>                :<span class="lineCov">         19 :       m_gaussian_method = x.m_gaussian_method;</span>
+<span class="lineNum">     138 </span>                :<span class="lineCov">         19 :       m_beta_method = x.m_beta_method;</span>
+<span class="lineNum">     139 </span>                :<span class="lineCov">         19 :       m_gamma_method = x.m_gamma_method;</span>
+<span class="lineNum">     140 </span>                :<span class="lineCov">         19 :       m_nthreads = x.m_nthreads;</span>
+<span class="lineNum">     141 </span>                :<span class="lineCov">         19 :       m_stream = tk::make_unique&lt; VSLStreamStatePtr[] &gt;(</span>
+<span class="lineNum">     142 </span>                :            :                    static_cast&lt;std::size_t&gt;(x.m_nthreads) );
+<span class="lineNum">     143 </span>        [<span class="branchCov" title="Branch 0 was taken 15 times"> + </span><span class="branchCov" title="Branch 1 was taken 4 times"> + </span>]:<span class="lineCov">         19 :       if (m_nthreads == 1)</span>
+<span class="lineNum">     144 </span>                :<span class="lineCov">          4 :         errchk( vslNewStream( &amp;m_stream[0], x.m_brng, x.m_seed ) );</span>
+<span class="lineNum">     145 </span>                :            :       else
+<span class="lineNum">     146 </span>        [<span class="branchCov" title="Branch 0 was taken 60 times"> + </span><span class="branchCov" title="Branch 1 was taken 15 times"> + </span>]:<span class="lineCov">         75 :         for (int i=0; i&lt;x.m_nthreads; ++i) {</span>
+<span class="lineNum">     147 </span>                :<span class="lineCov">         60 :           auto I = static_cast&lt; std::size_t &gt;( i );</span>
+<span class="lineNum">     148 </span>                :<span class="lineCov">         60 :           errchk( vslNewStream( &amp;m_stream[I], x.m_brng, x.m_seed ) );</span>
+<span class="lineNum">     149 </span>                :<span class="lineCov">         60 :           errchk( vslLeapfrogStream( m_stream[I], i, x.m_nthreads ) );</span>
+<span class="lineNum">     150 </span>                :            :         }
+<span class="lineNum">     151 </span>                :<span class="lineCov">         19 :       return *this;</span>
+<span class="lineNum">     152 </span>                :            :     }
+<a name="153"><span class="lineNum">     153 </span>                :            : </a>
+<span class="lineNum">     154 </span>                :            :     //! Copy constructor: in terms of copy assignment
+<span class="lineNum">     155 </span>        [<span class="branchCov" title="Branch 1 was taken 16 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">         16 :     MKLRNG( const MKLRNG&amp; x ) { operator=(x); }</span>
+<a name="156"><span class="lineNum">     156 </span>                :            : </a>
+<span class="lineNum">     157 </span>                :            :     //! Move assignment
+<span class="lineNum">     158 </span>                :<span class="lineCov">        247 :     MKLRNG&amp; operator=( MKLRNG&amp;&amp; x ) {</span>
+<span class="lineNum">     159 </span>                :<span class="lineCov">        247 :       deleteStreams();</span>
+<span class="lineNum">     160 </span>                :<span class="lineCov">        247 :       m_brng = x.m_brng;</span>
+<span class="lineNum">     161 </span>                :<span class="lineCov">        247 :       m_seed = x.m_seed;</span>
+<span class="lineNum">     162 </span>                :<span class="lineCov">        247 :       m_uniform_method = x.m_uniform_method;</span>
+<span class="lineNum">     163 </span>                :<span class="lineCov">        247 :       m_gaussian_method = x.m_gaussian_method;</span>
+<span class="lineNum">     164 </span>                :<span class="lineCov">        247 :       m_beta_method = x.m_beta_method;</span>
+<span class="lineNum">     165 </span>                :<span class="lineCov">        247 :       m_gamma_method = x.m_gamma_method;</span>
+<span class="lineNum">     166 </span>                :<span class="lineCov">        247 :       m_nthreads = x.m_nthreads;</span>
+<span class="lineNum">     167 </span>                :<span class="lineCov">        247 :       m_stream = tk::make_unique&lt; VSLStreamStatePtr[] &gt;(</span>
+<span class="lineNum">     168 </span>                :            :                    static_cast&lt;std::size_t&gt;(x.m_nthreads) );
+<span class="lineNum">     169 </span>        [<span class="branchCov" title="Branch 0 was taken 985 times"> + </span><span class="branchCov" title="Branch 1 was taken 247 times"> + </span>]:<span class="lineCov">       1232 :       for (int i=0; i&lt;x.m_nthreads; ++i) {</span>
+<span class="lineNum">     170 </span>                :<span class="lineCov">        985 :         auto I = static_cast&lt; std::size_t &gt;( i );</span>
+<span class="lineNum">     171 </span>                :<span class="lineCov">        985 :         m_stream[I] = x.m_stream[I];</span>
+<span class="lineNum">     172 </span>                :<span class="lineCov">        985 :         x.m_stream[I] = nullptr;</span>
+<span class="lineNum">     173 </span>                :            :       }
+<span class="lineNum">     174 </span>                :<span class="lineCov">        247 :       x.m_brng = 0;</span>
+<span class="lineNum">     175 </span>                :<span class="lineCov">        247 :       x.m_seed = 0;</span>
+<span class="lineNum">     176 </span>                :<span class="lineCov">        247 :       x.m_uniform_method = 0;</span>
+<span class="lineNum">     177 </span>                :<span class="lineCov">        247 :       x.m_gaussian_method = 0;</span>
+<span class="lineNum">     178 </span>                :<span class="lineCov">        247 :       x.m_beta_method = 0;</span>
+<span class="lineNum">     179 </span>                :<span class="lineCov">        247 :       x.m_gamma_method = 0;</span>
+<span class="lineNum">     180 </span>                :<span class="lineCov">        247 :       x.m_nthreads = 0;</span>
+<span class="lineNum">     181 </span>                :            :       x.m_stream.reset( nullptr );
+<span class="lineNum">     182 </span>                :<span class="lineCov">        247 :       return *this;</span>
+<span class="lineNum">     183 </span>                :            :     }
+<a name="184"><span class="lineNum">     184 </span>                :            : </a>
+<span class="lineNum">     185 </span>                :            :     //! Move constructor: in terms of move assignment
+<span class="lineNum">     186 </span>                :<span class="lineCov">        247 :     MKLRNG( MKLRNG&amp;&amp; x ) :</span>
+<span class="lineNum">     187 </span>                :            :       m_brng( 0 ),
+<span class="lineNum">     188 </span>                :            :       m_seed( 0 ),
+<span class="lineNum">     189 </span>                :            :       m_uniform_method( 0 ),
+<span class="lineNum">     190 </span>                :            :       m_gaussian_method( 0 ),
+<span class="lineNum">     191 </span>                :            :       m_beta_method( 0 ),
+<span class="lineNum">     192 </span>                :            :       m_gamma_method( 0 ),
+<span class="lineNum">     193 </span>                :            :       m_nthreads( 0 ),
+<span class="lineNum">     194 </span>                :<span class="lineCov">        247 :       m_stream( nullptr )</span>
+<span class="lineNum">     195 </span>        [<span class="branchCov" title="Branch 1 was taken 247 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">        247 :     { *this = std::move(x); }</span>
+<a name="196"><span class="lineNum">     196 </span>                :            : </a>
+<span class="lineNum">     197 </span>                :            :     //! Accessor to the number of threads we operate on
+<span class="lineNum">     198 </span>                :<span class="lineNoCov">          0 :     std::size_t nthreads() const noexcept</span>
+<span class="lineNum">     199 </span>                :<span class="lineCov">         35 :     { return static_cast&lt; std::size_t &gt;( m_nthreads); }</span>
+<span class="lineNum">     200 </span>                :            : 
+<a name="201"><span class="lineNum">     201 </span>                :            :   private:</a>
+<span class="lineNum">     202 </span>                :            :     //! Delete all thread streams
+<span class="lineNum">     203 </span>                :<span class="lineCov">        609 :     void deleteStreams() {</span>
+<span class="lineNum">     204 </span>        [<span class="branchCov" title="Branch 0 was taken 442 times"> + </span><span class="branchCov" title="Branch 1 was taken 609 times"> + </span>]:<span class="lineCov">       1051 :       for (int i=0; i&lt;m_nthreads; ++i) {</span>
+<span class="lineNum">     205 </span>                :<span class="lineCov">        442 :         auto I = static_cast&lt; std::size_t &gt;( i );</span>
+<span class="lineNum">     206 </span>        [<span class="branchCov" title="Branch 0 was taken 442 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">        442 :         if (m_stream[I]) {</span>
+<span class="lineNum">     207 </span>                :<span class="lineCov">        442 :           errchk( vslDeleteStream( &amp;m_stream[I] ) );</span>
+<span class="lineNum">     208 </span>                :<span class="lineCov">        442 :           m_stream[I] = nullptr;</span>
+<span class="lineNum">     209 </span>                :            :         }
+<span class="lineNum">     210 </span>                :            :       }
+<span class="lineNum">     211 </span>                :<span class="lineCov">        609 :     }</span>
+<span class="lineNum">     212 </span>                :            : 
+<span class="lineNum">     213 </span>                :            :     //! MKL VSL error check
+<span class="lineNum">     214 </span>                :            :     //! \param[in] err MKL VSL error code as returned from MKL VSL functions
+<span class="lineNum">     215 </span>                :            :     //! \details This calls ErrChk(), i.e., it is not compiled away in Release
+<a name="216"><span class="lineNum">     216 </span>                :            :     //!   mode as an error here can result due to user input incompatible with</a>
+<span class="lineNum">     217 </span>                :            :     //!   the MKL library.
+<span class="lineNum">     218 </span>                :<span class="lineCov">       1339 :     void errchk( int err ) {</span>
+<span class="lineNum">     219 </span>[<span class="branchCov" title="Branch 2 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>][<span class="branchCov" title="Branch 5 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 6 was not taken"> - </span>]:<span class="lineCov">          3 :        ErrChk( err == VSL_STATUS_OK, &quot;MKL VSL Error Code: &quot; +</span>
+<span class="lineNum">     220 </span>        [<span class="branchCov" title="Branch 0 was taken 1 time"> + </span><span class="branchCov" title="Branch 1 was taken 1338 times"> + </span>]:<span class="lineCov">       1339 :                std::to_string(err) + &quot;, see mkl_vsl_defines.h for more info&quot; );</span>
+<span class="lineNum">     221 </span>                :<span class="lineCov">       1338 :     }</span>
+<span class="lineNum">     222 </span>                :            : 
+<span class="lineNum">     223 </span>                :            :     int m_brng;                                      //!&lt; MKL RNG id
+<span class="lineNum">     224 </span>                :            :     unsigned int m_seed;                             //!&lt; Seed
+<span class="lineNum">     225 </span>                :            :     int m_uniform_method;                            //!&lt; Uniform method to use
+<span class="lineNum">     226 </span>                :            :     int m_gaussian_method;                           //!&lt; Gaussian method to use
+<span class="lineNum">     227 </span>                :            :     int m_beta_method;                               //!&lt; Beta method to use
+<span class="lineNum">     228 </span>                :            :     int m_gamma_method;                              //!&lt; Gamma method to use
+<span class="lineNum">     229 </span>                :            :     int m_nthreads;                                  //!&lt; Number of threads
+<span class="lineNum">     230 </span>                :            :     std::unique_ptr&lt; VSLStreamStatePtr[] &gt; m_stream; //!&lt; Random number streams
+<span class="lineNum">     231 </span>                :            : };
 <span class="lineNum">     232 </span>                :            : 
-<span class="lineNum">     233 </span>                :            : #endif // MKLRNG_h
+<span class="lineNum">     233 </span>                :            : } // tk::
+<span class="lineNum">     234 </span>                :            : 
+<span class="lineNum">     235 </span>                :            : #endif // MKLRNG_h
 </pre>
       </td>
     </tr>

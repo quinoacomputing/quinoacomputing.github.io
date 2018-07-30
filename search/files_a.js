@@ -1,7 +1,6 @@
 var searchData=
 [
   ['lapack_5flicense_2edox',['LAPACK_license.dox',['../_l_a_p_a_c_k__license_8dox.html',1,'']]],
-  ['lapacke_2eh',['lapacke.h',['../lapacke_8h.html',1,'']]],
   ['laxfriedrichs_2eh',['LaxFriedrichs.h',['../_lax_friedrichs_8h.html',1,'']]],
   ['layout_2edox',['layout.dox',['../layout_8dox.html',1,'']]],
   ['libcpp_5flicense_2edox',['LibCPP_license.dox',['../_lib_c_p_p__license_8dox.html',1,'']]],

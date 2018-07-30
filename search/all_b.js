@@ -6,7 +6,6 @@ var searchData=
   ['lambda',['lambda',['../structtag_1_1lambda.html',1,'tag']]],
   ['lapack_20license',['LAPACK license',['../_l_a_p_a_c_k_license.html',1,'licenses']]],
   ['lapack_5flicense_2edox',['LAPACK_license.dox',['../_l_a_p_a_c_k__license_8dox.html',1,'']]],
-  ['lapacke_2eh',['lapacke.h',['../lapacke_8h.html',1,'']]],
   ['lastfieldwritetime',['LastFieldWriteTime',['../classinciter_1_1_discretization.html#ae974f7576160f1217ed0694244a0352f',1,'inciter::Discretization::LastFieldWriteTime() const'],['../classinciter_1_1_discretization.html#a19915a108e3466ca32ddbcf7d62d39db',1,'inciter::Discretization::LastFieldWriteTime()']]],
   ['laxfriedrichs',['LaxFriedrichs',['../structinciter_1_1_lax_friedrichs.html',1,'inciter::LaxFriedrichs'],['../namespaceinciter_1_1ctr.html#ad03f0cd2ce483aefb8c19fa8dc7af1d2aed47604fc3e8751ed09bacd0a0754a71',1,'inciter::ctr::LaxFriedrichs()']]],
   ['laxfriedrichs_2eh',['LaxFriedrichs.h',['../_lax_friedrichs_8h.html',1,'']]],
