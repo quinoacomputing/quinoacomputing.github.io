@@ -8,7 +8,7 @@ var searchData=
   ['weightdistrib',['WeightDistrib',['../structtag_1_1_weight_distrib.html',1,'tag']]],
   ['workinserted',['workinserted',['../structtag_1_1workinserted.html',1,'tag']]],
   ['wright_5ffisher',['wright_fisher',['../structwalker_1_1deck_1_1wright__fisher.html',1,'walker::deck']]],
-  ['wrightfisher',['WrightFisher',['../classwalker_1_1_wright_fisher.html',1,'walker::WrightFisher&lt; Init, Coefficients &gt;'],['../structtag_1_1wrightfisher.html',1,'tag::wrightfisher']]],
+  ['wrightfisher',['wrightfisher',['../structtag_1_1wrightfisher.html',1,'tag::wrightfisher'],['../classwalker_1_1_wright_fisher.html',1,'walker::WrightFisher&lt; Init, Coefficients &gt;']]],
   ['wrightfishercoeffconst',['WrightFisherCoeffConst',['../classwalker_1_1_wright_fisher_coeff_const.html',1,'walker']]],
   ['writer',['Writer',['../classtk_1_1_writer.html',1,'tk']]],
   ['writer_5fcommon',['Writer_common',['../structtut_1_1_writer__common.html',1,'tut']]]

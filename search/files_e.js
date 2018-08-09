@@ -15,6 +15,7 @@ var searchData=
   ['partitioner_2eh',['Partitioner.h',['../_partitioner_8h.html',1,'']]],
   ['partitioningalgorithm_2eh',['PartitioningAlgorithm.h',['../_partitioning_algorithm_8h.html',1,'']]],
   ['pde_2eh',['PDE.h',['../_p_d_e_8h.html',1,'']]],
+  ['pdefactory_2eh',['PDEFactory.h',['../_p_d_e_factory_8h.html',1,'']]],
   ['pdestack_2ec',['PDEStack.C',['../_p_d_e_stack_8_c.html',1,'']]],
   ['pdestack_2eh',['PDEStack.h',['../_p_d_e_stack_8h.html',1,'']]],
   ['pdfcentering_2eh',['PDFCentering.h',['../_p_d_f_centering_8h.html',1,'']]],

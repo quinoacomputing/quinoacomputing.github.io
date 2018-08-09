@@ -4,7 +4,7 @@ var searchData=
   ['data_5fobject',['Data_object',['../namespacetut.html#a0a38f979fe9073321e265a811cf13b23',1,'tut']]],
   ['deriveddata_5fgroup',['DerivedData_group',['../namespacetut.html#a3edf1e84f64691ab03223c724836176d',1,'tut']]],
   ['deriveddata_5fobject',['DerivedData_object',['../namespacetut.html#a3c51b5583ef056dbb4596004d921c726',1,'tut']]],
-  ['dgfactory',['DGFactory',['../namespaceinciter.html#ab556050164d940a31172a2599c669ae2',1,'inciter']]],
+  ['dgfactory',['DGFactory',['../namespaceinciter.html#ab23bc89a17eaf764322ca0a5e22e35cf',1,'inciter']]],
   ['diagnostics',['diagnostics',['../namespaceinciter_1_1ctr.html#aa569fd3b9a64de4cd23c3489d4a7787b',1,'inciter::ctr']]],
   ['diagornsteinuhlenbeckcoeffpolicies',['DiagOrnsteinUhlenbeckCoeffPolicies',['../namespacewalker.html#a85b12bc527eae27d0e490eba27e1373b',1,'walker']]],
   ['diagornsteinuhlenbeckparameters',['DiagOrnsteinUhlenbeckParameters',['../namespacewalker_1_1ctr.html#a75be0c64d7986c153b084c27593d5e5b',1,'walker::ctr']]],

@@ -46,7 +46,7 @@ var searchData=
   ['dgadvection_2eh',['DGAdvection.h',['../_d_g_advection_8h.html',1,'']]],
   ['dgcompflow_2eh',['DGCompFlow.h',['../_d_g_comp_flow_8h.html',1,'']]],
   ['dgeuler_2eh',['DGEuler.h',['../_d_g_euler_8h.html',1,'']]],
-  ['dgfactory',['DGFactory',['../namespaceinciter.html#ab556050164d940a31172a2599c669ae2',1,'inciter']]],
+  ['dgfactory',['DGFactory',['../namespaceinciter.html#ab23bc89a17eaf764322ca0a5e22e35cf',1,'inciter']]],
   ['dgnavierstokes_2eh',['DGNavierStokes.h',['../_d_g_navier_stokes_8h.html',1,'']]],
   ['dgpde',['DGPDE',['../classinciter_1_1_d_g_p_d_e.html',1,'inciter::DGPDE'],['../classinciter_1_1_d_g_p_d_e.html#a5b238fa9da0d0471a83d6d72df535965',1,'inciter::DGPDE::DGPDE(T x)'],['../classinciter_1_1_d_g_p_d_e.html#aa3e70569f22a74a2f4e2e7a5144e8899',1,'inciter::DGPDE::DGPDE(std::function&lt; T(Args...)&gt; x, Args &amp;&amp;... args)'],['../classinciter_1_1_d_g_p_d_e.html#abe596d984e7d43d3cd753127615db860',1,'inciter::DGPDE::DGPDE(const DGPDE &amp;x)'],['../classinciter_1_1_d_g_p_d_e.html#ae4b2ae731e0455cf4dae9b25446e99bb',1,'inciter::DGPDE::DGPDE(DGPDE &amp;&amp;) noexcept=default']]],
   ['dgpde_2eh',['DGPDE.h',['../_d_g_p_d_e_8h.html',1,'']]],
