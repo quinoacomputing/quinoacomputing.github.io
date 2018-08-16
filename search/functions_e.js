@@ -7,7 +7,7 @@ var searchData=
   ['part',['part',['../classtk_1_1_print.html#a8079efac5c80b70a58acfa5cff8a55ee',1,'tk::Print']]],
   ['particlewriter',['ParticleWriter',['../classtk_1_1_particle_writer.html#a74a4a89cc6d17eb04184585967ebb045',1,'tk::ParticleWriter']]],
   ['partition',['partition',['../classinciter_1_1_partitioner.html#af0ed691bfaf90f34d17ae88b4042c868',1,'inciter::Partitioner::partition()'],['../classinciter_1_1_transporter.html#a033c8eb29622fd4485a7e8134a910cf0',1,'inciter::Transporter::partition()']]],
-  ['partitioner',['Partitioner',['../classinciter_1_1_partitioner.html#a92c38dd7af63fade7f5d1f2b2f71a223',1,'inciter::Partitioner']]],
+  ['partitioner',['Partitioner',['../classinciter_1_1_partitioner.html#a4fb511cf9a2bc11332c4a19fef6589ea',1,'inciter::Partitioner']]],
   ['partitioningalgorithm',['PartitioningAlgorithm',['../classtk_1_1ctr_1_1_partitioning_algorithm.html#ad3a9b073c240327c16037010fb5515ae',1,'tk::ctr::PartitioningAlgorithm']]],
   ['pde',['PDE',['../classinciter_1_1ctr_1_1_p_d_e.html#a3faa70033620256f3016a4b7c2192c6c',1,'inciter::ctr::PDE']]],
   ['pdename',['PDEName',['../classinciter_1_1_inciter_print.html#abb91400eca6a7f02e055e5bce6accdb4',1,'inciter::InciterPrint']]],

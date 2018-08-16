@@ -6,6 +6,7 @@ var searchData=
   ['offsetmap',['offsetmap',['../classtk_1_1ctr_1_1ncomponents.html#a9f00da04f3dc8db9c3eeb39aadf94f80',1,'tk::ctr::ncomponents::offsetmap()'],['../namespacetk_1_1ctr.html#a39d01fe23a2430b5491d145bc3193a09',1,'tk::ctr::OffsetMap()']]],
   ['omega',['omega',['../structtag_1_1omega.html',1,'tag']]],
   ['omega_5fh',['OMEGA_H',['../namespacetk.html#a8e37e8d13562df3379a730217f735255ae29e9370fcc76113c2afa7c1ab1289c2',1,'tk']]],
+  ['omega_5fh_5ffile_2eh',['Omega_h_file.h',['../_omega__h__file_8h.html',1,'']]],
   ['omega_5fh_5fmeshreader',['Omega_h_MeshReader',['../classtk_1_1_omega__h___mesh_reader.html',1,'tk::Omega_h_MeshReader'],['../classtk_1_1_omega__h___mesh_reader.html#adb6078044215fddf5cb6c10061cdb2be',1,'tk::Omega_h_MeshReader::Omega_h_MeshReader()']]],
   ['omega_5fh_5fmeshreader_2ec',['Omega_h_MeshReader.C',['../_omega__h___mesh_reader_8_c.html',1,'']]],
   ['omega_5fh_5fmeshreader_2eh',['Omega_h_MeshReader.h',['../_omega__h___mesh_reader_8h.html',1,'']]],
@@ -61,5 +62,6 @@ var searchData=
   ['outstat',['outStat',['../classwalker_1_1_distributor.html#a8698b1967d86f20d58da3093e6ed92a4',1,'walker::Distributor']]],
   ['outtripdf',['outTriPDF',['../classwalker_1_1_distributor.html#a2ee4084a993b0f6122622c191d786908',1,'walker::Distributor']]],
   ['outunipdf',['outUniPDF',['../classwalker_1_1_distributor.html#ad30d576d7c47311525d47064768f45ee',1,'walker::Distributor']]],
-  ['overwrite',['OVERWRITE',['../namespacetk_1_1ctr.html#a92959a7765e502343d1a9b7eba034a6ca1038b7c5b38b3977c52e47d18cc741ee',1,'tk::ctr']]]
+  ['overwrite',['OVERWRITE',['../namespacetk_1_1ctr.html#a92959a7765e502343d1a9b7eba034a6ca1038b7c5b38b3977c52e47d18cc741ee',1,'tk::ctr']]],
+  ['ownbndnodes',['ownBndNodes',['../classinciter_1_1_partitioner.html#a9085744508dcfa320b0926f78d923bdc',1,'inciter::Partitioner']]]
 ];

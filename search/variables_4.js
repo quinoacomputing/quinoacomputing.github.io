@@ -7,6 +7,7 @@ var searchData=
   ['er',['er',['../structtut_1_1_mesh_reader__common.html#ad21ae58484ab45be86dc6a5614dfc84d',1,'tut::MeshReader_common']]],
   ['erf',['erf',['../structtut_1_1_mesh_reader__common.html#ae5eb59fd77827b332431c319c3b87cbe',1,'tut::MeshReader_common']]],
   ['exonnpe',['ExoNnpe',['../namespacetk.html#afc6a4dbf99954fbde58f895283a8de43',1,'tk']]],
+  ['expofa',['expofa',['../namespacetk.html#a9445a95368496196e7c7560eccadbb09',1,'tk']]],
   ['expt',['expt',['../structtk_1_1ctr_1_1_keyword_info.html#af63334254fc323b002036bcf1fcc2bb7',1,'tk::ctr::KeywordInfo']]],
   ['exts',['exts',['../structtk_1_1ctr_1_1_p_d_f_info.html#abeecfd59b3001515a7fbccaf47fab00c',1,'tk::ctr::PDFInfo']]]
 ];

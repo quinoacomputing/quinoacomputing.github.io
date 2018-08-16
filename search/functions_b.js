@@ -17,6 +17,7 @@ var searchData=
   ['massfractionbetacoeffconst',['MassFractionBetaCoeffConst',['../classwalker_1_1_mass_fraction_beta_coeff_const.html#a93a1b4536f67b09e1ec3c0ce8dd81d46',1,'walker::MassFractionBetaCoeffConst']]],
   ['matcg',['MatCG',['../classinciter_1_1_mat_c_g.html#a9274efb43bb030255a56ee73013a2606',1,'inciter::MatCG::MatCG(const CProxy_Discretization &amp;disc, const tk::CProxy_Solver &amp;solver, const FaceData &amp;fd)'],['../classinciter_1_1_mat_c_g.html#a8fe43727681308c2ef5a5788654e4a52',1,'inciter::MatCG::MatCG(CkMigrateMessage *)']]],
   ['match',['match',['../namespaceinciter.html#a45591e6950c6acea4cea65f9609db94c',1,'inciter']]],
+  ['matchbcs',['matchBCs',['../classinciter_1_1_transporter.html#a08884c1ed8ce88d271574407f03a3708',1,'inciter::Transporter']]],
   ['matched',['matched',['../classinciter_1_1_transporter.html#abca930caab051e9dd4100841fda8ec58',1,'inciter::Transporter']]],
   ['matrixrank',['MatrixRank',['../classrngtest_1_1_test_u01_stack.html#a57a1e39f7add3dea4ae3da7ed46c58a6',1,'rngtest::TestU01Stack']]],
   ['max',['max',['../structtk_1_1_random123_1_1_adaptor.html#aa3197dbfc872e28f8a26b5f9e24d726b',1,'tk::Random123::Adaptor::max()'],['../structtk_1_1_r_n_g_s_s_e_1_1_adaptor.html#a5790ac381b61eccc07ca16181cf60b3f',1,'tk::RNGSSE::Adaptor::max()'],['../namespacetk.html#ac9a26e30d19b940a12990a866a514cb5',1,'tk::max()']]],

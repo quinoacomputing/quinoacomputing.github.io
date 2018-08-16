@@ -35,5 +35,6 @@ var searchData=
   ['outpdf',['outPDF',['../classwalker_1_1_distributor.html#a9c224bf6f53cfc34dd88cce8ecb12023',1,'walker::Distributor']]],
   ['outstat',['outStat',['../classwalker_1_1_distributor.html#a8698b1967d86f20d58da3093e6ed92a4',1,'walker::Distributor']]],
   ['outtripdf',['outTriPDF',['../classwalker_1_1_distributor.html#a2ee4084a993b0f6122622c191d786908',1,'walker::Distributor']]],
-  ['outunipdf',['outUniPDF',['../classwalker_1_1_distributor.html#ad30d576d7c47311525d47064768f45ee',1,'walker::Distributor']]]
+  ['outunipdf',['outUniPDF',['../classwalker_1_1_distributor.html#ad30d576d7c47311525d47064768f45ee',1,'walker::Distributor']]],
+  ['ownbndnodes',['ownBndNodes',['../classinciter_1_1_partitioner.html#a9085744508dcfa320b0926f78d923bdc',1,'inciter::Partitioner']]]
 ];

@@ -32,7 +32,7 @@ var searchData=
   ['mixmassfracbetacoeffmontecarlohomdecay',['MixMassFracBetaCoeffMonteCarloHomDecay',['../classwalker_1_1_mix_mass_frac_beta_coeff_monte_carlo_hom_decay.html',1,'walker']]],
   ['mixmassfractionbeta',['MixMassFractionBeta',['../classwalker_1_1_mix_mass_fraction_beta.html',1,'walker']]],
   ['mixnumberfractionbeta',['MixNumberFractionBeta',['../classwalker_1_1_mix_number_fraction_beta.html',1,'walker']]],
-  ['mixnumfracbeta',['mixnumfracbeta',['../structtag_1_1mixnumfracbeta.html',1,'tag::mixnumfracbeta'],['../structwalker_1_1deck_1_1mixnumfracbeta.html',1,'walker::deck::mixnumfracbeta']]],
+  ['mixnumfracbeta',['mixnumfracbeta',['../structwalker_1_1deck_1_1mixnumfracbeta.html',1,'walker::deck::mixnumfracbeta'],['../structtag_1_1mixnumfracbeta.html',1,'tag::mixnumfracbeta']]],
   ['mixnumfracbetacoeffdecay',['MixNumFracBetaCoeffDecay',['../classwalker_1_1_mix_num_frac_beta_coeff_decay.html',1,'walker']]],
   ['mixrate',['mixrate',['../structtag_1_1mixrate.html',1,'tag']]],
   ['mklbetamethod',['MKLBetaMethod',['../classtk_1_1ctr_1_1_m_k_l_beta_method.html',1,'tk::ctr']]],
