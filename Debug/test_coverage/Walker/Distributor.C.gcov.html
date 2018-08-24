@@ -1,0 +1,863 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html lang="en">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>Quinoa unit test code coverage report</title>
+  <link rel="stylesheet" type="text/css" href="../gcov.css">
+</head>
+<body>
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title">Quinoa all test code coverage report</td></tr>
+    <tr><td class="ruler"><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../index.html">top level</a> - <a href="index.html">Walker</a> - Distributor.C<span style="font-size: 80%;"> (source / <a href="Distributor.C.func-sort-c.html">functions</a>)</span></td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Commit:</td>
+            <td class="headerValue"><a href="https://github.com/quinoacomputing/quinoa/commit/9133450">Quinoa_v0.2-1234-g9133450</a></td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">263</td>
+            <td class="headerCovTableEntry">279</td>
+            <td class="headerCovTableEntryHi">94.3 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2018-08-24 04:56:39</td>
+            <td></td>
+            <td class="headerItem">Functions:</td>
+            <td class="headerCovTableEntry">20</td>
+            <td class="headerCovTableEntry">22</td>
+            <td class="headerCovTableEntryHi">90.9 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Legend:</td>
+            <td class="headerValueLeg">            Lines:
+            <span class="coverLegendCov">hit</span>
+            <span class="coverLegendNoCov">not hit</span>
+            | Branches:
+            <span class="coverLegendCov">+</span> taken
+            <span class="coverLegendNoCov">-</span> not taken
+            <span class="coverLegendNoCov">#</span> not executed
+</td>
+            <td></td>
+            <td class="headerItem">Branches:</td>
+            <td class="headerCovTableEntry">353</td>
+            <td class="headerCovTableEntry">792</td>
+            <td class="headerCovTableEntryLo">44.6 %</td>
+          </tr>
+          <tr><td><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">           Branch data     Line data    Source code</pre>
+<pre class="source">
+<a name="1"><span class="lineNum">       1 </span>                :            : // *****************************************************************************</a>
+<span class="lineNum">       2 </span>                :            : /*!
+<span class="lineNum">       3 </span>                :            :   \file      src/Walker/Distributor.C
+<span class="lineNum">       4 </span>                :            :   \copyright 2012-2015, J. Bakosi, 2016-2018, Los Alamos National Security, LLC.
+<span class="lineNum">       5 </span>                :            :   \brief     Distributor drives the time integration of differential equations
+<span class="lineNum">       6 </span>                :            :   \details   Distributor drives the time integration of differential equations.
+<span class="lineNum">       7 </span>                :            :     The implementation uses the Charm++ runtime system and is fully asynchronous,
+<span class="lineNum">       8 </span>                :            :     overlapping computation, communication as well as I/O. The algorithm
+<span class="lineNum">       9 </span>                :            :     utilizes the structured dagger (SDAG) Charm++ functionality. The high-level
+<span class="lineNum">      10 </span>                :            :     overview of the algorithm structure and how it interfaces with Charm++ is
+<span class="lineNum">      11 </span>                :            :     discussed in the Charm++ interface file src/Walker/distributor.ci.
+<span class="lineNum">      12 </span>                :            : */
+<span class="lineNum">      13 </span>                :            : // *****************************************************************************
+<span class="lineNum">      14 </span>                :            : 
+<span class="lineNum">      15 </span>                :            : #include &lt;list&gt;
+<span class="lineNum">      16 </span>                :            : #include &lt;string&gt;
+<span class="lineNum">      17 </span>                :            : #include &lt;algorithm&gt;
+<span class="lineNum">      18 </span>                :            : #include &lt;functional&gt;
+<span class="lineNum">      19 </span>                :            : #include &lt;iomanip&gt;
+<span class="lineNum">      20 </span>                :            : #include &lt;iostream&gt;
+<span class="lineNum">      21 </span>                :            : #include &lt;iterator&gt;
+<span class="lineNum">      22 </span>                :            : #include &lt;limits&gt;
+<span class="lineNum">      23 </span>                :            : #include &lt;cmath&gt;
+<span class="lineNum">      24 </span>                :            : #include &lt;cstddef&gt;
+<span class="lineNum">      25 </span>                :            : 
+<span class="lineNum">      26 </span>                :            : #include &quot;NoWarning/format.h&quot;
+<span class="lineNum">      27 </span>                :            : #include &lt;boost/optional.hpp&gt;
+<span class="lineNum">      28 </span>                :            : 
+<span class="lineNum">      29 </span>                :            : #include &quot;Macro.h&quot;
+<span class="lineNum">      30 </span>                :            : #include &quot;Print.h&quot;
+<span class="lineNum">      31 </span>                :            : #include &quot;Tags.h&quot;
+<span class="lineNum">      32 </span>                :            : #include &quot;StatCtr.h&quot;
+<span class="lineNum">      33 </span>                :            : #include &quot;Exception.h&quot;
+<span class="lineNum">      34 </span>                :            : #include &quot;Particles.h&quot;
+<span class="lineNum">      35 </span>                :            : #include &quot;LoadDistributor.h&quot;
+<span class="lineNum">      36 </span>                :            : #include &quot;Distributor.h&quot;
+<span class="lineNum">      37 </span>                :            : #include &quot;Integrator.h&quot;
+<span class="lineNum">      38 </span>                :            : #include &quot;DiffEqStack.h&quot;
+<span class="lineNum">      39 </span>                :            : #include &quot;TxtStatWriter.h&quot;
+<span class="lineNum">      40 </span>                :            : #include &quot;PDFReducer.h&quot;
+<span class="lineNum">      41 </span>                :            : #include &quot;PDFWriter.h&quot;
+<span class="lineNum">      42 </span>                :            : #include &quot;Options/PDFFile.h&quot;
+<span class="lineNum">      43 </span>                :            : #include &quot;Options/PDFPolicy.h&quot;
+<span class="lineNum">      44 </span>                :            : #include &quot;Walker/InputDeck/InputDeck.h&quot;
+<span class="lineNum">      45 </span>                :            : #include &quot;NoWarning/walker.decl.h&quot;
+<span class="lineNum">      46 </span>                :            : 
+<span class="lineNum">      47 </span>                :            : extern CProxy_Main mainProxy;
+<span class="lineNum">      48 </span>                :            : 
+<a name="49"><span class="lineNum">      49 </span>                :            : using walker::Distributor;</a>
+<span class="lineNum">      50 </span>                :            : 
+<span class="lineNum">      51 </span>                :<span class="lineCov">        168 : Distributor::Distributor( const ctr::CmdLine&amp; cmdline ) :</span>
+<span class="lineNum">      52 </span>                :            :   __dep(),
+<span class="lineNum">      53 </span>                :<span class="lineCov">         84 :   m_print( cmdline.get&lt; tag::verbose &gt;() ? std::cout : std::clog ),</span>
+<span class="lineNum">      54 </span>                :            :   m_output( false, false ),
+<span class="lineNum">      55 </span>                :            :   m_it( 0 ),
+<span class="lineNum">      56 </span>                :            :   m_npar( 0 ),
+<span class="lineNum">      57 </span>                :            :   m_t( 0.0 ),
+<span class="lineNum">      58 </span>[<span class="branchCov" title="Branch 1 was taken 84 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchNoExec" title="Branch 4 was not executed"> # </span><span class="branchNoExec" title="Branch 5 was not executed"> # </span>]:<span class="lineCov">         84 :   m_dt( computedt() ),</span>
+<span class="lineNum">      59 </span>                :            :   m_intproxy(),
+<span class="lineNum">      60 </span>                :            :   m_timer(),
+<span class="lineNum">      61 </span>                :            :   m_nameOrdinary( g_inputdeck.momentNames( tk::ctr::ordinary ) ),
+<span class="lineNum">      62 </span>                :            :   m_nameCentral( g_inputdeck.momentNames( tk::ctr::central ) ),
+<span class="lineNum">      63 </span>                :            :   m_ordinary( m_nameOrdinary.size(), 0.0 ),
+<span class="lineNum">      64 </span>                :            :   m_central( m_nameCentral.size(), 0.0 ),
+<span class="lineNum">      65 </span>                :            :   m_ordupdf(),
+<span class="lineNum">      66 </span>                :            :   m_ordbpdf(),
+<span class="lineNum">      67 </span>                :            :   m_ordtpdf(),
+<span class="lineNum">      68 </span>                :            :   m_cenupdf(),
+<span class="lineNum">      69 </span>                :            :   m_cenbpdf(),
+<span class="lineNum">      70 </span>                :            :   m_centpdf(),
+<span class="lineNum">      71 </span>                :            :   m_tables(),
+<span class="lineNum">      72 </span>[<span class="branchCov" title="Branch 3 was taken 84 times"> + </span><span class="branchNoCov" title="Branch 4 was not taken"> - </span>][<span class="branchCov" title="Branch 6 was taken 84 times"> + </span><span class="branchNoCov" title="Branch 7 was not taken"> - </span>]:<span class="lineCov">        252 :   m_moments()</span>
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 9 was taken 84 times"> + </span><span class="branchNoCov" title="Branch 10 was not taken"> - </span>][<span class="branchCov" title="Branch 12 was taken 84 times"> + </span><span class="branchNoCov" title="Branch 13 was not taken"> - </span>]
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 15 was taken 84 times"> + </span><span class="branchNoCov" title="Branch 16 was not taken"> - </span>][<span class="branchCov" title="Branch 18 was taken 84 times"> + </span><span class="branchNoCov" title="Branch 19 was not taken"> - </span>]
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 21 was taken 84 times"> + </span><span class="branchNoCov" title="Branch 22 was not taken"> - </span>][<span class="branchCov" title="Branch 25 was taken 84 times"> + </span><span class="branchNoCov" title="Branch 26 was not taken"> - </span>]
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 28 was taken 84 times"> + </span><span class="branchNoCov" title="Branch 29 was not taken"> - </span>][<span class="branchCov" title="Branch 34 was taken 84 times"> + </span><span class="branchNoCov" title="Branch 35 was not taken"> - </span>]
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 40 was taken 84 times"> + </span><span class="branchNoCov" title="Branch 41 was not taken"> - </span>][<span class="branchCov" title="Branch 44 was taken 84 times"> + </span><span class="branchNoCov" title="Branch 45 was not taken"> - </span>]
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 47 was taken 84 times"> + </span><span class="branchNoCov" title="Branch 48 was not taken"> - </span>][<span class="branchCov" title="Branch 50 was taken 84 times"> + </span><span class="branchNoCov" title="Branch 51 was not taken"> - </span>]
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 53 was taken 84 times"> + </span><span class="branchNoCov" title="Branch 54 was not taken"> - </span>][<span class="branchCov" title="Branch 56 was taken 84 times"> + </span><span class="branchNoCov" title="Branch 57 was not taken"> - </span>]
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 59 was taken 84 times"> + </span><span class="branchNoCov" title="Branch 60 was not taken"> - </span>][<span class="branchCov" title="Branch 62 was taken 84 times"> + </span><span class="branchNoCov" title="Branch 63 was not taken"> - </span>]
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 65 was taken 84 times"> + </span><span class="branchNoCov" title="Branch 66 was not taken"> - </span>][<span class="branchNoExec" title="Branch 91 was not executed"> # </span><span class="branchNoExec" title="Branch 92 was not executed"> # </span>]
+<span class="lineNum">         </span>[<span class="branchNoExec" title="Branch 94 was not executed"> # </span><span class="branchNoExec" title="Branch 95 was not executed"> # </span>][<span class="branchNoExec" title="Branch 97 was not executed"> # </span><span class="branchNoExec" title="Branch 98 was not executed"> # </span>]
+<span class="lineNum">         </span>[<span class="branchNoExec" title="Branch 100 was not executed"> # </span><span class="branchNoExec" title="Branch 101 was not executed"> # </span>][<span class="branchNoExec" title="Branch 103 was not executed"> # </span><span class="branchNoExec" title="Branch 104 was not executed"> # </span>]
+<span class="lineNum">         </span>[<span class="branchNoExec" title="Branch 106 was not executed"> # </span><span class="branchNoExec" title="Branch 107 was not executed"> # </span>][<span class="branchNoExec" title="Branch 109 was not executed"> # </span><span class="branchNoExec" title="Branch 110 was not executed"> # </span>]
+<span class="lineNum">         </span>[<span class="branchNoExec" title="Branch 113 was not executed"> # </span><span class="branchNoExec" title="Branch 114 was not executed"> # </span>][<span class="branchNoExec" title="Branch 116 was not executed"> # </span><span class="branchNoExec" title="Branch 117 was not executed"> # </span>]
+<span class="lineNum">         </span>[<span class="branchNoExec" title="Branch 122 was not executed"> # </span><span class="branchNoExec" title="Branch 123 was not executed"> # </span>][<span class="branchNoExec" title="Branch 128 was not executed"> # </span><span class="branchNoExec" title="Branch 129 was not executed"> # </span>]
+<span class="lineNum">         </span>[<span class="branchNoExec" title="Branch 132 was not executed"> # </span><span class="branchNoExec" title="Branch 133 was not executed"> # </span>][<span class="branchNoExec" title="Branch 135 was not executed"> # </span><span class="branchNoExec" title="Branch 136 was not executed"> # </span>]
+<span class="lineNum">         </span>[<span class="branchNoExec" title="Branch 138 was not executed"> # </span><span class="branchNoExec" title="Branch 139 was not executed"> # </span>][<span class="branchNoExec" title="Branch 141 was not executed"> # </span><span class="branchNoExec" title="Branch 142 was not executed"> # </span>]
+<span class="lineNum">         </span>[<span class="branchNoExec" title="Branch 144 was not executed"> # </span><span class="branchNoExec" title="Branch 145 was not executed"> # </span>][<span class="branchNoExec" title="Branch 147 was not executed"> # </span><span class="branchNoExec" title="Branch 148 was not executed"> # </span>]
+<span class="lineNum">         </span>[<span class="branchNoExec" title="Branch 150 was not executed"> # </span><span class="branchNoExec" title="Branch 151 was not executed"> # </span>][<span class="branchNoExec" title="Branch 153 was not executed"> # </span><span class="branchNoExec" title="Branch 154 was not executed"> # </span>]
+<span class="lineNum">      73 </span>                :            : // *****************************************************************************
+<span class="lineNum">      74 </span>                :            : // Constructor
+<span class="lineNum">      75 </span>                :            : //! \param[in] cmdline Data structure storing data from the command-line parser
+<span class="lineNum">      76 </span>                :            : // *****************************************************************************
+<span class="lineNum">      77 </span>                :            : {
+<span class="lineNum">      78 </span>                :            :   // Compute load distribution given total work (= number of particles) and
+<span class="lineNum">      79 </span>                :            :   // user-specified virtualization
+<span class="lineNum">      80 </span>                :            :   uint64_t chunksize, remainder;
+<span class="lineNum">      81 </span>                :            :   auto nchare = tk::linearLoadDistributor(
+<span class="lineNum">      82 </span>                :<span class="lineCov">         84 :                   g_inputdeck.get&lt; tag::cmd, tag::virtualization &gt;(),</span>
+<span class="lineNum">      83 </span>                :<span class="lineCov">         84 :                   g_inputdeck.get&lt; tag::discr, tag::npar &gt;(),</span>
+<span class="lineNum">      84 </span>                :            :                   CkNumPes(),
+<span class="lineNum">      85 </span>                :            :                   chunksize,
+<span class="lineNum">      86 </span>[<span class="branchCov" title="Branch 2 was taken 84 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>][<span class="branchNoExec" title="Branch 6 was not executed"> # </span><span class="branchNoExec" title="Branch 7 was not executed"> # </span>]:<span class="lineCov">        168 :                   remainder );</span>
+<span class="lineNum">      87 </span>                :            : 
+<span class="lineNum">      88 </span>                :            :   // Compute total number of particles distributed over all workers. Note that
+<span class="lineNum">      89 </span>                :            :   // this number will not necessarily be the same as given by the user, coming
+<span class="lineNum">      90 </span>                :            :   // from g_inputdeck.get&lt; tag::discr, tag::npar &gt;(), since each Charm++ chare
+<span class="lineNum">      91 </span>                :            :   // array element constructor takes this chunksize argument, which equals the
+<span class="lineNum">      92 </span>                :            :   // number of particles the array element (worker) will work on.
+<span class="lineNum">      93 </span>                :<span class="lineCov">         84 :   m_npar = static_cast&lt; tk::real &gt;( nchare * chunksize );</span>
+<span class="lineNum">      94 </span>                :            : 
+<span class="lineNum">      95 </span>                :            :   // Print out info on what will be done and how
+<span class="lineNum">      96 </span>[<span class="branchCov" title="Branch 1 was taken 84 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchNoExec" title="Branch 4 was not executed"> # </span><span class="branchNoExec" title="Branch 5 was not executed"> # </span>]:<span class="lineCov">         84 :   info( chunksize, nchare );</span>
+<span class="lineNum">      97 </span>                :            : 
+<span class="lineNum">      98 </span>                :            :   // Output header for statistics output file
+<span class="lineNum">      99 </span>[<span class="branchNoCov" title="Branch 2 was not taken"> - </span><span class="branchCov" title="Branch 3 was taken 3 times"> + </span>][<span class="branchNoExec" title="Branch 6 was not executed"> # </span><span class="branchNoExec" title="Branch 7 was not executed"> # </span>]:<span class="lineCov">         87 :   tk::TxtStatWriter sw( !m_nameOrdinary.empty() || !m_nameCentral.empty() ?</span>
+<span class="lineNum">     100 </span>                :<span class="lineCov">         81 :                         g_inputdeck.get&lt; tag::cmd, tag::io, tag::stat &gt;() :</span>
+<span class="lineNum">     101 </span>                :            :                         std::string(),
+<span class="lineNum">     102 </span>                :<span class="lineCov">         84 :                         g_inputdeck.get&lt; tag::flformat, tag::stat &gt;(),</span>
+<span class="lineNum">     103 </span>  [<span class="branchCov" title="Branch 1 was taken 3 times"> + </span><span class="branchCov" title="Branch 2 was taken 81 times"> + </span><span class="branchCov" title="Branch 4 was taken 81 times"> + </span><span class="branchNoCov" title="Branch 5 was not taken"> - </span>]:<span class="lineCov">        252 :                         g_inputdeck.get&lt; tag::prec, tag::stat &gt;() );</span>
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 7 was taken 3 times"> + </span><span class="branchNoCov" title="Branch 8 was not taken"> - </span>][<span class="branchCov" title="Branch 10 was taken 84 times"> + </span><span class="branchNoCov" title="Branch 11 was not taken"> - </span>]
+<span class="lineNum">         </span>  [<span class="branchNoExec" title="Branch 14 was not executed"> # </span><span class="branchNoExec" title="Branch 15 was not executed"> # </span><span class="branchNoExec" title="Branch 17 was not executed"> # </span><span class="branchNoExec" title="Branch 18 was not executed"> # </span>]
+<span class="lineNum">         </span>[<span class="branchNoExec" title="Branch 20 was not executed"> # </span><span class="branchNoExec" title="Branch 21 was not executed"> # </span>][<span class="branchNoExec" title="Branch 23 was not executed"> # </span><span class="branchNoExec" title="Branch 24 was not executed"> # </span>]
+<span class="lineNum">     104 </span>  [<span class="branchCov" title="Branch 1 was taken 84 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span><span class="branchNoExec" title="Branch 4 was not executed"> # </span><span class="branchNoExec" title="Branch 5 was not executed"> # </span>]:<span class="lineCov">         84 :   sw.header( m_nameOrdinary, m_nameCentral, m_tables.first );</span>
+<span class="lineNum">     105 </span>                :            : 
+<span class="lineNum">     106 </span>                :            :   // Print out time integration header
+<span class="lineNum">     107 </span>[<span class="branchCov" title="Branch 1 was taken 84 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchNoExec" title="Branch 4 was not executed"> # </span><span class="branchNoExec" title="Branch 5 was not executed"> # </span>]:<span class="lineCov">         84 :   m_print.endsubsection();</span>
+<span class="lineNum">     108 </span>[<span class="branchCov" title="Branch 2 was taken 84 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>][<span class="branchCov" title="Branch 5 was taken 84 times"> + </span><span class="branchNoCov" title="Branch 6 was not taken"> - </span>]:<span class="lineCov">         84 :   m_print.diag( &quot;Starting time stepping ...&quot; );</span>
+<span class="lineNum">         </span>[<span class="branchNoExec" title="Branch 13 was not executed"> # </span><span class="branchNoExec" title="Branch 14 was not executed"> # </span>][<span class="branchNoExec" title="Branch 16 was not executed"> # </span><span class="branchNoExec" title="Branch 17 was not executed"> # </span>]
+<span class="lineNum">     109 </span>  [<span class="branchCov" title="Branch 1 was taken 84 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span><span class="branchNoExec" title="Branch 4 was not executed"> # </span><span class="branchNoExec" title="Branch 5 was not executed"> # </span>]:<span class="lineCov">         84 :   header();</span>
+<span class="lineNum">     110 </span>                :            : 
+<span class="lineNum">     111 </span>                :            :   // Start timer measuring total integration time
+<span class="lineNum">     112 </span>[<span class="branchCov" title="Branch 1 was taken 84 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchNoExec" title="Branch 4 was not executed"> # </span><span class="branchNoExec" title="Branch 5 was not executed"> # </span>]:<span class="lineCov">         84 :   m_timer.emplace_back();</span>
+<span class="lineNum">     113 </span>                :            : 
+<span class="lineNum">     114 </span>                :            :   // Construct and initialize map of statistical moments
+<span class="lineNum">     115 </span>[<span class="branchCov" title="Branch 4 was taken 1044 times"> + </span><span class="branchNoCov" title="Branch 5 was not taken"> - </span>][<span class="branchCov" title="Branch 7 was taken 1044 times"> + </span><span class="branchNoCov" title="Branch 8 was not taken"> - </span>]:<span class="lineCov">       1128 :   for (const auto&amp; product : g_inputdeck.get&lt; tag::stat &gt;())</span>
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 10 was taken 1128 times"> + </span><span class="branchNoCov" title="Branch 11 was not taken"> - </span>][<span class="branchCov" title="Branch 12 was taken 1044 times"> + </span><span class="branchCov" title="Branch 13 was taken 84 times"> + </span>]
+<span class="lineNum">         </span>[<span class="branchNoExec" title="Branch 18 was not executed"> # </span><span class="branchNoExec" title="Branch 19 was not executed"> # </span>][<span class="branchNoExec" title="Branch 21 was not executed"> # </span><span class="branchNoExec" title="Branch 22 was not executed"> # </span>]
+<span class="lineNum">         </span>[<span class="branchNoExec" title="Branch 24 was not executed"> # </span><span class="branchNoExec" title="Branch 25 was not executed"> # </span>][<span class="branchNoExec" title="Branch 26 was not executed"> # </span><span class="branchNoExec" title="Branch 27 was not executed"> # </span>]
+<span class="lineNum">     116 </span>[<span class="branchCov" title="Branch 1 was taken 1044 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchNoExec" title="Branch 4 was not executed"> # </span><span class="branchNoExec" title="Branch 5 was not executed"> # </span>]:<span class="lineCov">       1044 :     m_moments[ product ] = 0.0;</span>
+<span class="lineNum">     117 </span>                :            : 
+<span class="lineNum">     118 </span>                :            :   // Activate SDAG-wait for estimation of ordinary statistics
+<span class="lineNum">     119 </span>[<span class="branchCov" title="Branch 1 was taken 84 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchNoExec" title="Branch 4 was not executed"> # </span><span class="branchNoExec" title="Branch 5 was not executed"> # </span>]:<span class="lineCov">         84 :   thisProxy.wait4ord();</span>
+<span class="lineNum">     120 </span>                :            :   // Activate SDAG-wait for estimation of PDFs at select times
+<span class="lineNum">     121 </span>[<span class="branchCov" title="Branch 1 was taken 84 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchNoExec" title="Branch 4 was not executed"> # </span><span class="branchNoExec" title="Branch 5 was not executed"> # </span>]:<span class="lineCov">         84 :   thisProxy.wait4pdf();</span>
+<span class="lineNum">     122 </span>                :            : 
+<span class="lineNum">     123 </span>                :            :   // Create statistics merger chare group collecting chare contributions
+<span class="lineNum">     124 </span>[<span class="branchCov" title="Branch 1 was taken 84 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 4 was taken 84 times"> + </span><span class="branchNoCov" title="Branch 5 was not taken"> - </span>]:<span class="lineCov">        168 :   CProxy_Collector collproxy = CProxy_Collector::ckNew( thisProxy );</span>
+<span class="lineNum">         </span>[<span class="branchNoExec" title="Branch 9 was not executed"> # </span><span class="branchNoExec" title="Branch 10 was not executed"> # </span>][<span class="branchNoExec" title="Branch 12 was not executed"> # </span><span class="branchNoExec" title="Branch 13 was not executed"> # </span>]
+<span class="lineNum">     125 </span>                :            : 
+<span class="lineNum">     126 </span>                :            :   // Fire up asynchronous differential equation integrators
+<span class="lineNum">     127 </span>[<span class="branchCov" title="Branch 1 was taken 84 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 4 was taken 84 times"> + </span><span class="branchNoCov" title="Branch 5 was not taken"> - </span>]:<span class="lineCov">        168 :   m_intproxy =</span>
+<span class="lineNum">         </span>[<span class="branchNoExec" title="Branch 9 was not executed"> # </span><span class="branchNoExec" title="Branch 10 was not executed"> # </span>][<span class="branchNoExec" title="Branch 12 was not executed"> # </span><span class="branchNoExec" title="Branch 13 was not executed"> # </span>]
+<span class="lineNum">     128 </span>                :            :     CProxy_Integrator::ckNew( thisProxy, collproxy, chunksize,
+<span class="lineNum">     129 </span>[<span class="branchCov" title="Branch 1 was taken 84 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchNoExec" title="Branch 6 was not executed"> # </span><span class="branchNoExec" title="Branch 7 was not executed"> # </span>]:<span class="lineCov">        168 :                               static_cast&lt;int&gt;( nchare ) );</span>
+<span class="lineNum">     130 </span>                :<span class="lineCov">         84 : }</span>
+<a name="131"><span class="lineNum">     131 </span>                :            : </a>
+<span class="lineNum">     132 </span>                :            : void
+<span class="lineNum">     133 </span>                :<span class="lineCov">         84 : Distributor::info( uint64_t chunksize, std::size_t nchare )</span>
+<span class="lineNum">     134 </span>                :            : // *****************************************************************************
+<span class="lineNum">     135 </span>                :            : //  Print information at startup
+<span class="lineNum">     136 </span>                :            : //! \param[in] chunksize Chunk size, see Base/LoadDistribution.h
+<span class="lineNum">     137 </span>                :            : //! \param[in] nchare Total number of Charem++ Integrator chares doing work
+<span class="lineNum">     138 </span>                :            : // *****************************************************************************
+<span class="lineNum">     139 </span>                :            : {
+<span class="lineNum">     140 </span>[<span class="branchCov" title="Branch 2 was taken 84 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>][<span class="branchCov" title="Branch 5 was taken 84 times"> + </span><span class="branchNoCov" title="Branch 6 was not taken"> - </span>]:<span class="lineCov">         84 :   m_print.part( &quot;Factory&quot; );</span>
+<span class="lineNum">     141 </span>                :            : 
+<span class="lineNum">     142 </span>                :            :   // Print out info data layout
+<span class="lineNum">     143 </span>                :            :   m_print.list( &quot;Particle properties data layout (CMake: PARTICLE_DATA_LAYOUT)&quot;,
+<span class="lineNum">     144 </span>[<span class="branchCov" title="Branch 2 was taken 84 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>][<span class="branchCov" title="Branch 5 was taken 84 times"> + </span><span class="branchNoCov" title="Branch 6 was not taken"> - </span>]:<span class="lineCov">        168 :                 std::list&lt; std::string &gt;{ tk::Particles::layout() } );</span>
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 9 was taken 84 times"> + </span><span class="branchNoCov" title="Branch 10 was not taken"> - </span>][<span class="branchCov" title="Branch 12 was taken 84 times"> + </span><span class="branchNoCov" title="Branch 13 was not taken"> - </span>]
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 17 was taken 84 times"> + </span><span class="branchCov" title="Branch 18 was taken 84 times"> + </span>][<span class="branchNoExec" title="Branch 24 was not executed"> # </span><span class="branchNoExec" title="Branch 25 was not executed"> # </span>]
+<span class="lineNum">     145 </span>                :            : 
+<span class="lineNum">     146 </span>                :            :   // Re-create differential equations stack for output
+<span class="lineNum">     147 </span>        [<span class="branchCov" title="Branch 1 was taken 84 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">         84 :   DiffEqStack stack;</span>
+<span class="lineNum">     148 </span>                :            : 
+<span class="lineNum">     149 </span>                :            :   // Print out information on factory
+<span class="lineNum">     150 </span>                :            :   m_print.eqlist( &quot;Registered differential equations&quot;,
+<span class="lineNum">     151 </span>[<span class="branchCov" title="Branch 1 was taken 84 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 4 was taken 84 times"> + </span><span class="branchNoCov" title="Branch 5 was not taken"> - </span>]:<span class="lineCov">         84 :                   stack.factory(), stack.ntypes() );</span>
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 8 was taken 84 times"> + </span><span class="branchNoCov" title="Branch 9 was not taken"> - </span>][<span class="branchCov" title="Branch 11 was taken 84 times"> + </span><span class="branchNoCov" title="Branch 12 was not taken"> - </span>]
+<span class="lineNum">     152 </span>        [<span class="branchCov" title="Branch 1 was taken 84 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">         84 :   m_print.endpart();</span>
+<span class="lineNum">     153 </span>                :            : 
+<span class="lineNum">     154 </span>                :            :   // Instantiate tables to sample and output to statistics file
+<span class="lineNum">     155 </span>        [<span class="branchCov" title="Branch 1 was taken 84 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">         84 :   m_tables = stack.tables();</span>
+<span class="lineNum">     156 </span>                :            : 
+<span class="lineNum">     157 </span>                :            :   // Print out information on problem
+<span class="lineNum">     158 </span>[<span class="branchCov" title="Branch 2 was taken 84 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>][<span class="branchCov" title="Branch 5 was taken 84 times"> + </span><span class="branchNoCov" title="Branch 6 was not taken"> - </span>]:<span class="lineCov">         84 :   m_print.part( &quot;Problem&quot; );</span>
+<span class="lineNum">     159 </span>                :            : 
+<span class="lineNum">     160 </span>                :            :   // Print out info on problem title
+<span class="lineNum">     161 </span>        [<span class="branchCov" title="Branch 2 was taken 84 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineCov">         84 :   if ( !g_inputdeck.get&lt; tag::title &gt;().empty() )</span>
+<span class="lineNum">     162 </span>        [<span class="branchCov" title="Branch 2 was taken 84 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineCov">         84 :     m_print.title( g_inputdeck.get&lt; tag::title &gt;() );</span>
+<span class="lineNum">     163 </span>                :            : 
+<span class="lineNum">     164 </span>                :            :   // Print out info on settings of selected differential equations
+<span class="lineNum">     165 </span>[<span class="branchCov" title="Branch 1 was taken 84 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 5 was taken 84 times"> + </span><span class="branchNoCov" title="Branch 6 was not taken"> - </span>]:<span class="lineCov">         84 :   m_print.diffeqs( &quot;Differential equations integrated&quot;, stack.info() );</span>
+<span class="lineNum">         </span>        [<span class="branchCov" title="Branch 8 was taken 84 times"> + </span><span class="branchNoCov" title="Branch 9 was not taken"> - </span>]
+<span class="lineNum">     166 </span>                :            : 
+<span class="lineNum">     167 </span>                :            :   // Print out info on RNGs selected
+<span class="lineNum">     168 </span>                :            :   // ...
+<span class="lineNum">     169 </span>                :            : 
+<span class="lineNum">     170 </span>                :            :   // Print I/O filenames
+<span class="lineNum">     171 </span>[<span class="branchCov" title="Branch 2 was taken 84 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>][<span class="branchCov" title="Branch 5 was taken 84 times"> + </span><span class="branchNoCov" title="Branch 6 was not taken"> - </span>]:<span class="lineCov">         84 :   m_print.section( &quot;Output filenames&quot; );</span>
+<span class="lineNum">     172 </span>        [<span class="branchCov" title="Branch 2 was taken 81 times"> + </span><span class="branchCov" title="Branch 3 was taken 3 times"> + </span>]:<span class="lineCov">         84 :   if (!g_inputdeck.get&lt; tag::stat &gt;().empty())</span>
+<span class="lineNum">     173 </span>[<span class="branchCov" title="Branch 3 was taken 81 times"> + </span><span class="branchNoCov" title="Branch 4 was not taken"> - </span>][<span class="branchCov" title="Branch 6 was taken 81 times"> + </span><span class="branchNoCov" title="Branch 7 was not taken"> - </span>]:<span class="lineCov">         81 :     m_print.item( &quot;Statistics&quot;, g_inputdeck.get&lt; tag::cmd, tag::io, tag::stat &gt;() );</span>
+<span class="lineNum">     174 </span>        [<span class="branchCov" title="Branch 2 was taken 16 times"> + </span><span class="branchCov" title="Branch 3 was taken 68 times"> + </span>]:<span class="lineCov">         84 :   if (!g_inputdeck.get&lt; tag::pdf &gt;().empty())</span>
+<span class="lineNum">     175 </span>[<span class="branchCov" title="Branch 3 was taken 16 times"> + </span><span class="branchNoCov" title="Branch 4 was not taken"> - </span>][<span class="branchCov" title="Branch 6 was taken 16 times"> + </span><span class="branchNoCov" title="Branch 7 was not taken"> - </span>]:<span class="lineCov">         16 :     m_print.item( &quot;PDF&quot;, g_inputdeck.get&lt; tag::cmd, tag::io, tag::pdf &gt;() );</span>
+<span class="lineNum">     176 </span>                :            : 
+<span class="lineNum">     177 </span>                :            :   // Print discretization parameters
+<span class="lineNum">     178 </span>[<span class="branchCov" title="Branch 2 was taken 84 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>][<span class="branchCov" title="Branch 5 was taken 84 times"> + </span><span class="branchNoCov" title="Branch 6 was not taken"> - </span>]:<span class="lineCov">         84 :   m_print.section( &quot;Discretization parameters&quot; );</span>
+<span class="lineNum">     179 </span>                :            :   m_print.item( &quot;Number of time steps&quot;,
+<span class="lineNum">     180 </span>[<span class="branchCov" title="Branch 3 was taken 84 times"> + </span><span class="branchNoCov" title="Branch 4 was not taken"> - </span>][<span class="branchCov" title="Branch 6 was taken 84 times"> + </span><span class="branchNoCov" title="Branch 7 was not taken"> - </span>]:<span class="lineCov">         84 :                 g_inputdeck.get&lt; tag::discr, tag::nstep &gt;() );</span>
+<span class="lineNum">     181 </span>                :            :   m_print.item( &quot;Terminate time&quot;,
+<span class="lineNum">     182 </span>[<span class="branchCov" title="Branch 3 was taken 84 times"> + </span><span class="branchNoCov" title="Branch 4 was not taken"> - </span>][<span class="branchCov" title="Branch 6 was taken 84 times"> + </span><span class="branchNoCov" title="Branch 7 was not taken"> - </span>]:<span class="lineCov">         84 :                 g_inputdeck.get&lt; tag::discr, tag::term &gt;() );</span>
+<span class="lineNum">     183 </span>                :            :   m_print.item( &quot;Initial time step size&quot;,
+<span class="lineNum">     184 </span>[<span class="branchCov" title="Branch 3 was taken 84 times"> + </span><span class="branchNoCov" title="Branch 4 was not taken"> - </span>][<span class="branchCov" title="Branch 6 was taken 84 times"> + </span><span class="branchNoCov" title="Branch 7 was not taken"> - </span>]:<span class="lineCov">         84 :                 g_inputdeck.get&lt; tag::discr, tag::dt &gt;() );</span>
+<span class="lineNum">     185 </span>                :            : 
+<span class="lineNum">     186 </span>                :            :   // Print output intervals
+<span class="lineNum">     187 </span>[<span class="branchCov" title="Branch 2 was taken 84 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>][<span class="branchCov" title="Branch 5 was taken 84 times"> + </span><span class="branchNoCov" title="Branch 6 was not taken"> - </span>]:<span class="lineCov">         84 :   m_print.section( &quot;Output intervals&quot; );</span>
+<span class="lineNum">     188 </span>[<span class="branchCov" title="Branch 3 was taken 84 times"> + </span><span class="branchNoCov" title="Branch 4 was not taken"> - </span>][<span class="branchCov" title="Branch 6 was taken 84 times"> + </span><span class="branchNoCov" title="Branch 7 was not taken"> - </span>]:<span class="lineCov">         84 :   m_print.item( &quot;TTY&quot;, g_inputdeck.get&lt; tag::interval, tag::tty&gt;() );</span>
+<span class="lineNum">     189 </span>        [<span class="branchCov" title="Branch 2 was taken 81 times"> + </span><span class="branchCov" title="Branch 3 was taken 3 times"> + </span>]:<span class="lineCov">         84 :   if (!g_inputdeck.get&lt; tag::stat &gt;().empty())</span>
+<span class="lineNum">     190 </span>[<span class="branchCov" title="Branch 3 was taken 81 times"> + </span><span class="branchNoCov" title="Branch 4 was not taken"> - </span>][<span class="branchCov" title="Branch 6 was taken 81 times"> + </span><span class="branchNoCov" title="Branch 7 was not taken"> - </span>]:<span class="lineCov">         81 :     m_print.item( &quot;Statistics&quot;, g_inputdeck.get&lt; tag::interval, tag::stat &gt;() );</span>
+<span class="lineNum">     191 </span>        [<span class="branchCov" title="Branch 2 was taken 16 times"> + </span><span class="branchCov" title="Branch 3 was taken 68 times"> + </span>]:<span class="lineCov">         84 :   if (!g_inputdeck.get&lt; tag::pdf &gt;().empty())</span>
+<span class="lineNum">     192 </span>[<span class="branchCov" title="Branch 3 was taken 16 times"> + </span><span class="branchNoCov" title="Branch 4 was not taken"> - </span>][<span class="branchCov" title="Branch 6 was taken 16 times"> + </span><span class="branchNoCov" title="Branch 7 was not taken"> - </span>]:<span class="lineCov">         16 :     m_print.item( &quot;PDF&quot;, g_inputdeck.get&lt; tag::interval, tag::pdf &gt;() );</span>
+<span class="lineNum">     193 </span>                :            : 
+<span class="lineNum">     194 </span>                :            :   // Print out statistics estimated
+<span class="lineNum">     195 </span>[<span class="branchCov" title="Branch 2 was taken 84 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>][<span class="branchCov" title="Branch 5 was taken 84 times"> + </span><span class="branchNoCov" title="Branch 6 was not taken"> - </span>]:<span class="lineCov">         84 :   m_print.statistics( &quot;Statistical moments and distributions&quot; );</span>
+<span class="lineNum">     196 </span>                :            : 
+<span class="lineNum">     197 </span>                :            :   // Print out info on load distirubtion
+<span class="lineNum">     198 </span>[<span class="branchCov" title="Branch 2 was taken 84 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>][<span class="branchCov" title="Branch 5 was taken 84 times"> + </span><span class="branchNoCov" title="Branch 6 was not taken"> - </span>]:<span class="lineCov">         84 :   m_print.section( &quot;Load distribution&quot; );</span>
+<span class="lineNum">     199 </span>                :            :   m_print.item( &quot;Virtualization [0.0...1.0]&quot;,
+<span class="lineNum">     200 </span>[<span class="branchCov" title="Branch 3 was taken 84 times"> + </span><span class="branchNoCov" title="Branch 4 was not taken"> - </span>][<span class="branchCov" title="Branch 6 was taken 84 times"> + </span><span class="branchNoCov" title="Branch 7 was not taken"> - </span>]:<span class="lineCov">         84 :                 g_inputdeck.get&lt; tag::cmd, tag::virtualization &gt;() );</span>
+<span class="lineNum">     201 </span>[<span class="branchCov" title="Branch 3 was taken 84 times"> + </span><span class="branchNoCov" title="Branch 4 was not taken"> - </span>][<span class="branchCov" title="Branch 6 was taken 84 times"> + </span><span class="branchNoCov" title="Branch 7 was not taken"> - </span>]:<span class="lineCov">         84 :   m_print.item( &quot;Number of processing elements&quot;, CkNumPes() );</span>
+<span class="lineNum">     202 </span>[<span class="branchCov" title="Branch 2 was taken 84 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>][<span class="branchCov" title="Branch 5 was taken 84 times"> + </span><span class="branchNoCov" title="Branch 6 was not taken"> - </span>]:<span class="lineCov">         84 :   m_print.item( &quot;Number of work units&quot;, nchare );</span>
+<span class="lineNum">     203 </span>                :            :   m_print.item( &quot;User load (# of particles)&quot;,
+<span class="lineNum">     204 </span>[<span class="branchCov" title="Branch 3 was taken 84 times"> + </span><span class="branchNoCov" title="Branch 4 was not taken"> - </span>][<span class="branchCov" title="Branch 6 was taken 84 times"> + </span><span class="branchNoCov" title="Branch 7 was not taken"> - </span>]:<span class="lineCov">         84 :                 g_inputdeck.get&lt; tag::discr, tag::npar &gt;() );</span>
+<span class="lineNum">     205 </span>[<span class="branchCov" title="Branch 2 was taken 84 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>][<span class="branchCov" title="Branch 5 was taken 84 times"> + </span><span class="branchNoCov" title="Branch 6 was not taken"> - </span>]:<span class="lineCov">         84 :   m_print.item( &quot;Chunksize (load per work unit)&quot;, chunksize );</span>
+<span class="lineNum">     206 </span>                :            :   m_print.item( &quot;Actual load (# of particles)&quot;,
+<span class="lineNum">     207 </span>[<span class="branchCov" title="Branch 1 was taken 84 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 4 was taken 84 times"> + </span><span class="branchNoCov" title="Branch 5 was not taken"> - </span>]:<span class="lineCov">        168 :                 std::to_string( nchare * chunksize ) +</span>
+<span class="lineNum">     208 </span>[<span class="branchCov" title="Branch 1 was taken 84 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 4 was taken 84 times"> + </span><span class="branchNoCov" title="Branch 5 was not taken"> - </span>]:<span class="lineCov">        336 :                 &quot; (=&quot; +</span>
+<span class="lineNum">     209 </span>[<span class="branchCov" title="Branch 1 was taken 84 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 4 was taken 84 times"> + </span><span class="branchNoCov" title="Branch 5 was not taken"> - </span>]:<span class="lineCov">        336 :                 std::to_string( nchare ) + &quot;*&quot; +</span>
+<span class="lineNum">         </span>        [<span class="branchCov" title="Branch 7 was taken 84 times"> + </span><span class="branchNoCov" title="Branch 8 was not taken"> - </span>]
+<span class="lineNum">     210 </span>[<span class="branchCov" title="Branch 1 was taken 84 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 5 was taken 84 times"> + </span><span class="branchNoCov" title="Branch 6 was not taken"> - </span>]:<span class="lineCov">        168 :                 std::to_string( chunksize ) + &quot;)&quot; );</span>
+<span class="lineNum">         </span>        [<span class="branchCov" title="Branch 8 was taken 84 times"> + </span><span class="branchNoCov" title="Branch 9 was not taken"> - </span>]
+<span class="lineNum">     211 </span>                :<span class="lineCov">         84 : }</span>
+<a name="212"><span class="lineNum">     212 </span>                :            : </a>
+<span class="lineNum">     213 </span>                :            : tk::real
+<span class="lineNum">     214 </span>                :<span class="lineCov">     518181 : Distributor::computedt()</span>
+<span class="lineNum">     215 </span>                :            : // *****************************************************************************
+<span class="lineNum">     216 </span>                :            : // Compute size of next time step
+<span class="lineNum">     217 </span>                :            : //! \return Size of dt for the next time step
+<span class="lineNum">     218 </span>                :            : // *****************************************************************************
+<span class="lineNum">     219 </span>                :            : {
+<span class="lineNum">     220 </span>                :            :   // Simply return a constant user-defined dt for now
+<span class="lineNum">     221 </span>                :<span class="lineCov">     518181 :   return g_inputdeck.get&lt; tag::discr, tag::dt &gt;();</span>
+<span class="lineNum">     222 </span>                :            : }
+<a name="223"><span class="lineNum">     223 </span>                :            : </a>
+<span class="lineNum">     224 </span>                :            : void
+<span class="lineNum">     225 </span>                :<span class="lineCov">     518097 : Distributor::estimateOrd( tk::real* ord, int n )</span>
+<span class="lineNum">     226 </span>                :            : // *****************************************************************************
+<span class="lineNum">     227 </span>                :            : // Estimate ordinary moments
+<span class="lineNum">     228 </span>                :            : //! \param[in] ord Ordinary moments (sum) collected over all chares
+<span class="lineNum">     229 </span>                :            : //! \param[in] n Number of ordinary moments in array ord
+<span class="lineNum">     230 </span>                :            : // *****************************************************************************
+<span class="lineNum">     231 </span>                :            : {
+<span class="lineNum">     232 </span>                :            :   #ifdef NDEBUG
+<span class="lineNum">     233 </span>                :            :   IGNORE(n);
+<span class="lineNum">     234 </span>                :            :   #endif
+<span class="lineNum">     235 </span>                :            : 
+<span class="lineNum">     236 </span>[<span class="branchNoExec" title="Branch 4 was not executed"> # </span><span class="branchNoExec" title="Branch 5 was not executed"> # </span>][<span class="branchNoExec" title="Branch 8 was not executed"> # </span><span class="branchNoExec" title="Branch 9 was not executed"> # </span>]:<span class="lineCov">     518097 :   Assert( static_cast&lt;std::size_t&gt;(n) == m_ordinary.size(),</span>
+<span class="lineNum">         </span>        [<span class="branchNoExec" title="Branch 12 was not executed"> # </span><span class="branchNoExec" title="Branch 13 was not executed"> # </span>]
+<span class="lineNum">     237 </span>        [<span class="branchNoCov" title="Branch 0 was not taken"> - </span><span class="branchCov" title="Branch 1 was taken 518097 times"> + </span>]:<span class="lineCov">     518097 :           &quot;Number of ordinary moments contributed not equal to expected&quot; );</span>
+<span class="lineNum">     238 </span>                :            : 
+<span class="lineNum">     239 </span>                :            :   // Add contribution from PE to total sums, i.e., u[i] += v[i] for all i
+<span class="lineNum">     240 </span>        [<span class="branchCov" title="Branch 2 was taken 2440535 times"> + </span><span class="branchCov" title="Branch 3 was taken 518097 times"> + </span>]:<span class="lineCov">    2958632 :   for (std::size_t i=0; i&lt;m_ordinary.size(); ++i) m_ordinary[i] += ord[i];</span>
+<span class="lineNum">     241 </span>                :            : 
+<span class="lineNum">     242 </span>                :            :   // Finish computing moments, i.e., divide sums by the number of samples
+<span class="lineNum">     243 </span>[<span class="branchCov" title="Branch 3 was taken 2440535 times"> + </span><span class="branchNoCov" title="Branch 4 was not taken"> - </span>][<span class="branchCov" title="Branch 6 was taken 2440535 times"> + </span><span class="branchNoCov" title="Branch 7 was not taken"> - </span>]:<span class="lineCov">    2958632 :   for (auto&amp; m : m_ordinary) m /= m_npar;</span>
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 9 was taken 2958632 times"> + </span><span class="branchNoCov" title="Branch 10 was not taken"> - </span>][<span class="branchCov" title="Branch 11 was taken 2440535 times"> + </span><span class="branchCov" title="Branch 12 was taken 518097 times"> + </span>]
+<span class="lineNum">     244 </span>                :            : 
+<span class="lineNum">     245 </span>                :            :   // Activate SDAG trigger signaling that ordinary moments have been estimated
+<span class="lineNum">     246 </span>                :<span class="lineCov">     518097 :   estimateOrdDone();</span>
+<span class="lineNum">     247 </span>                :<span class="lineCov">     518097 : }</span>
+<a name="248"><span class="lineNum">     248 </span>                :            : </a>
+<span class="lineNum">     249 </span>                :            : void
+<span class="lineNum">     250 </span>                :<span class="lineCov">     518097 : Distributor::estimateCen( tk::real* cen, int n )</span>
+<span class="lineNum">     251 </span>                :            : // *****************************************************************************
+<span class="lineNum">     252 </span>                :            : // Estimate ordinary moments
+<span class="lineNum">     253 </span>                :            : //! \param[in] cen Central moments (sum) collected over all chares
+<span class="lineNum">     254 </span>                :            : //! \param[in] n Number of central moments in array cen
+<span class="lineNum">     255 </span>                :            : // *****************************************************************************
+<span class="lineNum">     256 </span>                :            : {
+<span class="lineNum">     257 </span>                :            :   #ifdef NDEBUG
+<span class="lineNum">     258 </span>                :            :   IGNORE(n);
+<span class="lineNum">     259 </span>                :            :   #endif
+<span class="lineNum">     260 </span>                :            : 
+<span class="lineNum">     261 </span>[<span class="branchNoExec" title="Branch 4 was not executed"> # </span><span class="branchNoExec" title="Branch 5 was not executed"> # </span>][<span class="branchNoExec" title="Branch 8 was not executed"> # </span><span class="branchNoExec" title="Branch 9 was not executed"> # </span>]:<span class="lineCov">     518097 :   Assert( static_cast&lt;std::size_t&gt;(n) == m_central.size(),</span>
+<span class="lineNum">         </span>        [<span class="branchNoExec" title="Branch 12 was not executed"> # </span><span class="branchNoExec" title="Branch 13 was not executed"> # </span>]
+<span class="lineNum">     262 </span>        [<span class="branchNoCov" title="Branch 0 was not taken"> - </span><span class="branchCov" title="Branch 1 was taken 518097 times"> + </span>]:<span class="lineCov">     518097 :           &quot;Number of central moments contributed not equal to expected&quot; );</span>
+<span class="lineNum">     263 </span>                :            : 
+<span class="lineNum">     264 </span>                :            :   // Add contribution from PE to total sums, i.e., u[i] += v[i] for all i
+<span class="lineNum">     265 </span>        [<span class="branchCov" title="Branch 2 was taken 4764564 times"> + </span><span class="branchCov" title="Branch 3 was taken 518097 times"> + </span>]:<span class="lineCov">    5282661 :   for (std::size_t i=0; i&lt;m_central.size(); ++i) m_central[i] += cen[i];</span>
+<span class="lineNum">     266 </span>                :            : 
+<span class="lineNum">     267 </span>                :            :   // Finish computing moments, i.e., divide sums by the number of samples
+<span class="lineNum">     268 </span>[<span class="branchCov" title="Branch 3 was taken 4764564 times"> + </span><span class="branchNoCov" title="Branch 4 was not taken"> - </span>][<span class="branchCov" title="Branch 6 was taken 4764564 times"> + </span><span class="branchNoCov" title="Branch 7 was not taken"> - </span>]:<span class="lineCov">    5282661 :   for (auto&amp; m : m_central) m /= m_npar;</span>
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 9 was taken 5282661 times"> + </span><span class="branchNoCov" title="Branch 10 was not taken"> - </span>][<span class="branchCov" title="Branch 11 was taken 4764564 times"> + </span><span class="branchCov" title="Branch 12 was taken 518097 times"> + </span>]
+<span class="lineNum">     269 </span>                :            : 
+<span class="lineNum">     270 </span>                :            :   // Activate SDAG trigger signaling that central moments have been estimated
+<span class="lineNum">     271 </span>                :<span class="lineCov">     518097 :   estimateCenDone();</span>
+<span class="lineNum">     272 </span>                :<span class="lineCov">     518097 : }</span>
+<a name="273"><span class="lineNum">     273 </span>                :            : </a>
+<span class="lineNum">     274 </span>                :            : void
+<span class="lineNum">     275 </span>                :<span class="lineCov">     518097 : Distributor::estimateOrdPDF( CkReductionMsg* msg )</span>
+<span class="lineNum">     276 </span>                :            : // *****************************************************************************
+<span class="lineNum">     277 </span>                :            : // Estimate ordinary PDFs
+<span class="lineNum">     278 </span>                :            : //! \param[in] msg Serialized vectors of uni-, bi-, and tri-variate PDFs
+<span class="lineNum">     279 </span>                :            : // *****************************************************************************
+<span class="lineNum">     280 </span>                :            : {
+<span class="lineNum">     281 </span>                :            :   // Deserialize final PDFs
+<span class="lineNum">     282 </span>[<span class="branchCov" title="Branch 1 was taken 518097 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 4 was taken 518097 times"> + </span><span class="branchNoCov" title="Branch 5 was not taken"> - </span>]:<span class="lineCov">     518097 :   PUP::fromMem creator( msg-&gt;getData() );</span>
+<span class="lineNum">     283 </span>        [<span class="branchCov" title="Branch 1 was taken 518097 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">     518097 :   creator | m_ordupdf;</span>
+<span class="lineNum">     284 </span>        [<span class="branchCov" title="Branch 1 was taken 518097 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">     518097 :   creator | m_ordbpdf;</span>
+<span class="lineNum">     285 </span>        [<span class="branchCov" title="Branch 1 was taken 518097 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">     518097 :   creator | m_ordtpdf;</span>
+<span class="lineNum">     286 </span>                :            : 
+<span class="lineNum">     287 </span>[<span class="branchCov" title="Branch 0 was taken 518097 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>][<span class="branchCov" title="Branch 4 was taken 518097 times"> + </span><span class="branchNoCov" title="Branch 5 was not taken"> - </span>]:<span class="lineCov">     518097 :   delete msg;</span>
+<span class="lineNum">     288 </span>                :            : 
+<span class="lineNum">     289 </span>                :            :   // Activate SDAG trigger signaling that ordinary PDFs have been estimated
+<span class="lineNum">     290 </span>        [<span class="branchCov" title="Branch 1 was taken 518097 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">     518097 :   estimateOrdPDFDone();</span>
+<span class="lineNum">     291 </span>                :<span class="lineCov">     518097 : }</span>
+<a name="292"><span class="lineNum">     292 </span>                :            : </a>
+<span class="lineNum">     293 </span>                :            : void
+<span class="lineNum">     294 </span>                :<span class="lineCov">     518097 : Distributor::estimateCenPDF( CkReductionMsg* msg )</span>
+<span class="lineNum">     295 </span>                :            : // *****************************************************************************
+<span class="lineNum">     296 </span>                :            : // Estimate central PDFs
+<span class="lineNum">     297 </span>                :            : //! \param[in] msg Serialized vectors of uni-, bi-, and tri-variate PDFs
+<span class="lineNum">     298 </span>                :            : // *****************************************************************************
+<span class="lineNum">     299 </span>                :            : {
+<span class="lineNum">     300 </span>                :            :   // Deserialize final PDFs
+<span class="lineNum">     301 </span>[<span class="branchCov" title="Branch 1 was taken 518097 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 4 was taken 518097 times"> + </span><span class="branchNoCov" title="Branch 5 was not taken"> - </span>]:<span class="lineCov">     518097 :   PUP::fromMem creator( msg-&gt;getData() );</span>
+<span class="lineNum">     302 </span>        [<span class="branchCov" title="Branch 1 was taken 518097 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">     518097 :   creator | m_cenupdf;</span>
+<span class="lineNum">     303 </span>        [<span class="branchCov" title="Branch 1 was taken 518097 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">     518097 :   creator | m_cenbpdf;</span>
+<span class="lineNum">     304 </span>        [<span class="branchCov" title="Branch 1 was taken 518097 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">     518097 :   creator | m_centpdf;</span>
+<span class="lineNum">     305 </span>                :            : 
+<span class="lineNum">     306 </span>[<span class="branchCov" title="Branch 0 was taken 518097 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>][<span class="branchCov" title="Branch 4 was taken 518097 times"> + </span><span class="branchNoCov" title="Branch 5 was not taken"> - </span>]:<span class="lineCov">     518097 :   delete msg;</span>
+<span class="lineNum">     307 </span>                :            : 
+<span class="lineNum">     308 </span>                :            :   // Activate SDAG trigger signaling that central PDFs have been estimated
+<span class="lineNum">     309 </span>        [<span class="branchCov" title="Branch 1 was taken 518097 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">     518097 :   estimateCenPDFDone();</span>
+<span class="lineNum">     310 </span>                :<span class="lineCov">     518097 : }</span>
+<a name="311"><span class="lineNum">     311 </span>                :            : </a>
+<span class="lineNum">     312 </span>                :            : void
+<span class="lineNum">     313 </span>                :<span class="lineCov">     518097 : Distributor::outStat()</span>
+<span class="lineNum">     314 </span>                :            : // *****************************************************************************
+<span class="lineNum">     315 </span>                :            : // Output statistics to file
+<span class="lineNum">     316 </span>                :            : // *****************************************************************************
+<a name="317"><span class="lineNum">     317 </span>                :            : {</a>
+<span class="lineNum">     318 </span>                :            :   // lambda to sample tables to write to statistics file
+<span class="lineNum">     319 </span>                :<span class="lineCov">     396065 :   auto extra = [this]() -&gt; std::vector&lt; tk::real &gt; {</span>
+<span class="lineNum">     320 </span>                :<span class="lineCov">     396065 :     std::vector&lt; tk::real &gt; x;</span>
+<span class="lineNum">     321 </span>[<span class="branchNoExec" title="Branch 3 was not executed"> # </span><span class="branchNoExec" title="Branch 4 was not executed"> # </span>][<span class="branchNoExec" title="Branch 6 was not executed"> # </span><span class="branchNoExec" title="Branch 7 was not executed"> # </span>]:<span class="lineCov">     396065 :     for (const auto&amp; t : this-&gt;m_tables.second)</span>
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 9 was taken 396065 times"> + </span><span class="branchNoCov" title="Branch 10 was not taken"> - </span>][<span class="branchNoCov" title="Branch 11 was not taken"> - </span><span class="branchCov" title="Branch 12 was taken 396065 times"> + </span>]
+<span class="lineNum">     322 </span>[<span class="branchNoExec" title="Branch 1 was not executed"> # </span><span class="branchNoExec" title="Branch 2 was not executed"> # </span>][<span class="branchNoExec" title="Branch 4 was not executed"> # </span><span class="branchNoExec" title="Branch 5 was not executed"> # </span>]:<span class="lineNoCov">          0 :       x.push_back( tk::sample(m_t,t) );</span>
+<span class="lineNum">     323 </span>                :<span class="lineCov">     396065 :     return x;</span>
+<span class="lineNum">     324 </span>                :<span class="lineCov">     518097 :   };</span>
+<span class="lineNum">     325 </span>                :            : 
+<span class="lineNum">     326 </span>                :            :   // Append statistics file at selected times
+<span class="lineNum">     327 </span>        [<span class="branchCov" title="Branch 1 was taken 396065 times"> + </span><span class="branchCov" title="Branch 2 was taken 122032 times"> + </span>]:<span class="lineCov">     518097 :   if (!((m_it+1) % g_inputdeck.get&lt; tag::interval, tag::stat &gt;())) {</span>
+<span class="lineNum">     328 </span>        [<span class="branchNoCov" title="Branch 2 was not taken"> - </span><span class="branchCov" title="Branch 3 was taken 30003 times"> + </span>]:<span class="lineCov">     426068 :     tk::TxtStatWriter sw( !m_nameOrdinary.empty() || !m_nameCentral.empty() ?</span>
+<span class="lineNum">     329 </span>                :<span class="lineCov">     366062 :                           g_inputdeck.get&lt; tag::cmd, tag::io, tag::stat &gt;() :</span>
+<span class="lineNum">     330 </span>                :            :                           std::string(),
+<span class="lineNum">     331 </span>                :<span class="lineCov">     396065 :                           g_inputdeck.get&lt; tag::flformat, tag::stat &gt;(),</span>
+<span class="lineNum">     332 </span>                :<span class="lineCov">     396065 :                           g_inputdeck.get&lt; tag::prec, tag::stat &gt;(),</span>
+<span class="lineNum">     333 </span>  [<span class="branchCov" title="Branch 0 was taken 30003 times"> + </span><span class="branchCov" title="Branch 1 was taken 366062 times"> + </span><span class="branchCov" title="Branch 3 was taken 366062 times"> + </span><span class="branchNoCov" title="Branch 4 was not taken"> - </span>]:<span class="lineCov">     792130 :                           std::ios_base::app );</span>
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 6 was taken 30003 times"> + </span><span class="branchNoCov" title="Branch 7 was not taken"> - </span>][<span class="branchCov" title="Branch 9 was taken 396065 times"> + </span><span class="branchNoCov" title="Branch 10 was not taken"> - </span>]
+<span class="lineNum">     334 </span>[<span class="branchCov" title="Branch 1 was taken 396065 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 4 was taken 396065 times"> + </span><span class="branchNoCov" title="Branch 5 was not taken"> - </span>]:<span class="lineCov">     396065 :     if (sw.stat( m_it, m_t, m_ordinary, m_central, extra() ))</span>
+<span class="lineNum">         </span>        [<span class="branchCov" title="Branch 7 was taken 366062 times"> + </span><span class="branchCov" title="Branch 8 was taken 30003 times"> + </span>]
+<span class="lineNum">     335 </span>        [<span class="branchCov" title="Branch 1 was taken 366062 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">     396065 :       m_output.get&lt; tag::stat &gt;() = true;</span>
+<span class="lineNum">     336 </span>                :            :   }
+<span class="lineNum">     337 </span>                :<span class="lineCov">     518097 : }</span>
+<a name="338"><span class="lineNum">     338 </span>                :            : </a>
+<span class="lineNum">     339 </span>                :            : void
+<span class="lineNum">     340 </span>                :<span class="lineCov">     518097 : Distributor::outPDF()</span>
+<span class="lineNum">     341 </span>                :            : // *****************************************************************************
+<span class="lineNum">     342 </span>                :            : // Output PDFs to file
+<span class="lineNum">     343 </span>                :            : // *****************************************************************************
+<span class="lineNum">     344 </span>                :            : {
+<span class="lineNum">     345 </span>                :            :   // Output PDFs at selected times
+<span class="lineNum">     346 </span>        [<span class="branchCov" title="Branch 1 was taken 456114 times"> + </span><span class="branchCov" title="Branch 2 was taken 61983 times"> + </span>]:<span class="lineCov">     518097 :   if ( !((m_it+1) % g_inputdeck.get&lt; tag::interval, tag::pdf &gt;()) ) {</span>
+<span class="lineNum">     347 </span>                :<span class="lineCov">     456114 :     outUniPDF();                        // Output univariate PDFs to file(s)</span>
+<span class="lineNum">     348 </span>                :<span class="lineCov">     456114 :     outBiPDF();                         // Output bivariate PDFs to file(s)</span>
+<span class="lineNum">     349 </span>                :<span class="lineCov">     456114 :     outTriPDF();                        // Output trivariate PDFs to file(s)</span>
+<span class="lineNum">     350 </span>                :<span class="lineCov">     456114 :     m_output.get&lt; tag::pdf &gt;() = true;  // Signal that PDFs were written</span>
+<span class="lineNum">     351 </span>                :            :   }
+<span class="lineNum">     352 </span>                :<span class="lineCov">     518097 : }</span>
+<a name="353"><span class="lineNum">     353 </span>                :            : </a>
+<span class="lineNum">     354 </span>                :            : void
+<span class="lineNum">     355 </span>                :<span class="lineCov">        204 : Distributor::writeUniPDF( const tk::UniPDF&amp; p,</span>
+<span class="lineNum">     356 </span>                :            :                           tk::ctr::Moment m,
+<span class="lineNum">     357 </span>                :            :                           std::size_t idx )
+<span class="lineNum">     358 </span>                :            : // *****************************************************************************
+<span class="lineNum">     359 </span>                :            : // Write univariate PDF to file
+<span class="lineNum">     360 </span>                :            : //! \param[in] p Univariate PDF to output
+<span class="lineNum">     361 </span>                :            : //! \param[in] m ORDINARY or CENTRAL PDF we are writing
+<span class="lineNum">     362 </span>                :            : //! \param[in] idx Index of the PDF of all ordinary or central PDFs requested
+<span class="lineNum">     363 </span>                :            : // *****************************************************************************
+<span class="lineNum">     364 </span>                :            : {
+<span class="lineNum">     365 </span>                :            :   // Get PDF metadata
+<span class="lineNum">     366 </span>                :            :   const auto nfo =
+<span class="lineNum">     367 </span>                :<span class="lineCov">        204 :     tk::ctr::pdfInfo&lt; 1 &gt;( g_inputdeck.get&lt; tag::discr, tag::binsize &gt;(),</span>
+<span class="lineNum">     368 </span>                :<span class="lineCov">        204 :                            g_inputdeck.get&lt; tag::cmd, tag::io, tag::pdfnames &gt;(),</span>
+<span class="lineNum">     369 </span>                :<span class="lineCov">        204 :                            g_inputdeck.get&lt; tag::discr, tag::extent &gt;(),</span>
+<span class="lineNum">     370 </span>                :<span class="lineCov">        204 :                            g_inputdeck.get&lt; tag::pdf &gt;(),</span>
+<span class="lineNum">     371 </span>                :            :                            m,
+<span class="lineNum">     372 </span>        [<span class="branchCov" title="Branch 1 was taken 204 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">        204 :                            idx );</span>
+<span class="lineNum">     373 </span>                :            : 
+<span class="lineNum">     374 </span>                :            :   // Construct PDF file name: base name + '_' + pdf name
+<span class="lineNum">     375 </span>                :            :   std::string filename =
+<span class="lineNum">     376 </span>[<span class="branchCov" title="Branch 2 was taken 204 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>][<span class="branchCov" title="Branch 5 was taken 204 times"> + </span><span class="branchNoCov" title="Branch 6 was not taken"> - </span>]:<span class="lineCov">        408 :     g_inputdeck.get&lt; tag::cmd, tag::io, tag::pdf &gt;() + '_' + nfo.name;</span>
+<span class="lineNum">     377 </span>                :            : 
+<span class="lineNum">     378 </span>                :            :   // Augment PDF filename by time stamp if PDF output file policy is multiple
+<span class="lineNum">     379 </span>        [<span class="branchCov" title="Branch 1 was taken 196 times"> + </span><span class="branchCov" title="Branch 2 was taken 8 times"> + </span>]:<span class="lineCov">        204 :   if (g_inputdeck.get&lt; tag::selected, tag::pdfpolicy &gt;() ==</span>
+<span class="lineNum">     380 </span>                :            :       tk::ctr::PDFPolicyType::MULTIPLE)
+<span class="lineNum">     381 </span>[<span class="branchCov" title="Branch 1 was taken 196 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 4 was taken 196 times"> + </span><span class="branchNoCov" title="Branch 5 was not taken"> - </span>]:<span class="lineCov">        196 :     filename += '_' + std::to_string( m_t );</span>
+<span class="lineNum">         </span>        [<span class="branchCov" title="Branch 7 was taken 196 times"> + </span><span class="branchNoCov" title="Branch 8 was not taken"> - </span>]
+<span class="lineNum">     382 </span>                :            : 
+<span class="lineNum">     383 </span>                :            :   // Augment PDF filename by '.txt' extension
+<span class="lineNum">     384 </span>        [<span class="branchCov" title="Branch 1 was taken 204 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">        204 :   filename += &quot;.txt&quot;;</span>
+<span class="lineNum">     385 </span>                :            : 
+<span class="lineNum">     386 </span>                :            :   // Create new PDF file (overwrite if exists)
+<span class="lineNum">     387 </span>                :            :   tk::PDFWriter pdfw( filename,
+<span class="lineNum">     388 </span>                :<span class="lineCov">        204 :                       g_inputdeck.get&lt; tag::flformat, tag::pdf &gt;(),</span>
+<span class="lineNum">     389 </span>        [<span class="branchCov" title="Branch 2 was taken 204 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineCov">        612 :                       g_inputdeck.get&lt; tag::prec, tag::pdf &gt;() );</span>
+<span class="lineNum">     390 </span>                :            : 
+<span class="lineNum">     391 </span>                :            :   // Output PDF
+<span class="lineNum">     392 </span>        [<span class="branchCov" title="Branch 1 was taken 204 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">        408 :   pdfw.writeTxt( p, nfo );</span>
+<span class="lineNum">     393 </span>                :<span class="lineCov">        204 : }</span>
+<a name="394"><span class="lineNum">     394 </span>                :            : </a>
+<span class="lineNum">     395 </span>                :            : void
+<span class="lineNum">     396 </span>                :<span class="lineCov">          6 : Distributor::writeBiPDF( const tk::BiPDF&amp; p,</span>
+<span class="lineNum">     397 </span>                :            :                          tk::ctr::Moment m,
+<span class="lineNum">     398 </span>                :            :                          std::size_t idx )
+<span class="lineNum">     399 </span>                :            : // *****************************************************************************
+<span class="lineNum">     400 </span>                :            : // Write bivariate PDF to file
+<span class="lineNum">     401 </span>                :            : //! \param[in] p Bivariate PDF to output
+<span class="lineNum">     402 </span>                :            : //! \param[in] m ORDINARY or CENTRAL PDF we are writing
+<span class="lineNum">     403 </span>                :            : //! \param[in] idx Index of the PDF of all ordinary or central PDFs requested
+<span class="lineNum">     404 </span>                :            : // *****************************************************************************
+<span class="lineNum">     405 </span>                :            : {
+<span class="lineNum">     406 </span>                :            :   // Get PDF metadata
+<span class="lineNum">     407 </span>                :            :   const auto nfo =
+<span class="lineNum">     408 </span>                :<span class="lineCov">          6 :     tk::ctr::pdfInfo&lt; 2 &gt;( g_inputdeck.get&lt; tag::discr, tag::binsize &gt;(),</span>
+<span class="lineNum">     409 </span>                :<span class="lineCov">          6 :                            g_inputdeck.get&lt; tag::cmd, tag::io, tag::pdfnames &gt;(),</span>
+<span class="lineNum">     410 </span>                :<span class="lineCov">          6 :                            g_inputdeck.get&lt; tag::discr, tag::extent &gt;(),</span>
+<span class="lineNum">     411 </span>                :<span class="lineCov">          6 :                            g_inputdeck.get&lt; tag::pdf &gt;(),</span>
+<span class="lineNum">     412 </span>                :            :                            m,
+<span class="lineNum">     413 </span>        [<span class="branchCov" title="Branch 1 was taken 6 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">          6 :                            idx );</span>
+<span class="lineNum">     414 </span>                :            : 
+<span class="lineNum">     415 </span>                :            :   // Construct PDF file name: base name + '_' + pdf name
+<span class="lineNum">     416 </span>                :            :   std::string filename =
+<span class="lineNum">     417 </span>[<span class="branchCov" title="Branch 2 was taken 6 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>][<span class="branchCov" title="Branch 5 was taken 6 times"> + </span><span class="branchNoCov" title="Branch 6 was not taken"> - </span>]:<span class="lineCov">         12 :     g_inputdeck.get&lt; tag::cmd, tag::io, tag::pdf &gt;() + '_' + nfo.name;</span>
+<span class="lineNum">     418 </span>                :            : 
+<span class="lineNum">     419 </span>                :            :   // Augment PDF filename by time stamp if PDF output file policy is multiple
+<span class="lineNum">     420 </span>        [<span class="branchNoCov" title="Branch 1 was not taken"> - </span><span class="branchCov" title="Branch 2 was taken 6 times"> + </span>]:<span class="lineCov">          6 :   if (g_inputdeck.get&lt; tag::selected, tag::pdfpolicy &gt;() ==</span>
+<span class="lineNum">     421 </span>                :            :       tk::ctr::PDFPolicyType::MULTIPLE)
+<span class="lineNum">     422 </span>[<span class="branchNoExec" title="Branch 1 was not executed"> # </span><span class="branchNoExec" title="Branch 2 was not executed"> # </span>][<span class="branchNoExec" title="Branch 4 was not executed"> # </span><span class="branchNoExec" title="Branch 5 was not executed"> # </span>]:<span class="lineNoCov">          0 :     filename += '_' + std::to_string( m_t );</span>
+<span class="lineNum">         </span>        [<span class="branchNoExec" title="Branch 7 was not executed"> # </span><span class="branchNoExec" title="Branch 8 was not executed"> # </span>]
+<span class="lineNum">     423 </span>                :            : 
+<span class="lineNum">     424 </span>                :<span class="lineCov">          6 :   const auto&amp; filetype = g_inputdeck.get&lt; tag::selected, tag::filetype &gt;();</span>
+<span class="lineNum">     425 </span>                :            : 
+<span class="lineNum">     426 </span>                :            :   // Augment PDF filename by the appropriate extension
+<span class="lineNum">     427 </span>        [<span class="branchCov" title="Branch 0 was taken 5 times"> + </span><span class="branchCov" title="Branch 1 was taken 1 time"> + </span>]:<span class="lineCov">          6 :   if (filetype == tk::ctr::PDFFileType::TXT)</span>
+<span class="lineNum">     428 </span>        [<span class="branchCov" title="Branch 1 was taken 5 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">          5 :     filename += &quot;.txt&quot;;</span>
+<span class="lineNum">     429 </span>[<span class="branchCov" title="Branch 0 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>][<span class="branchNoCov" title="Branch 2 was not taken"> - </span><span class="branchCov" title="Branch 3 was taken 1 time"> + </span>]:<span class="lineCov">          1 :   else if (filetype == tk::ctr::PDFFileType::GMSHTXT ||</span>
+<span class="lineNum">     430 </span>                :<span class="lineCov">          1 :            filetype == tk::ctr::PDFFileType::GMSHBIN )</span>
+<span class="lineNum">     431 </span>        [<span class="branchNoExec" title="Branch 1 was not executed"> # </span><span class="branchNoExec" title="Branch 2 was not executed"> # </span>]:<span class="lineNoCov">          0 :     filename += &quot;.gmsh&quot;;</span>
+<span class="lineNum">     432 </span>        [<span class="branchCov" title="Branch 0 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">          1 :   else if (filetype == tk::ctr::PDFFileType::EXODUSII)</span>
+<span class="lineNum">     433 </span>        [<span class="branchCov" title="Branch 1 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">          1 :     filename += &quot;.exo&quot;;</span>
+<span class="lineNum">     434 </span>[<span class="branchNoExec" title="Branch 3 was not executed"> # </span><span class="branchNoExec" title="Branch 4 was not executed"> # </span>][<span class="branchNoExec" title="Branch 7 was not executed"> # </span><span class="branchNoExec" title="Branch 8 was not executed"> # </span>]:<span class="lineNoCov">          0 :   else Throw( &quot;Unkown PDF file type attempting to output bivariate PDF&quot; );</span>
+<span class="lineNum">         </span>        [<span class="branchNoExec" title="Branch 11 was not executed"> # </span><span class="branchNoExec" title="Branch 12 was not executed"> # </span>]
+<span class="lineNum">     435 </span>                :            : 
+<span class="lineNum">     436 </span>                :            :   // Create new PDF file (overwrite if exists)
+<span class="lineNum">     437 </span>                :            :   tk::PDFWriter pdfw( filename,
+<span class="lineNum">     438 </span>                :<span class="lineCov">          6 :                       g_inputdeck.get&lt; tag::flformat, tag::pdf &gt;(),</span>
+<span class="lineNum">     439 </span>        [<span class="branchCov" title="Branch 2 was taken 6 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineCov">         18 :                       g_inputdeck.get&lt; tag::prec, tag::pdf &gt;() );</span>
+<span class="lineNum">     440 </span>                :            : 
+<span class="lineNum">     441 </span>                :            :   // Output PDF
+<span class="lineNum">     442 </span>        [<span class="branchCov" title="Branch 0 was taken 5 times"> + </span><span class="branchCov" title="Branch 1 was taken 1 time"> + </span>]:<span class="lineCov">          6 :   if (filetype == tk::ctr::PDFFileType::TXT)</span>
+<span class="lineNum">     443 </span>        [<span class="branchCov" title="Branch 1 was taken 5 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">          5 :     pdfw.writeTxt( p, nfo );</span>
+<span class="lineNum">     444 </span>        [<span class="branchNoCov" title="Branch 0 was not taken"> - </span><span class="branchCov" title="Branch 1 was taken 1 time"> + </span>]:<span class="lineCov">          1 :   else if (filetype == tk::ctr::PDFFileType::GMSHTXT)</span>
+<span class="lineNum">     445 </span>                :            :     pdfw.writeGmshTxt( p, nfo,
+<span class="lineNum">     446 </span>        [<span class="branchNoExec" title="Branch 2 was not executed"> # </span><span class="branchNoExec" title="Branch 3 was not executed"> # </span>]:<span class="lineNoCov">          0 :                        g_inputdeck.get&lt; tag::selected, tag::pdfctr &gt;() );</span>
+<span class="lineNum">     447 </span>        [<span class="branchNoCov" title="Branch 0 was not taken"> - </span><span class="branchCov" title="Branch 1 was taken 1 time"> + </span>]:<span class="lineCov">          1 :   else if (filetype == tk::ctr::PDFFileType::GMSHBIN)</span>
+<span class="lineNum">     448 </span>                :            :     pdfw.writeGmshBin( p, nfo,
+<span class="lineNum">     449 </span>        [<span class="branchNoExec" title="Branch 2 was not executed"> # </span><span class="branchNoExec" title="Branch 3 was not executed"> # </span>]:<span class="lineNoCov">          0 :                        g_inputdeck.get&lt; tag::selected, tag::pdfctr &gt;() );</span>
+<span class="lineNum">     450 </span>        [<span class="branchCov" title="Branch 0 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">          1 :   else if (filetype == tk::ctr::PDFFileType::EXODUSII)</span>
+<span class="lineNum">     451 </span>                :            :     pdfw.writeExodusII( p, nfo,
+<span class="lineNum">     452 </span>        [<span class="branchCov" title="Branch 2 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineCov">          7 :                         g_inputdeck.get&lt; tag::selected, tag::pdfctr &gt;() );</span>
+<span class="lineNum">     453 </span>                :<span class="lineCov">          6 : }</span>
+<a name="454"><span class="lineNum">     454 </span>                :            : </a>
+<span class="lineNum">     455 </span>                :            : void
+<span class="lineNum">     456 </span>                :<span class="lineCov">          6 : Distributor::writeTriPDF( const tk::TriPDF&amp; p,</span>
+<span class="lineNum">     457 </span>                :            :                           tk::ctr::Moment m,
+<span class="lineNum">     458 </span>                :            :                           std::size_t idx )
+<span class="lineNum">     459 </span>                :            : // *****************************************************************************
+<span class="lineNum">     460 </span>                :            : // Write trivariate PDF to file
+<span class="lineNum">     461 </span>                :            : //! \param[in] p Trivariate PDF to output
+<span class="lineNum">     462 </span>                :            : //! \param[in] m ORDINARY or CENTRAL PDF we are writing
+<span class="lineNum">     463 </span>                :            : //! \param[in] idx Index of the PDF of all ordinary or central PDFs requested
+<span class="lineNum">     464 </span>                :            : // *****************************************************************************
+<span class="lineNum">     465 </span>                :            : {
+<span class="lineNum">     466 </span>                :            :   // Get PDF metadata
+<span class="lineNum">     467 </span>                :            :   const auto nfo =
+<span class="lineNum">     468 </span>                :<span class="lineCov">          6 :     tk::ctr::pdfInfo&lt; 3 &gt;( g_inputdeck.get&lt; tag::discr, tag::binsize &gt;(),</span>
+<span class="lineNum">     469 </span>                :<span class="lineCov">          6 :                            g_inputdeck.get&lt; tag::cmd, tag::io, tag::pdfnames &gt;(),</span>
+<span class="lineNum">     470 </span>                :<span class="lineCov">          6 :                            g_inputdeck.get&lt; tag::discr, tag::extent &gt;(),</span>
+<span class="lineNum">     471 </span>                :<span class="lineCov">          6 :                            g_inputdeck.get&lt; tag::pdf &gt;(),</span>
+<span class="lineNum">     472 </span>                :            :                            m,
+<span class="lineNum">     473 </span>        [<span class="branchCov" title="Branch 1 was taken 6 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">          6 :                            idx );</span>
+<span class="lineNum">     474 </span>                :            : 
+<span class="lineNum">     475 </span>                :            :   // Construct PDF file name: base name + '_' + pdf name
+<span class="lineNum">     476 </span>                :            :   std::string filename =
+<span class="lineNum">     477 </span>[<span class="branchCov" title="Branch 2 was taken 6 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>][<span class="branchCov" title="Branch 5 was taken 6 times"> + </span><span class="branchNoCov" title="Branch 6 was not taken"> - </span>]:<span class="lineCov">         12 :     g_inputdeck.get&lt; tag::cmd, tag::io, tag::pdf &gt;() + '_' + nfo.name;</span>
+<span class="lineNum">     478 </span>                :            : 
+<span class="lineNum">     479 </span>                :            :   // Augment PDF filename by time stamp if PDF output file policy is multiple
+<span class="lineNum">     480 </span>        [<span class="branchNoCov" title="Branch 1 was not taken"> - </span><span class="branchCov" title="Branch 2 was taken 6 times"> + </span>]:<span class="lineCov">          6 :   if (g_inputdeck.get&lt; tag::selected, tag::pdfpolicy &gt;() ==</span>
+<span class="lineNum">     481 </span>                :            :       tk::ctr::PDFPolicyType::MULTIPLE)
+<span class="lineNum">     482 </span>[<span class="branchNoExec" title="Branch 1 was not executed"> # </span><span class="branchNoExec" title="Branch 2 was not executed"> # </span>][<span class="branchNoExec" title="Branch 4 was not executed"> # </span><span class="branchNoExec" title="Branch 5 was not executed"> # </span>]:<span class="lineNoCov">          0 :     filename += '_' + std::to_string( m_t );</span>
+<span class="lineNum">         </span>        [<span class="branchNoExec" title="Branch 7 was not executed"> # </span><span class="branchNoExec" title="Branch 8 was not executed"> # </span>]
+<span class="lineNum">     483 </span>                :            : 
+<span class="lineNum">     484 </span>                :<span class="lineCov">          6 :   const auto&amp; filetype = g_inputdeck.get&lt; tag::selected, tag::filetype &gt;();</span>
+<span class="lineNum">     485 </span>                :            : 
+<span class="lineNum">     486 </span>                :            :   // Augment PDF filename by the appropriate extension
+<span class="lineNum">     487 </span>        [<span class="branchCov" title="Branch 0 was taken 4 times"> + </span><span class="branchCov" title="Branch 1 was taken 2 times"> + </span>]:<span class="lineCov">          6 :   if (filetype == tk::ctr::PDFFileType::TXT)</span>
+<span class="lineNum">     488 </span>        [<span class="branchCov" title="Branch 1 was taken 4 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">          4 :     filename += &quot;.txt&quot;;</span>
+<span class="lineNum">     489 </span>[<span class="branchCov" title="Branch 0 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>][<span class="branchNoCov" title="Branch 2 was not taken"> - </span><span class="branchCov" title="Branch 3 was taken 2 times"> + </span>]:<span class="lineCov">          2 :   else if (filetype == tk::ctr::PDFFileType::GMSHTXT ||</span>
+<span class="lineNum">     490 </span>                :<span class="lineCov">          2 :            filetype == tk::ctr::PDFFileType::GMSHBIN )</span>
+<span class="lineNum">     491 </span>        [<span class="branchNoExec" title="Branch 1 was not executed"> # </span><span class="branchNoExec" title="Branch 2 was not executed"> # </span>]:<span class="lineNoCov">          0 :     filename += &quot;.gmsh&quot;;</span>
+<span class="lineNum">     492 </span>        [<span class="branchCov" title="Branch 0 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">          2 :   else if (filetype == tk::ctr::PDFFileType::EXODUSII)</span>
+<span class="lineNum">     493 </span>        [<span class="branchCov" title="Branch 1 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">          2 :     filename += &quot;.exo&quot;;</span>
+<span class="lineNum">     494 </span>[<span class="branchNoExec" title="Branch 3 was not executed"> # </span><span class="branchNoExec" title="Branch 4 was not executed"> # </span>][<span class="branchNoExec" title="Branch 7 was not executed"> # </span><span class="branchNoExec" title="Branch 8 was not executed"> # </span>]:<span class="lineNoCov">          0 :   else Throw( &quot;Unkown PDF file type attempting to output trivariate PDF&quot; );</span>
+<span class="lineNum">         </span>        [<span class="branchNoExec" title="Branch 11 was not executed"> # </span><span class="branchNoExec" title="Branch 12 was not executed"> # </span>]
+<span class="lineNum">     495 </span>                :            : 
+<span class="lineNum">     496 </span>                :            :   // Create new PDF file (overwrite if exists)
+<span class="lineNum">     497 </span>                :            :   tk::PDFWriter pdfw( filename,
+<span class="lineNum">     498 </span>                :<span class="lineCov">          6 :                       g_inputdeck.get&lt; tag::flformat, tag::pdf &gt;(),</span>
+<span class="lineNum">     499 </span>        [<span class="branchCov" title="Branch 2 was taken 6 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineCov">         18 :                       g_inputdeck.get&lt; tag::prec, tag::pdf &gt;() );</span>
+<span class="lineNum">     500 </span>                :            : 
+<span class="lineNum">     501 </span>                :            :   // Output PDF
+<span class="lineNum">     502 </span>        [<span class="branchCov" title="Branch 0 was taken 4 times"> + </span><span class="branchCov" title="Branch 1 was taken 2 times"> + </span>]:<span class="lineCov">          6 :   if (filetype == tk::ctr::PDFFileType::TXT)</span>
+<span class="lineNum">     503 </span>        [<span class="branchCov" title="Branch 1 was taken 4 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">          4 :     pdfw.writeTxt( p, nfo );</span>
+<span class="lineNum">     504 </span>        [<span class="branchNoCov" title="Branch 0 was not taken"> - </span><span class="branchCov" title="Branch 1 was taken 2 times"> + </span>]:<span class="lineCov">          2 :   else if (filetype == tk::ctr::PDFFileType::GMSHTXT)</span>
+<span class="lineNum">     505 </span>                :            :      pdfw.writeGmshTxt( p, nfo,
+<span class="lineNum">     506 </span>        [<span class="branchNoExec" title="Branch 2 was not executed"> # </span><span class="branchNoExec" title="Branch 3 was not executed"> # </span>]:<span class="lineNoCov">          0 :                         g_inputdeck.get&lt; tag::selected, tag::pdfctr &gt;() );</span>
+<span class="lineNum">     507 </span>        [<span class="branchNoCov" title="Branch 0 was not taken"> - </span><span class="branchCov" title="Branch 1 was taken 2 times"> + </span>]:<span class="lineCov">          2 :   else if (filetype == tk::ctr::PDFFileType::GMSHBIN)</span>
+<span class="lineNum">     508 </span>                :            :      pdfw.writeGmshBin( p, nfo,
+<span class="lineNum">     509 </span>        [<span class="branchNoExec" title="Branch 2 was not executed"> # </span><span class="branchNoExec" title="Branch 3 was not executed"> # </span>]:<span class="lineNoCov">          0 :                         g_inputdeck.get&lt; tag::selected, tag::pdfctr &gt;() );</span>
+<span class="lineNum">     510 </span>        [<span class="branchCov" title="Branch 0 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">          2 :   else if (filetype == tk::ctr::PDFFileType::EXODUSII)</span>
+<span class="lineNum">     511 </span>                :            :     pdfw.writeExodusII( p, nfo,
+<span class="lineNum">     512 </span>        [<span class="branchCov" title="Branch 2 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineCov">          8 :                         g_inputdeck.get&lt; tag::selected, tag::pdfctr &gt;() );</span>
+<span class="lineNum">     513 </span>                :<span class="lineCov">          6 : }</span>
+<a name="514"><span class="lineNum">     514 </span>                :            : </a>
+<span class="lineNum">     515 </span>                :            : void
+<span class="lineNum">     516 </span>                :<span class="lineCov">     456114 : Distributor::outUniPDF()</span>
+<span class="lineNum">     517 </span>                :            : // *****************************************************************************
+<span class="lineNum">     518 </span>                :            : // Output all requested univariate PDFs to file(s)
+<span class="lineNum">     519 </span>                :            : // *****************************************************************************
+<span class="lineNum">     520 </span>                :            : {
+<span class="lineNum">     521 </span>                :<span class="lineCov">     456114 :   std::size_t idx = 0;</span>
+<span class="lineNum">     522 </span>[<span class="branchCov" title="Branch 3 was taken 202 times"> + </span><span class="branchNoCov" title="Branch 4 was not taken"> - </span>][<span class="branchCov" title="Branch 6 was taken 202 times"> + </span><span class="branchNoCov" title="Branch 7 was not taken"> - </span>]:<span class="lineCov">     456316 :   for (const auto&amp; p : m_ordupdf)</span>
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 9 was taken 456316 times"> + </span><span class="branchNoCov" title="Branch 10 was not taken"> - </span>][<span class="branchCov" title="Branch 11 was taken 202 times"> + </span><span class="branchCov" title="Branch 12 was taken 456114 times"> + </span>]
+<span class="lineNum">     523 </span>        [<span class="branchCov" title="Branch 1 was taken 202 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">        202 :     writeUniPDF( p, tk::ctr::Moment::ORDINARY, idx++ );</span>
+<span class="lineNum">     524 </span>                :<span class="lineCov">     456114 :   idx = 0;</span>
+<span class="lineNum">     525 </span>[<span class="branchCov" title="Branch 3 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 4 was not taken"> - </span>][<span class="branchCov" title="Branch 6 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 7 was not taken"> - </span>]:<span class="lineCov">     456116 :   for (const auto&amp; p : m_cenupdf)</span>
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 9 was taken 456116 times"> + </span><span class="branchNoCov" title="Branch 10 was not taken"> - </span>][<span class="branchCov" title="Branch 11 was taken 2 times"> + </span><span class="branchCov" title="Branch 12 was taken 456114 times"> + </span>]
+<span class="lineNum">     526 </span>        [<span class="branchCov" title="Branch 1 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">          2 :     writeUniPDF( p, tk::ctr::Moment::CENTRAL, idx++ );</span>
+<span class="lineNum">     527 </span>                :<span class="lineCov">     456114 : }</span>
+<a name="528"><span class="lineNum">     528 </span>                :            : </a>
+<span class="lineNum">     529 </span>                :            : void
+<span class="lineNum">     530 </span>                :<span class="lineCov">     456114 : Distributor::outBiPDF()</span>
+<span class="lineNum">     531 </span>                :            : // *****************************************************************************
+<span class="lineNum">     532 </span>                :            : // Output all requested bivariate PDFs to file(s)
+<span class="lineNum">     533 </span>                :            : //! \return Number of PDFs written
+<span class="lineNum">     534 </span>                :            : // *****************************************************************************
+<span class="lineNum">     535 </span>                :            : {
+<span class="lineNum">     536 </span>                :<span class="lineCov">     456114 :   std::size_t idx = 0;</span>
+<span class="lineNum">     537 </span>[<span class="branchCov" title="Branch 3 was taken 3 times"> + </span><span class="branchNoCov" title="Branch 4 was not taken"> - </span>][<span class="branchCov" title="Branch 6 was taken 3 times"> + </span><span class="branchNoCov" title="Branch 7 was not taken"> - </span>]:<span class="lineCov">     456117 :   for (const auto&amp; p : m_ordbpdf)</span>
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 9 was taken 456117 times"> + </span><span class="branchNoCov" title="Branch 10 was not taken"> - </span>][<span class="branchCov" title="Branch 11 was taken 3 times"> + </span><span class="branchCov" title="Branch 12 was taken 456114 times"> + </span>]
+<span class="lineNum">     538 </span>        [<span class="branchCov" title="Branch 1 was taken 3 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">          3 :     writeBiPDF( p, tk::ctr::Moment::ORDINARY, idx++ );</span>
+<span class="lineNum">     539 </span>                :<span class="lineCov">     456114 :   idx = 0;</span>
+<span class="lineNum">     540 </span>[<span class="branchCov" title="Branch 3 was taken 3 times"> + </span><span class="branchNoCov" title="Branch 4 was not taken"> - </span>][<span class="branchCov" title="Branch 6 was taken 3 times"> + </span><span class="branchNoCov" title="Branch 7 was not taken"> - </span>]:<span class="lineCov">     456117 :   for (const auto&amp; p : m_cenbpdf) {</span>
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 9 was taken 456117 times"> + </span><span class="branchNoCov" title="Branch 10 was not taken"> - </span>][<span class="branchCov" title="Branch 11 was taken 3 times"> + </span><span class="branchCov" title="Branch 12 was taken 456114 times"> + </span>]
+<span class="lineNum">     541 </span>        [<span class="branchCov" title="Branch 1 was taken 3 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">          3 :     writeBiPDF( p, tk::ctr::Moment::CENTRAL, idx++ );</span>
+<span class="lineNum">     542 </span>                :            :   }
+<span class="lineNum">     543 </span>                :<span class="lineCov">     456114 : }</span>
+<a name="544"><span class="lineNum">     544 </span>                :            : </a>
+<span class="lineNum">     545 </span>                :            : void
+<span class="lineNum">     546 </span>                :<span class="lineCov">     456114 : Distributor::outTriPDF()</span>
+<span class="lineNum">     547 </span>                :            : // *****************************************************************************
+<span class="lineNum">     548 </span>                :            : // Output all requested trivariate PDFs to file(s)
+<span class="lineNum">     549 </span>                :            : //! \return Number of PDFs written
+<span class="lineNum">     550 </span>                :            : // *****************************************************************************
+<span class="lineNum">     551 </span>                :            : {
+<span class="lineNum">     552 </span>                :<span class="lineCov">     456114 :   std::size_t idx = 0;</span>
+<span class="lineNum">     553 </span>[<span class="branchCov" title="Branch 3 was taken 3 times"> + </span><span class="branchNoCov" title="Branch 4 was not taken"> - </span>][<span class="branchCov" title="Branch 6 was taken 3 times"> + </span><span class="branchNoCov" title="Branch 7 was not taken"> - </span>]:<span class="lineCov">     456117 :   for (const auto&amp; p : m_ordtpdf) {</span>
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 9 was taken 456117 times"> + </span><span class="branchNoCov" title="Branch 10 was not taken"> - </span>][<span class="branchCov" title="Branch 11 was taken 3 times"> + </span><span class="branchCov" title="Branch 12 was taken 456114 times"> + </span>]
+<span class="lineNum">     554 </span>        [<span class="branchCov" title="Branch 1 was taken 3 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">          3 :     writeTriPDF( p, tk::ctr::Moment::ORDINARY, idx++ );</span>
+<span class="lineNum">     555 </span>                :            :   }
+<span class="lineNum">     556 </span>                :<span class="lineCov">     456114 :   idx = 0;</span>
+<span class="lineNum">     557 </span>[<span class="branchCov" title="Branch 3 was taken 3 times"> + </span><span class="branchNoCov" title="Branch 4 was not taken"> - </span>][<span class="branchCov" title="Branch 6 was taken 3 times"> + </span><span class="branchNoCov" title="Branch 7 was not taken"> - </span>]:<span class="lineCov">     456117 :   for (const auto&amp; p : m_centpdf) {</span>
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 9 was taken 456117 times"> + </span><span class="branchNoCov" title="Branch 10 was not taken"> - </span>][<span class="branchCov" title="Branch 11 was taken 3 times"> + </span><span class="branchCov" title="Branch 12 was taken 456114 times"> + </span>]
+<span class="lineNum">     558 </span>        [<span class="branchCov" title="Branch 1 was taken 3 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">          3 :     writeTriPDF( p, tk::ctr::Moment::CENTRAL, idx++ );</span>
+<span class="lineNum">     559 </span>                :            :   }
+<span class="lineNum">     560 </span>                :<span class="lineCov">     456114 : }</span>
+<a name="561"><span class="lineNum">     561 </span>                :            : </a>
+<span class="lineNum">     562 </span>                :            : void
+<span class="lineNum">     563 </span>                :<span class="lineCov">     518097 : Distributor::evaluateTime()</span>
+<span class="lineNum">     564 </span>                :            : // *****************************************************************************
+<span class="lineNum">     565 </span>                :            : // Evaluate time step, compute new time step size, decide if it is time to quit
+<span class="lineNum">     566 </span>                :            : // *****************************************************************************
+<span class="lineNum">     567 </span>                :            : {
+<span class="lineNum">     568 </span>                :<span class="lineCov">     518097 :   const auto term = g_inputdeck.get&lt; tag::discr, tag::term &gt;();</span>
+<span class="lineNum">     569 </span>                :<span class="lineCov">     518097 :   const auto eps = std::numeric_limits&lt; tk::real &gt;::epsilon();</span>
+<span class="lineNum">     570 </span>                :<span class="lineCov">     518097 :   const auto nstep = g_inputdeck.get&lt; tag::discr, tag::nstep &gt;();</span>
+<span class="lineNum">     571 </span>                :            : 
+<span class="lineNum">     572 </span>                :            :   // Increase number of iterations taken
+<span class="lineNum">     573 </span>                :<span class="lineCov">     518097 :   ++m_it;</span>
+<span class="lineNum">     574 </span>                :            :   // Advance physical time
+<span class="lineNum">     575 </span>                :<span class="lineCov">     518097 :   m_t += m_dt;</span>
+<span class="lineNum">     576 </span>                :            :   // Truncate the size of last time step
+<span class="lineNum">     577 </span>        [<span class="branchCov" title="Branch 0 was taken 84 times"> + </span><span class="branchCov" title="Branch 1 was taken 518013 times"> + </span>]:<span class="lineCov">     518097 :   if (m_t &gt; term) m_t = term;</span>
+<span class="lineNum">     578 </span>                :            :   // Compute size of next time step
+<span class="lineNum">     579 </span>                :<span class="lineCov">     518097 :   m_dt = computedt();</span>
+<span class="lineNum">     580 </span>                :            :   // Echo one-liner info on time step
+<span class="lineNum">     581 </span>                :<span class="lineCov">     518097 :   report();</span>
+<span class="lineNum">     582 </span>                :            : 
+<span class="lineNum">     583 </span>                :            :   // Finish if either max iterations or max time reached 
+<span class="lineNum">     584 </span>[<span class="branchCov" title="Branch 0 was taken 518013 times"> + </span><span class="branchCov" title="Branch 1 was taken 84 times"> + </span>][<span class="branchCov" title="Branch 2 was taken 518013 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineCov">     518097 :   if ( std::fabs(m_t-term) &gt; eps &amp;&amp; m_it &lt; nstep ) {</span>
+<span class="lineNum">     585 </span>                :            : 
+<span class="lineNum">     586 </span>        [<span class="branchCov" title="Branch 1 was taken 518013 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">     518013 :     if (g_inputdeck.stat()) {</span>
+<span class="lineNum">     587 </span>                :            :       // Update map of statistical moments
+<span class="lineNum">     588 </span>                :<span class="lineCov">     518013 :       std::size_t ord = 0;</span>
+<span class="lineNum">     589 </span>                :<span class="lineCov">     518013 :       std::size_t cen = 0;</span>
+<span class="lineNum">     590 </span>[<span class="branchCov" title="Branch 4 was taken 7204055 times"> + </span><span class="branchNoCov" title="Branch 5 was not taken"> - </span>][<span class="branchCov" title="Branch 7 was taken 7204055 times"> + </span><span class="branchNoCov" title="Branch 8 was not taken"> - </span>]:<span class="lineCov">    7722068 :       for (const auto&amp; product : g_inputdeck.get&lt; tag::stat &gt;())</span>
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 10 was taken 7722068 times"> + </span><span class="branchNoCov" title="Branch 11 was not taken"> - </span>][<span class="branchCov" title="Branch 12 was taken 7204055 times"> + </span><span class="branchCov" title="Branch 13 was taken 518013 times"> + </span>]
+<span class="lineNum">     591 </span>[<span class="branchCov" title="Branch 1 was taken 7204055 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 3 was taken 2440139 times"> + </span><span class="branchCov" title="Branch 4 was taken 4763916 times"> + </span>]:<span class="lineCov">    7204055 :         if (tk::ctr::ordinary( product ))</span>
+<span class="lineNum">     592 </span>[<span class="branchCov" title="Branch 1 was taken 2440139 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 4 was taken 2440139 times"> + </span><span class="branchNoCov" title="Branch 5 was not taken"> - </span>]:<span class="lineCov">    2440139 :           m_moments[ product ] = m_ordinary[ ord++ ];</span>
+<span class="lineNum">     593 </span>                :            :         else
+<span class="lineNum">     594 </span>[<span class="branchCov" title="Branch 1 was taken 4763916 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 4 was taken 4763916 times"> + </span><span class="branchNoCov" title="Branch 5 was not taken"> - </span>]:<span class="lineCov">    4763916 :           m_moments[ product ] = m_central[ cen++ ];</span>
+<span class="lineNum">     595 </span>                :            : 
+<span class="lineNum">     596 </span>                :            :       // Zero statistics counters and accumulators
+<span class="lineNum">     597 </span>[<span class="branchCov" title="Branch 1 was taken 518013 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 4 was taken 518013 times"> + </span><span class="branchNoCov" title="Branch 5 was not taken"> - </span>]:<span class="lineCov">     518013 :       std::fill( begin(m_ordinary), end(m_ordinary), 0.0 );</span>
+<span class="lineNum">         </span>        [<span class="branchCov" title="Branch 7 was taken 518013 times"> + </span><span class="branchNoCov" title="Branch 8 was not taken"> - </span>]
+<span class="lineNum">     598 </span>[<span class="branchCov" title="Branch 1 was taken 518013 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 4 was taken 518013 times"> + </span><span class="branchNoCov" title="Branch 5 was not taken"> - </span>]:<span class="lineCov">     518013 :       std::fill( begin(m_central), end(m_central), 0.0 );</span>
+<span class="lineNum">         </span>        [<span class="branchCov" title="Branch 7 was taken 518013 times"> + </span><span class="branchNoCov" title="Branch 8 was not taken"> - </span>]
+<span class="lineNum">     599 </span>                :            : 
+<span class="lineNum">     600 </span>                :            :       // Re-activate SDAG-wait for estimation of ordinary stats for next step
+<span class="lineNum">     601 </span>                :<span class="lineCov">     518013 :       thisProxy.wait4ord();</span>
+<span class="lineNum">     602 </span>                :            :       // Re-activate SDAG-wait for estimation of PDFs for next step
+<span class="lineNum">     603 </span>                :<span class="lineCov">     518013 :       thisProxy.wait4pdf();</span>
+<span class="lineNum">     604 </span>                :            :     }
+<span class="lineNum">     605 </span>                :            : 
+<span class="lineNum">     606 </span>                :            :     // Continue with next time step with all integrators
+<span class="lineNum">     607 </span>                :<span class="lineCov">     518013 :     m_intproxy.advance( m_dt, m_t, m_it, m_moments );</span>
+<span class="lineNum">     608 </span>                :            : 
+<span class="lineNum">     609 </span>                :<span class="lineCov">         84 :   } else finish();</span>
+<span class="lineNum">     610 </span>                :<span class="lineCov">     518097 : }</span>
+<a name="611"><span class="lineNum">     611 </span>                :            : </a>
+<span class="lineNum">     612 </span>                :            : void
+<span class="lineNum">     613 </span>                :<span class="lineCov">         84 : Distributor::finish()</span>
+<span class="lineNum">     614 </span>                :            : // *****************************************************************************
+<span class="lineNum">     615 </span>                :            : // Normal finish of time stepping
+<span class="lineNum">     616 </span>                :            : // *****************************************************************************
+<span class="lineNum">     617 </span>                :            : {
+<span class="lineNum">     618 </span>                :            :   // Print out reason for stopping
+<span class="lineNum">     619 </span>                :<span class="lineCov">         84 :   const auto term = g_inputdeck.get&lt; tag::discr, tag::term &gt;();</span>
+<span class="lineNum">     620 </span>                :<span class="lineCov">         84 :   const auto nstep = g_inputdeck.get&lt; tag::discr, tag::nstep &gt;();</span>
+<span class="lineNum">     621 </span>                :<span class="lineCov">         84 :   m_print.endsubsection();</span>
+<span class="lineNum">     622 </span>        [<span class="branchNoCov" title="Branch 1 was not taken"> - </span><span class="branchCov" title="Branch 2 was taken 84 times"> + </span>]:<span class="lineCov">         84 :   if (m_it &gt;= g_inputdeck.get&lt; tag::discr, tag::nstep &gt;())</span>
+<span class="lineNum">     623 </span>        [<span class="branchNoExec" title="Branch 2 was not executed"> # </span><span class="branchNoExec" title="Branch 3 was not executed"> # </span>]:<span class="lineNoCov">          0 :      m_print.note( &quot;Normal finish, maximum number of iterations reached: &quot; +</span>
+<span class="lineNum">     624 </span>        [<span class="branchNoExec" title="Branch 1 was not executed"> # </span><span class="branchNoExec" title="Branch 2 was not executed"> # </span>]:<span class="lineNoCov">          0 :                    std::to_string( nstep ) );</span>
+<span class="lineNum">     625 </span>                :            :    else 
+<span class="lineNum">     626 </span>        [<span class="branchCov" title="Branch 2 was taken 84 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineCov">        168 :      m_print.note( &quot;Normal finish, maximum time reached: &quot; +</span>
+<span class="lineNum">     627 </span>        [<span class="branchCov" title="Branch 1 was taken 84 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">         84 :                    std::to_string( term ) );</span>
+<span class="lineNum">     628 </span>                :            : 
+<span class="lineNum">     629 </span>                :            :   // Quit
+<span class="lineNum">     630 </span>                :<span class="lineCov">         84 :   mainProxy.finalize();</span>
+<span class="lineNum">     631 </span>                :<span class="lineCov">         84 : }</span>
+<a name="632"><span class="lineNum">     632 </span>                :            : </a>
+<span class="lineNum">     633 </span>                :            : void
+<span class="lineNum">     634 </span>                :<span class="lineNoCov">          0 : Distributor::nostat()</span>
+<span class="lineNum">     635 </span>                :            : // *****************************************************************************
+<span class="lineNum">     636 </span>                :            : //  Charm++ reduction target enabling shortcutting sync points if no stats
+<span class="lineNum">     637 </span>                :            : //! \details This reduction target is called if there are no statistics nor PDFs
+<span class="lineNum">     638 </span>                :            : //!   to be estimated and thus some synchronization points can be skipped. Upon
+<span class="lineNum">     639 </span>                :            : //!   this call we simply finish up the time step as usual.
+<span class="lineNum">     640 </span>                :            : // *****************************************************************************
+<span class="lineNum">     641 </span>                :            : {
+<span class="lineNum">     642 </span>                :<span class="lineNoCov">          0 :   evaluateTime();</span>
+<span class="lineNum">     643 </span>                :<span class="lineNoCov">          0 : }</span>
+<a name="644"><span class="lineNum">     644 </span>                :            : </a>
+<span class="lineNum">     645 </span>                :            : void
+<span class="lineNum">     646 </span>                :<span class="lineCov">         84 : Distributor::header() const</span>
+<span class="lineNum">     647 </span>                :            : // *****************************************************************************
+<span class="lineNum">     648 </span>                :            : // Print out time integration header
+<span class="lineNum">     649 </span>                :            : // *****************************************************************************
+<span class="lineNum">     650 </span>                :            : {
+<span class="lineNum">     651 </span>                :            :   m_print.inthead( &quot;Time integration&quot;, &quot;Differential equations testbed&quot;,
+<span class="lineNum">     652 </span>                :            :     &quot;Legend: it - iteration count\n&quot;
+<span class="lineNum">     653 </span>                :            :     &quot;         t - time\n&quot;
+<span class="lineNum">     654 </span>                :            :     &quot;        dt - time step size\n&quot;
+<span class="lineNum">     655 </span>                :            :     &quot;       ETE - estimated time elapsed (h:m:s)\n&quot;
+<span class="lineNum">     656 </span>                :            :     &quot;       ETA - estimated time for accomplishment (h:m:s)\n&quot;
+<span class="lineNum">     657 </span>                :            :     &quot;       out - output-saved flags (S: statistics, P: PDFs)\n&quot;,
+<span class="lineNum">     658 </span>                :            :     &quot;\n      it             t            dt        ETE        ETA   out\n&quot;
+<span class="lineNum">     659 </span>[<span class="branchCov" title="Branch 2 was taken 84 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>][<span class="branchCov" title="Branch 6 was taken 84 times"> + </span><span class="branchNoCov" title="Branch 7 was not taken"> - </span>]:<span class="lineCov">         84 :       &quot; ---------------------------------------------------------------\n&quot; );</span>
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 10 was taken 84 times"> + </span><span class="branchNoCov" title="Branch 11 was not taken"> - </span>][<span class="branchCov" title="Branch 14 was taken 84 times"> + </span><span class="branchNoCov" title="Branch 15 was not taken"> - </span>]
+<span class="lineNum">         </span>        [<span class="branchCov" title="Branch 17 was taken 84 times"> + </span><span class="branchNoCov" title="Branch 18 was not taken"> - </span>]
+<span class="lineNum">     660 </span>                :<span class="lineCov">         84 : }</span>
+<a name="661"><span class="lineNum">     661 </span>                :            : </a>
+<span class="lineNum">     662 </span>                :            : void
+<span class="lineNum">     663 </span>                :<span class="lineCov">     518097 : Distributor::report()</span>
+<span class="lineNum">     664 </span>                :            : // *****************************************************************************
+<span class="lineNum">     665 </span>                :            : // Print out one-liner report on time step
+<span class="lineNum">     666 </span>                :            : // *****************************************************************************
+<span class="lineNum">     667 </span>                :            : {
+<span class="lineNum">     668 </span>        [<span class="branchCov" title="Branch 1 was taken 1731 times"> + </span><span class="branchCov" title="Branch 2 was taken 516366 times"> + </span>]:<span class="lineCov">     518097 :   if (!(m_it % g_inputdeck.get&lt; tag::interval, tag::tty &gt;())) {</span>
+<span class="lineNum">     669 </span>                :            : 
+<span class="lineNum">     670 </span>                :            :     // estimated time elapsed and for accomplishment
+<span class="lineNum">     671 </span>[<span class="branchCov" title="Branch 1 was taken 1731 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 4 was taken 1731 times"> + </span><span class="branchNoCov" title="Branch 5 was not taken"> - </span>]:<span class="lineCov">       1731 :     tk::Timer::Watch ete, eta;</span>
+<span class="lineNum">     672 </span>        [<span class="branchCov" title="Branch 2 was taken 1731 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineCov">       1731 :     m_timer[0].eta( g_inputdeck.get&lt; tag::discr, tag::term &gt;(), m_t,</span>
+<span class="lineNum">     673 </span>                :<span class="lineCov">       1731 :                     g_inputdeck.get&lt; tag::discr, tag::nstep &gt;(), m_it,</span>
+<span class="lineNum">     674 </span>        [<span class="branchCov" title="Branch 1 was taken 1731 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">       1731 :                     ete, eta );</span>
+<span class="lineNum">     675 </span>                :            : 
+<span class="lineNum">     676 </span>                :            :     // Output one-liner
+<span class="lineNum">     677 </span>[<span class="branchCov" title="Branch 1 was taken 1731 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 4 was taken 1731 times"> + </span><span class="branchNoCov" title="Branch 5 was not taken"> - </span>]:<span class="lineCov">       1731 :     m_print &lt;&lt; std::setfill(' ') &lt;&lt; std::setw(8) &lt;&lt; m_it &lt;&lt; &quot;  &quot;</span>
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 7 was taken 1731 times"> + </span><span class="branchNoCov" title="Branch 8 was not taken"> - </span>][<span class="branchCov" title="Branch 10 was taken 1731 times"> + </span><span class="branchNoCov" title="Branch 11 was not taken"> - </span>]
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 13 was taken 1731 times"> + </span><span class="branchNoCov" title="Branch 14 was not taken"> - </span>][<span class="branchCov" title="Branch 16 was taken 1731 times"> + </span><span class="branchNoCov" title="Branch 17 was not taken"> - </span>]
+<span class="lineNum">     678 </span>[<span class="branchCov" title="Branch 1 was taken 1731 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 4 was taken 1731 times"> + </span><span class="branchNoCov" title="Branch 5 was not taken"> - </span>]:<span class="lineCov">       3462 :             &lt;&lt; std::scientific &lt;&lt; std::setprecision(6)</span>
+<span class="lineNum">         </span>        [<span class="branchCov" title="Branch 7 was taken 1731 times"> + </span><span class="branchNoCov" title="Branch 8 was not taken"> - </span>]
+<span class="lineNum">     679 </span>[<span class="branchCov" title="Branch 1 was taken 1731 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 4 was taken 1731 times"> + </span><span class="branchNoCov" title="Branch 5 was not taken"> - </span>]:<span class="lineCov">       3462 :             &lt;&lt; std::setw(12) &lt;&lt; m_t &lt;&lt; &quot;  &quot;</span>
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 7 was taken 1731 times"> + </span><span class="branchNoCov" title="Branch 8 was not taken"> - </span>][<span class="branchCov" title="Branch 10 was taken 1731 times"> + </span><span class="branchNoCov" title="Branch 11 was not taken"> - </span>]
+<span class="lineNum">     680 </span>[<span class="branchCov" title="Branch 1 was taken 1731 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 4 was taken 1731 times"> + </span><span class="branchNoCov" title="Branch 5 was not taken"> - </span>]:<span class="lineCov">       1731 :             &lt;&lt; m_dt &lt;&lt; &quot;  &quot;</span>
+<span class="lineNum">     681 </span>[<span class="branchCov" title="Branch 1 was taken 1731 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 4 was taken 1731 times"> + </span><span class="branchNoCov" title="Branch 5 was not taken"> - </span>]:<span class="lineCov">       3462 :             &lt;&lt; std::setfill('0')</span>
+<span class="lineNum">     682 </span>[<span class="branchCov" title="Branch 1 was taken 1731 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 4 was taken 1731 times"> + </span><span class="branchNoCov" title="Branch 5 was not taken"> - </span>]:<span class="lineCov">       3462 :             &lt;&lt; std::setw(3) &lt;&lt; ete.hrs.count() &lt;&lt; &quot;:&quot;</span>
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 7 was taken 1731 times"> + </span><span class="branchNoCov" title="Branch 8 was not taken"> - </span>][<span class="branchCov" title="Branch 10 was taken 1731 times"> + </span><span class="branchNoCov" title="Branch 11 was not taken"> - </span>]
+<span class="lineNum">         </span>        [<span class="branchCov" title="Branch 13 was taken 1731 times"> + </span><span class="branchNoCov" title="Branch 14 was not taken"> - </span>]
+<span class="lineNum">     683 </span>[<span class="branchCov" title="Branch 1 was taken 1731 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 4 was taken 1731 times"> + </span><span class="branchNoCov" title="Branch 5 was not taken"> - </span>]:<span class="lineCov">       3462 :             &lt;&lt; std::setw(2) &lt;&lt; ete.min.count() &lt;&lt; &quot;:&quot;</span>
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 7 was taken 1731 times"> + </span><span class="branchNoCov" title="Branch 8 was not taken"> - </span>][<span class="branchCov" title="Branch 10 was taken 1731 times"> + </span><span class="branchNoCov" title="Branch 11 was not taken"> - </span>]
+<span class="lineNum">         </span>        [<span class="branchCov" title="Branch 13 was taken 1731 times"> + </span><span class="branchNoCov" title="Branch 14 was not taken"> - </span>]
+<span class="lineNum">     684 </span>[<span class="branchCov" title="Branch 1 was taken 1731 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 4 was taken 1731 times"> + </span><span class="branchNoCov" title="Branch 5 was not taken"> - </span>]:<span class="lineCov">       3462 :             &lt;&lt; std::setw(2) &lt;&lt; ete.sec.count() &lt;&lt; &quot;  &quot;</span>
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 7 was taken 1731 times"> + </span><span class="branchNoCov" title="Branch 8 was not taken"> - </span>][<span class="branchCov" title="Branch 10 was taken 1731 times"> + </span><span class="branchNoCov" title="Branch 11 was not taken"> - </span>]
+<span class="lineNum">         </span>        [<span class="branchCov" title="Branch 13 was taken 1731 times"> + </span><span class="branchNoCov" title="Branch 14 was not taken"> - </span>]
+<span class="lineNum">     685 </span>[<span class="branchCov" title="Branch 1 was taken 1731 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 4 was taken 1731 times"> + </span><span class="branchNoCov" title="Branch 5 was not taken"> - </span>]:<span class="lineCov">       3462 :             &lt;&lt; std::setw(3) &lt;&lt; eta.hrs.count() &lt;&lt; &quot;:&quot;</span>
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 7 was taken 1731 times"> + </span><span class="branchNoCov" title="Branch 8 was not taken"> - </span>][<span class="branchCov" title="Branch 10 was taken 1731 times"> + </span><span class="branchNoCov" title="Branch 11 was not taken"> - </span>]
+<span class="lineNum">         </span>        [<span class="branchCov" title="Branch 13 was taken 1731 times"> + </span><span class="branchNoCov" title="Branch 14 was not taken"> - </span>]
+<span class="lineNum">     686 </span>[<span class="branchCov" title="Branch 1 was taken 1731 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 4 was taken 1731 times"> + </span><span class="branchNoCov" title="Branch 5 was not taken"> - </span>]:<span class="lineCov">       3462 :             &lt;&lt; std::setw(2) &lt;&lt; eta.min.count() &lt;&lt; &quot;:&quot;</span>
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 7 was taken 1731 times"> + </span><span class="branchNoCov" title="Branch 8 was not taken"> - </span>][<span class="branchCov" title="Branch 10 was taken 1731 times"> + </span><span class="branchNoCov" title="Branch 11 was not taken"> - </span>]
+<span class="lineNum">         </span>        [<span class="branchCov" title="Branch 13 was taken 1731 times"> + </span><span class="branchNoCov" title="Branch 14 was not taken"> - </span>]
+<span class="lineNum">     687 </span>[<span class="branchCov" title="Branch 1 was taken 1731 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 4 was taken 1731 times"> + </span><span class="branchNoCov" title="Branch 5 was not taken"> - </span>]:<span class="lineCov">       3462 :             &lt;&lt; std::setw(2) &lt;&lt; eta.sec.count() &lt;&lt; &quot;  &quot;;</span>
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 7 was taken 1731 times"> + </span><span class="branchNoCov" title="Branch 8 was not taken"> - </span>][<span class="branchCov" title="Branch 10 was taken 1731 times"> + </span><span class="branchNoCov" title="Branch 11 was not taken"> - </span>]
+<span class="lineNum">         </span>        [<span class="branchCov" title="Branch 13 was taken 1731 times"> + </span><span class="branchNoCov" title="Branch 14 was not taken"> - </span>]
+<span class="lineNum">     688 </span>                :            : 
+<span class="lineNum">     689 </span>                :            :     // Augment one-liner with output indicators
+<span class="lineNum">     690 </span>[<span class="branchCov" title="Branch 1 was taken 1731 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 3 was taken 1701 times"> + </span><span class="branchCov" title="Branch 4 was taken 30 times"> + </span>]:<span class="lineCov">       1731 :     if (m_output.get&lt; tag::stat &gt;()) m_print &lt;&lt; 'S';</span>
+<span class="lineNum">         </span>        [<span class="branchCov" title="Branch 6 was taken 1701 times"> + </span><span class="branchNoCov" title="Branch 7 was not taken"> - </span>]
+<span class="lineNum">     691 </span>[<span class="branchCov" title="Branch 1 was taken 1731 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 3 was taken 1182 times"> + </span><span class="branchCov" title="Branch 4 was taken 549 times"> + </span>]:<span class="lineCov">       1731 :     if (m_output.get&lt; tag::pdf &gt;()) m_print &lt;&lt; 'P';</span>
+<span class="lineNum">         </span>        [<span class="branchCov" title="Branch 6 was taken 1182 times"> + </span><span class="branchNoCov" title="Branch 7 was not taken"> - </span>]
+<span class="lineNum">     692 </span>                :            : 
+<span class="lineNum">     693 </span>                :            :     // Reset output indicators
+<span class="lineNum">     694 </span>        [<span class="branchCov" title="Branch 1 was taken 1731 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">       1731 :     m_output.get&lt; tag::stat &gt;() = false;</span>
+<span class="lineNum">     695 </span>        [<span class="branchCov" title="Branch 1 was taken 1731 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">       1731 :     m_output.get&lt; tag::pdf &gt;() = false;</span>
+<span class="lineNum">     696 </span>                :            : 
+<span class="lineNum">     697 </span>        [<span class="branchCov" title="Branch 1 was taken 1731 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">       1731 :     m_print &lt;&lt; std::endl;</span>
+<span class="lineNum">     698 </span>                :            :   }
+<span class="lineNum">     699 </span>                :<span class="lineCov">     518097 : }</span>
+<span class="lineNum">     700 </span>                :            : 
+<span class="lineNum">     701 </span>                :            : #include &quot;NoWarning/distributor.def.h&quot;
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.12</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

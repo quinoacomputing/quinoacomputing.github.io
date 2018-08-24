@@ -1,0 +1,676 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html lang="en">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>Quinoa unit test code coverage report</title>
+  <link rel="stylesheet" type="text/css" href="../gcov.css">
+</head>
+<body>
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title">Quinoa unit test code coverage report</td></tr>
+    <tr><td class="ruler"><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../index.html">top level</a> - <a href="index.html">Inciter</a> - DiagCG.C<span style="font-size: 80%;"> (source / <a href="DiagCG.C.func-sort-c.html">functions</a>)</span></td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Commit:</td>
+            <td class="headerValue"><a href="https://github.com/quinoacomputing/quinoa/commit/9133450">Quinoa_v0.2-1234-g9133450</a></td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">0</td>
+            <td class="headerCovTableEntry">203</td>
+            <td class="headerCovTableEntryLo">0.0 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2018-08-23 19:33:12</td>
+            <td></td>
+            <td class="headerItem">Functions:</td>
+            <td class="headerCovTableEntry">0</td>
+            <td class="headerCovTableEntry">11</td>
+            <td class="headerCovTableEntryLo">0.0 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Legend:</td>
+            <td class="headerValueLeg">            Lines:
+            <span class="coverLegendCov">hit</span>
+            <span class="coverLegendNoCov">not hit</span>
+            | Branches:
+            <span class="coverLegendCov">+</span> taken
+            <span class="coverLegendNoCov">-</span> not taken
+            <span class="coverLegendNoCov">#</span> not executed
+</td>
+            <td></td>
+            <td class="headerItem">Branches:</td>
+            <td class="headerCovTableEntry">0</td>
+            <td class="headerCovTableEntry">0</td>
+            <td class="headerCovTableEntryHi">-</td>
+          </tr>
+          <tr><td><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">           Branch data     Line data    Source code</pre>
+<pre class="source">
+<a name="1"><span class="lineNum">       1 </span>                :            : // *****************************************************************************</a>
+<span class="lineNum">       2 </span>                :            : /*!
+<span class="lineNum">       3 </span>                :            :   \file      src/Inciter/DiagCG.C
+<span class="lineNum">       4 </span>                :            :   \copyright 2012-2015, J. Bakosi, 2016-2018, Los Alamos National Security, LLC.
+<span class="lineNum">       5 </span>                :            :   \brief     DiagCG for a PDE system with continuous Galerkin without a matrix
+<span class="lineNum">       6 </span>                :            :   \details   DiagCG advances a system of partial differential equations (PDEs)
+<span class="lineNum">       7 </span>                :            :     using continuous Galerkin (CG) finite element (FE) spatial discretization
+<span class="lineNum">       8 </span>                :            :     (using linear shapefunctions on tetrahedron elements) combined with a time
+<span class="lineNum">       9 </span>                :            :     stepping scheme that is equivalent to the Lax-Wendroff (LW) scheme within
+<span class="lineNum">      10 </span>                :            :     the unstructured-mesh FE context and treats discontinuities with
+<span class="lineNum">      11 </span>                :            :     flux-corrected transport (FCT). Only the diagonal entries of the left-hand
+<span class="lineNum">      12 </span>                :            :     side matrix are non-zero thus it does not need a mtrix-based linear solver.
+<span class="lineNum">      13 </span>                :            :   \see The documentation in DiagCG.h.
+<span class="lineNum">      14 </span>                :            : */
+<span class="lineNum">      15 </span>                :            : // *****************************************************************************
+<span class="lineNum">      16 </span>                :            : 
+<span class="lineNum">      17 </span>                :            : #include &quot;QuinoaConfig.h&quot;
+<span class="lineNum">      18 </span>                :            : #include &quot;DiagCG.h&quot;
+<span class="lineNum">      19 </span>                :            : #include &quot;Solver.h&quot;
+<span class="lineNum">      20 </span>                :            : #include &quot;Vector.h&quot;
+<span class="lineNum">      21 </span>                :            : #include &quot;Reader.h&quot;
+<span class="lineNum">      22 </span>                :            : #include &quot;ContainerUtil.h&quot;
+<span class="lineNum">      23 </span>                :            : #include &quot;UnsMesh.h&quot;
+<span class="lineNum">      24 </span>                :            : #include &quot;Reorder.h&quot;
+<span class="lineNum">      25 </span>                :            : #include &quot;ExodusIIMeshReader.h&quot;
+<span class="lineNum">      26 </span>                :            : #include &quot;ExodusIIMeshWriter.h&quot;
+<span class="lineNum">      27 </span>                :            : #include &quot;Inciter/InputDeck/InputDeck.h&quot;
+<span class="lineNum">      28 </span>                :            : #include &quot;DerivedData.h&quot;
+<span class="lineNum">      29 </span>                :            : #include &quot;CGPDE.h&quot;
+<span class="lineNum">      30 </span>                :            : #include &quot;Discretization.h&quot;
+<span class="lineNum">      31 </span>                :            : #include &quot;DistFCT.h&quot;
+<span class="lineNum">      32 </span>                :            : #include &quot;DiagReducer.h&quot;
+<span class="lineNum">      33 </span>                :            : #include &quot;NodeBC.h&quot;
+<span class="lineNum">      34 </span>                :            : 
+<span class="lineNum">      35 </span>                :            : #ifdef HAS_ROOT
+<span class="lineNum">      36 </span>                :            :   #include &quot;RootMeshWriter.h&quot;
+<span class="lineNum">      37 </span>                :            : #endif
+<span class="lineNum">      38 </span>                :            : 
+<span class="lineNum">      39 </span>                :            : namespace inciter {
+<span class="lineNum">      40 </span>                :            : 
+<span class="lineNum">      41 </span>                :            : extern ctr::InputDeck g_inputdeck;
+<span class="lineNum">      42 </span>                :            : extern ctr::InputDeck g_inputdeck_defaults;
+<span class="lineNum">      43 </span>                :            : extern std::vector&lt; CGPDE &gt; g_cgpde;
+<span class="lineNum">      44 </span>                :            : 
+<span class="lineNum">      45 </span>                :            : } // inciter::
+<span class="lineNum">      46 </span>                :            : 
+<span class="lineNum">      47 </span>                :            : using inciter::DiagCG;
+<span class="lineNum">      48 </span>                :            : 
+<span class="lineNum">      49 </span>                :<span class="lineNoCov">          0 : DiagCG::DiagCG( const CProxy_Discretization&amp; disc,</span>
+<span class="lineNum">      50 </span>                :            :                 const tk::CProxy_Solver&amp; solver,
+<span class="lineNum">      51 </span>                :            :                 const FaceData&amp; fd ) :
+<span class="lineNum">      52 </span>                :            :   m_itf( 0 ),
+<span class="lineNum">      53 </span>                :            :   m_nsol( 0 ),
+<span class="lineNum">      54 </span>                :            :   m_nlhs( 0 ),
+<span class="lineNum">      55 </span>                :            :   m_nrhs( 0 ),
+<span class="lineNum">      56 </span>                :            :   m_ndif( 0 ),
+<span class="lineNum">      57 </span>                :            :   m_disc( disc ),
+<span class="lineNum">      58 </span>                :            :   m_fd( fd ),
+<span class="lineNum">      59 </span>                :<span class="lineNoCov">          0 :   m_u( m_disc[thisIndex].ckLocal()-&gt;Gid().size(),</span>
+<span class="lineNum">      60 </span>                :            :        g_inputdeck.get&lt; tag::component &gt;().nprop() ),
+<span class="lineNum">      61 </span>                :            :   m_ul( m_u.nunk(), m_u.nprop() ),
+<span class="lineNum">      62 </span>                :            :   m_du( m_u.nunk(), m_u.nprop() ),
+<span class="lineNum">      63 </span>                :            :   m_dul( m_u.nunk(), m_u.nprop() ),
+<span class="lineNum">      64 </span>                :<span class="lineNoCov">          0 :   m_ue( m_disc[thisIndex].ckLocal()-&gt;Inpoel().size()/4, m_u.nprop() ),</span>
+<span class="lineNum">      65 </span>                :            :   m_lhs( m_u.nunk(), m_u.nprop() ),
+<span class="lineNum">      66 </span>                :            :   m_rhs( m_u.nunk(), m_u.nprop() ),
+<span class="lineNum">      67 </span>                :            :   m_dif( m_u.nunk(), m_u.nprop() ),
+<span class="lineNum">      68 </span>                :            :   m_bc(),
+<span class="lineNum">      69 </span>                :            :   m_lhsc(),
+<span class="lineNum">      70 </span>                :            :   m_rhsc(),
+<span class="lineNum">      71 </span>                :            :   m_difc(),
+<span class="lineNum">      72 </span>                :            :   m_vol( 0.0 ),
+<span class="lineNum">      73 </span>                :<span class="lineNoCov">          0 :   m_diag( *Disc() )</span>
+<span class="lineNum">      74 </span>                :            : // *****************************************************************************
+<span class="lineNum">      75 </span>                :            : //  Constructor
+<span class="lineNum">      76 </span>                :            : //! \param[in] disc Discretization proxy
+<span class="lineNum">      77 </span>                :            : //! \param[in] solver Linear system solver (Solver) proxy
+<span class="lineNum">      78 </span>                :            : //! \param[in] fd Face data structures
+<span class="lineNum">      79 </span>                :            : // *****************************************************************************
+<span class="lineNum">      80 </span>                :            : {
+<span class="lineNum">      81 </span>                :<span class="lineNoCov">          0 :   auto d = Disc();</span>
+<span class="lineNum">      82 </span>                :            : 
+<span class="lineNum">      83 </span>                :            :   // Allocate communication buffers for LHS, ICs, RHS, mass diffusion RHS
+<span class="lineNum">      84 </span>                :            :   auto np = m_u.nprop();
+<span class="lineNum">      85 </span>                :            :   auto nb = d-&gt;Bid().size();
+<span class="lineNum">      86 </span>                :<span class="lineNoCov">          0 :   m_lhsc.resize( nb );</span>
+<span class="lineNum">      87 </span>                :<span class="lineNoCov">          0 :   for (auto&amp; b : m_lhsc) b.resize( np );</span>
+<span class="lineNum">      88 </span>                :<span class="lineNoCov">          0 :   m_rhsc.resize( nb );</span>
+<span class="lineNum">      89 </span>                :<span class="lineNoCov">          0 :   for (auto&amp; b : m_rhsc) b.resize( np );</span>
+<span class="lineNum">      90 </span>                :<span class="lineNoCov">          0 :   m_difc.resize( nb );</span>
+<span class="lineNum">      91 </span>                :<span class="lineNoCov">          0 :   for (auto&amp; b : m_difc) b.resize( np );</span>
+<span class="lineNum">      92 </span>                :            : 
+<span class="lineNum">      93 </span>                :            :   // Zero communication buffers for setup (LHS, ICs)
+<span class="lineNum">      94 </span>                :<span class="lineNoCov">          0 :   for (auto&amp; b : m_lhsc) std::fill( begin(b), end(b), 0.0 );</span>
+<span class="lineNum">      95 </span>                :            : 
+<span class="lineNum">      96 </span>                :            :   // Signal the runtime system that the workers have been created
+<span class="lineNum">      97 </span>                :<span class="lineNoCov">          0 :   solver.ckLocalBranch()-&gt;created();</span>
+<span class="lineNum">      98 </span>                :<span class="lineNoCov">          0 : }</span>
+<a name="99"><span class="lineNum">      99 </span>                :            : </a>
+<span class="lineNum">     100 </span>                :            : void
+<span class="lineNum">     101 </span>                :<span class="lineNoCov">          0 : DiagCG::registerReducers()</span>
+<span class="lineNum">     102 </span>                :            : // *****************************************************************************
+<span class="lineNum">     103 </span>                :            : //  Configure Charm++ reduction types initiated from this chare array
+<span class="lineNum">     104 </span>                :            : //! \details Since this is a [nodeinit] routine, the runtime system executes the
+<span class="lineNum">     105 </span>                :            : //!   routine exactly once on every logical node early on in the Charm++ init
+<span class="lineNum">     106 </span>                :            : //!   sequence. Must be static as it is called without an object. See also:
+<span class="lineNum">     107 </span>                :            : //!   Section &quot;Initializations at Program Startup&quot; at in the Charm++ manual
+<span class="lineNum">     108 </span>                :            : //!   http://charm.cs.illinois.edu/manuals/html/charm++/manual.html.
+<span class="lineNum">     109 </span>                :            : // *****************************************************************************
+<span class="lineNum">     110 </span>                :            : {
+<span class="lineNum">     111 </span>                :<span class="lineNoCov">          0 :   NodeDiagnostics::registerReducers();</span>
+<span class="lineNum">     112 </span>                :<span class="lineNoCov">          0 : }</span>
+<a name="113"><span class="lineNum">     113 </span>                :            : </a>
+<span class="lineNum">     114 </span>                :            : void
+<span class="lineNum">     115 </span>                :<span class="lineNoCov">          0 : DiagCG::setup( tk::real v )</span>
+<span class="lineNum">     116 </span>                :            : // *****************************************************************************
+<span class="lineNum">     117 </span>                :            : // Setup rows, query boundary conditions, output mesh, etc.
+<span class="lineNum">     118 </span>                :            : //! \param[in] v Total mesh volume
+<span class="lineNum">     119 </span>                :            : // *****************************************************************************
+<span class="lineNum">     120 </span>                :            : {
+<span class="lineNum">     121 </span>                :<span class="lineNoCov">          0 :   auto d = Disc();</span>
+<span class="lineNum">     122 </span>                :            : 
+<span class="lineNum">     123 </span>                :            :   // Store total mesh volume
+<span class="lineNum">     124 </span>                :<span class="lineNoCov">          0 :   m_vol = v;</span>
+<span class="lineNum">     125 </span>                :            :   // Output chare mesh to file
+<span class="lineNum">     126 </span>                :<span class="lineNoCov">          0 :   d-&gt;writeMesh( m_fd.Bface(), m_fd.Triinpoel(), m_fd.Bnode() );</span>
+<span class="lineNum">     127 </span>                :            :   // Output fields metadata to output file
+<span class="lineNum">     128 </span>                :<span class="lineNoCov">          0 :   d-&gt;writeNodeMeta();</span>
+<span class="lineNum">     129 </span>                :            : 
+<span class="lineNum">     130 </span>                :            :   // Compute left-hand side of PDEs
+<span class="lineNum">     131 </span>                :<span class="lineNoCov">          0 :   lhs();</span>
+<span class="lineNum">     132 </span>                :            : 
+<span class="lineNum">     133 </span>                :            :   // Set initial conditions for all PDEs
+<span class="lineNum">     134 </span>                :<span class="lineNoCov">          0 :   for (const auto&amp; eq : g_cgpde) eq.initialize( d-&gt;Coord(), m_u, d-&gt;T() );</span>
+<span class="lineNum">     135 </span>                :            : 
+<span class="lineNum">     136 </span>                :            :   // Activate SDAG waits for setup
+<span class="lineNum">     137 </span>                :<span class="lineNoCov">          0 :   thisProxy[ thisIndex ].wait4setup();</span>
+<span class="lineNum">     138 </span>                :            : 
+<span class="lineNum">     139 </span>                :            :   // Output initial conditions to file (regardless of whether it was requested)
+<span class="lineNum">     140 </span>                :<span class="lineNoCov">          0 :   if ( !g_inputdeck.get&lt; tag::cmd, tag::benchmark &gt;() ) writeFields( d-&gt;T() );</span>
+<span class="lineNum">     141 </span>                :<span class="lineNoCov">          0 : }</span>
+<a name="142"><span class="lineNum">     142 </span>                :            : </a>
+<span class="lineNum">     143 </span>                :            : void
+<span class="lineNum">     144 </span>                :<span class="lineNoCov">          0 : DiagCG::start()</span>
+<span class="lineNum">     145 </span>                :            : // *****************************************************************************
+<span class="lineNum">     146 </span>                :            : //  Start time stepping
+<span class="lineNum">     147 </span>                :            : // *****************************************************************************
+<span class="lineNum">     148 </span>                :            : {
+<span class="lineNum">     149 </span>                :<span class="lineNoCov">          0 :   auto d = Disc();</span>
+<span class="lineNum">     150 </span>                :            : 
+<span class="lineNum">     151 </span>                :            :   // Start timer measuring time stepping wall clock time
+<span class="lineNum">     152 </span>                :<span class="lineNoCov">          0 :   d-&gt;Timer().zero();</span>
+<span class="lineNum">     153 </span>                :            : 
+<span class="lineNum">     154 </span>                :            :   // Combine own and communicated contributions to LHS and ICs
+<span class="lineNum">     155 </span>                :<span class="lineNoCov">          0 :   for (const auto&amp; b : d-&gt;Bid()) {</span>
+<span class="lineNum">     156 </span>                :<span class="lineNoCov">          0 :     auto lid = tk::cref_find( d-&gt;Lid(), b.first );</span>
+<span class="lineNum">     157 </span>                :<span class="lineNoCov">          0 :     const auto&amp; blhsc = m_lhsc[ b.second ];</span>
+<span class="lineNum">     158 </span>                :<span class="lineNoCov">          0 :     for (ncomp_t c=0; c&lt;m_lhs.nprop(); ++c) m_lhs(lid,c,0) += blhsc[c];</span>
+<span class="lineNum">     159 </span>                :            :   }
+<span class="lineNum">     160 </span>                :            : 
+<span class="lineNum">     161 </span>                :            :   // Zero communication buffers for first time step (rhs, mass diffusion rhs)
+<span class="lineNum">     162 </span>                :<span class="lineNoCov">          0 :   for (auto&amp; b : m_rhsc) std::fill( begin(b), end(b), 0.0 );</span>
+<span class="lineNum">     163 </span>                :<span class="lineNoCov">          0 :   for (auto&amp; b : m_difc) std::fill( begin(b), end(b), 0.0 );</span>
+<span class="lineNum">     164 </span>                :            : 
+<span class="lineNum">     165 </span>                :<span class="lineNoCov">          0 :   dt();</span>
+<span class="lineNum">     166 </span>                :<span class="lineNoCov">          0 : }</span>
+<span class="lineNum">     167 </span>                :            : 
+<span class="lineNum">     168 </span>                :            : void
+<span class="lineNum">     169 </span>                :<span class="lineNoCov">          0 : DiagCG::lhs()</span>
+<span class="lineNum">     170 </span>                :            : // *****************************************************************************
+<span class="lineNum">     171 </span>                :            : // Compute the left-hand side of transport equations
+<span class="lineNum">     172 </span>                :            : // *****************************************************************************
+<span class="lineNum">     173 </span>                :            : {
+<span class="lineNum">     174 </span>                :<span class="lineNoCov">          0 :   auto d = Disc();</span>
+<span class="lineNum">     175 </span>                :            : 
+<span class="lineNum">     176 </span>                :            :   // Compute lumped mass lhs required for both high and low order solutions
+<span class="lineNum">     177 </span>                :<span class="lineNoCov">          0 :   m_lhs = d-&gt;FCT()-&gt;lump( *d );</span>
+<span class="lineNum">     178 </span>                :            : 
+<span class="lineNum">     179 </span>                :<span class="lineNoCov">          0 :   if (d-&gt;Msum().empty())</span>
+<span class="lineNum">     180 </span>                :<span class="lineNoCov">          0 :     comlhs_complete();</span>
+<span class="lineNum">     181 </span>                :            :   else // send contributions of lhs to chare-boundary nodes to fellow chares
+<span class="lineNum">     182 </span>                :<span class="lineNoCov">          0 :     for (const auto&amp; n : d-&gt;Msum()) {</span>
+<span class="lineNum">     183 </span>                :            :       std::vector&lt; std::vector&lt; tk::real &gt; &gt; l;
+<span class="lineNum">     184 </span>                :<span class="lineNoCov">          0 :       for (auto i : n.second) l.push_back( m_lhs[ tk::cref_find(d-&gt;Lid(),i) ] );</span>
+<span class="lineNum">     185 </span>                :<span class="lineNoCov">          0 :       thisProxy[ n.first ].comlhs( n.second, l );</span>
+<span class="lineNum">     186 </span>                :<span class="lineNoCov">          0 :     }</span>
+<span class="lineNum">     187 </span>                :            : 
+<span class="lineNum">     188 </span>                :<span class="lineNoCov">          0 :   ownlhs_complete();</span>
+<span class="lineNum">     189 </span>                :<span class="lineNoCov">          0 : }</span>
+<a name="190"><span class="lineNum">     190 </span>                :            : </a>
+<span class="lineNum">     191 </span>                :            : void
+<span class="lineNum">     192 </span>                :<span class="lineNoCov">          0 : DiagCG::comlhs( const std::vector&lt; std::size_t &gt;&amp; gid,</span>
+<span class="lineNum">     193 </span>                :<span class="lineNoCov">          0 :                 const std::vector&lt; std::vector&lt; tk::real &gt; &gt;&amp; L )</span>
+<span class="lineNum">     194 </span>                :            : // *****************************************************************************
+<span class="lineNum">     195 </span>                :            : //  Receive contributions to left-hand side diagonal matrix on chare-boundaries
+<span class="lineNum">     196 </span>                :            : //! \param[in] gid Global mesh node IDs at which we receive LHS contributions
+<span class="lineNum">     197 </span>                :            : //! \param[in] L Partial contributions of LHS to chare-boundary nodes
+<span class="lineNum">     198 </span>                :            : //! \details This function receives contributions to m_lhs, which stores the
+<span class="lineNum">     199 </span>                :            : //!   diagonal (lumped) mass matrix at mesh nodes. While m_lhs stores
+<span class="lineNum">     200 </span>                :            : //!   own contributions, m_lhsc collects the neighbor chare contributions during
+<span class="lineNum">     201 </span>                :            : //!   communication. This way work on m_lhs and m_lhsc is overlapped. The two
+<span class="lineNum">     202 </span>                :            : //!   are combined in start().
+<span class="lineNum">     203 </span>                :            : // *****************************************************************************
+<span class="lineNum">     204 </span>                :            : {
+<span class="lineNum">     205 </span>                :            :   Assert( L.size() == gid.size(), &quot;Size mismatch&quot; );
+<span class="lineNum">     206 </span>                :            : 
+<span class="lineNum">     207 </span>                :            :   using tk::operator+=;
+<span class="lineNum">     208 </span>                :            : 
+<span class="lineNum">     209 </span>                :<span class="lineNoCov">          0 :   auto d = Disc();</span>
+<span class="lineNum">     210 </span>                :            : 
+<span class="lineNum">     211 </span>                :<span class="lineNoCov">          0 :   for (std::size_t i=0; i&lt;gid.size(); ++i) {</span>
+<span class="lineNum">     212 </span>                :<span class="lineNoCov">          0 :     auto bid = tk::cref_find( d-&gt;Bid(), gid[i] );</span>
+<span class="lineNum">     213 </span>                :            :     Assert( bid &lt; m_lhsc.size(), &quot;Indexing out of bounds&quot; );
+<span class="lineNum">     214 </span>                :<span class="lineNoCov">          0 :     m_lhsc[ bid ] += L[i];</span>
+<span class="lineNum">     215 </span>                :            :   }
+<span class="lineNum">     216 </span>                :            : 
+<span class="lineNum">     217 </span>                :<span class="lineNoCov">          0 :   if (++m_nlhs == d-&gt;Msum().size()) {</span>
+<span class="lineNum">     218 </span>                :<span class="lineNoCov">          0 :     m_nlhs = 0;</span>
+<span class="lineNum">     219 </span>                :<span class="lineNoCov">          0 :     comlhs_complete();</span>
+<span class="lineNum">     220 </span>                :            :   }
+<span class="lineNum">     221 </span>                :<span class="lineNoCov">          0 : }</span>
+<a name="222"><span class="lineNum">     222 </span>                :            : </a>
+<span class="lineNum">     223 </span>                :            : void
+<span class="lineNum">     224 </span>                :<span class="lineNoCov">          0 : DiagCG::dt()</span>
+<span class="lineNum">     225 </span>                :            : // *****************************************************************************
+<span class="lineNum">     226 </span>                :            : // Comppute time step size
+<span class="lineNum">     227 </span>                :            : // *****************************************************************************
+<span class="lineNum">     228 </span>                :            : {
+<span class="lineNum">     229 </span>                :<span class="lineNoCov">          0 :   tk::real mindt = std::numeric_limits&lt; tk::real &gt;::max();</span>
+<span class="lineNum">     230 </span>                :            : 
+<span class="lineNum">     231 </span>                :<span class="lineNoCov">          0 :   auto const_dt = g_inputdeck.get&lt; tag::discr, tag::dt &gt;();</span>
+<span class="lineNum">     232 </span>                :<span class="lineNoCov">          0 :   auto def_const_dt = g_inputdeck_defaults.get&lt; tag::discr, tag::dt &gt;();</span>
+<span class="lineNum">     233 </span>                :            :   auto eps = std::numeric_limits&lt; tk::real &gt;::epsilon();
+<span class="lineNum">     234 </span>                :            : 
+<span class="lineNum">     235 </span>                :<span class="lineNoCov">          0 :   auto d = Disc();</span>
+<span class="lineNum">     236 </span>                :            : 
+<span class="lineNum">     237 </span>                :            :   // use constant dt if configured
+<span class="lineNum">     238 </span>                :<span class="lineNoCov">          0 :   if (std::abs(const_dt - def_const_dt) &gt; eps) {</span>
+<span class="lineNum">     239 </span>                :            : 
+<span class="lineNum">     240 </span>                :<span class="lineNoCov">          0 :     mindt = const_dt;</span>
+<span class="lineNum">     241 </span>                :            : 
+<span class="lineNum">     242 </span>                :            :   } else {      // compute dt based on CFL
+<span class="lineNum">     243 </span>                :            : 
+<span class="lineNum">     244 </span>                :            :     // find the minimum dt across all PDEs integrated
+<span class="lineNum">     245 </span>                :<span class="lineNoCov">          0 :     for (const auto&amp; eq : g_cgpde) {</span>
+<span class="lineNum">     246 </span>                :<span class="lineNoCov">          0 :       auto eqdt = eq.dt( d-&gt;Coord(), d-&gt;Inpoel(), m_u );</span>
+<span class="lineNum">     247 </span>                :<span class="lineNoCov">          0 :       if (eqdt &lt; mindt) mindt = eqdt;</span>
+<span class="lineNum">     248 </span>                :            :     }
+<span class="lineNum">     249 </span>                :            : 
+<span class="lineNum">     250 </span>                :            :     // Scale smallest dt with CFL coefficient
+<span class="lineNum">     251 </span>                :<span class="lineNoCov">          0 :     mindt *= g_inputdeck.get&lt; tag::discr, tag::cfl &gt;();</span>
+<span class="lineNum">     252 </span>                :            : 
+<span class="lineNum">     253 </span>                :            :   }
+<span class="lineNum">     254 </span>                :            : 
+<span class="lineNum">     255 </span>                :            :   // Contribute to minimum dt across all chares the advance to next step
+<span class="lineNum">     256 </span>                :            :   contribute( sizeof(tk::real), &amp;mindt, CkReduction::min_double,
+<span class="lineNum">     257 </span>                :<span class="lineNoCov">          0 :               CkCallback(CkReductionTarget(DiagCG,advance), thisProxy) );</span>
+<span class="lineNum">     258 </span>                :<span class="lineNoCov">          0 : }</span>
+<span class="lineNum">     259 </span>                :            : 
+<span class="lineNum">     260 </span>                :            : void
+<span class="lineNum">     261 </span>                :<span class="lineNoCov">          0 : DiagCG::rhs()</span>
+<span class="lineNum">     262 </span>                :            : // *****************************************************************************
+<span class="lineNum">     263 </span>                :            : // Compute right-hand side of transport equations
+<span class="lineNum">     264 </span>                :            : // *****************************************************************************
+<span class="lineNum">     265 </span>                :            : {
+<span class="lineNum">     266 </span>                :<span class="lineNoCov">          0 :   auto d = Disc();</span>
+<span class="lineNum">     267 </span>                :            : 
+<span class="lineNum">     268 </span>                :            :   // Compute right-hand side and query Dirichlet BCs for all equations
+<span class="lineNum">     269 </span>                :<span class="lineNoCov">          0 :   for (const auto&amp; eq : g_cgpde)</span>
+<span class="lineNum">     270 </span>                :<span class="lineNoCov">          0 :     eq.rhs( d-&gt;T(), d-&gt;Dt(), d-&gt;Coord(), d-&gt;Inpoel(), m_u, m_ue, m_rhs );</span>
+<span class="lineNum">     271 </span>                :            : 
+<span class="lineNum">     272 </span>                :            :   // Query and match user-specified boundary conditions to side sets
+<span class="lineNum">     273 </span>                :<span class="lineNoCov">          0 :   bc();</span>
+<span class="lineNum">     274 </span>                :            : 
+<span class="lineNum">     275 </span>                :<span class="lineNoCov">          0 :   if (d-&gt;Msum().empty())</span>
+<span class="lineNum">     276 </span>                :<span class="lineNoCov">          0 :     comrhs_complete();</span>
+<span class="lineNum">     277 </span>                :            :   else // send contributions of rhs to chare-boundary nodes to fellow chares
+<span class="lineNum">     278 </span>                :<span class="lineNoCov">          0 :     for (const auto&amp; n : d-&gt;Msum()) {</span>
+<span class="lineNum">     279 </span>                :            :       std::vector&lt; std::vector&lt; tk::real &gt; &gt; r;
+<span class="lineNum">     280 </span>                :<span class="lineNoCov">          0 :       for (auto i : n.second) r.push_back( m_rhs[ tk::cref_find(d-&gt;Lid(),i) ] );</span>
+<span class="lineNum">     281 </span>                :<span class="lineNoCov">          0 :       thisProxy[ n.first ].comrhs( n.second, r );</span>
+<span class="lineNum">     282 </span>                :<span class="lineNoCov">          0 :     }</span>
+<span class="lineNum">     283 </span>                :            : 
+<span class="lineNum">     284 </span>                :<span class="lineNoCov">          0 :   ownrhs_complete();</span>
+<span class="lineNum">     285 </span>                :            : 
+<span class="lineNum">     286 </span>                :            :   // Compute mass diffusion rhs contribution required for the low order solution
+<span class="lineNum">     287 </span>                :<span class="lineNoCov">          0 :   m_dif = d-&gt;FCT()-&gt;diff( *d, m_u );</span>
+<span class="lineNum">     288 </span>                :            : 
+<span class="lineNum">     289 </span>                :<span class="lineNoCov">          0 :   if (d-&gt;Msum().empty())</span>
+<span class="lineNum">     290 </span>                :<span class="lineNoCov">          0 :     comdif_complete();</span>
+<span class="lineNum">     291 </span>                :            :   else // send contributions of diff to chare-boundary nodes to fellow chares
+<span class="lineNum">     292 </span>                :<span class="lineNoCov">          0 :     for (const auto&amp; n : d-&gt;Msum()) {</span>
+<span class="lineNum">     293 </span>                :            :       std::vector&lt; std::vector&lt; tk::real &gt; &gt; D;
+<span class="lineNum">     294 </span>                :<span class="lineNoCov">          0 :       for (auto i : n.second) D.push_back( m_dif[ tk::cref_find(d-&gt;Lid(),i) ] );</span>
+<span class="lineNum">     295 </span>                :<span class="lineNoCov">          0 :       thisProxy[ n.first ].comdif( n.second, D );</span>
+<span class="lineNum">     296 </span>                :<span class="lineNoCov">          0 :     }</span>
+<span class="lineNum">     297 </span>                :            : 
+<span class="lineNum">     298 </span>                :<span class="lineNoCov">          0 :   owndif_complete();</span>
+<span class="lineNum">     299 </span>                :<span class="lineNoCov">          0 : }</span>
+<a name="300"><span class="lineNum">     300 </span>                :            : </a>
+<span class="lineNum">     301 </span>                :            : void
+<span class="lineNum">     302 </span>                :<span class="lineNoCov">          0 : DiagCG::comrhs( const std::vector&lt; std::size_t &gt;&amp; gid,</span>
+<span class="lineNum">     303 </span>                :<span class="lineNoCov">          0 :                 const std::vector&lt; std::vector&lt; tk::real &gt; &gt;&amp; R )</span>
+<span class="lineNum">     304 </span>                :            : // *****************************************************************************
+<span class="lineNum">     305 </span>                :            : //  Receive contributions to right-hand side vector on chare-boundaries
+<span class="lineNum">     306 </span>                :            : //! \param[in] gid Global mesh node IDs at which we receive RHS contributions
+<span class="lineNum">     307 </span>                :            : //! \param[in] R Partial contributions of RHS to chare-boundary nodes
+<span class="lineNum">     308 </span>                :            : //! \details This function receives contributions to m_rhs, which stores the
+<span class="lineNum">     309 </span>                :            : //!   right hand side vector at mesh nodes. While m_rhs stores own
+<span class="lineNum">     310 </span>                :            : //!   contributions, m_rhsc collects the neighbor chare contributions during
+<span class="lineNum">     311 </span>                :            : //!   communication. This way work on m_rhs and m_rhsc is overlapped. The two
+<span class="lineNum">     312 </span>                :            : //!   are combined in solve().
+<span class="lineNum">     313 </span>                :            : // *****************************************************************************
+<span class="lineNum">     314 </span>                :            : {
+<span class="lineNum">     315 </span>                :            :   Assert( R.size() == gid.size(), &quot;Size mismatch&quot; );
+<span class="lineNum">     316 </span>                :            : 
+<span class="lineNum">     317 </span>                :            :   using tk::operator+=;
+<span class="lineNum">     318 </span>                :            : 
+<span class="lineNum">     319 </span>                :<span class="lineNoCov">          0 :   auto d = Disc();</span>
+<span class="lineNum">     320 </span>                :            : 
+<span class="lineNum">     321 </span>                :<span class="lineNoCov">          0 :   for (std::size_t i=0; i&lt;gid.size(); ++i) {</span>
+<span class="lineNum">     322 </span>                :<span class="lineNoCov">          0 :     auto bid = tk::cref_find( d-&gt;Bid(), gid[i] );</span>
+<span class="lineNum">     323 </span>                :            :     Assert( bid &lt; m_rhsc.size(), &quot;Indexing out of bounds&quot; );
+<span class="lineNum">     324 </span>                :<span class="lineNoCov">          0 :     m_rhsc[ bid ] += R[i];</span>
+<span class="lineNum">     325 </span>                :            :   }
+<span class="lineNum">     326 </span>                :            : 
+<span class="lineNum">     327 </span>                :<span class="lineNoCov">          0 :   if (++m_nrhs == d-&gt;Msum().size()) {</span>
+<span class="lineNum">     328 </span>                :<span class="lineNoCov">          0 :     m_nrhs = 0;</span>
+<span class="lineNum">     329 </span>                :<span class="lineNoCov">          0 :     comrhs_complete();</span>
+<span class="lineNum">     330 </span>                :            :   }
+<span class="lineNum">     331 </span>                :<span class="lineNoCov">          0 : }</span>
+<a name="332"><span class="lineNum">     332 </span>                :            : </a>
+<span class="lineNum">     333 </span>                :            : void
+<span class="lineNum">     334 </span>                :<span class="lineNoCov">          0 : DiagCG::comdif( const std::vector&lt; std::size_t &gt;&amp; gid,</span>
+<span class="lineNum">     335 </span>                :<span class="lineNoCov">          0 :                 const std::vector&lt; std::vector&lt; tk::real &gt; &gt;&amp; D )</span>
+<span class="lineNum">     336 </span>                :            : // *****************************************************************************
+<span class="lineNum">     337 </span>                :            : //  Receive contributions to right-hand side mass diffusion on chare-boundaries
+<span class="lineNum">     338 </span>                :            : //! \param[in] gid Global mesh node IDs at which we receive ontributions
+<span class="lineNum">     339 </span>                :            : //! \param[in] D Partial contributions to chare-boundary nodes
+<span class="lineNum">     340 </span>                :            : //! \details This function receives contributions to m_dif, which stores the
+<span class="lineNum">     341 </span>                :            : //!   mass diffusion right hand side vector at mesh nodes. While m_dif stores
+<span class="lineNum">     342 </span>                :            : //!   own contributions, m_difc collects the neighbor chare contributions during
+<span class="lineNum">     343 </span>                :            : //!   communication. This way work on m_dif and m_difc is overlapped. The two
+<span class="lineNum">     344 </span>                :            : //!   are combined in solve().
+<span class="lineNum">     345 </span>                :            : // *****************************************************************************
+<span class="lineNum">     346 </span>                :            : {
+<span class="lineNum">     347 </span>                :            :   Assert( D.size() == gid.size(), &quot;Size mismatch&quot; );
+<span class="lineNum">     348 </span>                :            : 
+<span class="lineNum">     349 </span>                :            :   using tk::operator+=;
+<span class="lineNum">     350 </span>                :            : 
+<span class="lineNum">     351 </span>                :<span class="lineNoCov">          0 :   auto d = Disc();</span>
+<span class="lineNum">     352 </span>                :            : 
+<span class="lineNum">     353 </span>                :<span class="lineNoCov">          0 :   for (std::size_t i=0; i&lt;gid.size(); ++i) {</span>
+<span class="lineNum">     354 </span>                :<span class="lineNoCov">          0 :     auto bid = tk::cref_find( d-&gt;Bid(), gid[i] );</span>
+<span class="lineNum">     355 </span>                :            :     Assert( bid &lt; m_difc.size(), &quot;Indexing out of bounds&quot; );
+<span class="lineNum">     356 </span>                :<span class="lineNoCov">          0 :     m_difc[ bid ] += D[i];</span>
+<span class="lineNum">     357 </span>                :            :   }
+<span class="lineNum">     358 </span>                :            : 
+<span class="lineNum">     359 </span>                :<span class="lineNoCov">          0 :   if (++m_ndif == d-&gt;Msum().size()) {</span>
+<span class="lineNum">     360 </span>                :<span class="lineNoCov">          0 :     m_ndif = 0;</span>
+<span class="lineNum">     361 </span>                :<span class="lineNoCov">          0 :     comdif_complete();</span>
+<span class="lineNum">     362 </span>                :            :   }
+<span class="lineNum">     363 </span>                :<span class="lineNoCov">          0 : }</span>
+<span class="lineNum">     364 </span>                :            : 
+<span class="lineNum">     365 </span>                :            : void
+<span class="lineNum">     366 </span>                :<span class="lineNoCov">          0 : DiagCG::bc()</span>
+<span class="lineNum">     367 </span>                :            : // *****************************************************************************
+<span class="lineNum">     368 </span>                :            : // Query and match user-specified boundary conditions to side sets
+<span class="lineNum">     369 </span>                :            : // *****************************************************************************
+<span class="lineNum">     370 </span>                :            : {
+<span class="lineNum">     371 </span>                :<span class="lineNoCov">          0 :   auto d = Disc();</span>
+<span class="lineNum">     372 </span>                :            : 
+<span class="lineNum">     373 </span>                :            :   // Match user-specified boundary conditions to side sets
+<span class="lineNum">     374 </span>                :<span class="lineNoCov">          0 :   m_bc = match( m_u.nprop(), d-&gt;T(), d-&gt;Dt(), d-&gt;Coord(), d-&gt;Gid(),</span>
+<span class="lineNum">     375 </span>                :<span class="lineNoCov">          0 :                 d-&gt;Lid(), m_fd.Bnode() );</span>
+<span class="lineNum">     376 </span>                :<span class="lineNoCov">          0 : }</span>
+<span class="lineNum">     377 </span>                :            : 
+<span class="lineNum">     378 </span>                :            : void
+<span class="lineNum">     379 </span>                :<span class="lineNoCov">          0 : DiagCG::solve()</span>
+<span class="lineNum">     380 </span>                :            : // *****************************************************************************
+<span class="lineNum">     381 </span>                :            : //  Solve low and high order diagonal systems
+<span class="lineNum">     382 </span>                :            : // *****************************************************************************
+<span class="lineNum">     383 </span>                :            : {
+<span class="lineNum">     384 </span>                :<span class="lineNoCov">          0 :   const auto ncomp = m_rhs.nprop();</span>
+<span class="lineNum">     385 </span>                :            : 
+<span class="lineNum">     386 </span>                :<span class="lineNoCov">          0 :   auto d = Disc();</span>
+<span class="lineNum">     387 </span>                :            : 
+<span class="lineNum">     388 </span>                :            :   // Combine own and communicated contributions to rhs and mass diffusion
+<span class="lineNum">     389 </span>                :<span class="lineNoCov">          0 :   for (const auto&amp; b : d-&gt;Bid()) {</span>
+<span class="lineNum">     390 </span>                :<span class="lineNoCov">          0 :     auto lid = tk::cref_find( d-&gt;Lid(), b.first );</span>
+<span class="lineNum">     391 </span>                :<span class="lineNoCov">          0 :     const auto&amp; brhsc = m_rhsc[ b.second ];</span>
+<span class="lineNum">     392 </span>                :<span class="lineNoCov">          0 :     for (ncomp_t c=0; c&lt;ncomp; ++c) m_rhs(lid,c,0) += brhsc[c];</span>
+<span class="lineNum">     393 </span>                :<span class="lineNoCov">          0 :     const auto&amp; bdifc = m_difc[ b.second ];</span>
+<span class="lineNum">     394 </span>                :<span class="lineNoCov">          0 :     for (ncomp_t c=0; c&lt;ncomp; ++c) m_dif(lid,c,0) += bdifc[c];</span>
+<span class="lineNum">     395 </span>                :            :   }
+<span class="lineNum">     396 </span>                :            : 
+<span class="lineNum">     397 </span>                :            :   // Zero communication buffers for next time step (rhs, mass diffusion rhs)
+<span class="lineNum">     398 </span>                :<span class="lineNoCov">          0 :   for (auto&amp; b : m_rhsc) std::fill( begin(b), end(b), 0.0 );</span>
+<span class="lineNum">     399 </span>                :<span class="lineNoCov">          0 :   for (auto&amp; b : m_difc) std::fill( begin(b), end(b), 0.0 );</span>
+<span class="lineNum">     400 </span>                :            : 
+<span class="lineNum">     401 </span>                :            :   // Set Dirichlet BCs for lhs and both low and high order rhs vectors. Note
+<span class="lineNum">     402 </span>                :            :   // that the low order rhs (more prcisely the mass-diffusion term) is set to
+<span class="lineNum">     403 </span>                :            :   // zero instead of the solution increment at Dirichlet BCs, because for the
+<span class="lineNum">     404 </span>                :            :   // low order solution the right hand side is the sum of the high order right
+<span class="lineNum">     405 </span>                :            :   // hand side and mass diffusion so the low order system is L = R + D, where L
+<span class="lineNum">     406 </span>                :            :   // is the lumped mass matrix, R is the high order RHS, and D is
+<span class="lineNum">     407 </span>                :            :   // mass diffusion, and R already will have the Dirichlet BC set.
+<span class="lineNum">     408 </span>                :<span class="lineNoCov">          0 :   for (const auto&amp; n : m_bc) {</span>
+<span class="lineNum">     409 </span>                :<span class="lineNoCov">          0 :     auto b = d-&gt;Lid().find( n.first );</span>
+<span class="lineNum">     410 </span>                :<span class="lineNoCov">          0 :     if (b != end(d-&gt;Lid())) {</span>
+<span class="lineNum">     411 </span>                :<span class="lineNoCov">          0 :       auto id = b-&gt;second;</span>
+<span class="lineNum">     412 </span>                :<span class="lineNoCov">          0 :       for (ncomp_t c=0; c&lt;ncomp; ++c)</span>
+<span class="lineNum">     413 </span>                :<span class="lineNoCov">          0 :         if (n.second[c].first) {</span>
+<span class="lineNum">     414 </span>                :<span class="lineNoCov">          0 :           m_lhs( id, c, 0 ) = 1.0;</span>
+<span class="lineNum">     415 </span>                :<span class="lineNoCov">          0 :           m_rhs( id, c, 0 ) = n.second[c].second;</span>
+<span class="lineNum">     416 </span>                :<span class="lineNoCov">          0 :           m_dif( id, c, 0 ) = 0.0;</span>
+<span class="lineNum">     417 </span>                :            :         }
+<span class="lineNum">     418 </span>                :            :     }
+<span class="lineNum">     419 </span>                :            :   }
+<span class="lineNum">     420 </span>                :            : 
+<span class="lineNum">     421 </span>                :            :   // Solve low and high order diagonal systems and update low order solution
+<span class="lineNum">     422 </span>                :<span class="lineNoCov">          0 :   m_dul = (m_rhs + m_dif) / m_lhs;</span>
+<span class="lineNum">     423 </span>                :<span class="lineNoCov">          0 :   m_ul = m_u + m_dul;</span>
+<span class="lineNum">     424 </span>                :<span class="lineNoCov">          0 :   m_du = m_rhs / m_lhs;</span>
+<span class="lineNum">     425 </span>                :            : 
+<span class="lineNum">     426 </span>                :            :   // Continue with FCT
+<span class="lineNum">     427 </span>                :<span class="lineNoCov">          0 :   d-&gt;FCT()-&gt;aec( *d, m_du, m_u, m_bc );</span>
+<span class="lineNum">     428 </span>                :<span class="lineNoCov">          0 :   d-&gt;FCT()-&gt;alw( m_u, m_ul, m_dul, thisProxy );  </span>
+<span class="lineNum">     429 </span>                :<span class="lineNoCov">          0 : }</span>
+<a name="430"><span class="lineNum">     430 </span>                :            : </a>
+<span class="lineNum">     431 </span>                :            : void
+<span class="lineNum">     432 </span>                :<span class="lineNoCov">          0 : DiagCG::writeFields( tk::real time )</span>
+<span class="lineNum">     433 </span>                :            : // *****************************************************************************
+<span class="lineNum">     434 </span>                :            : // Output mesh-based fields to file
+<span class="lineNum">     435 </span>                :            : //! \param[in] time Physical time
+<span class="lineNum">     436 </span>                :            : // *****************************************************************************
+<span class="lineNum">     437 </span>                :            : {
+<span class="lineNum">     438 </span>                :<span class="lineNoCov">          0 :   auto d = Disc();</span>
+<span class="lineNum">     439 </span>                :            : 
+<span class="lineNum">     440 </span>                :            :   // Only write if the last time is different than the current one
+<span class="lineNum">     441 </span>                :<span class="lineNoCov">          0 :   if (std::abs(d-&gt;LastFieldWriteTime() - time) &lt;</span>
+<span class="lineNum">     442 </span>                :            :       std::numeric_limits&lt; tk::real &gt;::epsilon() )
+<span class="lineNum">     443 </span>                :<span class="lineNoCov">          0 :     return;</span>
+<span class="lineNum">     444 </span>                :            : 
+<span class="lineNum">     445 </span>                :            :   // Save time stamp at which the last field write happened
+<span class="lineNum">     446 </span>                :<span class="lineNoCov">          0 :   d-&gt;LastFieldWriteTime() = time;</span>
+<span class="lineNum">     447 </span>                :            : 
+<span class="lineNum">     448 </span>                :            :   // Increase field output iteration count
+<span class="lineNum">     449 </span>                :<span class="lineNoCov">          0 :   ++m_itf;</span>
+<span class="lineNum">     450 </span>                :            : 
+<span class="lineNum">     451 </span>                :            :   // Lambda to collect node fields output from all PDEs
+<span class="lineNum">     452 </span>                :<span class="lineNoCov">          0 :   auto nodefields = [&amp;]() {</span>
+<span class="lineNum">     453 </span>                :<span class="lineNoCov">          0 :     auto u = m_u;   // make a copy as eq::output() may overwrite its arg</span>
+<span class="lineNum">     454 </span>                :            :     std::vector&lt; std::vector&lt; tk::real &gt; &gt; output;
+<span class="lineNum">     455 </span>                :<span class="lineNoCov">          0 :     for (const auto&amp; eq : g_cgpde) {</span>
+<span class="lineNum">     456 </span>                :<span class="lineNoCov">          0 :       auto o = eq.fieldOutput( time, m_vol, d-&gt;Coord(), d-&gt;V(), u );</span>
+<span class="lineNum">     457 </span>                :<span class="lineNoCov">          0 :       output.insert( end(output), begin(o), end(o) );</span>
+<span class="lineNum">     458 </span>                :<span class="lineNoCov">          0 :     }</span>
+<span class="lineNum">     459 </span>                :<span class="lineNoCov">          0 :     return output;</span>
+<span class="lineNum">     460 </span>                :<span class="lineNoCov">          0 :   };</span>
+<span class="lineNum">     461 </span>                :            : 
+<span class="lineNum">     462 </span>                :            :   #ifdef HAS_ROOT
+<span class="lineNum">     463 </span>                :<span class="lineNoCov">          0 :   auto filetype = g_inputdeck.get&lt; tag::selected, tag::filetype &gt;();</span>
+<span class="lineNum">     464 </span>                :            : 
+<span class="lineNum">     465 </span>                :<span class="lineNoCov">          0 :   if (filetype == tk::ctr::FieldFileType::ROOT) {</span>
+<span class="lineNum">     466 </span>                :            : 
+<span class="lineNum">     467 </span>                :            :     // Create Root writer
+<span class="lineNum">     468 </span>                :<span class="lineNoCov">          0 :     tk::RootMeshWriter rmw( d-&gt;OutFilename(), 1 );</span>
+<span class="lineNum">     469 </span>                :            :     // Write time stamp
+<span class="lineNum">     470 </span>                :<span class="lineNoCov">          0 :     rmw.writeTimeStamp( m_itf, time );</span>
+<span class="lineNum">     471 </span>                :            :     // Write node fields to file
+<span class="lineNum">     472 </span>                :<span class="lineNoCov">          0 :     d-&gt;writeNodeSolution( rmw, m_itf, nodefields() );</span>
+<span class="lineNum">     473 </span>                :            : 
+<span class="lineNum">     474 </span>                :            :   } else
+<span class="lineNum">     475 </span>                :            :   #endif
+<span class="lineNum">     476 </span>                :            :   {
+<span class="lineNum">     477 </span>                :            : 
+<span class="lineNum">     478 </span>                :            :     // Create ExodusII writer
+<span class="lineNum">     479 </span>                :<span class="lineNoCov">          0 :     tk::ExodusIIMeshWriter ew( d-&gt;OutFilename(), tk::ExoWriter::OPEN );</span>
+<span class="lineNum">     480 </span>                :            :     // Write time stamp
+<span class="lineNum">     481 </span>                :<span class="lineNoCov">          0 :     ew.writeTimeStamp( m_itf, time );</span>
+<span class="lineNum">     482 </span>                :            :     // Write node fields to file
+<span class="lineNum">     483 </span>                :<span class="lineNoCov">          0 :     d-&gt;writeNodeSolution( ew, m_itf, nodefields() );</span>
+<span class="lineNum">     484 </span>                :            : 
+<span class="lineNum">     485 </span>                :            :   }
+<span class="lineNum">     486 </span>                :            : }
+<a name="487"><span class="lineNum">     487 </span>                :            : </a>
+<span class="lineNum">     488 </span>                :            : void
+<span class="lineNum">     489 </span>                :<span class="lineNoCov">          0 : DiagCG::out()</span>
+<span class="lineNum">     490 </span>                :            : // *****************************************************************************
+<span class="lineNum">     491 </span>                :            : // Output mesh field data
+<span class="lineNum">     492 </span>                :            : // *****************************************************************************
+<span class="lineNum">     493 </span>                :            : {
+<span class="lineNum">     494 </span>                :<span class="lineNoCov">          0 :   auto d = Disc();</span>
+<span class="lineNum">     495 </span>                :            : 
+<span class="lineNum">     496 </span>                :            :   // Optionally output field and particle data
+<span class="lineNum">     497 </span>                :<span class="lineNoCov">          0 :   if ( !((d-&gt;It()+1) % g_inputdeck.get&lt; tag::interval, tag::field &gt;()) &amp;&amp;</span>
+<span class="lineNum">     498 </span>                :<span class="lineNoCov">          0 :        !g_inputdeck.get&lt; tag::cmd, tag::benchmark &gt;() )</span>
+<span class="lineNum">     499 </span>                :            :   {
+<span class="lineNum">     500 </span>                :<span class="lineNoCov">          0 :     writeFields( d-&gt;T()+d-&gt;Dt() );</span>
+<span class="lineNum">     501 </span>                :            :   }
+<span class="lineNum">     502 </span>                :            : 
+<span class="lineNum">     503 </span>                :            :   // Output final field data to file (regardless of whether it was requested)
+<span class="lineNum">     504 </span>                :<span class="lineNoCov">          0 :   const auto term = g_inputdeck.get&lt; tag::discr, tag::term &gt;();</span>
+<span class="lineNum">     505 </span>                :            :   const auto eps = std::numeric_limits&lt; tk::real &gt;::epsilon();
+<span class="lineNum">     506 </span>                :<span class="lineNoCov">          0 :   const auto nstep = g_inputdeck.get&lt; tag::discr, tag::nstep &gt;();</span>
+<span class="lineNum">     507 </span>                :<span class="lineNoCov">          0 :   if ( (std::fabs(d-&gt;T() + d-&gt;Dt()-term) &lt; eps || (d-&gt;It()+1) &gt;= nstep) &amp;&amp;</span>
+<span class="lineNum">     508 </span>                :<span class="lineNoCov">          0 :        (!g_inputdeck.get&lt; tag::cmd, tag::benchmark &gt;()) )</span>
+<span class="lineNum">     509 </span>                :            :   {
+<span class="lineNum">     510 </span>                :<span class="lineNoCov">          0 :     writeFields( d-&gt;T()+d-&gt;Dt() );</span>
+<span class="lineNum">     511 </span>                :            :   }
+<span class="lineNum">     512 </span>                :<span class="lineNoCov">          0 : }</span>
+<a name="513"><span class="lineNum">     513 </span>                :            : </a>
+<span class="lineNum">     514 </span>                :            : void
+<span class="lineNum">     515 </span>                :<span class="lineNoCov">          0 : DiagCG::advance( tk::real newdt )</span>
+<span class="lineNum">     516 </span>                :            : // *****************************************************************************
+<span class="lineNum">     517 </span>                :            : // Advance equations to next time step
+<span class="lineNum">     518 </span>                :            : //! \param[in] newdt Size of this new time step
+<span class="lineNum">     519 </span>                :            : // *****************************************************************************
+<span class="lineNum">     520 </span>                :            : {
+<span class="lineNum">     521 </span>                :<span class="lineNoCov">          0 :   auto d = Disc();</span>
+<span class="lineNum">     522 </span>                :            : 
+<span class="lineNum">     523 </span>                :            :   // Set new time step size
+<span class="lineNum">     524 </span>                :<span class="lineNoCov">          0 :   d-&gt;setdt( newdt );</span>
+<span class="lineNum">     525 </span>                :            : 
+<span class="lineNum">     526 </span>                :            :   // Activate SDAG-waits for FCT
+<span class="lineNum">     527 </span>                :<span class="lineNoCov">          0 :   d-&gt;FCT()-&gt;next();</span>
+<span class="lineNum">     528 </span>                :            : 
+<span class="lineNum">     529 </span>                :            :   // Actiavate SDAG waits for time step
+<span class="lineNum">     530 </span>                :<span class="lineNoCov">          0 :   thisProxy[ thisIndex ].wait4rhs();</span>
+<span class="lineNum">     531 </span>                :            : 
+<span class="lineNum">     532 </span>                :            :   // Compute rhs for next time step
+<span class="lineNum">     533 </span>                :<span class="lineNoCov">          0 :   rhs();</span>
+<span class="lineNum">     534 </span>                :<span class="lineNoCov">          0 : }</span>
+<span class="lineNum">     535 </span>                :            : 
+<span class="lineNum">     536 </span>                :            : void
+<span class="lineNum">     537 </span>                :<span class="lineNoCov">          0 : DiagCG::next( const tk::Fields&amp; a )</span>
+<span class="lineNum">     538 </span>                :            : // *****************************************************************************
+<span class="lineNum">     539 </span>                :            : // Prepare for next step
+<span class="lineNum">     540 </span>                :            : //! \param[in] a Limited antidiffusive element contributions
+<span class="lineNum">     541 </span>                :            : // *****************************************************************************
+<span class="lineNum">     542 </span>                :            : {
+<span class="lineNum">     543 </span>                :<span class="lineNoCov">          0 :   auto d = Disc();</span>
+<span class="lineNum">     544 </span>                :            : 
+<span class="lineNum">     545 </span>                :            :   // Verify that the change in the solution at those nodes where Dirichlet
+<span class="lineNum">     546 </span>                :            :   // boundary conditions are set is exactly the amount the BCs prescribe
+<span class="lineNum">     547 </span>                :            :   Assert( correctBC( a, m_dul, m_bc, d-&gt;Lid() ),
+<span class="lineNum">     548 </span>                :            :           &quot;Dirichlet boundary condition incorrect&quot; );
+<span class="lineNum">     549 </span>                :            : 
+<span class="lineNum">     550 </span>                :            :   // Apply limited antidiffusive element contributions to low order solution
+<span class="lineNum">     551 </span>                :<span class="lineNoCov">          0 :   if (g_inputdeck.get&lt; tag::discr, tag::fct &gt;())</span>
+<span class="lineNum">     552 </span>                :<span class="lineNoCov">          0 :     m_u = m_ul + a;</span>
+<span class="lineNum">     553 </span>                :            :   else
+<span class="lineNum">     554 </span>                :<span class="lineNoCov">          0 :     m_u = m_u + m_du;</span>
+<span class="lineNum">     555 </span>                :            : 
+<span class="lineNum">     556 </span>                :            :   // Output field data to file
+<span class="lineNum">     557 </span>                :<span class="lineNoCov">          0 :   out();</span>
+<span class="lineNum">     558 </span>                :            :   // Compute diagnostics, e.g., residuals
+<span class="lineNum">     559 </span>                :<span class="lineNoCov">          0 :   auto diag =  m_diag.compute( *d, m_u );</span>
+<span class="lineNum">     560 </span>                :            :   // Increase number of iterations and physical time
+<span class="lineNum">     561 </span>                :<span class="lineNoCov">          0 :   d-&gt;next();</span>
+<span class="lineNum">     562 </span>                :            :   // Output one-liner status report
+<span class="lineNum">     563 </span>                :<span class="lineNoCov">          0 :   d-&gt;status();</span>
+<span class="lineNum">     564 </span>                :            : 
+<span class="lineNum">     565 </span>                :            :   // Evaluate whether to continue with next step
+<span class="lineNum">     566 </span>                :<span class="lineNoCov">          0 :   if (!diag) eval();</span>
+<span class="lineNum">     567 </span>                :<span class="lineNoCov">          0 : }</span>
+<a name="568"><span class="lineNum">     568 </span>                :            : </a>
+<span class="lineNum">     569 </span>                :            : void
+<span class="lineNum">     570 </span>                :<span class="lineNoCov">          0 : DiagCG::eval()</span>
+<span class="lineNum">     571 </span>                :            : // *****************************************************************************
+<span class="lineNum">     572 </span>                :            : // Evaluate whether to continue with next step
+<span class="lineNum">     573 </span>                :            : // *****************************************************************************
+<span class="lineNum">     574 </span>                :            : {
+<span class="lineNum">     575 </span>                :<span class="lineNoCov">          0 :   auto d = Disc();</span>
+<span class="lineNum">     576 </span>                :            : 
+<span class="lineNum">     577 </span>                :<span class="lineNoCov">          0 :   const auto term = g_inputdeck.get&lt; tag::discr, tag::term &gt;();</span>
+<span class="lineNum">     578 </span>                :<span class="lineNoCov">          0 :   const auto nstep = g_inputdeck.get&lt; tag::discr, tag::nstep &gt;();</span>
+<span class="lineNum">     579 </span>                :            :   const auto eps = std::numeric_limits&lt; tk::real &gt;::epsilon();
+<span class="lineNum">     580 </span>                :            : 
+<span class="lineNum">     581 </span>                :            :   // If neither max iterations nor max time reached, continue, otherwise finish
+<span class="lineNum">     582 </span>                :<span class="lineNoCov">          0 :   if (std::fabs(d-&gt;T()-term) &gt; eps &amp;&amp; d-&gt;It() &lt; nstep)</span>
+<span class="lineNum">     583 </span>                :<span class="lineNoCov">          0 :     dt();</span>
+<span class="lineNum">     584 </span>                :            :   else
+<span class="lineNum">     585 </span>                :<span class="lineNoCov">          0 :     contribute( CkCallback( CkReductionTarget(Transporter,finish), d-&gt;Tr() ) );</span>
+<span class="lineNum">     586 </span>                :<span class="lineNoCov">          0 : }</span>
+<span class="lineNum">     587 </span>                :            : 
+<span class="lineNum">     588 </span>                :            : #include &quot;NoWarning/diagcg.def.h&quot;
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.12</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>
