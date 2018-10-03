@@ -24,7 +24,7 @@
           </tr>
           <tr>
             <td class="headerItem">Commit:</td>
-            <td class="headerValue"><a href="https://github.com/quinoacomputing/quinoa/commit/340569e">Quinoa_v0.2-1415-g340569e</a></td>
+            <td class="headerValue"><a href="https://github.com/quinoacomputing/quinoa/commit/764259f">Quinoa_v0.2-1430-g764259f</a></td>
             <td></td>
             <td class="headerItem">Lines:</td>
             <td class="headerCovTableEntry">0</td>
@@ -33,7 +33,7 @@
           </tr>
           <tr>
             <td class="headerItem">Date:</td>
-            <td class="headerValue">2018-09-26 06:54:27</td>
+            <td class="headerValue">2018-10-02 20:41:51</td>
             <td></td>
             <td class="headerItem">Functions:</td>
             <td class="headerCovTableEntry">0</td>
@@ -622,622 +622,630 @@
 <span class="lineNum">     548 </span>                :            :   const auto&amp; refidx = g_inputdeck.get&lt; tag::amr, tag::id &gt;();
 <span class="lineNum">     549 </span>                :<span class="lineNoCov">          0 :   auto errtype = g_inputdeck.get&lt; tag::amr, tag::error &gt;();</span>
 <span class="lineNum">     550 </span>                :            : 
-<span class="lineNum">     551 </span>                :            :   // Compute errors in ICs and define refinement criteria for edges
-<span class="lineNum">     552 </span>                :            :   std::vector&lt; edge_t &gt; edge;
-<span class="lineNum">     553 </span>                :            :   std::vector&lt; real_t &gt; crit;
-<span class="lineNum">     554 </span>                :            :   AMR::Error error;
-<span class="lineNum">     555 </span>                :<span class="lineNoCov">          0 :   for (std::size_t p=0; p&lt;npoin; ++p)   // for all mesh nodes on this chare</span>
-<span class="lineNum">     556 </span>                :<span class="lineNoCov">          0 :     for (auto q : tk::Around(psup,p)) { // for all nodes surrounding p</span>
-<span class="lineNum">     557 </span>                :<span class="lineNoCov">          0 :        tk::real cmax = 0.0;</span>
-<span class="lineNum">     558 </span>                :            :        edge_t e(p,q);
-<span class="lineNum">     559 </span>                :<span class="lineNoCov">          0 :        for (auto i : refidx) {          // for all refinement variables</span>
-<span class="lineNum">     560 </span>                :<span class="lineNoCov">          0 :          auto c = error.scalar( u, e, i, m_coord, m_inpoel, esup, errtype );</span>
-<span class="lineNum">     561 </span>                :<span class="lineNoCov">          0 :          if (c &gt; cmax) cmax = c;        // find max error at edge</span>
-<span class="lineNum">     562 </span>                :            :        }
-<span class="lineNum">     563 </span>                :<span class="lineNoCov">          0 :        if (cmax &gt; 0.0) {         // if nonzero error, will pass edge to refiner</span>
-<span class="lineNum">     564 </span>                :<span class="lineNoCov">          0 :          edge.push_back( e );</span>
-<span class="lineNum">     565 </span>                :<span class="lineNoCov">          0 :          crit.push_back( cmax );</span>
-<span class="lineNum">     566 </span>                :            :        }
-<span class="lineNum">     567 </span>                :            :      }
-<span class="lineNum">     568 </span>                :            : 
-<span class="lineNum">     569 </span>                :            :   Assert( edge.size() == crit.size(), &quot;Size mismatch&quot; );
+<span class="lineNum">     551 </span>                :            :   using AMR::edge_t;
+<span class="lineNum">     552 </span>                :            : 
+<span class="lineNum">     553 </span>                :            :   // Compute errors in ICs and define refinement criteria for edges
+<span class="lineNum">     554 </span>                :            :   std::vector&lt; edge_t &gt; edge;
+<span class="lineNum">     555 </span>                :            :   std::vector&lt; tk::real &gt; crit;
+<span class="lineNum">     556 </span>                :            :   AMR::Error error;
+<span class="lineNum">     557 </span>                :<span class="lineNoCov">          0 :   for (std::size_t p=0; p&lt;npoin; ++p)   // for all mesh nodes on this chare</span>
+<span class="lineNum">     558 </span>                :<span class="lineNoCov">          0 :     for (auto q : tk::Around(psup,p)) { // for all nodes surrounding p</span>
+<span class="lineNum">     559 </span>                :<span class="lineNoCov">          0 :        tk::real cmax = 0.0;</span>
+<span class="lineNum">     560 </span>                :            :        edge_t e(p,q);
+<span class="lineNum">     561 </span>                :<span class="lineNoCov">          0 :        for (auto i : refidx) {          // for all refinement variables</span>
+<span class="lineNum">     562 </span>                :<span class="lineNoCov">          0 :          auto c = error.scalar( u, e, i, m_coord, m_inpoel, esup, errtype );</span>
+<span class="lineNum">     563 </span>                :<span class="lineNoCov">          0 :          if (c &gt; cmax) cmax = c;        // find max error at edge</span>
+<span class="lineNum">     564 </span>                :            :        }
+<span class="lineNum">     565 </span>                :<span class="lineNoCov">          0 :        if (cmax &gt; 0.0) {         // if nonzero error, will pass edge to refiner</span>
+<span class="lineNum">     566 </span>                :<span class="lineNoCov">          0 :          edge.push_back( e );</span>
+<span class="lineNum">     567 </span>                :<span class="lineNoCov">          0 :          crit.push_back( cmax );</span>
+<span class="lineNum">     568 </span>                :            :        }
+<span class="lineNum">     569 </span>                :            :      }
 <span class="lineNum">     570 </span>                :            : 
-<span class="lineNum">     571 </span>                :            :   // Do error-based refinement
-<span class="lineNum">     572 </span>                :<span class="lineNoCov">          0 :   m_refiner.error_refinement( edge, crit );</span>
-<span class="lineNum">     573 </span>                :            : 
-<span class="lineNum">     574 </span>                :            :   // Update mesh coordinates and connectivity
-<span class="lineNum">     575 </span>                :<span class="lineNoCov">          0 :   updateMesh();</span>
-<span class="lineNum">     576 </span>                :            : 
-<span class="lineNum">     577 </span>                :            :   // Set number of extra edges to a nonzero number, triggering correction
-<span class="lineNum">     578 </span>                :<span class="lineNoCov">          0 :   m_extra = 1;</span>
-<span class="lineNum">     579 </span>                :<span class="lineNoCov">          0 : }</span>
-<span class="lineNum">     580 </span>                :            : 
-<span class="lineNum">     581 </span>                :            : void
-<span class="lineNum">     582 </span>                :<span class="lineNoCov">          0 : Refiner::userRefine()</span>
-<span class="lineNum">     583 </span>                :            : // *****************************************************************************
-<span class="lineNum">     584 </span>                :            : // Do mesh refinement based on user explicitly tagging edges
+<span class="lineNum">     571 </span>                :            :   Assert( edge.size() == crit.size(), &quot;Size mismatch&quot; );
+<span class="lineNum">     572 </span>                :            : 
+<span class="lineNum">     573 </span>                :            :   // Do error-based refinement
+<span class="lineNum">     574 </span>                :<span class="lineNoCov">          0 :   m_refiner.error_refinement( edge, crit );</span>
+<span class="lineNum">     575 </span>                :            : 
+<span class="lineNum">     576 </span>                :            :   // Update mesh coordinates and connectivity
+<span class="lineNum">     577 </span>                :<span class="lineNoCov">          0 :   updateMesh();</span>
+<span class="lineNum">     578 </span>                :            : 
+<span class="lineNum">     579 </span>                :            :   // Set number of extra edges to a nonzero number, triggering correction
+<span class="lineNum">     580 </span>                :<span class="lineNoCov">          0 :   m_extra = 1;</span>
+<span class="lineNum">     581 </span>                :<span class="lineNoCov">          0 : }</span>
+<span class="lineNum">     582 </span>                :            : 
+<span class="lineNum">     583 </span>                :            : void
+<span class="lineNum">     584 </span>                :<span class="lineNoCov">          0 : Refiner::userRefine()</span>
 <span class="lineNum">     585 </span>                :            : // *****************************************************************************
-<span class="lineNum">     586 </span>                :            : {
-<span class="lineNum">     587 </span>                :            :   // Get user-defined node-pairs (edges) to tag for refinement
-<span class="lineNum">     588 </span>                :<span class="lineNoCov">          0 :   const auto&amp; edgenodelist = g_inputdeck.get&lt; tag::amr, tag::edge &gt;();</span>
-<span class="lineNum">     589 </span>                :            : 
-<span class="lineNum">     590 </span>                :<span class="lineNoCov">          0 :   if (!edgenodelist.empty()) {  // if user explicitly tagged edges</span>
-<span class="lineNum">     591 </span>                :            :     // Find number of nodes in old mesh
-<span class="lineNum">     592 </span>                :<span class="lineNoCov">          0 :     auto npoin = tk::npoin( m_inpoel );</span>
-<span class="lineNum">     593 </span>                :            :     // Generate edges surrounding points in old mesh
-<span class="lineNum">     594 </span>                :<span class="lineNoCov">          0 :     auto esup = tk::genEsup( m_inpoel, 4 );</span>
-<span class="lineNum">     595 </span>                :<span class="lineNoCov">          0 :     auto psup = tk::genPsup( m_inpoel, 4, esup );</span>
-<span class="lineNum">     596 </span>                :            : 
-<span class="lineNum">     597 </span>                :<span class="lineNoCov">          0 :     tk::UnsMesh::EdgeSet edgeset;</span>
-<span class="lineNum">     598 </span>                :<span class="lineNoCov">          0 :     for (std::size_t i=0; i&lt;edgenodelist.size()/2; ++i)</span>
-<span class="lineNum">     599 </span>                :<span class="lineNoCov">          0 :       edgeset.insert( {{ {edgenodelist[i*2+0], edgenodelist[i*2+1]} }} );</span>
-<span class="lineNum">     600 </span>                :            : 
-<span class="lineNum">     601 </span>                :            :     // Tag edges the user configured
-<span class="lineNum">     602 </span>                :            :     std::vector&lt; edge_t &gt; edge;
-<span class="lineNum">     603 </span>                :            :     std::vector&lt; real_t &gt; crit;
-<span class="lineNum">     604 </span>                :<span class="lineNoCov">          0 :     for (std::size_t p=0; p&lt;npoin; ++p)        // for all mesh nodes on this chare</span>
-<span class="lineNum">     605 </span>                :<span class="lineNoCov">          0 :       for (auto q : tk::Around(psup,p)) {      // for all nodes surrounding p</span>
-<span class="lineNum">     606 </span>                :<span class="lineNoCov">          0 :         tk::UnsMesh::Edge e{{p,q}};</span>
-<span class="lineNum">     607 </span>                :<span class="lineNoCov">          0 :         if (edgeset.find(e) != end(edgeset)) { // tag edge if on user's list</span>
-<span class="lineNum">     608 </span>                :<span class="lineNoCov">          0 :           edge.push_back( edge_t(e[0],e[1]) );</span>
-<span class="lineNum">     609 </span>                :<span class="lineNoCov">          0 :           crit.push_back( 1.0 );</span>
-<span class="lineNum">     610 </span>                :            :         }
-<span class="lineNum">     611 </span>                :            :       }
-<span class="lineNum">     612 </span>                :            : 
-<span class="lineNum">     613 </span>                :            :     Assert( edge.size() == crit.size(), &quot;Size mismatch&quot; );
-<span class="lineNum">     614 </span>                :            : 
-<span class="lineNum">     615 </span>                :            :     // Do error-based refinement
-<span class="lineNum">     616 </span>                :<span class="lineNoCov">          0 :     m_refiner.error_refinement( edge, crit );</span>
-<span class="lineNum">     617 </span>                :            : 
-<span class="lineNum">     618 </span>                :            :     // Update mesh coordinates and connectivity
-<span class="lineNum">     619 </span>                :<span class="lineNoCov">          0 :     updateMesh();</span>
-<span class="lineNum">     620 </span>                :            : 
-<span class="lineNum">     621 </span>                :            :     // Set number of extra edges to a nonzero number, triggering correction
-<span class="lineNum">     622 </span>                :<span class="lineNoCov">          0 :     m_extra = 1;</span>
-<span class="lineNum">     623 </span>                :            :   }
-<span class="lineNum">     624 </span>                :<span class="lineNoCov">          0 : }</span>
-<span class="lineNum">     625 </span>                :            : 
-<span class="lineNum">     626 </span>                :            : void
-<span class="lineNum">     627 </span>                :<span class="lineNoCov">          0 : Refiner::coordRefine()</span>
-<span class="lineNum">     628 </span>                :            : // *****************************************************************************
-<span class="lineNum">     629 </span>                :            : // Do mesh refinement based on tagging edges based on end-point coordinates
-<span class="lineNum">     630 </span>                :            : // *****************************************************************************
-<span class="lineNum">     631 </span>                :            : {
-<span class="lineNum">     632 </span>                :            :   // Get user-defined half-world coordinates
-<span class="lineNum">     633 </span>                :<span class="lineNoCov">          0 :   auto xminus = g_inputdeck.get&lt; tag::amr, tag::xminus &gt;();</span>
-<span class="lineNum">     634 </span>                :<span class="lineNoCov">          0 :   auto xplus = g_inputdeck.get&lt; tag::amr, tag::xplus &gt;();</span>
-<span class="lineNum">     635 </span>                :<span class="lineNoCov">          0 :   auto yminus = g_inputdeck.get&lt; tag::amr, tag::yminus &gt;();</span>
-<span class="lineNum">     636 </span>                :<span class="lineNoCov">          0 :   auto yplus = g_inputdeck.get&lt; tag::amr, tag::yplus &gt;();</span>
-<span class="lineNum">     637 </span>                :<span class="lineNoCov">          0 :   auto zminus = g_inputdeck.get&lt; tag::amr, tag::zminus &gt;();</span>
-<span class="lineNum">     638 </span>                :<span class="lineNoCov">          0 :   auto zplus = g_inputdeck.get&lt; tag::amr, tag::zplus &gt;();</span>
-<span class="lineNum">     639 </span>                :            : 
-<span class="lineNum">     640 </span>                :            :   // The default is the largest representable double
-<span class="lineNum">     641 </span>                :            :   auto rmax = std::numeric_limits&lt; kw::amr_xminus::info::expect::type &gt;::max();
-<span class="lineNum">     642 </span>                :            :   auto eps =
-<span class="lineNum">     643 </span>                :            :     std::numeric_limits&lt; kw::amr_xminus::info::expect::type &gt;::epsilon();
-<span class="lineNum">     644 </span>                :            : 
-<span class="lineNum">     645 </span>                :            :   // Decide if user has configured the half-world
-<span class="lineNum">     646 </span>                :<span class="lineNoCov">          0 :   bool xm = std::abs(xminus - rmax) &gt; eps ? true : false;</span>
-<span class="lineNum">     647 </span>                :<span class="lineNoCov">          0 :   bool xp = std::abs(xplus - rmax) &gt; eps ? true : false;</span>
-<span class="lineNum">     648 </span>                :<span class="lineNoCov">          0 :   bool ym = std::abs(yminus - rmax) &gt; eps ? true : false;</span>
-<span class="lineNum">     649 </span>                :<span class="lineNoCov">          0 :   bool yp = std::abs(yplus - rmax) &gt; eps ? true : false;</span>
-<span class="lineNum">     650 </span>                :<span class="lineNoCov">          0 :   bool zm = std::abs(zminus - rmax) &gt; eps ? true : false;</span>
-<span class="lineNum">     651 </span>                :<span class="lineNoCov">          0 :   bool zp = std::abs(zplus - rmax) &gt; eps ? true : false;</span>
-<span class="lineNum">     652 </span>                :            : 
-<span class="lineNum">     653 </span>                :<span class="lineNoCov">          0 :   if (xm || xp || ym || yp || zm || zp) {       // if any half-world configured</span>
-<span class="lineNum">     654 </span>                :            :     // Find number of nodes in old mesh
-<span class="lineNum">     655 </span>                :<span class="lineNoCov">          0 :     auto npoin = tk::npoin( m_inpoel );</span>
-<span class="lineNum">     656 </span>                :            :     // Generate edges surrounding points in old mesh
-<span class="lineNum">     657 </span>                :<span class="lineNoCov">          0 :     auto esup = tk::genEsup( m_inpoel, 4 );</span>
-<span class="lineNum">     658 </span>                :<span class="lineNoCov">          0 :     auto psup = tk::genPsup( m_inpoel, 4, esup );</span>
-<span class="lineNum">     659 </span>                :            :     // Get access to node coordinates
-<span class="lineNum">     660 </span>                :<span class="lineNoCov">          0 :     const auto&amp; x = m_coord[0];</span>
-<span class="lineNum">     661 </span>                :<span class="lineNoCov">          0 :     const auto&amp; y = m_coord[1];</span>
-<span class="lineNum">     662 </span>                :<span class="lineNoCov">          0 :     const auto&amp; z = m_coord[2];</span>
-<span class="lineNum">     663 </span>                :            :     // Compute errors in ICs and define refinement criteria for edges
-<span class="lineNum">     664 </span>                :            :     std::vector&lt; edge_t &gt; edge;
-<span class="lineNum">     665 </span>                :            :     std::vector&lt; real_t &gt; crit;
-<span class="lineNum">     666 </span>                :<span class="lineNoCov">          0 :     for (std::size_t p=0; p&lt;npoin; ++p)        // for all mesh nodes on this chare</span>
-<span class="lineNum">     667 </span>                :<span class="lineNoCov">          0 :       for (auto q : tk::Around(psup,p)) {      // for all nodes surrounding p</span>
-<span class="lineNum">     668 </span>                :            :         tk::UnsMesh::Edge e{{p,q}};
-<span class="lineNum">     669 </span>                :            : 
-<span class="lineNum">     670 </span>                :            :         bool t = true;
-<span class="lineNum">     671 </span>                :<span class="lineNoCov">          0 :         if (xm) { if (x[p]&gt;xminus &amp;&amp; x[q]&gt;xminus) t = false; }</span>
-<span class="lineNum">     672 </span>                :<span class="lineNoCov">          0 :         if (xp) { if (x[p]&lt;xplus &amp;&amp; x[q]&lt;xplus) t = false; }</span>
-<span class="lineNum">     673 </span>                :<span class="lineNoCov">          0 :         if (ym) { if (y[p]&gt;yminus &amp;&amp; y[q]&gt;yminus) t = false; }</span>
-<span class="lineNum">     674 </span>                :<span class="lineNoCov">          0 :         if (yp) { if (y[p]&lt;yplus &amp;&amp; y[q]&lt;yplus) t = false; }</span>
-<span class="lineNum">     675 </span>                :<span class="lineNoCov">          0 :         if (zm) { if (z[p]&gt;zminus &amp;&amp; z[q]&gt;zminus) t = false; }</span>
-<span class="lineNum">     676 </span>                :<span class="lineNoCov">          0 :         if (zp) { if (z[p]&lt;zplus &amp;&amp; z[q]&lt;zplus) t = false; }</span>
-<span class="lineNum">     677 </span>                :            : 
-<span class="lineNum">     678 </span>                :<span class="lineNoCov">          0 :         if (t) {</span>
-<span class="lineNum">     679 </span>                :<span class="lineNoCov">          0 :           edge.push_back( edge_t(e[0],e[1]) );</span>
-<span class="lineNum">     680 </span>                :<span class="lineNoCov">          0 :           crit.push_back( 1.0 );</span>
-<span class="lineNum">     681 </span>                :            :         }
-<span class="lineNum">     682 </span>                :            :       }
+<span class="lineNum">     586 </span>                :            : // Do mesh refinement based on user explicitly tagging edges
+<span class="lineNum">     587 </span>                :            : // *****************************************************************************
+<span class="lineNum">     588 </span>                :            : {
+<span class="lineNum">     589 </span>                :            :   // Get user-defined node-pairs (edges) to tag for refinement
+<span class="lineNum">     590 </span>                :<span class="lineNoCov">          0 :   const auto&amp; edgenodelist = g_inputdeck.get&lt; tag::amr, tag::edge &gt;();</span>
+<span class="lineNum">     591 </span>                :            : 
+<span class="lineNum">     592 </span>                :<span class="lineNoCov">          0 :   if (!edgenodelist.empty()) {  // if user explicitly tagged edges</span>
+<span class="lineNum">     593 </span>                :            :     // Find number of nodes in old mesh
+<span class="lineNum">     594 </span>                :<span class="lineNoCov">          0 :     auto npoin = tk::npoin( m_inpoel );</span>
+<span class="lineNum">     595 </span>                :            :     // Generate edges surrounding points in old mesh
+<span class="lineNum">     596 </span>                :<span class="lineNoCov">          0 :     auto esup = tk::genEsup( m_inpoel, 4 );</span>
+<span class="lineNum">     597 </span>                :<span class="lineNoCov">          0 :     auto psup = tk::genPsup( m_inpoel, 4, esup );</span>
+<span class="lineNum">     598 </span>                :            : 
+<span class="lineNum">     599 </span>                :<span class="lineNoCov">          0 :     tk::UnsMesh::EdgeSet edgeset;</span>
+<span class="lineNum">     600 </span>                :<span class="lineNoCov">          0 :     for (std::size_t i=0; i&lt;edgenodelist.size()/2; ++i)</span>
+<span class="lineNum">     601 </span>                :<span class="lineNoCov">          0 :       edgeset.insert( {{ {edgenodelist[i*2+0], edgenodelist[i*2+1]} }} );</span>
+<span class="lineNum">     602 </span>                :            : 
+<span class="lineNum">     603 </span>                :            :     using AMR::edge_t;
+<span class="lineNum">     604 </span>                :            : 
+<span class="lineNum">     605 </span>                :            :     // Tag edges the user configured
+<span class="lineNum">     606 </span>                :            :     std::vector&lt; edge_t &gt; edge;
+<span class="lineNum">     607 </span>                :            :     std::vector&lt; tk::real &gt; crit;
+<span class="lineNum">     608 </span>                :<span class="lineNoCov">          0 :     for (std::size_t p=0; p&lt;npoin; ++p)        // for all mesh nodes on this chare</span>
+<span class="lineNum">     609 </span>                :<span class="lineNoCov">          0 :       for (auto q : tk::Around(psup,p)) {      // for all nodes surrounding p</span>
+<span class="lineNum">     610 </span>                :<span class="lineNoCov">          0 :         tk::UnsMesh::Edge e{{p,q}};</span>
+<span class="lineNum">     611 </span>                :<span class="lineNoCov">          0 :         if (edgeset.find(e) != end(edgeset)) { // tag edge if on user's list</span>
+<span class="lineNum">     612 </span>                :<span class="lineNoCov">          0 :           edge.push_back( edge_t(e[0],e[1]) );</span>
+<span class="lineNum">     613 </span>                :<span class="lineNoCov">          0 :           crit.push_back( 1.0 );</span>
+<span class="lineNum">     614 </span>                :            :         }
+<span class="lineNum">     615 </span>                :            :       }
+<span class="lineNum">     616 </span>                :            : 
+<span class="lineNum">     617 </span>                :            :     Assert( edge.size() == crit.size(), &quot;Size mismatch&quot; );
+<span class="lineNum">     618 </span>                :            : 
+<span class="lineNum">     619 </span>                :            :     // Do error-based refinement
+<span class="lineNum">     620 </span>                :<span class="lineNoCov">          0 :     m_refiner.error_refinement( edge, crit );</span>
+<span class="lineNum">     621 </span>                :            : 
+<span class="lineNum">     622 </span>                :            :     // Update mesh coordinates and connectivity
+<span class="lineNum">     623 </span>                :<span class="lineNoCov">          0 :     updateMesh();</span>
+<span class="lineNum">     624 </span>                :            : 
+<span class="lineNum">     625 </span>                :            :     // Set number of extra edges to a nonzero number, triggering correction
+<span class="lineNum">     626 </span>                :<span class="lineNoCov">          0 :     m_extra = 1;</span>
+<span class="lineNum">     627 </span>                :            :   }
+<span class="lineNum">     628 </span>                :<span class="lineNoCov">          0 : }</span>
+<span class="lineNum">     629 </span>                :            : 
+<span class="lineNum">     630 </span>                :            : void
+<span class="lineNum">     631 </span>                :<span class="lineNoCov">          0 : Refiner::coordRefine()</span>
+<span class="lineNum">     632 </span>                :            : // *****************************************************************************
+<span class="lineNum">     633 </span>                :            : // Do mesh refinement based on tagging edges based on end-point coordinates
+<span class="lineNum">     634 </span>                :            : // *****************************************************************************
+<span class="lineNum">     635 </span>                :            : {
+<span class="lineNum">     636 </span>                :            :   // Get user-defined half-world coordinates
+<span class="lineNum">     637 </span>                :<span class="lineNoCov">          0 :   auto xminus = g_inputdeck.get&lt; tag::amr, tag::xminus &gt;();</span>
+<span class="lineNum">     638 </span>                :<span class="lineNoCov">          0 :   auto xplus = g_inputdeck.get&lt; tag::amr, tag::xplus &gt;();</span>
+<span class="lineNum">     639 </span>                :<span class="lineNoCov">          0 :   auto yminus = g_inputdeck.get&lt; tag::amr, tag::yminus &gt;();</span>
+<span class="lineNum">     640 </span>                :<span class="lineNoCov">          0 :   auto yplus = g_inputdeck.get&lt; tag::amr, tag::yplus &gt;();</span>
+<span class="lineNum">     641 </span>                :<span class="lineNoCov">          0 :   auto zminus = g_inputdeck.get&lt; tag::amr, tag::zminus &gt;();</span>
+<span class="lineNum">     642 </span>                :<span class="lineNoCov">          0 :   auto zplus = g_inputdeck.get&lt; tag::amr, tag::zplus &gt;();</span>
+<span class="lineNum">     643 </span>                :            : 
+<span class="lineNum">     644 </span>                :            :   // The default is the largest representable double
+<span class="lineNum">     645 </span>                :            :   auto rmax = std::numeric_limits&lt; kw::amr_xminus::info::expect::type &gt;::max();
+<span class="lineNum">     646 </span>                :            :   auto eps =
+<span class="lineNum">     647 </span>                :            :     std::numeric_limits&lt; kw::amr_xminus::info::expect::type &gt;::epsilon();
+<span class="lineNum">     648 </span>                :            : 
+<span class="lineNum">     649 </span>                :            :   // Decide if user has configured the half-world
+<span class="lineNum">     650 </span>                :<span class="lineNoCov">          0 :   bool xm = std::abs(xminus - rmax) &gt; eps ? true : false;</span>
+<span class="lineNum">     651 </span>                :<span class="lineNoCov">          0 :   bool xp = std::abs(xplus - rmax) &gt; eps ? true : false;</span>
+<span class="lineNum">     652 </span>                :<span class="lineNoCov">          0 :   bool ym = std::abs(yminus - rmax) &gt; eps ? true : false;</span>
+<span class="lineNum">     653 </span>                :<span class="lineNoCov">          0 :   bool yp = std::abs(yplus - rmax) &gt; eps ? true : false;</span>
+<span class="lineNum">     654 </span>                :<span class="lineNoCov">          0 :   bool zm = std::abs(zminus - rmax) &gt; eps ? true : false;</span>
+<span class="lineNum">     655 </span>                :<span class="lineNoCov">          0 :   bool zp = std::abs(zplus - rmax) &gt; eps ? true : false;</span>
+<span class="lineNum">     656 </span>                :            : 
+<span class="lineNum">     657 </span>                :            :   using AMR::edge_t;
+<span class="lineNum">     658 </span>                :            : 
+<span class="lineNum">     659 </span>                :<span class="lineNoCov">          0 :   if (xm || xp || ym || yp || zm || zp) {       // if any half-world configured</span>
+<span class="lineNum">     660 </span>                :            :     // Find number of nodes in old mesh
+<span class="lineNum">     661 </span>                :<span class="lineNoCov">          0 :     auto npoin = tk::npoin( m_inpoel );</span>
+<span class="lineNum">     662 </span>                :            :     // Generate edges surrounding points in old mesh
+<span class="lineNum">     663 </span>                :<span class="lineNoCov">          0 :     auto esup = tk::genEsup( m_inpoel, 4 );</span>
+<span class="lineNum">     664 </span>                :<span class="lineNoCov">          0 :     auto psup = tk::genPsup( m_inpoel, 4, esup );</span>
+<span class="lineNum">     665 </span>                :            :     // Get access to node coordinates
+<span class="lineNum">     666 </span>                :<span class="lineNoCov">          0 :     const auto&amp; x = m_coord[0];</span>
+<span class="lineNum">     667 </span>                :<span class="lineNoCov">          0 :     const auto&amp; y = m_coord[1];</span>
+<span class="lineNum">     668 </span>                :<span class="lineNoCov">          0 :     const auto&amp; z = m_coord[2];</span>
+<span class="lineNum">     669 </span>                :            :     // Compute errors in ICs and define refinement criteria for edges
+<span class="lineNum">     670 </span>                :            :     std::vector&lt; edge_t &gt; edge;
+<span class="lineNum">     671 </span>                :            :     std::vector&lt; tk::real &gt; crit;
+<span class="lineNum">     672 </span>                :<span class="lineNoCov">          0 :     for (std::size_t p=0; p&lt;npoin; ++p)        // for all mesh nodes on this chare</span>
+<span class="lineNum">     673 </span>                :<span class="lineNoCov">          0 :       for (auto q : tk::Around(psup,p)) {      // for all nodes surrounding p</span>
+<span class="lineNum">     674 </span>                :            :         tk::UnsMesh::Edge e{{p,q}};
+<span class="lineNum">     675 </span>                :            : 
+<span class="lineNum">     676 </span>                :            :         bool t = true;
+<span class="lineNum">     677 </span>                :<span class="lineNoCov">          0 :         if (xm) { if (x[p]&gt;xminus &amp;&amp; x[q]&gt;xminus) t = false; }</span>
+<span class="lineNum">     678 </span>                :<span class="lineNoCov">          0 :         if (xp) { if (x[p]&lt;xplus &amp;&amp; x[q]&lt;xplus) t = false; }</span>
+<span class="lineNum">     679 </span>                :<span class="lineNoCov">          0 :         if (ym) { if (y[p]&gt;yminus &amp;&amp; y[q]&gt;yminus) t = false; }</span>
+<span class="lineNum">     680 </span>                :<span class="lineNoCov">          0 :         if (yp) { if (y[p]&lt;yplus &amp;&amp; y[q]&lt;yplus) t = false; }</span>
+<span class="lineNum">     681 </span>                :<span class="lineNoCov">          0 :         if (zm) { if (z[p]&gt;zminus &amp;&amp; z[q]&gt;zminus) t = false; }</span>
+<span class="lineNum">     682 </span>                :<span class="lineNoCov">          0 :         if (zp) { if (z[p]&lt;zplus &amp;&amp; z[q]&lt;zplus) t = false; }</span>
 <span class="lineNum">     683 </span>                :            : 
-<span class="lineNum">     684 </span>                :            :     Assert( edge.size() == crit.size(), &quot;Size mismatch&quot; );
-<span class="lineNum">     685 </span>                :            : 
-<span class="lineNum">     686 </span>                :            :     // Do error-based refinement
-<span class="lineNum">     687 </span>                :<span class="lineNoCov">          0 :     m_refiner.error_refinement( edge, crit );</span>
-<span class="lineNum">     688 </span>                :            : 
-<span class="lineNum">     689 </span>                :            :     // Update mesh coordinates and connectivity
-<span class="lineNum">     690 </span>                :<span class="lineNoCov">          0 :     updateMesh();</span>
+<span class="lineNum">     684 </span>                :<span class="lineNoCov">          0 :         if (t) {</span>
+<span class="lineNum">     685 </span>                :<span class="lineNoCov">          0 :           edge.push_back( edge_t(e[0],e[1]) );</span>
+<span class="lineNum">     686 </span>                :<span class="lineNoCov">          0 :           crit.push_back( 1.0 );</span>
+<span class="lineNum">     687 </span>                :            :         }
+<span class="lineNum">     688 </span>                :            :       }
+<span class="lineNum">     689 </span>                :            : 
+<span class="lineNum">     690 </span>                :            :     Assert( edge.size() == crit.size(), &quot;Size mismatch&quot; );
 <span class="lineNum">     691 </span>                :            : 
-<span class="lineNum">     692 </span>                :            :     // Set number of extra edges to a nonzero number, triggering correction
-<span class="lineNum">     693 </span>                :<span class="lineNoCov">          0 :     m_extra = 1;</span>
-<span class="lineNum">     694 </span>                :            :   }
-<span class="lineNum">     695 </span>                :<span class="lineNoCov">          0 : }</span>
-<span class="lineNum">     696 </span>                :            : 
-<span class="lineNum">     697 </span>                :            : tk::Fields
-<span class="lineNum">     698 </span>                :<span class="lineNoCov">          0 : Refiner::nodeinit( std::size_t npoin,</span>
-<span class="lineNum">     699 </span>                :            :                    const std::pair&lt; std::vector&lt; std::size_t &gt;,
-<span class="lineNum">     700 </span>                :            :                                     std::vector&lt; std::size_t &gt; &gt;&amp; esup )
-<span class="lineNum">     701 </span>                :            : // *****************************************************************************
-<span class="lineNum">     702 </span>                :            : // Evaluate initial conditions (IC) at mesh nodes
-<span class="lineNum">     703 </span>                :            : //! \param[in] npoin Number points in mesh (on this chare)
-<span class="lineNum">     704 </span>                :            : //! \param[in] esup Elements surrounding points as linked lists, see tk::genEsup
-<span class="lineNum">     705 </span>                :            : //! \return Initial conditions (evaluated at t0) at nodes
-<span class="lineNum">     706 </span>                :            : // *****************************************************************************
-<span class="lineNum">     707 </span>                :            : {
-<span class="lineNum">     708 </span>                :<span class="lineNoCov">          0 :   auto t0 = g_inputdeck.get&lt; tag::discr, tag::t0 &gt;();</span>
-<span class="lineNum">     709 </span>                :<span class="lineNoCov">          0 :   auto nprop = g_inputdeck.get&lt; tag::component &gt;().nprop();</span>
-<span class="lineNum">     710 </span>                :            : 
-<span class="lineNum">     711 </span>                :            :   // Will store nodal ICs
-<span class="lineNum">     712 </span>                :<span class="lineNoCov">          0 :   tk::Fields u( m_coord[0].size(), nprop );</span>
-<span class="lineNum">     713 </span>                :            : 
-<span class="lineNum">     714 </span>                :            :   // Evaluate ICs differently depending on nodal or cell-centered discretization
-<span class="lineNum">     715 </span>                :<span class="lineNoCov">          0 :   const auto scheme = g_inputdeck.get&lt; tag::discr, tag::scheme &gt;();</span>
-<span class="lineNum">     716 </span>                :<span class="lineNoCov">          0 :   if (scheme == ctr::SchemeType::MatCG || scheme == ctr::SchemeType::DiagCG) {</span>
-<span class="lineNum">     717 </span>                :            : 
-<span class="lineNum">     718 </span>                :            :     // Node-centered: evaluate ICs for all scalar components integrated
-<span class="lineNum">     719 </span>                :<span class="lineNoCov">          0 :     for (const auto&amp; eq : g_cgpde) eq.initialize( m_coord, u, t0 );</span>
-<span class="lineNum">     720 </span>                :            : 
-<span class="lineNum">     721 </span>                :<span class="lineNoCov">          0 :   } else if (scheme == ctr::SchemeType::DG) {</span>
-<span class="lineNum">     722 </span>                :            : 
-<span class="lineNum">     723 </span>                :            :     // Initialize cell-centered unknowns
-<span class="lineNum">     724 </span>                :<span class="lineNoCov">          0 :     tk::Fields ue( m_inpoel.size()/4, nprop );</span>
-<span class="lineNum">     725 </span>                :<span class="lineNoCov">          0 :     auto geoElem = tk::genGeoElemTet( m_inpoel, m_coord );</span>
-<span class="lineNum">     726 </span>                :<span class="lineNoCov">          0 :     for (const auto&amp; eq : g_dgpde) eq.initialize( geoElem, ue, t0 );</span>
-<span class="lineNum">     727 </span>                :            : 
-<span class="lineNum">     728 </span>                :            :     // Transfer initial conditions from cells to nodes
-<span class="lineNum">     729 </span>                :<span class="lineNoCov">          0 :     for (std::size_t p=0; p&lt;npoin; ++p) {    // for all mesh nodes on this chare</span>
-<span class="lineNum">     730 </span>                :<span class="lineNoCov">          0 :       std::vector&lt; tk::real &gt; up( nprop, 0.0 );</span>
-<span class="lineNum">     731 </span>                :            :       tk::real vol = 0.0;
-<span class="lineNum">     732 </span>                :<span class="lineNoCov">          0 :       for (auto e : tk::Around(esup,p)) {       // for all cells around node p</span>
-<span class="lineNum">     733 </span>                :            :         // compute nodal volume: every element contributes their volume / 4
-<span class="lineNum">     734 </span>                :<span class="lineNoCov">          0 :         vol += geoElem(e,0,0) / 4.0;</span>
-<span class="lineNum">     735 </span>                :            :         // sum cell value to node weighed by cell volume / 4
-<span class="lineNum">     736 </span>                :<span class="lineNoCov">          0 :         for (std::size_t c=0; c&lt;nprop; ++c)</span>
-<span class="lineNum">     737 </span>                :<span class="lineNoCov">          0 :           up[c] += ue[e][c] * geoElem(e,0,0) / 4.0;</span>
-<span class="lineNum">     738 </span>                :            :       }
-<span class="lineNum">     739 </span>                :            :       // store nodal value
-<span class="lineNum">     740 </span>                :<span class="lineNoCov">          0 :       for (std::size_t c=0; c&lt;nprop; ++c) u(p,c,0) = up[c] / vol;</span>
-<span class="lineNum">     741 </span>                :            :     }
-<span class="lineNum">     742 </span>                :            : 
-<span class="lineNum">     743 </span>                :<span class="lineNoCov">          0 :   } else Throw( &quot;Nodal initialization not handled for discretization scheme&quot; );</span>
-<span class="lineNum">     744 </span>                :            : 
-<span class="lineNum">     745 </span>                :            :   Assert( u.nunk() == m_coord[0].size(), &quot;Size mismatch&quot; );
-<span class="lineNum">     746 </span>                :            :   Assert( u.nprop() == nprop, &quot;Size mismatch&quot; );
-<span class="lineNum">     747 </span>                :            : 
-<span class="lineNum">     748 </span>                :<span class="lineNoCov">          0 :   return u;</span>
-<span class="lineNum">     749 </span>                :            : }
+<span class="lineNum">     692 </span>                :            :     // Do error-based refinement
+<span class="lineNum">     693 </span>                :<span class="lineNoCov">          0 :     m_refiner.error_refinement( edge, crit );</span>
+<span class="lineNum">     694 </span>                :            : 
+<span class="lineNum">     695 </span>                :            :     // Update mesh coordinates and connectivity
+<span class="lineNum">     696 </span>                :<span class="lineNoCov">          0 :     updateMesh();</span>
+<span class="lineNum">     697 </span>                :            : 
+<span class="lineNum">     698 </span>                :            :     // Set number of extra edges to a nonzero number, triggering correction
+<span class="lineNum">     699 </span>                :<span class="lineNoCov">          0 :     m_extra = 1;</span>
+<span class="lineNum">     700 </span>                :            :   }
+<span class="lineNum">     701 </span>                :<span class="lineNoCov">          0 : }</span>
+<span class="lineNum">     702 </span>                :            : 
+<span class="lineNum">     703 </span>                :            : tk::Fields
+<span class="lineNum">     704 </span>                :<span class="lineNoCov">          0 : Refiner::nodeinit( std::size_t npoin,</span>
+<span class="lineNum">     705 </span>                :            :                    const std::pair&lt; std::vector&lt; std::size_t &gt;,
+<span class="lineNum">     706 </span>                :            :                                     std::vector&lt; std::size_t &gt; &gt;&amp; esup )
+<span class="lineNum">     707 </span>                :            : // *****************************************************************************
+<span class="lineNum">     708 </span>                :            : // Evaluate initial conditions (IC) at mesh nodes
+<span class="lineNum">     709 </span>                :            : //! \param[in] npoin Number points in mesh (on this chare)
+<span class="lineNum">     710 </span>                :            : //! \param[in] esup Elements surrounding points as linked lists, see tk::genEsup
+<span class="lineNum">     711 </span>                :            : //! \return Initial conditions (evaluated at t0) at nodes
+<span class="lineNum">     712 </span>                :            : // *****************************************************************************
+<span class="lineNum">     713 </span>                :            : {
+<span class="lineNum">     714 </span>                :<span class="lineNoCov">          0 :   auto t0 = g_inputdeck.get&lt; tag::discr, tag::t0 &gt;();</span>
+<span class="lineNum">     715 </span>                :<span class="lineNoCov">          0 :   auto nprop = g_inputdeck.get&lt; tag::component &gt;().nprop();</span>
+<span class="lineNum">     716 </span>                :            : 
+<span class="lineNum">     717 </span>                :            :   // Will store nodal ICs
+<span class="lineNum">     718 </span>                :<span class="lineNoCov">          0 :   tk::Fields u( m_coord[0].size(), nprop );</span>
+<span class="lineNum">     719 </span>                :            : 
+<span class="lineNum">     720 </span>                :            :   // Evaluate ICs differently depending on nodal or cell-centered discretization
+<span class="lineNum">     721 </span>                :<span class="lineNoCov">          0 :   const auto scheme = g_inputdeck.get&lt; tag::discr, tag::scheme &gt;();</span>
+<span class="lineNum">     722 </span>                :<span class="lineNoCov">          0 :   if (scheme == ctr::SchemeType::MatCG || scheme == ctr::SchemeType::DiagCG) {</span>
+<span class="lineNum">     723 </span>                :            : 
+<span class="lineNum">     724 </span>                :            :     // Node-centered: evaluate ICs for all scalar components integrated
+<span class="lineNum">     725 </span>                :<span class="lineNoCov">          0 :     for (const auto&amp; eq : g_cgpde) eq.initialize( m_coord, u, t0 );</span>
+<span class="lineNum">     726 </span>                :            : 
+<span class="lineNum">     727 </span>                :<span class="lineNoCov">          0 :   } else if (scheme == ctr::SchemeType::DG) {</span>
+<span class="lineNum">     728 </span>                :            : 
+<span class="lineNum">     729 </span>                :            :     // Initialize cell-centered unknowns
+<span class="lineNum">     730 </span>                :<span class="lineNoCov">          0 :     tk::Fields ue( m_inpoel.size()/4, nprop );</span>
+<span class="lineNum">     731 </span>                :<span class="lineNoCov">          0 :     auto geoElem = tk::genGeoElemTet( m_inpoel, m_coord );</span>
+<span class="lineNum">     732 </span>                :<span class="lineNoCov">          0 :     for (const auto&amp; eq : g_dgpde) eq.initialize( geoElem, ue, t0 );</span>
+<span class="lineNum">     733 </span>                :            : 
+<span class="lineNum">     734 </span>                :            :     // Transfer initial conditions from cells to nodes
+<span class="lineNum">     735 </span>                :<span class="lineNoCov">          0 :     for (std::size_t p=0; p&lt;npoin; ++p) {    // for all mesh nodes on this chare</span>
+<span class="lineNum">     736 </span>                :<span class="lineNoCov">          0 :       std::vector&lt; tk::real &gt; up( nprop, 0.0 );</span>
+<span class="lineNum">     737 </span>                :            :       tk::real vol = 0.0;
+<span class="lineNum">     738 </span>                :<span class="lineNoCov">          0 :       for (auto e : tk::Around(esup,p)) {       // for all cells around node p</span>
+<span class="lineNum">     739 </span>                :            :         // compute nodal volume: every element contributes their volume / 4
+<span class="lineNum">     740 </span>                :<span class="lineNoCov">          0 :         vol += geoElem(e,0,0) / 4.0;</span>
+<span class="lineNum">     741 </span>                :            :         // sum cell value to node weighed by cell volume / 4
+<span class="lineNum">     742 </span>                :<span class="lineNoCov">          0 :         for (std::size_t c=0; c&lt;nprop; ++c)</span>
+<span class="lineNum">     743 </span>                :<span class="lineNoCov">          0 :           up[c] += ue[e][c] * geoElem(e,0,0) / 4.0;</span>
+<span class="lineNum">     744 </span>                :            :       }
+<span class="lineNum">     745 </span>                :            :       // store nodal value
+<span class="lineNum">     746 </span>                :<span class="lineNoCov">          0 :       for (std::size_t c=0; c&lt;nprop; ++c) u(p,c,0) = up[c] / vol;</span>
+<span class="lineNum">     747 </span>                :            :     }
+<span class="lineNum">     748 </span>                :            : 
+<span class="lineNum">     749 </span>                :<span class="lineNoCov">          0 :   } else Throw( &quot;Nodal initialization not handled for discretization scheme&quot; );</span>
 <span class="lineNum">     750 </span>                :            : 
-<span class="lineNum">     751 </span>                :            : void
-<span class="lineNum">     752 </span>                :<span class="lineNoCov">          0 : Refiner::correctRefine( const tk::UnsMesh::EdgeSet&amp; extra )</span>
-<span class="lineNum">     753 </span>                :            : // *****************************************************************************
-<span class="lineNum">     754 </span>                :            : // Do mesh refinement correcting chare-boundary edges
-<span class="lineNum">     755 </span>                :            : //! \param[in] extra Unique edges that need a new node on chare boundaries
-<span class="lineNum">     756 </span>                :            : // *****************************************************************************
-<span class="lineNum">     757 </span>                :            : {
-<span class="lineNum">     758 </span>                :<span class="lineNoCov">          0 :   if (!extra.empty()) {</span>
-<span class="lineNum">     759 </span>                :            :     // Generate list of edges that need to be corrected
-<span class="lineNum">     760 </span>                :            :     std::vector&lt; edge_t &gt; edge;
-<span class="lineNum">     761 </span>                :<span class="lineNoCov">          0 :     for (const auto&amp; e : extra) edge.push_back( edge_t(e[0],e[1]) );</span>
-<span class="lineNum">     762 </span>                :<span class="lineNoCov">          0 :     std::vector&lt; real_t &gt; crit( edge.size(), 1.0 );</span>
-<span class="lineNum">     763 </span>                :            : 
-<span class="lineNum">     764 </span>                :            :     // Do refinement including edges that need to be corrected
-<span class="lineNum">     765 </span>                :<span class="lineNoCov">          0 :     m_refiner.error_refinement( edge, crit );</span>
-<span class="lineNum">     766 </span>                :            : 
-<span class="lineNum">     767 </span>                :            :     // Update mesh coordinates and connectivity
-<span class="lineNum">     768 </span>                :<span class="lineNoCov">          0 :     updateMesh();</span>
-<span class="lineNum">     769 </span>                :            :   }
-<span class="lineNum">     770 </span>                :<span class="lineNoCov">          0 : }</span>
+<span class="lineNum">     751 </span>                :            :   Assert( u.nunk() == m_coord[0].size(), &quot;Size mismatch&quot; );
+<span class="lineNum">     752 </span>                :            :   Assert( u.nprop() == nprop, &quot;Size mismatch&quot; );
+<span class="lineNum">     753 </span>                :            : 
+<span class="lineNum">     754 </span>                :<span class="lineNoCov">          0 :   return u;</span>
+<span class="lineNum">     755 </span>                :            : }
+<span class="lineNum">     756 </span>                :            : 
+<span class="lineNum">     757 </span>                :            : void
+<span class="lineNum">     758 </span>                :<span class="lineNoCov">          0 : Refiner::correctRefine( const tk::UnsMesh::EdgeSet&amp; extra )</span>
+<span class="lineNum">     759 </span>                :            : // *****************************************************************************
+<span class="lineNum">     760 </span>                :            : // Do mesh refinement correcting chare-boundary edges
+<span class="lineNum">     761 </span>                :            : //! \param[in] extra Unique edges that need a new node on chare boundaries
+<span class="lineNum">     762 </span>                :            : // *****************************************************************************
+<span class="lineNum">     763 </span>                :            : {
+<span class="lineNum">     764 </span>                :            :   using AMR::edge_t;
+<span class="lineNum">     765 </span>                :            : 
+<span class="lineNum">     766 </span>                :<span class="lineNoCov">          0 :   if (!extra.empty()) {</span>
+<span class="lineNum">     767 </span>                :            :     // Generate list of edges that need to be corrected
+<span class="lineNum">     768 </span>                :            :     std::vector&lt; edge_t &gt; edge;
+<span class="lineNum">     769 </span>                :<span class="lineNoCov">          0 :     for (const auto&amp; e : extra) edge.push_back( edge_t(e[0],e[1]) );</span>
+<span class="lineNum">     770 </span>                :<span class="lineNoCov">          0 :     std::vector&lt; tk::real &gt; crit( edge.size(), 1.0 );</span>
 <span class="lineNum">     771 </span>                :            : 
-<span class="lineNum">     772 </span>                :            : void
-<span class="lineNum">     773 </span>                :<span class="lineNoCov">          0 : Refiner::updateMesh()</span>
-<span class="lineNum">     774 </span>                :            : // *****************************************************************************
-<span class="lineNum">     775 </span>                :            : // Update mesh after refinement
-<span class="lineNum">     776 </span>                :            : // *****************************************************************************
-<span class="lineNum">     777 </span>                :            : {
-<span class="lineNum">     778 </span>                :            :   // Get refined mesh connectivity
-<span class="lineNum">     779 </span>                :<span class="lineNoCov">          0 :   const auto&amp; refinpoel = m_refiner.tet_store.get_active_inpoel();</span>
-<span class="lineNum">     780 </span>                :            :   Assert( refinpoel.size()%4 == 0, &quot;Inconsistent refined mesh connectivity&quot; );
-<span class="lineNum">     781 </span>                :            : 
-<span class="lineNum">     782 </span>                :            :   // Generate unique node lists of old and refined mesh using local ids
-<span class="lineNum">     783 </span>                :<span class="lineNoCov">          0 :   std::unordered_set&lt; std::size_t &gt; old( m_inpoel.cbegin(), m_inpoel.cend() );</span>
-<span class="lineNum">     784 </span>                :<span class="lineNoCov">          0 :   std::unordered_set&lt; std::size_t &gt; ref( refinpoel.cbegin(), refinpoel.cend() );</span>
-<span class="lineNum">     785 </span>                :            : 
-<span class="lineNum">     786 </span>                :<span class="lineNoCov">          0 :   updateVolMesh( old, ref );</span>
-<span class="lineNum">     787 </span>                :<span class="lineNoCov">          0 :   updateBndMesh( old, ref );</span>
-<span class="lineNum">     788 </span>                :            : 
-<span class="lineNum">     789 </span>                :            :   // Update mesh connectivity with local node IDs
-<span class="lineNum">     790 </span>                :<span class="lineNoCov">          0 :   m_inpoel = refinpoel;</span>
-<span class="lineNum">     791 </span>                :            : 
-<span class="lineNum">     792 </span>                :            :   // Update mesh connectivity with new global node ids
-<span class="lineNum">     793 </span>                :<span class="lineNoCov">          0 :   m_ginpoel = m_inpoel;</span>
-<span class="lineNum">     794 </span>                :            :   Assert( tk::uniquecopy(m_ginpoel).size() == m_coord[0].size(),
-<span class="lineNum">     795 </span>                :            :           &quot;Size mismatch&quot; );
-<span class="lineNum">     796 </span>                :<span class="lineNoCov">          0 :   for (auto&amp; i : m_ginpoel) i = m_gid[i];</span>
-<span class="lineNum">     797 </span>                :            : 
-<span class="lineNum">     798 </span>                :            :   // Update flat coordinates storage
-<span class="lineNum">     799 </span>                :<span class="lineNoCov">          0 :   m_coord = flatcoord( m_coordmap );</span>
-<span class="lineNum">     800 </span>                :            : 
-<span class="lineNum">     801 </span>                :            :   // Perform leak test on new mesh
-<span class="lineNum">     802 </span>                :            :   Assert( !tk::leakyPartition(
-<span class="lineNum">     803 </span>                :            :             tk::genEsuelTet( m_inpoel, tk::genEsup(m_inpoel,4) ),
-<span class="lineNum">     804 </span>                :            :             m_inpoel, m_coord ),
-<span class="lineNum">     805 </span>                :            :           &quot;Refined mesh partition leaky&quot; );
-<span class="lineNum">     806 </span>                :            : 
-<span class="lineNum">     807 </span>                :            : //std::cout &lt;&lt; &quot;----------------\n&quot;;
-<span class="lineNum">     808 </span>                :<span class="lineNoCov">          0 : }</span>
-<a name="809"><span class="lineNum">     809 </span>                :            : </a>
-<span class="lineNum">     810 </span>                :            : void
-<span class="lineNum">     811 </span>                :<span class="lineNoCov">          0 : Refiner::updateVolMesh( const std::unordered_set&lt; std::size_t &gt;&amp; old,</span>
-<span class="lineNum">     812 </span>                :            :                         const std::unordered_set&lt; std::size_t &gt;&amp; ref )
-<span class="lineNum">     813 </span>                :            : // *****************************************************************************
-<span class="lineNum">     814 </span>                :            : //  Update volume mesh after mesh refinement
-<span class="lineNum">     815 </span>                :            : //! \param[in] old Unique nodes of the old (unrefined) mesh using local ids
-<span class="lineNum">     816 </span>                :            : //! \param[in] ref Unique nodes of the refined mesh using local ids
-<span class="lineNum">     817 </span>                :            : // *****************************************************************************
-<span class="lineNum">     818 </span>                :            : {
-<span class="lineNum">     819 </span>                :<span class="lineNoCov">          0 :   auto&amp; x = m_coord[0];</span>
-<span class="lineNum">     820 </span>                :<span class="lineNoCov">          0 :   auto&amp; y = m_coord[1];</span>
-<span class="lineNum">     821 </span>                :<span class="lineNoCov">          0 :   auto&amp; z = m_coord[2];</span>
-<span class="lineNum">     822 </span>                :            : 
-<span class="lineNum">     823 </span>                :            :   // Resize node coordinate storage to accommodate refined mesh nodes
-<span class="lineNum">     824 </span>                :            :   auto npoin = ref.size();
-<span class="lineNum">     825 </span>                :<span class="lineNoCov">          0 :   x.resize( npoin );</span>
-<span class="lineNum">     826 </span>                :<span class="lineNoCov">          0 :   y.resize( npoin );</span>
-<span class="lineNum">     827 </span>                :<span class="lineNoCov">          0 :   z.resize( npoin );</span>
-<span class="lineNum">     828 </span>                :<span class="lineNoCov">          0 :   m_gid.resize( npoin, std::numeric_limits&lt; std::size_t &gt;::max() );</span>
-<span class="lineNum">     829 </span>                :            : 
-<span class="lineNum">     830 </span>                :            :   // Generate coordinates and ids to newly added nodes after refinement step
-<span class="lineNum">     831 </span>                :<span class="lineNoCov">          0 :   for (auto r : ref) {               // for all unique nodes of the refined mesh</span>
-<span class="lineNum">     832 </span>                :<span class="lineNoCov">          0 :     if (old.find(r) == end(old)) {   // if node is newly added (in this step)</span>
-<span class="lineNum">     833 </span>                :            :       // get (local) parent ids of newly added node
-<span class="lineNum">     834 </span>                :<span class="lineNoCov">          0 :       auto p = m_refiner.node_connectivity.get( r );</span>
-<span class="lineNum">     835 </span>                :            :       Assert( old.find(p[0]) != end(old) &amp;&amp; old.find(p[1]) != end(old),
-<span class="lineNum">     836 </span>                :            :               &quot;Parent(s) not in old mesh&quot; );
-<span class="lineNum">     837 </span>                :            :       Assert( r &gt;= old.size(), &quot;Attempting to overwrite node with added one&quot; );
-<span class="lineNum">     838 </span>                :            :       // generate coordinates for newly added node
-<span class="lineNum">     839 </span>                :<span class="lineNoCov">          0 :       x[r] = (x[p[0]] + x[p[1]])/2.0;</span>
-<span class="lineNum">     840 </span>                :<span class="lineNoCov">          0 :       y[r] = (y[p[0]] + y[p[1]])/2.0;</span>
-<span class="lineNum">     841 </span>                :<span class="lineNoCov">          0 :       z[r] = (z[p[0]] + z[p[1]])/2.0;</span>
-<span class="lineNum">     842 </span>                :<span class="lineNoCov">          0 :       decltype(p) gp{{ m_gid[p[0]], m_gid[p[1]] }}; // global parent ids</span>
-<span class="lineNum">     843 </span>                :            :       // generate new global ID for newly added node
-<span class="lineNum">     844 </span>                :<span class="lineNoCov">          0 :       auto g = tk::UnsMesh::Hash&lt;2&gt;()( gp );</span>
-<span class="lineNum">     845 </span>                :            :       // ensure newly generated node id has not yet been used
-<span class="lineNum">     846 </span>                :            :       Assert( g &gt;= old.size(), &quot;Hashed id overwriting old id&quot; );
-<span class="lineNum">     847 </span>                :            :       Assert( m_coordmap.find(g) == end(m_coordmap),
-<span class="lineNum">     848 </span>                :            :               &quot;Hash collision: ID already exist&quot; );
-<span class="lineNum">     849 </span>                :            :       // assign new global ids to local-&gt;global and to global-&gt;local maps
-<span class="lineNum">     850 </span>                :<span class="lineNoCov">          0 :       m_gid[r] = g;</span>
-<span class="lineNum">     851 </span>                :            :       Assert( m_lid.find(g) == end(m_lid),
-<span class="lineNum">     852 </span>                :            :               &quot;Overwriting entry global-&gt;local node ID map&quot; );
-<span class="lineNum">     853 </span>                :<span class="lineNoCov">          0 :       m_lid[g] = r;</span>
-<span class="lineNum">     854 </span>                :            :       // assign new coordinates to new global node id
+<span class="lineNum">     772 </span>                :            :     // Do refinement including edges that need to be corrected
+<span class="lineNum">     773 </span>                :<span class="lineNoCov">          0 :     m_refiner.error_refinement( edge, crit );</span>
+<span class="lineNum">     774 </span>                :            : 
+<span class="lineNum">     775 </span>                :            :     // Update mesh coordinates and connectivity
+<span class="lineNum">     776 </span>                :<span class="lineNoCov">          0 :     updateMesh();</span>
+<span class="lineNum">     777 </span>                :            :   }
+<span class="lineNum">     778 </span>                :<span class="lineNoCov">          0 : }</span>
+<span class="lineNum">     779 </span>                :            : 
+<span class="lineNum">     780 </span>                :            : void
+<span class="lineNum">     781 </span>                :<span class="lineNoCov">          0 : Refiner::updateMesh()</span>
+<span class="lineNum">     782 </span>                :            : // *****************************************************************************
+<span class="lineNum">     783 </span>                :            : // Update mesh after refinement
+<span class="lineNum">     784 </span>                :            : // *****************************************************************************
+<span class="lineNum">     785 </span>                :            : {
+<span class="lineNum">     786 </span>                :            :   // Get refined mesh connectivity
+<span class="lineNum">     787 </span>                :<span class="lineNoCov">          0 :   const auto&amp; refinpoel = m_refiner.tet_store.get_active_inpoel();</span>
+<span class="lineNum">     788 </span>                :            :   Assert( refinpoel.size()%4 == 0, &quot;Inconsistent refined mesh connectivity&quot; );
+<span class="lineNum">     789 </span>                :            : 
+<span class="lineNum">     790 </span>                :            :   // Generate unique node lists of old and refined mesh using local ids
+<span class="lineNum">     791 </span>                :<span class="lineNoCov">          0 :   std::unordered_set&lt; std::size_t &gt; old( m_inpoel.cbegin(), m_inpoel.cend() );</span>
+<span class="lineNum">     792 </span>                :<span class="lineNoCov">          0 :   std::unordered_set&lt; std::size_t &gt; ref( refinpoel.cbegin(), refinpoel.cend() );</span>
+<span class="lineNum">     793 </span>                :            : 
+<span class="lineNum">     794 </span>                :<span class="lineNoCov">          0 :   updateVolMesh( old, ref );</span>
+<span class="lineNum">     795 </span>                :<span class="lineNoCov">          0 :   updateBndMesh( old, ref );</span>
+<span class="lineNum">     796 </span>                :            : 
+<span class="lineNum">     797 </span>                :            :   // Update mesh connectivity with local node IDs
+<span class="lineNum">     798 </span>                :<span class="lineNoCov">          0 :   m_inpoel = refinpoel;</span>
+<span class="lineNum">     799 </span>                :            : 
+<span class="lineNum">     800 </span>                :            :   // Update mesh connectivity with new global node ids
+<span class="lineNum">     801 </span>                :<span class="lineNoCov">          0 :   m_ginpoel = m_inpoel;</span>
+<span class="lineNum">     802 </span>                :            :   Assert( tk::uniquecopy(m_ginpoel).size() == m_coord[0].size(),
+<span class="lineNum">     803 </span>                :            :           &quot;Size mismatch&quot; );
+<span class="lineNum">     804 </span>                :<span class="lineNoCov">          0 :   for (auto&amp; i : m_ginpoel) i = m_gid[i];</span>
+<span class="lineNum">     805 </span>                :            : 
+<span class="lineNum">     806 </span>                :            :   // Update flat coordinates storage
+<span class="lineNum">     807 </span>                :<span class="lineNoCov">          0 :   m_coord = flatcoord( m_coordmap );</span>
+<span class="lineNum">     808 </span>                :            : 
+<span class="lineNum">     809 </span>                :            :   // Perform leak test on new mesh
+<span class="lineNum">     810 </span>                :            :   Assert( !tk::leakyPartition(
+<span class="lineNum">     811 </span>                :            :             tk::genEsuelTet( m_inpoel, tk::genEsup(m_inpoel,4) ),
+<span class="lineNum">     812 </span>                :            :             m_inpoel, m_coord ),
+<span class="lineNum">     813 </span>                :            :           &quot;Refined mesh partition leaky&quot; );
+<span class="lineNum">     814 </span>                :            : 
+<span class="lineNum">     815 </span>                :            : //std::cout &lt;&lt; &quot;----------------\n&quot;;
+<span class="lineNum">     816 </span>                :<span class="lineNoCov">          0 : }</span>
+<a name="817"><span class="lineNum">     817 </span>                :            : </a>
+<span class="lineNum">     818 </span>                :            : void
+<span class="lineNum">     819 </span>                :<span class="lineNoCov">          0 : Refiner::updateVolMesh( const std::unordered_set&lt; std::size_t &gt;&amp; old,</span>
+<span class="lineNum">     820 </span>                :            :                         const std::unordered_set&lt; std::size_t &gt;&amp; ref )
+<span class="lineNum">     821 </span>                :            : // *****************************************************************************
+<span class="lineNum">     822 </span>                :            : //  Update volume mesh after mesh refinement
+<span class="lineNum">     823 </span>                :            : //! \param[in] old Unique nodes of the old (unrefined) mesh using local ids
+<span class="lineNum">     824 </span>                :            : //! \param[in] ref Unique nodes of the refined mesh using local ids
+<span class="lineNum">     825 </span>                :            : // *****************************************************************************
+<span class="lineNum">     826 </span>                :            : {
+<span class="lineNum">     827 </span>                :<span class="lineNoCov">          0 :   auto&amp; x = m_coord[0];</span>
+<span class="lineNum">     828 </span>                :<span class="lineNoCov">          0 :   auto&amp; y = m_coord[1];</span>
+<span class="lineNum">     829 </span>                :<span class="lineNoCov">          0 :   auto&amp; z = m_coord[2];</span>
+<span class="lineNum">     830 </span>                :            : 
+<span class="lineNum">     831 </span>                :            :   // Resize node coordinate storage to accommodate refined mesh nodes
+<span class="lineNum">     832 </span>                :            :   auto npoin = ref.size();
+<span class="lineNum">     833 </span>                :<span class="lineNoCov">          0 :   x.resize( npoin );</span>
+<span class="lineNum">     834 </span>                :<span class="lineNoCov">          0 :   y.resize( npoin );</span>
+<span class="lineNum">     835 </span>                :<span class="lineNoCov">          0 :   z.resize( npoin );</span>
+<span class="lineNum">     836 </span>                :<span class="lineNoCov">          0 :   m_gid.resize( npoin, std::numeric_limits&lt; std::size_t &gt;::max() );</span>
+<span class="lineNum">     837 </span>                :            : 
+<span class="lineNum">     838 </span>                :            :   // Generate coordinates and ids to newly added nodes after refinement step
+<span class="lineNum">     839 </span>                :<span class="lineNoCov">          0 :   for (auto r : ref) {               // for all unique nodes of the refined mesh</span>
+<span class="lineNum">     840 </span>                :<span class="lineNoCov">          0 :     if (old.find(r) == end(old)) {   // if node is newly added (in this step)</span>
+<span class="lineNum">     841 </span>                :            :       // get (local) parent ids of newly added node
+<span class="lineNum">     842 </span>                :<span class="lineNoCov">          0 :       auto p = m_refiner.node_connectivity.get( r );</span>
+<span class="lineNum">     843 </span>                :            :       Assert( old.find(p[0]) != end(old) &amp;&amp; old.find(p[1]) != end(old),
+<span class="lineNum">     844 </span>                :            :               &quot;Parent(s) not in old mesh&quot; );
+<span class="lineNum">     845 </span>                :            :       Assert( r &gt;= old.size(), &quot;Attempting to overwrite node with added one&quot; );
+<span class="lineNum">     846 </span>                :            :       // generate coordinates for newly added node
+<span class="lineNum">     847 </span>                :<span class="lineNoCov">          0 :       x[r] = (x[p[0]] + x[p[1]])/2.0;</span>
+<span class="lineNum">     848 </span>                :<span class="lineNoCov">          0 :       y[r] = (y[p[0]] + y[p[1]])/2.0;</span>
+<span class="lineNum">     849 </span>                :<span class="lineNoCov">          0 :       z[r] = (z[p[0]] + z[p[1]])/2.0;</span>
+<span class="lineNum">     850 </span>                :<span class="lineNoCov">          0 :       decltype(p) gp{{ m_gid[p[0]], m_gid[p[1]] }}; // global parent ids</span>
+<span class="lineNum">     851 </span>                :            :       // generate new global ID for newly added node
+<span class="lineNum">     852 </span>                :<span class="lineNoCov">          0 :       auto g = tk::UnsMesh::Hash&lt;2&gt;()( gp );</span>
+<span class="lineNum">     853 </span>                :            :       // ensure newly generated node id has not yet been used
+<span class="lineNum">     854 </span>                :            :       Assert( g &gt;= old.size(), &quot;Hashed id overwriting old id&quot; );
 <span class="lineNum">     855 </span>                :            :       Assert( m_coordmap.find(g) == end(m_coordmap),
-<span class="lineNum">     856 </span>                :            :               &quot;Overwriting entry coordmap&quot; );
-<span class="lineNum">     857 </span>                :<span class="lineNoCov">          0 :       m_coordmap.insert( {g, {{x[r], y[r], z[r]}}} );</span>
-<span class="lineNum">     858 </span>                :            :       // assign new coordinates and new global node id to global parent id pair
-<span class="lineNum">     859 </span>                :<span class="lineNoCov">          0 :       m_edgenode[ gp ] = std::make_tuple( g, x[r], y[r], z[r] );</span>
-<span class="lineNum">     860 </span>                :            :     }
-<span class="lineNum">     861 </span>                :            :   }
-<span class="lineNum">     862 </span>                :            : 
-<span class="lineNum">     863 </span>                :            :   Assert( m_gid.size() == m_lid.size(), &quot;Size mismatch&quot; );
-<span class="lineNum">     864 </span>                :            : 
-<span class="lineNum">     865 </span>                :            :   Assert( std::none_of( begin(m_gid), end(m_gid), [](std::size_t i){
-<span class="lineNum">     866 </span>                :            :             return i == std::numeric_limits&lt; std::size_t &gt;::max(); } ),
-<span class="lineNum">     867 </span>                :            :           &quot;Not all local-&gt;global node IDs have been assigned&quot; );
-<span class="lineNum">     868 </span>                :<span class="lineNoCov">          0 : }</span>
-<span class="lineNum">     869 </span>                :            : 
-<span class="lineNum">     870 </span>                :            : Refiner::BndFaces
-<span class="lineNum">     871 </span>                :<span class="lineNoCov">          0 : Refiner::boundary()</span>
-<span class="lineNum">     872 </span>                :            : // *****************************************************************************
-<span class="lineNum">     873 </span>                :            : // Generate boundary data structure
-<span class="lineNum">     874 </span>                :            : //! \return Map associating a pair of side set id and adjacent tet id (value)
-<span class="lineNum">     875 </span>                :            : //!   to a partition-boundary triangle face (key) given by three global node IDs
-<span class="lineNum">     876 </span>                :            : //! \details This is used to regenerate physical boundary face and node data
-<span class="lineNum">     877 </span>                :            : //!   structures after refinement, see updateBoundaryMesh().
-<span class="lineNum">     878 </span>                :            : // *****************************************************************************
-<span class="lineNum">     879 </span>                :            : {
-<span class="lineNum">     880 </span>                :            :   using Face = tk::UnsMesh::Face;
-<span class="lineNum">     881 </span>                :            :   using Tet = tk::UnsMesh::Tet;
-<span class="lineNum">     882 </span>                :            : 
-<span class="lineNum">     883 </span>                :            :   // Generate the inverse of AMR's tets map
-<span class="lineNum">     884 </span>                :            :   std::unordered_map&lt; Tet,
-<span class="lineNum">     885 </span>                :            :                       std::size_t,
-<span class="lineNum">     886 </span>                :            :                       tk::UnsMesh::Hash&lt;4&gt;,
-<span class="lineNum">     887 </span>                :<span class="lineNoCov">          0 :                       tk::UnsMesh::Eq&lt;4&gt; &gt; invtets;</span>
-<span class="lineNum">     888 </span>                :<span class="lineNoCov">          0 :   for (const auto&amp; t : m_refiner.tet_store.tets) invtets[ t.second ] = t.first;</span>
-<span class="lineNum">     889 </span>                :            : 
-<span class="lineNum">     890 </span>                :            :   // Generate data structure that associates the pair of side set id and
-<span class="lineNum">     891 </span>                :            :   // adjacent tet id to a boundary triangle face for all boundary faces. After
-<span class="lineNum">     892 </span>                :            :   // this loop we will have all tets adjacent to boundary faces, where the
-<span class="lineNum">     893 </span>                :            :   // boundary includes all physical boundaries (where the user may assign
-<span class="lineNum">     894 </span>                :            :   // boundary conditions via side sets from the mesh file) as well as
-<span class="lineNum">     895 </span>                :            :   // chare-boundaries due to domain decomposition.
-<span class="lineNum">     896 </span>                :<span class="lineNoCov">          0 :   BndFaces bnd;</span>
-<span class="lineNum">     897 </span>                :<span class="lineNoCov">          0 :   auto oldesuel = tk::genEsuelTet( m_inpoel, tk::genEsup(m_inpoel,4) );</span>
-<span class="lineNum">     898 </span>                :<span class="lineNoCov">          0 :   for (std::size_t e=0; e&lt;oldesuel.size()/4; ++e) {    // for tets on this chare</span>
-<span class="lineNum">     899 </span>                :<span class="lineNoCov">          0 :     auto mark = e*4;</span>
-<span class="lineNum">     900 </span>                :<span class="lineNoCov">          0 :     for (std::size_t f=0; f&lt;4; ++f) {</span>
-<span class="lineNum">     901 </span>                :<span class="lineNoCov">          0 :       if (oldesuel[mark+f] == -1) {  // if a face does not have an adjacent tet</span>
-<span class="lineNum">     902 </span>                :<span class="lineNoCov">          0 :         Face b{{ m_ginpoel[ mark+tk::lpofa[f][0] ],</span>
-<span class="lineNum">     903 </span>                :<span class="lineNoCov">          0 :                  m_ginpoel[ mark+tk::lpofa[f][1] ],</span>
-<span class="lineNum">     904 </span>                :<span class="lineNoCov">          0 :                  m_ginpoel[ mark+tk::lpofa[f][2] ] }};</span>
-<span class="lineNum">     905 </span>                :<span class="lineNoCov">          0 :         Tet t{{ m_inpoel[mark+0], m_inpoel[mark+1],</span>
-<span class="lineNum">     906 </span>                :<span class="lineNoCov">          0 :                 m_inpoel[mark+2], m_inpoel[mark+3] }};</span>
-<span class="lineNum">     907 </span>                :            :         // associate tet id adjacent to boundary face to boundary face, at this
-<span class="lineNum">     908 </span>                :            :         // point we fill in -1 for the side set id, since we don't know it yet
-<span class="lineNum">     909 </span>                :            :         auto i = invtets.find( t );
-<span class="lineNum">     910 </span>                :            :         Assert( i != end(invtets), &quot;Tet not found in AMR object&quot; );
-<span class="lineNum">     911 </span>                :<span class="lineNoCov">          0 :         bnd[ b ] = { -1, i-&gt;second };</span>
-<span class="lineNum">     912 </span>                :            :       }
-<span class="lineNum">     913 </span>                :            :     }
-<span class="lineNum">     914 </span>                :            :   }
-<span class="lineNum">     915 </span>                :            : 
-<span class="lineNum">     916 </span>                :            :   // Assign side set ids to faces on the physical boundary only. Note that
-<span class="lineNum">     917 </span>                :            :   // m_belem may be empty and that is okay, in that case bnd will contain data
-<span class="lineNum">     918 </span>                :            :   // on both chare as well as physical boundaries and the side set id in the map
-<span class="lineNum">     919 </span>                :            :   // value will stay at -1.
-<span class="lineNum">     920 </span>                :<span class="lineNoCov">          0 :   for (const auto&amp; ss : m_belem)  // for all phsyical boundaries (sidesets)</span>
-<span class="lineNum">     921 </span>                :<span class="lineNoCov">          0 :     for (auto f : ss.second) {    // for all faces on this physical boundary</span>
-<span class="lineNum">     922 </span>                :<span class="lineNoCov">          0 :       Face t{{ m_triinpoel[f*3+0], m_triinpoel[f*3+1], m_triinpoel[f*3+2] }};</span>
-<span class="lineNum">     923 </span>                :            :       auto cf = bnd.find( t );
-<span class="lineNum">     924 </span>                :<span class="lineNoCov">          0 :       if (cf != end(bnd)) cf-&gt;second.first = ss.first;</span>
-<span class="lineNum">     925 </span>                :            :     }
-<span class="lineNum">     926 </span>                :            : 
-<span class="lineNum">     927 </span>                :            :   // Remove chare-boundary faces (to which the above loop did not assign set
-<span class="lineNum">     928 </span>                :            :   // id), but only if the above loop was run, i.e., if m_belem was not empty.
-<span class="lineNum">     929 </span>                :            :   // This results in removing the chare-boundary faces keeping only the physical
-<span class="lineNum">     930 </span>                :            :   // boundary faces (and their associated side set id and tet id).
-<span class="lineNum">     931 </span>                :<span class="lineNoCov">          0 :   if (!m_belem.empty()) {</span>
-<span class="lineNum">     932 </span>                :            :     auto bndcopy = bnd;
-<span class="lineNum">     933 </span>                :<span class="lineNoCov">          0 :     for (const auto&amp; f : bndcopy) if (f.second.first == -1) bnd.erase( f.first );</span>
-<span class="lineNum">     934 </span>                :            :   }
-<span class="lineNum">     935 </span>                :            : 
-<span class="lineNum">     936 </span>                :<span class="lineNoCov">          0 :   return bnd;</span>
-<span class="lineNum">     937 </span>                :            : }
-<span class="lineNum">     938 </span>                :            : 
-<span class="lineNum">     939 </span>                :            : void
-<span class="lineNum">     940 </span>                :<span class="lineNoCov">          0 : Refiner::updateBndMesh( const std::unordered_set&lt; std::size_t &gt;&amp; old,</span>
-<span class="lineNum">     941 </span>                :            :                         const std::unordered_set&lt; std::size_t &gt;&amp; ref )
-<span class="lineNum">     942 </span>                :            : // *****************************************************************************
-<span class="lineNum">     943 </span>                :            : // Update boundary data structures after mesh refinement
-<span class="lineNum">     944 </span>                :            : //! \param[in] old Unique nodes of the old (unrefined) mesh using local ids
-<span class="lineNum">     945 </span>                :            : //! \param[in] ref Unique nodes of the refined mesh using local ids
-<span class="lineNum">     946 </span>                :            : // *****************************************************************************
-<span class="lineNum">     947 </span>                :            : {
-<span class="lineNum">     948 </span>                :            :   // generate boundary data structure after mesh refinement
-<span class="lineNum">     949 </span>                :<span class="lineNoCov">          0 :   auto bnd = boundary();</span>
-<span class="lineNum">     950 </span>                :            : 
-<span class="lineNum">     951 </span>                :            :   // regerate boundary faces and nodes after mesh refinement
-<span class="lineNum">     952 </span>                :<span class="lineNoCov">          0 :   updateBndFaces( old, ref, bnd );</span>
-<span class="lineNum">     953 </span>                :<span class="lineNoCov">          0 :   updateBndNodes( old, ref, bnd );</span>
-<span class="lineNum">     954 </span>                :<span class="lineNoCov">          0 : }</span>
-<span class="lineNum">     955 </span>                :            : 
-<span class="lineNum">     956 </span>                :            : void
-<span class="lineNum">     957 </span>                :<span class="lineNoCov">          0 : Refiner::updateBndFaces( const std::unordered_set&lt; std::size_t &gt;&amp; old,</span>
-<span class="lineNum">     958 </span>                :            :                          const std::unordered_set&lt; std::size_t &gt;&amp; ref,
-<span class="lineNum">     959 </span>                :            :                          const BndFaces&amp; bnd )
-<span class="lineNum">     960 </span>                :            : // *****************************************************************************
-<span class="lineNum">     961 </span>                :            : // Regenerate boundary faces after mesh refinement step
-<span class="lineNum">     962 </span>                :            : //! \param[in] old Unique nodes of the old (unrefined) mesh using local ids
-<span class="lineNum">     963 </span>                :            : //! \param[in] ref Unique nodes of the refined mesh using local ids
-<span class="lineNum">     964 </span>                :            : //! \param[in] bnd Boundary face map, associating a pair of side set id and
-<span class="lineNum">     965 </span>                :            : //!   adjacent tet id to a boundary triangle face
-<span class="lineNum">     966 </span>                :            : // *****************************************************************************
-<span class="lineNum">     967 </span>                :            : {
-<span class="lineNum">     968 </span>                :            :   IGNORE(ref);  // to avoid compiler warning when asserts are optimized away
-<span class="lineNum">     969 </span>                :            : 
-<span class="lineNum">     970 </span>                :            :   using Face = tk::UnsMesh::Face;
-<span class="lineNum">     971 </span>                :            : 
-<span class="lineNum">     972 </span>                :            :   // storage for boundary faces associated to side-set IDs of the refined mesh
-<span class="lineNum">     973 </span>                :            :   decltype(m_belem) belem;              // will become m_belem
-<span class="lineNum">     974 </span>                :            :   // storage for boundary faces-node connectivity of the refined mesh
-<span class="lineNum">     975 </span>                :            :   decltype(m_triinpoel) triinpoel;      // will become m_triinpoel
-<span class="lineNum">     976 </span>                :            :   // face id counter
-<span class="lineNum">     977 </span>                :<span class="lineNoCov">          0 :   std::size_t facecnt = 0;</span>
-<span class="lineNum">     978 </span>                :            : 
-<span class="lineNum">     979 </span>                :            :   // Lambda to associate a boundary face and connectivity to a side set.
-<span class="lineNum">     980 </span>                :            :   // Parameter 's' is the list of faces (ids) to add new face to. Parameter 'f'
-<a name="981"><span class="lineNum">     981 </span>                :            :   // is the triangle face connecttivity to add.</a>
-<span class="lineNum">     982 </span>                :            :   auto addBndFace = [ &amp;facecnt, &amp;triinpoel ]
-<span class="lineNum">     983 </span>                :<span class="lineNoCov">          0 :                     ( std::vector&lt; std::size_t &gt;&amp; s, const Face&amp; f )</span>
-<span class="lineNum">     984 </span>                :            :   {
-<span class="lineNum">     985 </span>                :<span class="lineNoCov">          0 :     s.push_back( facecnt++ );</span>
-<span class="lineNum">     986 </span>                :<span class="lineNoCov">          0 :     triinpoel.insert( end(triinpoel), begin(f), end(f) );</span>
-<span class="lineNum">     987 </span>                :<span class="lineNoCov">          0 :   };</span>
-<span class="lineNum">     988 </span>                :            : 
-<span class="lineNum">     989 </span>                :            :   // Lambda to find the nodes of the parent face of a child face. Argument
-<span class="lineNum">     990 </span>                :            :   // 'face' denotes the node ids of the child face whose parent face we are
-<span class="lineNum">     991 </span>                :            :   // looking for. This search may find 3 or 4 parent nodes, depending on whether
-<span class="lineNum">     992 </span>                :            :   // the child shares or does not share a face with the parent tet,
-<span class="lineNum">     993 </span>                :            :   // respectively.
-<span class="lineNum">     994 </span>                :<span class="lineNoCov">          0 :   auto parentFace = [ &amp;old, this ]( const Face&amp; face ){</span>
-<span class="lineNum">     995 </span>                :<span class="lineNoCov">          0 :     std::unordered_set&lt; std::size_t &gt; s;// will store nodes of parent face</span>
-<span class="lineNum">     996 </span>                :<span class="lineNoCov">          0 :     for (auto n : face) {               // for all 3 nodes of the face</span>
-<span class="lineNum">     997 </span>                :<span class="lineNoCov">          0 :       if (old.find(n) != end(old))      // if child node found in old mesh,</span>
-<span class="lineNum">     998 </span>                :            :         s.insert( n );                  // that node is also in the parent face
-<span class="lineNum">     999 </span>                :            :       else {                            // if child node is a newly added one
-<span class="lineNum">    1000 </span>                :            :         // find its parent nodes and store both uniquely
-<span class="lineNum">    1001 </span>                :<span class="lineNoCov">          0 :         auto p = this-&gt;m_refiner.node_connectivity.get( n );</span>
-<span class="lineNum">    1002 </span>                :            :         s.insert( begin(p), end(p) );
-<span class="lineNum">    1003 </span>                :            :       }
-<span class="lineNum">    1004 </span>                :            :     }
-<span class="lineNum">    1005 </span>                :            :     // Ensure the number of parent nodes are correct
-<span class="lineNum">    1006 </span>                :            :     Assert( s.size() == 3 || s.size() == 4,
-<span class="lineNum">    1007 </span>                :            :             &quot;Parent node list length must be 3 or 4&quot; );
-<span class="lineNum">    1008 </span>                :            :     // Ensure all parent nodes are part of the old (unrefined) mesh
-<span class="lineNum">    1009 </span>                :            :     Assert( std::all_of( begin(s), end(s), [ &amp;old ]( std::size_t j ){
-<span class="lineNum">    1010 </span>                :            :                            return old.find(j) != end(old); } ),
-<span class="lineNum">    1011 </span>                :            :             &quot;Old face nodes not in old mesh&quot; );
-<span class="lineNum">    1012 </span>                :            :     // Return unique set of nodes of the parent face of child face
-<span class="lineNum">    1013 </span>                :<span class="lineNoCov">          0 :     return s;</span>
-<span class="lineNum">    1014 </span>                :<span class="lineNoCov">          0 :   };</span>
-<span class="lineNum">    1015 </span>                :            : 
-<span class="lineNum">    1016 </span>                :            :   // Regenerate boundary faces after refinement step
-<span class="lineNum">    1017 </span>                :<span class="lineNoCov">          0 :   for (const auto&amp; f : bnd)     // for all boundary faces</span>
-<span class="lineNum">    1018 </span>                :<span class="lineNoCov">          0 :     if (f.second.first != -1) { // for all physical boundary faces</span>
-<span class="lineNum">    1019 </span>                :            :       // construct face of old mesh boundary face using local ids
-<span class="lineNum">    1020 </span>                :<span class="lineNoCov">          0 :       Face oldface{{ tk::cref_find( m_lid, f.first[0] ),</span>
-<span class="lineNum">    1021 </span>                :<span class="lineNoCov">          0 :                      tk::cref_find( m_lid, f.first[1] ),</span>
-<span class="lineNum">    1022 </span>                :<span class="lineNoCov">          0 :                      tk::cref_find( m_lid, f.first[2] ) }};</span>
-<span class="lineNum">    1023 </span>                :            :       // will associate to side set id of old (unrefined) mesh boundary face
-<span class="lineNum">    1024 </span>                :<span class="lineNoCov">          0 :       auto&amp; sideface = belem[ f.second.first ];</span>
-<span class="lineNum">    1025 </span>                :            :       // query number of children of boundary tet adjacent to boundary face
-<span class="lineNum">    1026 </span>                :<span class="lineNoCov">          0 :       auto nc = m_refiner.tet_store.data( f.second.second ).num_children;</span>
-<span class="lineNum">    1027 </span>                :<span class="lineNoCov">          0 :       if (nc == 0) {    // if boundary tet is not refined, add its boundary face</span>
-<span class="lineNum">    1028 </span>                :<span class="lineNoCov">          0 :         addBndFace( sideface, f.first );</span>
-<span class="lineNum">    1029 </span>                :            :       } else {          // if boundary tet is refined
-<span class="lineNum">    1030 </span>                :            :         const auto&amp; tets = m_refiner.tet_store.tets;
-<span class="lineNum">    1031 </span>                :<span class="lineNoCov">          0 :         for (decltype(nc) i=0; i&lt;nc; ++i ) {      // for all child tets</span>
-<span class="lineNum">    1032 </span>                :            :           // get child tet id
-<span class="lineNum">    1033 </span>                :<span class="lineNoCov">          0 :           auto childtet = m_refiner.tet_store.get_child_id( f.second.second, i );</span>
-<span class="lineNum">    1034 </span>                :            :           auto ct = tets.find( childtet );
-<span class="lineNum">    1035 </span>                :            :           Assert( ct != end(tets), &quot;Child tet not found&quot; );
-<span class="lineNum">    1036 </span>                :            :           // ensure all nodes of child tet are in refined mesh
-<span class="lineNum">    1037 </span>                :            :           Assert( ref.find(ct-&gt;second[0]) != end(ref) &amp;&amp;
-<span class="lineNum">    1038 </span>                :            :                   ref.find(ct-&gt;second[1]) != end(ref) &amp;&amp;
-<span class="lineNum">    1039 </span>                :            :                   ref.find(ct-&gt;second[2]) != end(ref) &amp;&amp;
-<span class="lineNum">    1040 </span>                :            :                   ref.find(ct-&gt;second[3]) != end(ref),
-<span class="lineNum">    1041 </span>                :            :                   &quot;Boundary child tet node id not found in refined mesh&quot; );
-<span class="lineNum">    1042 </span>                :            :           // get nodes of child tet
-<span class="lineNum">    1043 </span>                :<span class="lineNoCov">          0 :           auto A = ct-&gt;second[0];</span>
-<span class="lineNum">    1044 </span>                :<span class="lineNoCov">          0 :           auto B = ct-&gt;second[1];</span>
-<span class="lineNum">    1045 </span>                :<span class="lineNoCov">          0 :           auto C = ct-&gt;second[2];</span>
-<span class="lineNum">    1046 </span>                :<span class="lineNoCov">          0 :           auto D = ct-&gt;second[3];</span>
-<span class="lineNum">    1047 </span>                :            :           // form all 4 faces of child tet
-<span class="lineNum">    1048 </span>                :<span class="lineNoCov">          0 :           std::array&lt;Face,4&gt; face{{{{A,C,B}}, {{A,B,D}}, {{A,D,C}}, {{B,C,D}}}};</span>
-<span class="lineNum">    1049 </span>                :<span class="lineNoCov">          0 :           for (const auto&amp; rf : face) {   // for all faces of child tet</span>
-<span class="lineNum">    1050 </span>                :            :             // find nodes of the parent face of child face
-<span class="lineNum">    1051 </span>                :<span class="lineNoCov">          0 :             auto parfac = parentFace( rf );</span>
-<span class="lineNum">    1052 </span>                :            :             // if the child shares a face with its parent and all 3 nodes of the
-<span class="lineNum">    1053 </span>                :            :             // parent face of the child's face are the same, the child face is
-<span class="lineNum">    1054 </span>                :            :             // on the same boundary as the parent face
-<span class="lineNum">    1055 </span>                :<span class="lineNoCov">          0 :             if ( parfac.size() == 3 &amp;&amp;</span>
-<span class="lineNum">    1056 </span>                :<span class="lineNoCov">          0 :                  parfac.find(oldface[0]) != end(parfac) &amp;&amp;</span>
-<span class="lineNum">    1057 </span>                :<span class="lineNoCov">          0 :                  parfac.find(oldface[1]) != end(parfac) &amp;&amp;</span>
-<span class="lineNum">    1058 </span>                :            :                  parfac.find(oldface[2]) != end(parfac) )
-<span class="lineNum">    1059 </span>                :            :             {
-<span class="lineNum">    1060 </span>                :<span class="lineNoCov">          0 :               addBndFace(sideface, {{m_gid[rf[2]],m_gid[rf[1]],m_gid[rf[0]]}});</span>
-<span class="lineNum">    1061 </span>                :            :             }
-<span class="lineNum">    1062 </span>                :            :           }
-<span class="lineNum">    1063 </span>                :            :         }
-<span class="lineNum">    1064 </span>                :            :       }
-<span class="lineNum">    1065 </span>                :            :     }
-<span class="lineNum">    1066 </span>                :            : 
-<span class="lineNum">    1067 </span>                :            :   // Update boundary face data structures
-<span class="lineNum">    1068 </span>                :<span class="lineNoCov">          0 :   m_belem = std::move(belem);</span>
-<span class="lineNum">    1069 </span>                :<span class="lineNoCov">          0 :   m_triinpoel = std::move(triinpoel);</span>
-<span class="lineNum">    1070 </span>                :<span class="lineNoCov">          0 : }</span>
-<span class="lineNum">    1071 </span>                :            : 
-<span class="lineNum">    1072 </span>                :            : void
-<span class="lineNum">    1073 </span>                :<span class="lineNoCov">          0 : Refiner::updateBndNodes( const std::unordered_set&lt; std::size_t &gt;&amp; old,</span>
-<span class="lineNum">    1074 </span>                :            :                          const std::unordered_set&lt; std::size_t &gt;&amp; ref,
-<span class="lineNum">    1075 </span>                :            :                          const BndFaces&amp; bnd )
-<span class="lineNum">    1076 </span>                :            : // *****************************************************************************
-<span class="lineNum">    1077 </span>                :            : // Update boundary nodes after mesh refinement
-<span class="lineNum">    1078 </span>                :            : //! \param[in] old Unique nodes of the old (unrefined) mesh using local ids
-<span class="lineNum">    1079 </span>                :            : //! \param[in] ref Unique nodes of the refined mesh using local ids
-<span class="lineNum">    1080 </span>                :            : //! \param[in] bnd Boundary face map, associating a pair of side set id and
-<span class="lineNum">    1081 </span>                :            : //!   adjacent tet id to a boundary triangle face
-<span class="lineNum">    1082 </span>                :            : // *****************************************************************************
-<span class="lineNum">    1083 </span>                :            : {
-<span class="lineNum">    1084 </span>                :            :   IGNORE(ref);  // to avoid compiler warning when asserts are optimized away
-<span class="lineNum">    1085 </span>                :            : 
-<span class="lineNum">    1086 </span>                :            :   using Edge = tk::UnsMesh::Edge;
-<span class="lineNum">    1087 </span>                :            : 
-<span class="lineNum">    1088 </span>                :            :   // storage for boundary nodes associated to side-set IDs of the refined mesh
-<span class="lineNum">    1089 </span>                :            :   decltype(m_bnode) bnode;              // will become m_node
-<span class="lineNum">    1090 </span>                :            : 
-<span class="lineNum">    1091 </span>                :            :   // Generate unique set of nodes for each side set
-<span class="lineNum">    1092 </span>                :<span class="lineNoCov">          0 :   std::unordered_map&lt; int, std::unordered_set&lt; std::size_t &gt; &gt; bnodeset;</span>
-<span class="lineNum">    1093 </span>                :<span class="lineNoCov">          0 :   for (const auto&amp; ss : m_bnode)  // for all phsyical boundaries (sidesets)</span>
-<span class="lineNum">    1094 </span>                :<span class="lineNoCov">          0 :     bnodeset[ ss.first ].insert( begin(ss.second), end(ss.second) );</span>
-<a name="1095"><span class="lineNum">    1095 </span>                :            : </a>
-<span class="lineNum">    1096 </span>                :            :   // Lambda to find the nodes of the parent edge of a node
-<span class="lineNum">    1097 </span>                :<span class="lineNoCov">          0 :   auto parentEdge = [ &amp;old, this ]( std::size_t c ) -&gt; Edge {</span>
-<span class="lineNum">    1098 </span>                :<span class="lineNoCov">          0 :     if (old.find(c) != end(old)) // if node is in old mesh, return doubled input</span>
-<span class="lineNum">    1099 </span>                :<span class="lineNoCov">          0 :       return {{ c, c }};</span>
-<span class="lineNum">    1100 </span>                :            :     else
-<span class="lineNum">    1101 </span>                :<span class="lineNoCov">          0 :       return this-&gt;m_refiner.node_connectivity.get( c );</span>
-<span class="lineNum">    1102 </span>                :<span class="lineNoCov">          0 :   };</span>
-<span class="lineNum">    1103 </span>                :            : 
-<span class="lineNum">    1104 </span>                :            :   // Lambda to find a global node ID among the nodelists of side sets. Return -1
-<span class="lineNum">    1105 </span>                :            :   // if not found, or all the side set ids in which the node is found.
-<span class="lineNum">    1106 </span>                :<span class="lineNoCov">          0 :   auto bndNode = [ &amp;bnodeset ]( std::size_t p ){</span>
-<span class="lineNum">    1107 </span>                :            :     std::vector&lt; int &gt; ss;
-<span class="lineNum">    1108 </span>                :<span class="lineNoCov">          0 :     for (const auto&amp; s : bnodeset)  // for all phsyical boundaries (sidesets)</span>
-<span class="lineNum">    1109 </span>                :<span class="lineNoCov">          0 :       if (s.second.find(p) != end(s.second))</span>
-<span class="lineNum">    1110 </span>                :<span class="lineNoCov">          0 :         ss.push_back( s.first );</span>
-<span class="lineNum">    1111 </span>                :<span class="lineNoCov">          0 :     return ss;</span>
-<span class="lineNum">    1112 </span>                :<span class="lineNoCov">          0 :   };</span>
-<span class="lineNum">    1113 </span>                :            : 
-<span class="lineNum">    1114 </span>                :            : 
-<span class="lineNum">    1115 </span>                :            :   // Regenerate boundary node lists after refinement step
-<span class="lineNum">    1116 </span>                :<span class="lineNoCov">          0 :   for (const auto&amp; f : bnd) {</span>
-<span class="lineNum">    1117 </span>                :            :     // query number of children of boundary tet adjacent to boundary face
-<span class="lineNum">    1118 </span>                :<span class="lineNoCov">          0 :     auto nc = m_refiner.tet_store.data( f.second.second ).num_children;</span>
-<span class="lineNum">    1119 </span>                :<span class="lineNoCov">          0 :     if (nc == 0) {      // if boundary tet is not refined, add its boundary face</span>
-<span class="lineNum">    1120 </span>                :<span class="lineNoCov">          0 :       for (auto n : f.first) {</span>
-<span class="lineNum">    1121 </span>                :<span class="lineNoCov">          0 :         auto ss = bndNode( n );</span>
-<span class="lineNum">    1122 </span>                :<span class="lineNoCov">          0 :         for (auto s : ss) if (s != -1) bnode[ s ].push_back( n );</span>
-<span class="lineNum">    1123 </span>                :            :       }
-<span class="lineNum">    1124 </span>                :            :     } else {            // if boundary tet is refined
-<span class="lineNum">    1125 </span>                :            :       const auto&amp; tets = m_refiner.tet_store.tets;
-<span class="lineNum">    1126 </span>                :<span class="lineNoCov">          0 :       for (decltype(nc) i=0; i&lt;nc; ++i ) {      // for all child tets</span>
-<span class="lineNum">    1127 </span>                :            :         // get child tet id
-<span class="lineNum">    1128 </span>                :<span class="lineNoCov">          0 :         auto childtet = m_refiner.tet_store.get_child_id( f.second.second, i );</span>
-<span class="lineNum">    1129 </span>                :            :         auto ct = tets.find( childtet );
-<span class="lineNum">    1130 </span>                :            :         Assert( ct != end(tets), &quot;Child tet not found&quot; );
-<span class="lineNum">    1131 </span>                :            :         // ensure all nodes of child tet are in refined mesh
-<span class="lineNum">    1132 </span>                :            :         Assert( ref.find(ct-&gt;second[0]) != end(ref) &amp;&amp;
-<span class="lineNum">    1133 </span>                :            :                 ref.find(ct-&gt;second[1]) != end(ref) &amp;&amp;
-<span class="lineNum">    1134 </span>                :            :                 ref.find(ct-&gt;second[2]) != end(ref) &amp;&amp;
-<span class="lineNum">    1135 </span>                :            :                 ref.find(ct-&gt;second[3]) != end(ref),
-<span class="lineNum">    1136 </span>                :            :                 &quot;Boundary child tet node id not found in refined mesh&quot; );
-<span class="lineNum">    1137 </span>                :            :         // get nodes of child tet
-<span class="lineNum">    1138 </span>                :<span class="lineNoCov">          0 :         auto A = ct-&gt;second[0];</span>
-<span class="lineNum">    1139 </span>                :<span class="lineNoCov">          0 :         auto B = ct-&gt;second[1];</span>
-<span class="lineNum">    1140 </span>                :<span class="lineNoCov">          0 :         auto C = ct-&gt;second[2];</span>
-<span class="lineNum">    1141 </span>                :<span class="lineNoCov">          0 :         auto D = ct-&gt;second[3];</span>
-<span class="lineNum">    1142 </span>                :            :         // form all 6 edges of child tet
-<span class="lineNum">    1143 </span>                :            :         std::array&lt;Edge,6&gt; edge{{ {{A,B}}, {{B,C}}, {{A,C}},
-<span class="lineNum">    1144 </span>                :<span class="lineNoCov">          0 :                                   {{A,D}}, {{B,D}}, {{C,D}} }};</span>
-<span class="lineNum">    1145 </span>                :<span class="lineNoCov">          0 :         for (const auto&amp; re : edge)</span>
-<span class="lineNum">    1146 </span>                :<span class="lineNoCov">          0 :           for (auto c : re) {</span>
-<span class="lineNum">    1147 </span>                :<span class="lineNoCov">          0 :             auto p = parentEdge( c );</span>
-<span class="lineNum">    1148 </span>                :<span class="lineNoCov">          0 :             auto ss1 = bndNode( m_gid[p[0]] );</span>
-<span class="lineNum">    1149 </span>                :<span class="lineNoCov">          0 :             auto ss2 = bndNode( m_gid[p[1]] );</span>
-<span class="lineNum">    1150 </span>                :<span class="lineNoCov">          0 :             for (auto s1 : ss1)</span>
-<span class="lineNum">    1151 </span>                :<span class="lineNoCov">          0 :               for (auto s2 : ss2)</span>
-<span class="lineNum">    1152 </span>                :<span class="lineNoCov">          0 :                 if (s1 != -1 &amp;&amp; s2 != -1 &amp;&amp; s1 == s2)</span>
-<span class="lineNum">    1153 </span>                :<span class="lineNoCov">          0 :                   bnode[ s1 ].push_back( m_gid[c] );</span>
-<span class="lineNum">    1154 </span>                :            :           }
-<span class="lineNum">    1155 </span>                :            :       }
-<span class="lineNum">    1156 </span>                :            :     }
-<span class="lineNum">    1157 </span>                :            :   }
-<span class="lineNum">    1158 </span>                :            : 
-<span class="lineNum">    1159 </span>                :            :   // Make boundary node IDs unique for each physical boundary (side set)
-<span class="lineNum">    1160 </span>                :<span class="lineNoCov">          0 :   for (auto&amp; s : bnode) tk::unique( s.second );</span>
-<span class="lineNum">    1161 </span>                :            : 
-<span class="lineNum">    1162 </span>                :            :   // Update boundary node lists
-<span class="lineNum">    1163 </span>                :<span class="lineNoCov">          0 :   m_bnode = std::move(bnode);</span>
-<span class="lineNum">    1164 </span>                :<span class="lineNoCov">          0 : }</span>
-<span class="lineNum">    1165 </span>                :            : 
-<span class="lineNum">    1166 </span>                :            : #include &quot;NoWarning/refiner.def.h&quot;
+<span class="lineNum">     856 </span>                :            :               &quot;Hash collision: ID already exist&quot; );
+<span class="lineNum">     857 </span>                :            :       // assign new global ids to local-&gt;global and to global-&gt;local maps
+<span class="lineNum">     858 </span>                :<span class="lineNoCov">          0 :       m_gid[r] = g;</span>
+<span class="lineNum">     859 </span>                :            :       Assert( m_lid.find(g) == end(m_lid),
+<span class="lineNum">     860 </span>                :            :               &quot;Overwriting entry global-&gt;local node ID map&quot; );
+<span class="lineNum">     861 </span>                :<span class="lineNoCov">          0 :       m_lid[g] = r;</span>
+<span class="lineNum">     862 </span>                :            :       // assign new coordinates to new global node id
+<span class="lineNum">     863 </span>                :            :       Assert( m_coordmap.find(g) == end(m_coordmap),
+<span class="lineNum">     864 </span>                :            :               &quot;Overwriting entry coordmap&quot; );
+<span class="lineNum">     865 </span>                :<span class="lineNoCov">          0 :       m_coordmap.insert( {g, {{x[r], y[r], z[r]}}} );</span>
+<span class="lineNum">     866 </span>                :            :       // assign new coordinates and new global node id to global parent id pair
+<span class="lineNum">     867 </span>                :<span class="lineNoCov">          0 :       m_edgenode[ gp ] = std::make_tuple( g, x[r], y[r], z[r] );</span>
+<span class="lineNum">     868 </span>                :            :     }
+<span class="lineNum">     869 </span>                :            :   }
+<span class="lineNum">     870 </span>                :            : 
+<span class="lineNum">     871 </span>                :            :   Assert( m_gid.size() == m_lid.size(), &quot;Size mismatch&quot; );
+<span class="lineNum">     872 </span>                :            : 
+<span class="lineNum">     873 </span>                :            :   Assert( std::none_of( begin(m_gid), end(m_gid), [](std::size_t i){
+<span class="lineNum">     874 </span>                :            :             return i == std::numeric_limits&lt; std::size_t &gt;::max(); } ),
+<span class="lineNum">     875 </span>                :            :           &quot;Not all local-&gt;global node IDs have been assigned&quot; );
+<span class="lineNum">     876 </span>                :<span class="lineNoCov">          0 : }</span>
+<span class="lineNum">     877 </span>                :            : 
+<span class="lineNum">     878 </span>                :            : Refiner::BndFaces
+<span class="lineNum">     879 </span>                :<span class="lineNoCov">          0 : Refiner::boundary()</span>
+<span class="lineNum">     880 </span>                :            : // *****************************************************************************
+<span class="lineNum">     881 </span>                :            : // Generate boundary data structure
+<span class="lineNum">     882 </span>                :            : //! \return Map associating a pair of side set id and adjacent tet id (value)
+<span class="lineNum">     883 </span>                :            : //!   to a partition-boundary triangle face (key) given by three global node IDs
+<span class="lineNum">     884 </span>                :            : //! \details This is used to regenerate physical boundary face and node data
+<span class="lineNum">     885 </span>                :            : //!   structures after refinement, see updateBoundaryMesh().
+<span class="lineNum">     886 </span>                :            : // *****************************************************************************
+<span class="lineNum">     887 </span>                :            : {
+<span class="lineNum">     888 </span>                :            :   using Face = tk::UnsMesh::Face;
+<span class="lineNum">     889 </span>                :            :   using Tet = tk::UnsMesh::Tet;
+<span class="lineNum">     890 </span>                :            : 
+<span class="lineNum">     891 </span>                :            :   // Generate the inverse of AMR's tets map
+<span class="lineNum">     892 </span>                :            :   std::unordered_map&lt; Tet,
+<span class="lineNum">     893 </span>                :            :                       std::size_t,
+<span class="lineNum">     894 </span>                :            :                       tk::UnsMesh::Hash&lt;4&gt;,
+<span class="lineNum">     895 </span>                :<span class="lineNoCov">          0 :                       tk::UnsMesh::Eq&lt;4&gt; &gt; invtets;</span>
+<span class="lineNum">     896 </span>                :<span class="lineNoCov">          0 :   for (const auto&amp; t : m_refiner.tet_store.tets) invtets[ t.second ] = t.first;</span>
+<span class="lineNum">     897 </span>                :            : 
+<span class="lineNum">     898 </span>                :            :   // Generate data structure that associates the pair of side set id and
+<span class="lineNum">     899 </span>                :            :   // adjacent tet id to a boundary triangle face for all boundary faces. After
+<span class="lineNum">     900 </span>                :            :   // this loop we will have all tets adjacent to boundary faces, where the
+<span class="lineNum">     901 </span>                :            :   // boundary includes all physical boundaries (where the user may assign
+<span class="lineNum">     902 </span>                :            :   // boundary conditions via side sets from the mesh file) as well as
+<span class="lineNum">     903 </span>                :            :   // chare-boundaries due to domain decomposition.
+<span class="lineNum">     904 </span>                :<span class="lineNoCov">          0 :   BndFaces bnd;</span>
+<span class="lineNum">     905 </span>                :<span class="lineNoCov">          0 :   auto oldesuel = tk::genEsuelTet( m_inpoel, tk::genEsup(m_inpoel,4) );</span>
+<span class="lineNum">     906 </span>                :<span class="lineNoCov">          0 :   for (std::size_t e=0; e&lt;oldesuel.size()/4; ++e) {    // for tets on this chare</span>
+<span class="lineNum">     907 </span>                :<span class="lineNoCov">          0 :     auto mark = e*4;</span>
+<span class="lineNum">     908 </span>                :<span class="lineNoCov">          0 :     for (std::size_t f=0; f&lt;4; ++f) {</span>
+<span class="lineNum">     909 </span>                :<span class="lineNoCov">          0 :       if (oldesuel[mark+f] == -1) {  // if a face does not have an adjacent tet</span>
+<span class="lineNum">     910 </span>                :<span class="lineNoCov">          0 :         Face b{{ m_ginpoel[ mark+tk::lpofa[f][0] ],</span>
+<span class="lineNum">     911 </span>                :<span class="lineNoCov">          0 :                  m_ginpoel[ mark+tk::lpofa[f][1] ],</span>
+<span class="lineNum">     912 </span>                :<span class="lineNoCov">          0 :                  m_ginpoel[ mark+tk::lpofa[f][2] ] }};</span>
+<span class="lineNum">     913 </span>                :<span class="lineNoCov">          0 :         Tet t{{ m_inpoel[mark+0], m_inpoel[mark+1],</span>
+<span class="lineNum">     914 </span>                :<span class="lineNoCov">          0 :                 m_inpoel[mark+2], m_inpoel[mark+3] }};</span>
+<span class="lineNum">     915 </span>                :            :         // associate tet id adjacent to boundary face to boundary face, at this
+<span class="lineNum">     916 </span>                :            :         // point we fill in -1 for the side set id, since we don't know it yet
+<span class="lineNum">     917 </span>                :            :         auto i = invtets.find( t );
+<span class="lineNum">     918 </span>                :            :         Assert( i != end(invtets), &quot;Tet not found in AMR object&quot; );
+<span class="lineNum">     919 </span>                :<span class="lineNoCov">          0 :         bnd[ b ] = { -1, i-&gt;second };</span>
+<span class="lineNum">     920 </span>                :            :       }
+<span class="lineNum">     921 </span>                :            :     }
+<span class="lineNum">     922 </span>                :            :   }
+<span class="lineNum">     923 </span>                :            : 
+<span class="lineNum">     924 </span>                :            :   // Assign side set ids to faces on the physical boundary only. Note that
+<span class="lineNum">     925 </span>                :            :   // m_belem may be empty and that is okay, in that case bnd will contain data
+<span class="lineNum">     926 </span>                :            :   // on both chare as well as physical boundaries and the side set id in the map
+<span class="lineNum">     927 </span>                :            :   // value will stay at -1.
+<span class="lineNum">     928 </span>                :<span class="lineNoCov">          0 :   for (const auto&amp; ss : m_belem)  // for all phsyical boundaries (sidesets)</span>
+<span class="lineNum">     929 </span>                :<span class="lineNoCov">          0 :     for (auto f : ss.second) {    // for all faces on this physical boundary</span>
+<span class="lineNum">     930 </span>                :<span class="lineNoCov">          0 :       Face t{{ m_triinpoel[f*3+0], m_triinpoel[f*3+1], m_triinpoel[f*3+2] }};</span>
+<span class="lineNum">     931 </span>                :            :       auto cf = bnd.find( t );
+<span class="lineNum">     932 </span>                :<span class="lineNoCov">          0 :       if (cf != end(bnd)) cf-&gt;second.first = ss.first;</span>
+<span class="lineNum">     933 </span>                :            :     }
+<span class="lineNum">     934 </span>                :            : 
+<span class="lineNum">     935 </span>                :            :   // Remove chare-boundary faces (to which the above loop did not assign set
+<span class="lineNum">     936 </span>                :            :   // id), but only if the above loop was run, i.e., if m_belem was not empty.
+<span class="lineNum">     937 </span>                :            :   // This results in removing the chare-boundary faces keeping only the physical
+<span class="lineNum">     938 </span>                :            :   // boundary faces (and their associated side set id and tet id).
+<span class="lineNum">     939 </span>                :<span class="lineNoCov">          0 :   if (!m_belem.empty()) {</span>
+<span class="lineNum">     940 </span>                :            :     auto bndcopy = bnd;
+<span class="lineNum">     941 </span>                :<span class="lineNoCov">          0 :     for (const auto&amp; f : bndcopy) if (f.second.first == -1) bnd.erase( f.first );</span>
+<span class="lineNum">     942 </span>                :            :   }
+<span class="lineNum">     943 </span>                :            : 
+<span class="lineNum">     944 </span>                :<span class="lineNoCov">          0 :   return bnd;</span>
+<span class="lineNum">     945 </span>                :            : }
+<span class="lineNum">     946 </span>                :            : 
+<span class="lineNum">     947 </span>                :            : void
+<span class="lineNum">     948 </span>                :<span class="lineNoCov">          0 : Refiner::updateBndMesh( const std::unordered_set&lt; std::size_t &gt;&amp; old,</span>
+<span class="lineNum">     949 </span>                :            :                         const std::unordered_set&lt; std::size_t &gt;&amp; ref )
+<span class="lineNum">     950 </span>                :            : // *****************************************************************************
+<span class="lineNum">     951 </span>                :            : // Update boundary data structures after mesh refinement
+<span class="lineNum">     952 </span>                :            : //! \param[in] old Unique nodes of the old (unrefined) mesh using local ids
+<span class="lineNum">     953 </span>                :            : //! \param[in] ref Unique nodes of the refined mesh using local ids
+<span class="lineNum">     954 </span>                :            : // *****************************************************************************
+<span class="lineNum">     955 </span>                :            : {
+<span class="lineNum">     956 </span>                :            :   // generate boundary data structure after mesh refinement
+<span class="lineNum">     957 </span>                :<span class="lineNoCov">          0 :   auto bnd = boundary();</span>
+<span class="lineNum">     958 </span>                :            : 
+<span class="lineNum">     959 </span>                :            :   // regerate boundary faces and nodes after mesh refinement
+<span class="lineNum">     960 </span>                :<span class="lineNoCov">          0 :   updateBndFaces( old, ref, bnd );</span>
+<span class="lineNum">     961 </span>                :<span class="lineNoCov">          0 :   updateBndNodes( old, ref, bnd );</span>
+<span class="lineNum">     962 </span>                :<span class="lineNoCov">          0 : }</span>
+<span class="lineNum">     963 </span>                :            : 
+<span class="lineNum">     964 </span>                :            : void
+<span class="lineNum">     965 </span>                :<span class="lineNoCov">          0 : Refiner::updateBndFaces( const std::unordered_set&lt; std::size_t &gt;&amp; old,</span>
+<span class="lineNum">     966 </span>                :            :                          const std::unordered_set&lt; std::size_t &gt;&amp; ref,
+<span class="lineNum">     967 </span>                :            :                          const BndFaces&amp; bnd )
+<span class="lineNum">     968 </span>                :            : // *****************************************************************************
+<span class="lineNum">     969 </span>                :            : // Regenerate boundary faces after mesh refinement step
+<span class="lineNum">     970 </span>                :            : //! \param[in] old Unique nodes of the old (unrefined) mesh using local ids
+<span class="lineNum">     971 </span>                :            : //! \param[in] ref Unique nodes of the refined mesh using local ids
+<span class="lineNum">     972 </span>                :            : //! \param[in] bnd Boundary face map, associating a pair of side set id and
+<span class="lineNum">     973 </span>                :            : //!   adjacent tet id to a boundary triangle face
+<span class="lineNum">     974 </span>                :            : // *****************************************************************************
+<span class="lineNum">     975 </span>                :            : {
+<span class="lineNum">     976 </span>                :            :   IGNORE(ref);  // to avoid compiler warning when asserts are optimized away
+<span class="lineNum">     977 </span>                :            : 
+<span class="lineNum">     978 </span>                :            :   using Face = tk::UnsMesh::Face;
+<span class="lineNum">     979 </span>                :            : 
+<span class="lineNum">     980 </span>                :            :   // storage for boundary faces associated to side-set IDs of the refined mesh
+<span class="lineNum">     981 </span>                :            :   decltype(m_belem) belem;              // will become m_belem
+<span class="lineNum">     982 </span>                :            :   // storage for boundary faces-node connectivity of the refined mesh
+<span class="lineNum">     983 </span>                :            :   decltype(m_triinpoel) triinpoel;      // will become m_triinpoel
+<span class="lineNum">     984 </span>                :            :   // face id counter
+<span class="lineNum">     985 </span>                :<span class="lineNoCov">          0 :   std::size_t facecnt = 0;</span>
+<span class="lineNum">     986 </span>                :            : 
+<span class="lineNum">     987 </span>                :            :   // Lambda to associate a boundary face and connectivity to a side set.
+<span class="lineNum">     988 </span>                :            :   // Parameter 's' is the list of faces (ids) to add new face to. Parameter 'f'
+<a name="989"><span class="lineNum">     989 </span>                :            :   // is the triangle face connecttivity to add.</a>
+<span class="lineNum">     990 </span>                :            :   auto addBndFace = [ &amp;facecnt, &amp;triinpoel ]
+<span class="lineNum">     991 </span>                :<span class="lineNoCov">          0 :                     ( std::vector&lt; std::size_t &gt;&amp; s, const Face&amp; f )</span>
+<span class="lineNum">     992 </span>                :            :   {
+<span class="lineNum">     993 </span>                :<span class="lineNoCov">          0 :     s.push_back( facecnt++ );</span>
+<span class="lineNum">     994 </span>                :<span class="lineNoCov">          0 :     triinpoel.insert( end(triinpoel), begin(f), end(f) );</span>
+<span class="lineNum">     995 </span>                :<span class="lineNoCov">          0 :   };</span>
+<span class="lineNum">     996 </span>                :            : 
+<span class="lineNum">     997 </span>                :            :   // Lambda to find the nodes of the parent face of a child face. Argument
+<span class="lineNum">     998 </span>                :            :   // 'face' denotes the node ids of the child face whose parent face we are
+<span class="lineNum">     999 </span>                :            :   // looking for. This search may find 3 or 4 parent nodes, depending on whether
+<span class="lineNum">    1000 </span>                :            :   // the child shares or does not share a face with the parent tet,
+<span class="lineNum">    1001 </span>                :            :   // respectively.
+<span class="lineNum">    1002 </span>                :<span class="lineNoCov">          0 :   auto parentFace = [ &amp;old, this ]( const Face&amp; face ){</span>
+<span class="lineNum">    1003 </span>                :<span class="lineNoCov">          0 :     std::unordered_set&lt; std::size_t &gt; s;// will store nodes of parent face</span>
+<span class="lineNum">    1004 </span>                :<span class="lineNoCov">          0 :     for (auto n : face) {               // for all 3 nodes of the face</span>
+<span class="lineNum">    1005 </span>                :<span class="lineNoCov">          0 :       if (old.find(n) != end(old))      // if child node found in old mesh,</span>
+<span class="lineNum">    1006 </span>                :            :         s.insert( n );                  // that node is also in the parent face
+<span class="lineNum">    1007 </span>                :            :       else {                            // if child node is a newly added one
+<span class="lineNum">    1008 </span>                :            :         // find its parent nodes and store both uniquely
+<span class="lineNum">    1009 </span>                :<span class="lineNoCov">          0 :         auto p = this-&gt;m_refiner.node_connectivity.get( n );</span>
+<span class="lineNum">    1010 </span>                :            :         s.insert( begin(p), end(p) );
+<span class="lineNum">    1011 </span>                :            :       }
+<span class="lineNum">    1012 </span>                :            :     }
+<span class="lineNum">    1013 </span>                :            :     // Ensure the number of parent nodes are correct
+<span class="lineNum">    1014 </span>                :            :     Assert( s.size() == 3 || s.size() == 4,
+<span class="lineNum">    1015 </span>                :            :             &quot;Parent node list length must be 3 or 4&quot; );
+<span class="lineNum">    1016 </span>                :            :     // Ensure all parent nodes are part of the old (unrefined) mesh
+<span class="lineNum">    1017 </span>                :            :     Assert( std::all_of( begin(s), end(s), [ &amp;old ]( std::size_t j ){
+<span class="lineNum">    1018 </span>                :            :                            return old.find(j) != end(old); } ),
+<span class="lineNum">    1019 </span>                :            :             &quot;Old face nodes not in old mesh&quot; );
+<span class="lineNum">    1020 </span>                :            :     // Return unique set of nodes of the parent face of child face
+<span class="lineNum">    1021 </span>                :<span class="lineNoCov">          0 :     return s;</span>
+<span class="lineNum">    1022 </span>                :<span class="lineNoCov">          0 :   };</span>
+<span class="lineNum">    1023 </span>                :            : 
+<span class="lineNum">    1024 </span>                :            :   // Regenerate boundary faces after refinement step
+<span class="lineNum">    1025 </span>                :<span class="lineNoCov">          0 :   for (const auto&amp; f : bnd)     // for all boundary faces</span>
+<span class="lineNum">    1026 </span>                :<span class="lineNoCov">          0 :     if (f.second.first != -1) { // for all physical boundary faces</span>
+<span class="lineNum">    1027 </span>                :            :       // construct face of old mesh boundary face using local ids
+<span class="lineNum">    1028 </span>                :<span class="lineNoCov">          0 :       Face oldface{{ tk::cref_find( m_lid, f.first[0] ),</span>
+<span class="lineNum">    1029 </span>                :<span class="lineNoCov">          0 :                      tk::cref_find( m_lid, f.first[1] ),</span>
+<span class="lineNum">    1030 </span>                :<span class="lineNoCov">          0 :                      tk::cref_find( m_lid, f.first[2] ) }};</span>
+<span class="lineNum">    1031 </span>                :            :       // will associate to side set id of old (unrefined) mesh boundary face
+<span class="lineNum">    1032 </span>                :<span class="lineNoCov">          0 :       auto&amp; sideface = belem[ f.second.first ];</span>
+<span class="lineNum">    1033 </span>                :            :       // query number of children of boundary tet adjacent to boundary face
+<span class="lineNum">    1034 </span>                :<span class="lineNoCov">          0 :       auto nc = m_refiner.tet_store.data( f.second.second ).num_children;</span>
+<span class="lineNum">    1035 </span>                :<span class="lineNoCov">          0 :       if (nc == 0) {    // if boundary tet is not refined, add its boundary face</span>
+<span class="lineNum">    1036 </span>                :<span class="lineNoCov">          0 :         addBndFace( sideface, f.first );</span>
+<span class="lineNum">    1037 </span>                :            :       } else {          // if boundary tet is refined
+<span class="lineNum">    1038 </span>                :            :         const auto&amp; tets = m_refiner.tet_store.tets;
+<span class="lineNum">    1039 </span>                :<span class="lineNoCov">          0 :         for (decltype(nc) i=0; i&lt;nc; ++i ) {      // for all child tets</span>
+<span class="lineNum">    1040 </span>                :            :           // get child tet id
+<span class="lineNum">    1041 </span>                :<span class="lineNoCov">          0 :           auto childtet = m_refiner.tet_store.get_child_id( f.second.second, i );</span>
+<span class="lineNum">    1042 </span>                :            :           auto ct = tets.find( childtet );
+<span class="lineNum">    1043 </span>                :            :           Assert( ct != end(tets), &quot;Child tet not found&quot; );
+<span class="lineNum">    1044 </span>                :            :           // ensure all nodes of child tet are in refined mesh
+<span class="lineNum">    1045 </span>                :            :           Assert( ref.find(ct-&gt;second[0]) != end(ref) &amp;&amp;
+<span class="lineNum">    1046 </span>                :            :                   ref.find(ct-&gt;second[1]) != end(ref) &amp;&amp;
+<span class="lineNum">    1047 </span>                :            :                   ref.find(ct-&gt;second[2]) != end(ref) &amp;&amp;
+<span class="lineNum">    1048 </span>                :            :                   ref.find(ct-&gt;second[3]) != end(ref),
+<span class="lineNum">    1049 </span>                :            :                   &quot;Boundary child tet node id not found in refined mesh&quot; );
+<span class="lineNum">    1050 </span>                :            :           // get nodes of child tet
+<span class="lineNum">    1051 </span>                :<span class="lineNoCov">          0 :           auto A = ct-&gt;second[0];</span>
+<span class="lineNum">    1052 </span>                :<span class="lineNoCov">          0 :           auto B = ct-&gt;second[1];</span>
+<span class="lineNum">    1053 </span>                :<span class="lineNoCov">          0 :           auto C = ct-&gt;second[2];</span>
+<span class="lineNum">    1054 </span>                :<span class="lineNoCov">          0 :           auto D = ct-&gt;second[3];</span>
+<span class="lineNum">    1055 </span>                :            :           // form all 4 faces of child tet
+<span class="lineNum">    1056 </span>                :<span class="lineNoCov">          0 :           std::array&lt;Face,4&gt; face{{{{A,C,B}}, {{A,B,D}}, {{A,D,C}}, {{B,C,D}}}};</span>
+<span class="lineNum">    1057 </span>                :<span class="lineNoCov">          0 :           for (const auto&amp; rf : face) {   // for all faces of child tet</span>
+<span class="lineNum">    1058 </span>                :            :             // find nodes of the parent face of child face
+<span class="lineNum">    1059 </span>                :<span class="lineNoCov">          0 :             auto parfac = parentFace( rf );</span>
+<span class="lineNum">    1060 </span>                :            :             // if the child shares a face with its parent and all 3 nodes of the
+<span class="lineNum">    1061 </span>                :            :             // parent face of the child's face are the same, the child face is
+<span class="lineNum">    1062 </span>                :            :             // on the same boundary as the parent face
+<span class="lineNum">    1063 </span>                :<span class="lineNoCov">          0 :             if ( parfac.size() == 3 &amp;&amp;</span>
+<span class="lineNum">    1064 </span>                :<span class="lineNoCov">          0 :                  parfac.find(oldface[0]) != end(parfac) &amp;&amp;</span>
+<span class="lineNum">    1065 </span>                :<span class="lineNoCov">          0 :                  parfac.find(oldface[1]) != end(parfac) &amp;&amp;</span>
+<span class="lineNum">    1066 </span>                :            :                  parfac.find(oldface[2]) != end(parfac) )
+<span class="lineNum">    1067 </span>                :            :             {
+<span class="lineNum">    1068 </span>                :<span class="lineNoCov">          0 :               addBndFace(sideface, {{m_gid[rf[2]],m_gid[rf[1]],m_gid[rf[0]]}});</span>
+<span class="lineNum">    1069 </span>                :            :             }
+<span class="lineNum">    1070 </span>                :            :           }
+<span class="lineNum">    1071 </span>                :            :         }
+<span class="lineNum">    1072 </span>                :            :       }
+<span class="lineNum">    1073 </span>                :            :     }
+<span class="lineNum">    1074 </span>                :            : 
+<span class="lineNum">    1075 </span>                :            :   // Update boundary face data structures
+<span class="lineNum">    1076 </span>                :<span class="lineNoCov">          0 :   m_belem = std::move(belem);</span>
+<span class="lineNum">    1077 </span>                :<span class="lineNoCov">          0 :   m_triinpoel = std::move(triinpoel);</span>
+<span class="lineNum">    1078 </span>                :<span class="lineNoCov">          0 : }</span>
+<span class="lineNum">    1079 </span>                :            : 
+<span class="lineNum">    1080 </span>                :            : void
+<span class="lineNum">    1081 </span>                :<span class="lineNoCov">          0 : Refiner::updateBndNodes( const std::unordered_set&lt; std::size_t &gt;&amp; old,</span>
+<span class="lineNum">    1082 </span>                :            :                          const std::unordered_set&lt; std::size_t &gt;&amp; ref,
+<span class="lineNum">    1083 </span>                :            :                          const BndFaces&amp; bnd )
+<span class="lineNum">    1084 </span>                :            : // *****************************************************************************
+<span class="lineNum">    1085 </span>                :            : // Update boundary nodes after mesh refinement
+<span class="lineNum">    1086 </span>                :            : //! \param[in] old Unique nodes of the old (unrefined) mesh using local ids
+<span class="lineNum">    1087 </span>                :            : //! \param[in] ref Unique nodes of the refined mesh using local ids
+<span class="lineNum">    1088 </span>                :            : //! \param[in] bnd Boundary face map, associating a pair of side set id and
+<span class="lineNum">    1089 </span>                :            : //!   adjacent tet id to a boundary triangle face
+<span class="lineNum">    1090 </span>                :            : // *****************************************************************************
+<span class="lineNum">    1091 </span>                :            : {
+<span class="lineNum">    1092 </span>                :            :   IGNORE(ref);  // to avoid compiler warning when asserts are optimized away
+<span class="lineNum">    1093 </span>                :            : 
+<span class="lineNum">    1094 </span>                :            :   using Edge = tk::UnsMesh::Edge;
+<span class="lineNum">    1095 </span>                :            : 
+<span class="lineNum">    1096 </span>                :            :   // storage for boundary nodes associated to side-set IDs of the refined mesh
+<span class="lineNum">    1097 </span>                :            :   decltype(m_bnode) bnode;              // will become m_node
+<span class="lineNum">    1098 </span>                :            : 
+<span class="lineNum">    1099 </span>                :            :   // Generate unique set of nodes for each side set
+<span class="lineNum">    1100 </span>                :<span class="lineNoCov">          0 :   std::unordered_map&lt; int, std::unordered_set&lt; std::size_t &gt; &gt; bnodeset;</span>
+<span class="lineNum">    1101 </span>                :<span class="lineNoCov">          0 :   for (const auto&amp; ss : m_bnode)  // for all phsyical boundaries (sidesets)</span>
+<span class="lineNum">    1102 </span>                :<span class="lineNoCov">          0 :     bnodeset[ ss.first ].insert( begin(ss.second), end(ss.second) );</span>
+<a name="1103"><span class="lineNum">    1103 </span>                :            : </a>
+<span class="lineNum">    1104 </span>                :            :   // Lambda to find the nodes of the parent edge of a node
+<span class="lineNum">    1105 </span>                :<span class="lineNoCov">          0 :   auto parentEdge = [ &amp;old, this ]( std::size_t c ) -&gt; Edge {</span>
+<span class="lineNum">    1106 </span>                :<span class="lineNoCov">          0 :     if (old.find(c) != end(old)) // if node is in old mesh, return doubled input</span>
+<span class="lineNum">    1107 </span>                :<span class="lineNoCov">          0 :       return {{ c, c }};</span>
+<span class="lineNum">    1108 </span>                :            :     else
+<span class="lineNum">    1109 </span>                :<span class="lineNoCov">          0 :       return this-&gt;m_refiner.node_connectivity.get( c );</span>
+<span class="lineNum">    1110 </span>                :<span class="lineNoCov">          0 :   };</span>
+<span class="lineNum">    1111 </span>                :            : 
+<span class="lineNum">    1112 </span>                :            :   // Lambda to find a global node ID among the nodelists of side sets. Return -1
+<span class="lineNum">    1113 </span>                :            :   // if not found, or all the side set ids in which the node is found.
+<span class="lineNum">    1114 </span>                :<span class="lineNoCov">          0 :   auto bndNode = [ &amp;bnodeset ]( std::size_t p ){</span>
+<span class="lineNum">    1115 </span>                :            :     std::vector&lt; int &gt; ss;
+<span class="lineNum">    1116 </span>                :<span class="lineNoCov">          0 :     for (const auto&amp; s : bnodeset)  // for all phsyical boundaries (sidesets)</span>
+<span class="lineNum">    1117 </span>                :<span class="lineNoCov">          0 :       if (s.second.find(p) != end(s.second))</span>
+<span class="lineNum">    1118 </span>                :<span class="lineNoCov">          0 :         ss.push_back( s.first );</span>
+<span class="lineNum">    1119 </span>                :<span class="lineNoCov">          0 :     return ss;</span>
+<span class="lineNum">    1120 </span>                :<span class="lineNoCov">          0 :   };</span>
+<span class="lineNum">    1121 </span>                :            : 
+<span class="lineNum">    1122 </span>                :            : 
+<span class="lineNum">    1123 </span>                :            :   // Regenerate boundary node lists after refinement step
+<span class="lineNum">    1124 </span>                :<span class="lineNoCov">          0 :   for (const auto&amp; f : bnd) {</span>
+<span class="lineNum">    1125 </span>                :            :     // query number of children of boundary tet adjacent to boundary face
+<span class="lineNum">    1126 </span>                :<span class="lineNoCov">          0 :     auto nc = m_refiner.tet_store.data( f.second.second ).num_children;</span>
+<span class="lineNum">    1127 </span>                :<span class="lineNoCov">          0 :     if (nc == 0) {      // if boundary tet is not refined, add its boundary face</span>
+<span class="lineNum">    1128 </span>                :<span class="lineNoCov">          0 :       for (auto n : f.first) {</span>
+<span class="lineNum">    1129 </span>                :<span class="lineNoCov">          0 :         auto ss = bndNode( n );</span>
+<span class="lineNum">    1130 </span>                :<span class="lineNoCov">          0 :         for (auto s : ss) if (s != -1) bnode[ s ].push_back( n );</span>
+<span class="lineNum">    1131 </span>                :            :       }
+<span class="lineNum">    1132 </span>                :            :     } else {            // if boundary tet is refined
+<span class="lineNum">    1133 </span>                :            :       const auto&amp; tets = m_refiner.tet_store.tets;
+<span class="lineNum">    1134 </span>                :<span class="lineNoCov">          0 :       for (decltype(nc) i=0; i&lt;nc; ++i ) {      // for all child tets</span>
+<span class="lineNum">    1135 </span>                :            :         // get child tet id
+<span class="lineNum">    1136 </span>                :<span class="lineNoCov">          0 :         auto childtet = m_refiner.tet_store.get_child_id( f.second.second, i );</span>
+<span class="lineNum">    1137 </span>                :            :         auto ct = tets.find( childtet );
+<span class="lineNum">    1138 </span>                :            :         Assert( ct != end(tets), &quot;Child tet not found&quot; );
+<span class="lineNum">    1139 </span>                :            :         // ensure all nodes of child tet are in refined mesh
+<span class="lineNum">    1140 </span>                :            :         Assert( ref.find(ct-&gt;second[0]) != end(ref) &amp;&amp;
+<span class="lineNum">    1141 </span>                :            :                 ref.find(ct-&gt;second[1]) != end(ref) &amp;&amp;
+<span class="lineNum">    1142 </span>                :            :                 ref.find(ct-&gt;second[2]) != end(ref) &amp;&amp;
+<span class="lineNum">    1143 </span>                :            :                 ref.find(ct-&gt;second[3]) != end(ref),
+<span class="lineNum">    1144 </span>                :            :                 &quot;Boundary child tet node id not found in refined mesh&quot; );
+<span class="lineNum">    1145 </span>                :            :         // get nodes of child tet
+<span class="lineNum">    1146 </span>                :<span class="lineNoCov">          0 :         auto A = ct-&gt;second[0];</span>
+<span class="lineNum">    1147 </span>                :<span class="lineNoCov">          0 :         auto B = ct-&gt;second[1];</span>
+<span class="lineNum">    1148 </span>                :<span class="lineNoCov">          0 :         auto C = ct-&gt;second[2];</span>
+<span class="lineNum">    1149 </span>                :<span class="lineNoCov">          0 :         auto D = ct-&gt;second[3];</span>
+<span class="lineNum">    1150 </span>                :            :         // form all 6 edges of child tet
+<span class="lineNum">    1151 </span>                :            :         std::array&lt;Edge,6&gt; edge{{ {{A,B}}, {{B,C}}, {{A,C}},
+<span class="lineNum">    1152 </span>                :<span class="lineNoCov">          0 :                                   {{A,D}}, {{B,D}}, {{C,D}} }};</span>
+<span class="lineNum">    1153 </span>                :<span class="lineNoCov">          0 :         for (const auto&amp; re : edge)</span>
+<span class="lineNum">    1154 </span>                :<span class="lineNoCov">          0 :           for (auto c : re) {</span>
+<span class="lineNum">    1155 </span>                :<span class="lineNoCov">          0 :             auto p = parentEdge( c );</span>
+<span class="lineNum">    1156 </span>                :<span class="lineNoCov">          0 :             auto ss1 = bndNode( m_gid[p[0]] );</span>
+<span class="lineNum">    1157 </span>                :<span class="lineNoCov">          0 :             auto ss2 = bndNode( m_gid[p[1]] );</span>
+<span class="lineNum">    1158 </span>                :<span class="lineNoCov">          0 :             for (auto s1 : ss1)</span>
+<span class="lineNum">    1159 </span>                :<span class="lineNoCov">          0 :               for (auto s2 : ss2)</span>
+<span class="lineNum">    1160 </span>                :<span class="lineNoCov">          0 :                 if (s1 != -1 &amp;&amp; s2 != -1 &amp;&amp; s1 == s2)</span>
+<span class="lineNum">    1161 </span>                :<span class="lineNoCov">          0 :                   bnode[ s1 ].push_back( m_gid[c] );</span>
+<span class="lineNum">    1162 </span>                :            :           }
+<span class="lineNum">    1163 </span>                :            :       }
+<span class="lineNum">    1164 </span>                :            :     }
+<span class="lineNum">    1165 </span>                :            :   }
+<span class="lineNum">    1166 </span>                :            : 
+<span class="lineNum">    1167 </span>                :            :   // Make boundary node IDs unique for each physical boundary (side set)
+<span class="lineNum">    1168 </span>                :<span class="lineNoCov">          0 :   for (auto&amp; s : bnode) tk::unique( s.second );</span>
+<span class="lineNum">    1169 </span>                :            : 
+<span class="lineNum">    1170 </span>                :            :   // Update boundary node lists
+<span class="lineNum">    1171 </span>                :<span class="lineNoCov">          0 :   m_bnode = std::move(bnode);</span>
+<span class="lineNum">    1172 </span>                :<span class="lineNoCov">          0 : }</span>
+<span class="lineNum">    1173 </span>                :            : 
+<span class="lineNum">    1174 </span>                :            : #include &quot;NoWarning/refiner.def.h&quot;
 </pre>
       </td>
     </tr>
