@@ -24,7 +24,7 @@
           </tr>
           <tr>
             <td class="headerItem">Commit:</td>
-            <td class="headerValue"><a href="https://github.com/quinoacomputing/quinoa/commit/2213dc2">Quinoa_v0.2-1492-g2213dc2</a></td>
+            <td class="headerValue"><a href="https://github.com/quinoacomputing/quinoa/commit/5d5ec27">Quinoa_v0.2-1523-g5d5ec27</a></td>
             <td></td>
             <td class="headerItem">Lines:</td>
             <td class="headerCovTableEntry">0</td>
@@ -33,7 +33,7 @@
           </tr>
           <tr>
             <td class="headerItem">Date:</td>
-            <td class="headerValue">2018-10-15 09:32:50</td>
+            <td class="headerValue">2018-10-15 19:35:52</td>
             <td></td>
             <td class="headerItem">Functions:</td>
             <td class="headerCovTableEntry">0</td>
@@ -757,7 +757,7 @@
 <span class="lineNum">     683 </span>                :            :   // if t&gt;0 refinement enabled and we hit the frequency
 <span class="lineNum">     684 </span>                :<span class="lineNoCov">          0 :   if (dtref &amp;&amp; !(d-&gt;It() % dtfreq)) {   // refine</span>
 <span class="lineNum">     685 </span>                :            : 
-<span class="lineNum">     686 </span>                :<span class="lineNoCov">          0 :     d-&gt;Ref()-&gt;dtref( d-&gt;T(), thisProxy );</span>
+<span class="lineNum">     686 </span>                :<span class="lineNoCov">          0 :     d-&gt;Ref()-&gt;dtref( d-&gt;T(), thisProxy, m_fd.Bnode() );</span>
 <span class="lineNum">     687 </span>                :            : 
 <span class="lineNum">     688 </span>                :            :   } else {      // do not refine
 <span class="lineNum">     689 </span>                :            : 
@@ -773,90 +773,96 @@
 <span class="lineNum">     699 </span>                :            :                 const tk::UnsMesh::Coords&amp; coord,
 <span class="lineNum">     700 </span>                :            :                 const tk::Fields&amp; u,
 <span class="lineNum">     701 </span>                :            :                 const std::unordered_map&lt; int,
-<span class="lineNum">     702 </span>                :            :                       std::vector&lt; std::size_t &gt; &gt;&amp; msum )
-<span class="lineNum">     703 </span>                :            : // *****************************************************************************
-<span class="lineNum">     704 </span>                :            : //  Receive new mesh from Refiner
-<span class="lineNum">     705 </span>                :            : //! \param[in] chunk New mesh chunk (connectivity and global&lt;-&gt;local id maps)
-<span class="lineNum">     706 </span>                :            : //! \param[in] coord New mesh node coordinates
-<span class="lineNum">     707 </span>                :            : //! \param[in] u New solution on new mesh
-<span class="lineNum">     708 </span>                :            : //! \param[in] msum New node communication map
-<span class="lineNum">     709 </span>                :            : // *****************************************************************************
-<span class="lineNum">     710 </span>                :            : {
-<span class="lineNum">     711 </span>                :<span class="lineNoCov">          0 :   auto d = Disc();</span>
-<span class="lineNum">     712 </span>                :            : 
-<span class="lineNum">     713 </span>                :            :   // Set flag that indicates that we are during time stepping
-<span class="lineNum">     714 </span>                :<span class="lineNoCov">          0 :   m_initial = false;</span>
+<span class="lineNum">     702 </span>                :            :                       std::vector&lt; std::size_t &gt; &gt;&amp; msum,
+<span class="lineNum">     703 </span>                :            :                 const std::map&lt; int, std::vector&lt; std::size_t &gt; &gt;&amp; bnode )
+<span class="lineNum">     704 </span>                :            : // *****************************************************************************
+<span class="lineNum">     705 </span>                :            : //  Receive new mesh from Refiner
+<span class="lineNum">     706 </span>                :            : //! \param[in] chunk New mesh chunk (connectivity and global&lt;-&gt;local id maps)
+<span class="lineNum">     707 </span>                :            : //! \param[in] coord New mesh node coordinates
+<span class="lineNum">     708 </span>                :            : //! \param[in] u New solution on new mesh
+<span class="lineNum">     709 </span>                :            : //! \param[in] msum New node communication map
+<span class="lineNum">     710 </span>                :            : //! \param[in] bnode Map of boundary-node lists mapped to corresponding
+<span class="lineNum">     711 </span>                :            : //!   side set ids for this mesh chunk
+<span class="lineNum">     712 </span>                :            : // *****************************************************************************
+<span class="lineNum">     713 </span>                :            : {
+<span class="lineNum">     714 </span>                :<span class="lineNoCov">          0 :   auto d = Disc();</span>
 <span class="lineNum">     715 </span>                :            : 
-<span class="lineNum">     716 </span>                :            :   // Zero field output iteration count between two mesh refinement steps
-<span class="lineNum">     717 </span>                :<span class="lineNoCov">          0 :   m_itf = 0;</span>
+<span class="lineNum">     716 </span>                :            :   // Set flag that indicates that we are during time stepping
+<span class="lineNum">     717 </span>                :<span class="lineNoCov">          0 :   m_initial = false;</span>
 <span class="lineNum">     718 </span>                :            : 
-<span class="lineNum">     719 </span>                :            :   // Increase number of iterations with mesh refinement
-<span class="lineNum">     720 </span>                :<span class="lineNoCov">          0 :   ++d-&gt;Itr();</span>
+<span class="lineNum">     719 </span>                :            :   // Zero field output iteration count between two mesh refinement steps
+<span class="lineNum">     720 </span>                :<span class="lineNoCov">          0 :   m_itf = 0;</span>
 <span class="lineNum">     721 </span>                :            : 
-<span class="lineNum">     722 </span>                :            :   // Resize mesh data structures
-<span class="lineNum">     723 </span>                :<span class="lineNoCov">          0 :   d-&gt;resize( chunk, coord, msum );</span>
+<span class="lineNum">     722 </span>                :            :   // Increase number of iterations with mesh refinement
+<span class="lineNum">     723 </span>                :<span class="lineNoCov">          0 :   ++d-&gt;Itr();</span>
 <span class="lineNum">     724 </span>                :            : 
-<span class="lineNum">     725 </span>                :            :   // Update (resize) solution on new mesh
-<span class="lineNum">     726 </span>                :            :   m_u = u;
+<span class="lineNum">     725 </span>                :            :   // Resize mesh data structures
+<span class="lineNum">     726 </span>                :<span class="lineNoCov">          0 :   d-&gt;resize( chunk, coord, msum );</span>
 <span class="lineNum">     727 </span>                :            : 
-<span class="lineNum">     728 </span>                :            :   // Resize auxiliary solution vectors
-<span class="lineNum">     729 </span>                :<span class="lineNoCov">          0 :   auto nelem = d-&gt;Inpoel().size()/4;</span>
-<span class="lineNum">     730 </span>                :<span class="lineNoCov">          0 :   auto npoin = coord[0].size();</span>
-<span class="lineNum">     731 </span>                :            :   auto nprop = m_u.nprop();
-<span class="lineNum">     732 </span>                :<span class="lineNoCov">          0 :   m_ul.resize( npoin, nprop );</span>
-<span class="lineNum">     733 </span>                :            :   m_du.resize( npoin, nprop );
-<span class="lineNum">     734 </span>                :            :   m_dul.resize( npoin, nprop );
-<span class="lineNum">     735 </span>                :            :   m_ue.resize( nelem, nprop );
-<span class="lineNum">     736 </span>                :            :   m_lhs.resize( npoin, nprop );
-<span class="lineNum">     737 </span>                :            :   m_rhs.resize( npoin, nprop );
-<span class="lineNum">     738 </span>                :            :   m_dif.resize( npoin, nprop );
-<span class="lineNum">     739 </span>                :            : 
-<span class="lineNum">     740 </span>                :            :   // Resize communication buffers
-<span class="lineNum">     741 </span>                :<span class="lineNoCov">          0 :   resizeComm();</span>
+<span class="lineNum">     728 </span>                :            :   // Update (resize) solution on new mesh
+<span class="lineNum">     729 </span>                :            :   m_u = u;
+<span class="lineNum">     730 </span>                :            : 
+<span class="lineNum">     731 </span>                :            :   // Resize auxiliary solution vectors
+<span class="lineNum">     732 </span>                :<span class="lineNoCov">          0 :   auto nelem = d-&gt;Inpoel().size()/4;</span>
+<span class="lineNum">     733 </span>                :<span class="lineNoCov">          0 :   auto npoin = coord[0].size();</span>
+<span class="lineNum">     734 </span>                :            :   auto nprop = m_u.nprop();
+<span class="lineNum">     735 </span>                :<span class="lineNoCov">          0 :   m_ul.resize( npoin, nprop );</span>
+<span class="lineNum">     736 </span>                :            :   m_du.resize( npoin, nprop );
+<span class="lineNum">     737 </span>                :            :   m_dul.resize( npoin, nprop );
+<span class="lineNum">     738 </span>                :            :   m_ue.resize( nelem, nprop );
+<span class="lineNum">     739 </span>                :            :   m_lhs.resize( npoin, nprop );
+<span class="lineNum">     740 </span>                :            :   m_rhs.resize( npoin, nprop );
+<span class="lineNum">     741 </span>                :            :   m_dif.resize( npoin, nprop );
 <span class="lineNum">     742 </span>                :            : 
-<span class="lineNum">     743 </span>                :            :   // Resize FCT data structures
-<span class="lineNum">     744 </span>                :<span class="lineNoCov">          0 :   d-&gt;FCT()-&gt;resize( npoin, msum, d-&gt;Bid(), d-&gt;Lid(), d-&gt;Inpoel() );</span>
+<span class="lineNum">     743 </span>                :            :   // Update physical-boundary node lists
+<span class="lineNum">     744 </span>                :            :   m_fd.Bnode() = bnode;
 <span class="lineNum">     745 </span>                :            : 
-<span class="lineNum">     746 </span>                :            :   // Activate SDAG waits for re-computing the left-hand side
-<span class="lineNum">     747 </span>                :<span class="lineNoCov">          0 :   thisProxy[ thisIndex ].wait4lhs();</span>
+<span class="lineNum">     746 </span>                :            :   // Resize communication buffers
+<span class="lineNum">     747 </span>                :<span class="lineNoCov">          0 :   resizeComm();</span>
 <span class="lineNum">     748 </span>                :            : 
-<span class="lineNum">     749 </span>                :<span class="lineNoCov">          0 :   ref_complete();</span>
-<span class="lineNum">     750 </span>                :            : 
-<span class="lineNum">     751 </span>                :<span class="lineNoCov">          0 :   contribute( CkCallback(CkReductionTarget(Transporter,workresized), d-&gt;Tr()) );</span>
-<span class="lineNum">     752 </span>                :<span class="lineNoCov">          0 : }</span>
-<a name="753"><span class="lineNum">     753 </span>                :            : </a>
-<span class="lineNum">     754 </span>                :            : void
-<span class="lineNum">     755 </span>                :<span class="lineNoCov">          0 : DiagCG::eval()</span>
-<span class="lineNum">     756 </span>                :            : // *****************************************************************************
-<span class="lineNum">     757 </span>                :            : // Evaluate whether to continue with next step
-<span class="lineNum">     758 </span>                :            : // *****************************************************************************
-<span class="lineNum">     759 </span>                :            : {
-<span class="lineNum">     760 </span>                :            : //   if (g_inputdeck.get&lt; tag::cmd, tag::chare &gt;() ||
-<span class="lineNum">     761 </span>                :            : //       g_inputdeck.get&lt; tag::cmd, tag::quiescence &gt;())
-<span class="lineNum">     762 </span>                :            : //     stateProxy.ckLocalBranch()-&gt;insert( &quot;DiagCG&quot;, thisIndex, CkMyPe(),
-<span class="lineNum">     763 </span>                :            : //                                         Disc()-&gt;It(), &quot;eval&quot; );
-<span class="lineNum">     764 </span>                :            : 
-<span class="lineNum">     765 </span>                :<span class="lineNoCov">          0 :   auto d = Disc();</span>
-<span class="lineNum">     766 </span>                :            : 
-<span class="lineNum">     767 </span>                :            :   // Output field data to file
-<span class="lineNum">     768 </span>                :<span class="lineNoCov">          0 :   out();</span>
-<span class="lineNum">     769 </span>                :            :   // Output one-liner status report to screen
-<span class="lineNum">     770 </span>                :<span class="lineNoCov">          0 :   d-&gt;status();</span>
-<span class="lineNum">     771 </span>                :            : 
-<span class="lineNum">     772 </span>                :<span class="lineNoCov">          0 :   const auto term = g_inputdeck.get&lt; tag::discr, tag::term &gt;();</span>
-<span class="lineNum">     773 </span>                :<span class="lineNoCov">          0 :   const auto nstep = g_inputdeck.get&lt; tag::discr, tag::nstep &gt;();</span>
-<span class="lineNum">     774 </span>                :            :   const auto eps = std::numeric_limits&lt; tk::real &gt;::epsilon();
-<span class="lineNum">     775 </span>                :            : 
-<span class="lineNum">     776 </span>                :            :   // If neither max iterations nor max time reached, continue, otherwise finish
-<span class="lineNum">     777 </span>                :<span class="lineNoCov">          0 :   if (std::fabs(d-&gt;T()-term) &gt; eps &amp;&amp; d-&gt;It() &lt; nstep) {</span>
-<span class="lineNum">     778 </span>                :<span class="lineNoCov">          0 :     AtSync();   // Migrate here if needed</span>
-<span class="lineNum">     779 </span>                :<span class="lineNoCov">          0 :     dt();</span>
-<span class="lineNum">     780 </span>                :            :   } else {
-<span class="lineNum">     781 </span>                :<span class="lineNoCov">          0 :     contribute( CkCallback( CkReductionTarget(Transporter,finish), d-&gt;Tr() ) );</span>
-<span class="lineNum">     782 </span>                :            :   }
-<span class="lineNum">     783 </span>                :<span class="lineNoCov">          0 : }</span>
-<span class="lineNum">     784 </span>                :            : 
-<span class="lineNum">     785 </span>                :            : #include &quot;NoWarning/diagcg.def.h&quot;
+<span class="lineNum">     749 </span>                :            :   // Resize FCT data structures
+<span class="lineNum">     750 </span>                :<span class="lineNoCov">          0 :   d-&gt;FCT()-&gt;resize( npoin, msum, d-&gt;Bid(), d-&gt;Lid(), d-&gt;Inpoel() );</span>
+<span class="lineNum">     751 </span>                :            : 
+<span class="lineNum">     752 </span>                :            :   // Activate SDAG waits for re-computing the left-hand side
+<span class="lineNum">     753 </span>                :<span class="lineNoCov">          0 :   thisProxy[ thisIndex ].wait4lhs();</span>
+<span class="lineNum">     754 </span>                :            : 
+<span class="lineNum">     755 </span>                :<span class="lineNoCov">          0 :   ref_complete();</span>
+<span class="lineNum">     756 </span>                :            : 
+<span class="lineNum">     757 </span>                :<span class="lineNoCov">          0 :   contribute( CkCallback(CkReductionTarget(Transporter,workresized), d-&gt;Tr()) );</span>
+<span class="lineNum">     758 </span>                :<span class="lineNoCov">          0 : }</span>
+<a name="759"><span class="lineNum">     759 </span>                :            : </a>
+<span class="lineNum">     760 </span>                :            : void
+<span class="lineNum">     761 </span>                :<span class="lineNoCov">          0 : DiagCG::eval()</span>
+<span class="lineNum">     762 </span>                :            : // *****************************************************************************
+<span class="lineNum">     763 </span>                :            : // Evaluate whether to continue with next step
+<span class="lineNum">     764 </span>                :            : // *****************************************************************************
+<span class="lineNum">     765 </span>                :            : {
+<span class="lineNum">     766 </span>                :            : //   if (g_inputdeck.get&lt; tag::cmd, tag::chare &gt;() ||
+<span class="lineNum">     767 </span>                :            : //       g_inputdeck.get&lt; tag::cmd, tag::quiescence &gt;())
+<span class="lineNum">     768 </span>                :            : //     stateProxy.ckLocalBranch()-&gt;insert( &quot;DiagCG&quot;, thisIndex, CkMyPe(),
+<span class="lineNum">     769 </span>                :            : //                                         Disc()-&gt;It(), &quot;eval&quot; );
+<span class="lineNum">     770 </span>                :            : 
+<span class="lineNum">     771 </span>                :<span class="lineNoCov">          0 :   auto d = Disc();</span>
+<span class="lineNum">     772 </span>                :            : 
+<span class="lineNum">     773 </span>                :            :   // Output field data to file
+<span class="lineNum">     774 </span>                :<span class="lineNoCov">          0 :   out();</span>
+<span class="lineNum">     775 </span>                :            :   // Output one-liner status report to screen
+<span class="lineNum">     776 </span>                :<span class="lineNoCov">          0 :   d-&gt;status();</span>
+<span class="lineNum">     777 </span>                :            : 
+<span class="lineNum">     778 </span>                :<span class="lineNoCov">          0 :   const auto term = g_inputdeck.get&lt; tag::discr, tag::term &gt;();</span>
+<span class="lineNum">     779 </span>                :<span class="lineNoCov">          0 :   const auto nstep = g_inputdeck.get&lt; tag::discr, tag::nstep &gt;();</span>
+<span class="lineNum">     780 </span>                :            :   const auto eps = std::numeric_limits&lt; tk::real &gt;::epsilon();
+<span class="lineNum">     781 </span>                :            : 
+<span class="lineNum">     782 </span>                :            :   // If neither max iterations nor max time reached, continue, otherwise finish
+<span class="lineNum">     783 </span>                :<span class="lineNoCov">          0 :   if (std::fabs(d-&gt;T()-term) &gt; eps &amp;&amp; d-&gt;It() &lt; nstep) {</span>
+<span class="lineNum">     784 </span>                :<span class="lineNoCov">          0 :     AtSync();   // Migrate here if needed</span>
+<span class="lineNum">     785 </span>                :<span class="lineNoCov">          0 :     dt();</span>
+<span class="lineNum">     786 </span>                :            :   } else {
+<span class="lineNum">     787 </span>                :<span class="lineNoCov">          0 :     contribute( CkCallback( CkReductionTarget(Transporter,finish), d-&gt;Tr() ) );</span>
+<span class="lineNum">     788 </span>                :            :   }
+<span class="lineNum">     789 </span>                :<span class="lineNoCov">          0 : }</span>
+<span class="lineNum">     790 </span>                :            : 
+<span class="lineNum">     791 </span>                :            : #include &quot;NoWarning/diagcg.def.h&quot;
 </pre>
       </td>
     </tr>
