@@ -24,16 +24,16 @@
           </tr>
           <tr>
             <td class="headerItem">Commit:</td>
-            <td class="headerValue"><a href="https://github.com/quinoacomputing/quinoa/commit/5bab787">Quinoa_v0.2-1739-g5bab787</a></td>
+            <td class="headerValue"><a href="https://github.com/quinoacomputing/quinoa/commit/a63126c">Quinoa_v0.2-1757-ga63126c</a></td>
             <td></td>
             <td class="headerItem">Lines:</td>
             <td class="headerCovTableEntry">0</td>
-            <td class="headerCovTableEntry">24</td>
+            <td class="headerCovTableEntry">47</td>
             <td class="headerCovTableEntryLo">0.0 %</td>
           </tr>
           <tr>
             <td class="headerItem">Date:</td>
-            <td class="headerValue">2018-11-20 07:11:53</td>
+            <td class="headerValue">2018-11-22 21:08:17</td>
             <td></td>
             <td class="headerItem">Functions:</td>
             <td class="headerCovTableEntry">0</td>
@@ -53,7 +53,7 @@
             <td></td>
             <td class="headerItem">Branches:</td>
             <td class="headerCovTableEntry">0</td>
-            <td class="headerCovTableEntry">38</td>
+            <td class="headerCovTableEntry">84</td>
             <td class="headerCovTableEntryLo">0.0 %</td>
           </tr>
           <tr><td><img src="../glass.png" width=3 height=3 alt=""></td></tr>
@@ -126,9 +126,9 @@
 <span class="lineNum">      52 </span>                :            : 
 <span class="lineNum">      53 </span>                :            : namespace walker {
 <span class="lineNum">      54 </span>                :            : 
-<span class="lineNum">      55 </span>                :            : //! MixDirichlet coefficients policy: constants in time + &lt;rho&gt; = const
+<span class="lineNum">      55 </span>                :            : //! MixDirichlet coefficients policity: constants in time + &lt;rho&gt; = const
 <span class="lineNum">      56 </span>                :            : //! \details User-defined parameters b and kappa are constant vectors in time
-<span class="lineNum">      57 </span>                :            : //!   and, S is constrained to make \f$\mathrm{d}&lt;\rho&gt;/\mathrm{d}t = 0\f$.
+<span class="lineNum">      57 </span>                :            : //!   and, S is constrained to make \f$\mathrm{d}&lt;rho&gt;/\mathrm{d}t = 0\f$.
 <span class="lineNum">      58 </span>                :            : class MixDirichletHomCoeffConst {
 <span class="lineNum">      59 </span>                :            : 
 <span class="lineNum">      60 </span>                :            :   private:
@@ -176,39 +176,104 @@
 <span class="lineNum">      99 </span>                :            :     {
 <span class="lineNum">     100 </span>                :            :       using tk::ctr::lookup;
 <span class="lineNum">     101 </span>                :            :       using tk::ctr::mean;
-<span class="lineNum">     102 </span>                :            :       // statistics nomenclature:
-<span class="lineNum">     103 </span>                :            :       //   Y = instantaneous mass fraction,
-<span class="lineNum">     104 </span>                :            :       //   R = instantaneous density,
-<span class="lineNum">     105 </span>                :            :       //   y = Y - &lt;Y&gt;, mass fraction fluctuation about its mean,
-<span class="lineNum">     106 </span>                :            :       //   r = R - &lt;R&gt;, density fluctuation about its mean,
-<span class="lineNum">     107 </span>                :            :       // &lt;Y&gt; = mean mass fraction,
-<span class="lineNum">     108 </span>                :            :       // &lt;R&gt; = mean density,
-<span class="lineNum">     109 </span>                :            : 
-<span class="lineNum">     110 </span>                :            : 
-<span class="lineNum">     111 </span>        [<span class="branchNoExec" title="Branch 2 was not executed"> # </span><span class="branchNoExec" title="Branch 3 was not executed"> # </span>]:<span class="lineNoCov">          0 :       tk::real d = lookup( mean(depvar,ncomp), moments );       // &lt;R&gt;</span>
-<span class="lineNum">     112 </span>        [<span class="branchNoExec" title="Branch 0 was not executed"> # </span><span class="branchNoExec" title="Branch 1 was not executed"> # </span>]:<span class="lineNoCov">          0 :       if (d &lt; 1.0e-8) { std::cout &lt;&lt; &quot;d:&quot; &lt;&lt; d &lt;&lt; &quot; &quot;; d = 0.5; }</span>
-<span class="lineNum">     113 </span>                :            : 
-<span class="lineNum">     114 </span>        [<span class="branchNoExec" title="Branch 0 was not executed"> # </span><span class="branchNoExec" title="Branch 1 was not executed"> # </span>]:<span class="lineNoCov">          0 :       for (ncomp_t c=0; c&lt;ncomp; ++c) {</span>
-<span class="lineNum">     115 </span>        [<span class="branchNoExec" title="Branch 2 was not executed"> # </span><span class="branchNoExec" title="Branch 3 was not executed"> # </span>]:<span class="lineNoCov">          0 :         tk::real m = lookup( mean(depvar,c), moments );         // &lt;Y&gt;</span>
-<span class="lineNum">     116 </span>                :            :         if (m&lt;1.0e-8 || m&gt;1.0-1.0e-8) m = 0.5;
-<span class="lineNum">     117 </span>                :            : 
-<span class="lineNum">     118 </span>                :            :         //S[c] = 0.5;
+<span class="lineNum">     102 </span>                :            :       using tk::ctr::Term;
+<span class="lineNum">     103 </span>                :            :       using tk::ctr::Moment;
+<span class="lineNum">     104 </span>                :            :       using tk::ctr::Product;
+<span class="lineNum">     105 </span>                :            : 
+<span class="lineNum">     106 </span>                :            :       // note: ncomp = K = N-1
+<span class="lineNum">     107 </span>                :            : 
+<span class="lineNum">     108 </span>                :            :       // statistics nomenclature:
+<span class="lineNum">     109 </span>                :            :       //   Y = instantaneous mass fraction
+<span class="lineNum">     110 </span>                :            :       //   R = instantaneous density
+<span class="lineNum">     111 </span>                :            :       //   y = Y - &lt;Y&gt;, mass fraction fluctuation about its mean
+<span class="lineNum">     112 </span>                :            :       //   r = R - &lt;R&gt;, density fluctuation about its mean
+<span class="lineNum">     113 </span>                :            :       // &lt;Y&gt; = mean mass fraction
+<span class="lineNum">     114 </span>                :            :       // &lt;R&gt; = mean density
+<span class="lineNum">     115 </span>                :            : 
+<span class="lineNum">     116 </span>                :            :       // &lt;R&gt;
+<span class="lineNum">     117 </span>        [<span class="branchNoExec" title="Branch 2 was not executed"> # </span><span class="branchNoExec" title="Branch 3 was not executed"> # </span>]:<span class="lineNoCov">          0 :       tk::real R = lookup( mean(depvar,ncomp), moments );</span>
+<span class="lineNum">     118 </span>        [<span class="branchNoExec" title="Branch 0 was not executed"> # </span><span class="branchNoExec" title="Branch 1 was not executed"> # </span>]:<span class="lineNoCov">          0 :       if (R &lt; 1.0e-8) R = 1.0;</span>
 <span class="lineNum">     119 </span>                :            : 
-<span class="lineNum">     120 </span>[<span class="branchNoExec" title="Branch 0 was not executed"> # </span><span class="branchNoExec" title="Branch 1 was not executed"> # </span>][<span class="branchNoExec" title="Branch 2 was not executed"> # </span><span class="branchNoExec" title="Branch 3 was not executed"> # </span>]:<span class="lineNoCov">          0 :         if (S[c] &lt; 0.0 || S[c] &gt; 1.0) {</span>
-<span class="lineNum">         </span>        [<span class="branchNoExec" title="Branch 4 was not executed"> # </span><span class="branchNoExec" title="Branch 5 was not executed"> # </span>]
-<span class="lineNum">     121 </span>                :<span class="lineNoCov">          0 :           std::cout &lt;&lt; S[c] &lt;&lt; &quot; &quot;;</span>
-<span class="lineNum">     122 </span>                :            :           //S[c] = 0.5;
-<span class="lineNum">     123 </span>                :            :         }
-<span class="lineNum">     124 </span>                :            :       }
-<span class="lineNum">     125 </span>                :<span class="lineNoCov">          0 :     }</span>
-<span class="lineNum">     126 </span>                :            : };
+<span class="lineNum">     120 </span>                :            :       // &lt;RY^c&gt;
+<span class="lineNum">     121 </span>                :<span class="lineNoCov">          0 :       std::vector&lt; tk::real &gt; RY( ncomp, 0.0 );</span>
+<span class="lineNum">     122 </span>        [<span class="branchNoExec" title="Branch 0 was not executed"> # </span><span class="branchNoExec" title="Branch 1 was not executed"> # </span>]:<span class="lineNoCov">          0 :       for (ncomp_t c=0; c&lt;ncomp; ++c) {</span>
+<span class="lineNum">     123 </span>                :            :         Term tR( 'Y', ncomp, Moment::ORDINARY );
+<span class="lineNum">     124 </span>                :            :         Term tY( 'Y', c, Moment::ORDINARY );
+<span class="lineNum">     125 </span>[<span class="branchNoExec" title="Branch 1 was not executed"> # </span><span class="branchNoExec" title="Branch 2 was not executed"> # </span>][<span class="branchNoExec" title="Branch 4 was not executed"> # </span><span class="branchNoExec" title="Branch 5 was not executed"> # </span>]:<span class="lineNoCov">          0 :         RY[c] = lookup( Product({tR,tY}), moments );</span>
+<span class="lineNum">     126 </span>                :            :       }
 <span class="lineNum">     127 </span>                :            : 
-<span class="lineNum">     128 </span>                :            : //! List of all MixDirichlet's coefficients policies
-<span class="lineNum">     129 </span>                :            : using MixDirichletCoeffPolicies = brigand::list&lt; MixDirichletHomCoeffConst &gt;;
-<span class="lineNum">     130 </span>                :            : 
-<span class="lineNum">     131 </span>                :            : } // walker::
-<span class="lineNum">     132 </span>                :            : 
-<span class="lineNum">     133 </span>                :            : #endif // MixDirichletCoeffPolicy_h
+<span class="lineNum">     128 </span>                :            :       // Reynolds means
+<span class="lineNum">     129 </span>                :            : 
+<span class="lineNum">     130 </span>                :            :       // Reynolds means, Yc
+<span class="lineNum">     131 </span>        [<span class="branchNoExec" title="Branch 1 was not executed"> # </span><span class="branchNoExec" title="Branch 2 was not executed"> # </span>]:<span class="lineNoCov">          0 :       std::vector&lt; tk::real &gt; Y( ncomp, 0.0 );</span>
+<span class="lineNum">     132 </span>        [<span class="branchNoExec" title="Branch 0 was not executed"> # </span><span class="branchNoExec" title="Branch 1 was not executed"> # </span>]:<span class="lineNoCov">          0 :       for (ncomp_t c=0; c&lt;ncomp; ++c) {</span>
+<span class="lineNum">     133 </span>[<span class="branchNoExec" title="Branch 1 was not executed"> # </span><span class="branchNoExec" title="Branch 2 was not executed"> # </span>][<span class="branchNoExec" title="Branch 4 was not executed"> # </span><span class="branchNoExec" title="Branch 5 was not executed"> # </span>]:<span class="lineNoCov">          0 :         Y[c] = lookup( mean(depvar,c), moments );</span>
+<span class="lineNum">     134 </span>        [<span class="branchNoExec" title="Branch 1 was not executed"> # </span><span class="branchNoExec" title="Branch 2 was not executed"> # </span>]:<span class="lineNoCov">          0 :         std::cout &lt;&lt; &quot;Y: &quot; &lt;&lt; Y[c] &lt;&lt; ' ';</span>
+<span class="lineNum">     135 </span>                :            :       }
+<span class="lineNum">     136 </span>                :            :       std::cout &lt;&lt; std::endl;
+<span class="lineNum">     137 </span>                :            : 
+<span class="lineNum">     138 </span>                :            :       // sum of Yc
+<span class="lineNum">     139 </span>                :            :       tk::real sumY = 0.0;
+<span class="lineNum">     140 </span>        [<span class="branchNoExec" title="Branch 0 was not executed"> # </span><span class="branchNoExec" title="Branch 1 was not executed"> # </span>]:<span class="lineNoCov">          0 :       for (ncomp_t c=0; c&lt;ncomp; ++c) sumY += Y[c];</span>
+<span class="lineNum">     141 </span>                :            : 
+<span class="lineNum">     142 </span>                :            :       // Y|Kc
+<span class="lineNum">     143 </span>        [<span class="branchNoExec" title="Branch 1 was not executed"> # </span><span class="branchNoExec" title="Branch 2 was not executed"> # </span>]:<span class="lineNoCov">          0 :       std::vector&lt; tk::real &gt; YK( ncomp, 0.0 );</span>
+<span class="lineNum">     144 </span>        [<span class="branchNoExec" title="Branch 0 was not executed"> # </span><span class="branchNoExec" title="Branch 1 was not executed"> # </span>]:<span class="lineNoCov">          0 :       for (ncomp_t c=0; c&lt;ncomp; ++c) {</span>
+<span class="lineNum">     145 </span>[<span class="branchNoExec" title="Branch 1 was not executed"> # </span><span class="branchNoExec" title="Branch 2 was not executed"> # </span>][<span class="branchNoExec" title="Branch 4 was not executed"> # </span><span class="branchNoExec" title="Branch 5 was not executed"> # </span>]:<span class="lineNoCov">          0 :         YK[c] = sumY - lookup( mean(depvar,c), moments );</span>
+<span class="lineNum">     146 </span>        [<span class="branchNoExec" title="Branch 1 was not executed"> # </span><span class="branchNoExec" title="Branch 2 was not executed"> # </span>]:<span class="lineNoCov">          0 :         std::cout &lt;&lt; &quot;YK: &quot; &lt;&lt; YK[c] &lt;&lt; ' ';</span>
+<span class="lineNum">     147 </span>                :            :       }
+<span class="lineNum">     148 </span>                :            :       std::cout &lt;&lt; std::endl;
+<span class="lineNum">     149 </span>                :            : 
+<span class="lineNum">     150 </span>                :            :       // Favre means
+<span class="lineNum">     151 </span>                :            : 
+<span class="lineNum">     152 </span>                :            :       // Ytc
+<span class="lineNum">     153 </span>        [<span class="branchNoExec" title="Branch 1 was not executed"> # </span><span class="branchNoExec" title="Branch 2 was not executed"> # </span>]:<span class="lineNoCov">          0 :       std::vector&lt; tk::real &gt; Yt( ncomp, 0.0 );</span>
+<span class="lineNum">     154 </span>        [<span class="branchNoExec" title="Branch 0 was not executed"> # </span><span class="branchNoExec" title="Branch 1 was not executed"> # </span>]:<span class="lineNoCov">          0 :       for (ncomp_t c=0; c&lt;ncomp; ++c) {</span>
+<span class="lineNum">     155 </span>                :<span class="lineNoCov">          0 :         Yt[c] = RY[c] / R;</span>
+<span class="lineNum">     156 </span>        [<span class="branchNoExec" title="Branch 1 was not executed"> # </span><span class="branchNoExec" title="Branch 2 was not executed"> # </span>]:<span class="lineNoCov">          0 :         std::cout &lt;&lt; &quot;Yt: &quot; &lt;&lt; Yt[c] &lt;&lt; ' ';</span>
+<span class="lineNum">     157 </span>                :            :       }
+<span class="lineNum">     158 </span>                :            :       std::cout &lt;&lt; std::endl;
+<span class="lineNum">     159 </span>                :            : 
+<span class="lineNum">     160 </span>                :            :       // sum of Ytc
+<span class="lineNum">     161 </span>                :            :       tk::real sumYt = 0.0;
+<span class="lineNum">     162 </span>        [<span class="branchNoExec" title="Branch 0 was not executed"> # </span><span class="branchNoExec" title="Branch 1 was not executed"> # </span>]:<span class="lineNoCov">          0 :       for (ncomp_t c=0; c&lt;ncomp; ++c) sumYt += Yt[c];</span>
+<span class="lineNum">     163 </span>                :            : 
+<span class="lineNum">     164 </span>                :            :       // Yt|Kc
+<span class="lineNum">     165 </span>        [<span class="branchNoExec" title="Branch 1 was not executed"> # </span><span class="branchNoExec" title="Branch 2 was not executed"> # </span>]:<span class="lineNoCov">          0 :       std::vector&lt; tk::real &gt; YtK( ncomp, 0.0 );</span>
+<span class="lineNum">     166 </span>        [<span class="branchNoExec" title="Branch 0 was not executed"> # </span><span class="branchNoExec" title="Branch 1 was not executed"> # </span>]:<span class="lineNoCov">          0 :       for (ncomp_t c=0; c&lt;ncomp; ++c) {</span>
+<span class="lineNum">     167 </span>                :<span class="lineNoCov">          0 :         YtK[c] = sumYt - Yt[c];</span>
+<span class="lineNum">     168 </span>        [<span class="branchNoExec" title="Branch 1 was not executed"> # </span><span class="branchNoExec" title="Branch 2 was not executed"> # </span>]:<span class="lineNoCov">          0 :         std::cout &lt;&lt; &quot;YtK: &quot; &lt;&lt; YtK[c] &lt;&lt; ' ';</span>
+<span class="lineNum">     169 </span>                :            :       }
+<span class="lineNum">     170 </span>                :            :       std::cout &lt;&lt; std::endl;
+<span class="lineNum">     171 </span>                :            : 
+<span class="lineNum">     172 </span>                :            :       // Sc
+<span class="lineNum">     173 </span>        [<span class="branchNoExec" title="Branch 0 was not executed"> # </span><span class="branchNoExec" title="Branch 1 was not executed"> # </span>]:<span class="lineNoCov">          0 :       for (ncomp_t c=0; c&lt;ncomp; ++c) {</span>
+<span class="lineNum">     174 </span>                :            :         // 1st attempt at forcing &lt;rho&gt; = const
+<span class="lineNum">     175 </span>                :            :         //S[c] = 1.0/(1.0-YK[c]) - (1.0-Yt[c])/(1.0-YtK[c]);
+<span class="lineNum">     176 </span>                :            :         // 2nd attempt at forcing &lt;rho&gt; = const
+<span class="lineNum">     177 </span>                :<span class="lineNoCov">          0 :         S[c] = YK[c]/(1.0-YK[c]) - (1.0-Yt[c])*YtK[c]/(1.0-YtK[c]) + Yt[c];</span>
+<span class="lineNum">     178 </span>                :            :         //std::cout &lt;&lt; &quot;S: &quot; &lt;&lt; S[c] &lt;&lt; &quot;, YKc: &quot; &lt;&lt; YK[c]
+<span class="lineNum">     179 </span>                :            :         //          &lt;&lt; &quot;, Ytc: &quot; &lt;&lt; Yt[c] &lt;&lt; &quot;, YtKc: &quot; &lt;&lt; YtK[c] &lt;&lt; ' ';
+<span class="lineNum">     180 </span>                :            :       }
+<span class="lineNum">     181 </span>                :            :       //std::cout &lt;&lt; std::endl;
+<span class="lineNum">     182 </span>                :            : 
+<span class="lineNum">     183 </span>        [<span class="branchNoExec" title="Branch 0 was not executed"> # </span><span class="branchNoExec" title="Branch 1 was not executed"> # </span>]:<span class="lineNoCov">          0 :       for (ncomp_t c=0; c&lt;ncomp; ++c) {</span>
+<span class="lineNum">     184 </span>[<span class="branchNoExec" title="Branch 0 was not executed"> # </span><span class="branchNoExec" title="Branch 1 was not executed"> # </span>][<span class="branchNoExec" title="Branch 2 was not executed"> # </span><span class="branchNoExec" title="Branch 3 was not executed"> # </span>]:<span class="lineNoCov">          0 :         if (S[c] &lt; 0.0 || S[c] &gt; 1.0) {</span>
+<span class="lineNum">         </span>        [<span class="branchNoExec" title="Branch 4 was not executed"> # </span><span class="branchNoExec" title="Branch 5 was not executed"> # </span>]
+<span class="lineNum">     185 </span>[<span class="branchNoExec" title="Branch 1 was not executed"> # </span><span class="branchNoExec" title="Branch 2 was not executed"> # </span>][<span class="branchNoExec" title="Branch 4 was not executed"> # </span><span class="branchNoExec" title="Branch 5 was not executed"> # </span>]:<span class="lineNoCov">          0 :           std::cout &lt;&lt; &quot;S[&quot; &lt;&lt; c &lt;&lt; &quot;] bounds violated: &quot; &lt;&lt; S[c] &lt;&lt; ' ';</span>
+<span class="lineNum">     186 </span>                :<span class="lineNoCov">          0 :           S[c] = 0.5;</span>
+<span class="lineNum">     187 </span>                :            :         }
+<span class="lineNum">     188 </span>                :            :       }
+<span class="lineNum">     189 </span>                :            :       std::cout &lt;&lt; std::endl;
+<span class="lineNum">     190 </span>                :<span class="lineNoCov">          0 :     }</span>
+<span class="lineNum">     191 </span>                :            : };
+<span class="lineNum">     192 </span>                :            : 
+<span class="lineNum">     193 </span>                :            : //! List of all MixDirichlet's coefficients policies
+<span class="lineNum">     194 </span>                :            : using MixDirichletCoeffPolicies = brigand::list&lt; MixDirichletHomCoeffConst &gt;;
+<span class="lineNum">     195 </span>                :            : 
+<span class="lineNum">     196 </span>                :            : } // walker::
+<span class="lineNum">     197 </span>                :            : 
+<span class="lineNum">     198 </span>                :            : #endif // MixDirichletCoeffPolicy_h
 </pre>
       </td>
     </tr>
