@@ -24,20 +24,20 @@
           </tr>
           <tr>
             <td class="headerItem">Commit:</td>
-            <td class="headerValue"><a href="https://github.com/quinoacomputing/quinoa/commit/d10bc3c">Quinoa_v0.2-2284-gd10bc3c</a></td>
+            <td class="headerValue"><a href="https://github.com/quinoacomputing/quinoa/commit/4509858">Quinoa_v0.2-2328-g4509858</a></td>
             <td></td>
             <td class="headerItem">Lines:</td>
             <td class="headerCovTableEntry">0</td>
-            <td class="headerCovTableEntry">473</td>
+            <td class="headerCovTableEntry">477</td>
             <td class="headerCovTableEntryLo">0.0 %</td>
           </tr>
           <tr>
             <td class="headerItem">Date:</td>
-            <td class="headerValue">2019-03-10 18:55:44</td>
+            <td class="headerValue">2019-03-13 07:13:33</td>
             <td></td>
             <td class="headerItem">Functions:</td>
             <td class="headerCovTableEntry">0</td>
-            <td class="headerCovTableEntry">28</td>
+            <td class="headerCovTableEntry">29</td>
             <td class="headerCovTableEntryLo">0.0 %</td>
           </tr>
           <tr>
@@ -911,599 +911,614 @@
 <span class="lineNum">     837 </span>                :<span class="lineNoCov">          0 : }</span>
 <a name="838"><span class="lineNum">     838 </span>                :            : </a>
 <span class="lineNum">     839 </span>                :            : void
-<span class="lineNum">     840 </span>                :<span class="lineNoCov">          0 : DG::setup( tk::real v )</span>
+<span class="lineNum">     840 </span>                :<span class="lineNoCov">          0 : DG::ResumeFromSync()</span>
 <span class="lineNum">     841 </span>                :            : // *****************************************************************************
-<span class="lineNum">     842 </span>                :            : // Set initial conditions, generate lhs, output mesh
-<span class="lineNum">     843 </span>                :            : //! \param[in] v Total mesh volume
-<span class="lineNum">     844 </span>                :            : // *****************************************************************************
-<span class="lineNum">     845 </span>                :            : {
-<span class="lineNum">     846 </span>                :<span class="lineNoCov">          0 :   tk::destroy(m_msumset);</span>
-<span class="lineNum">     847 </span>                :            : 
-<span class="lineNum">     848 </span>                :<span class="lineNoCov">          0 :   auto d = Disc();</span>
-<span class="lineNum">     849 </span>                :            : 
-<span class="lineNum">     850 </span>                :            :   // Store total mesh volume
-<span class="lineNum">     851 </span>                :<span class="lineNoCov">          0 :   m_vol = v;</span>
-<span class="lineNum">     852 </span>                :            : 
-<span class="lineNum">     853 </span>                :            :   // Basic error checking on sizes of element geometry data and connectivity
-<span class="lineNum">     854 </span>                :            :   Assert( m_geoElem.nunk() == m_lhs.nunk(), &quot;Size mismatch in DG::setup()&quot; );
-<span class="lineNum">     855 </span>                :            :   Assert( d-&gt;Inpoel().size()/4 == m_lhs.nunk(),
-<span class="lineNum">     856 </span>                :            :           &quot;Size mismatch in DG::setup()&quot; );
-<span class="lineNum">     857 </span>                :            : 
-<span class="lineNum">     858 </span>                :            :   // Compute left-hand side of discrete PDEs
-<span class="lineNum">     859 </span>                :<span class="lineNoCov">          0 :   lhs();</span>
+<span class="lineNum">     842 </span>                :            : //  Return from migration
+<span class="lineNum">     843 </span>                :            : //! \details This is called when load balancing (LB) completes. The presence of
+<span class="lineNum">     844 </span>                :            : //!   this function does not affect whether or not we block on LB.
+<span class="lineNum">     845 </span>                :            : // *****************************************************************************
+<span class="lineNum">     846 </span>                :            : {
+<span class="lineNum">     847 </span>                :<span class="lineNoCov">          0 :   if (Disc()-&gt;It() == 0) Throw( &quot;it = 0 in ResumeFromSync()&quot; );</span>
+<span class="lineNum">     848 </span>                :            : 
+<span class="lineNum">     849 </span>                :<span class="lineNoCov">          0 :   if (!g_inputdeck.get&lt; tag::cmd, tag::nonblocking &gt;()) next();</span>
+<span class="lineNum">     850 </span>                :<span class="lineNoCov">          0 : }</span>
+<a name="851"><span class="lineNum">     851 </span>                :            : </a>
+<span class="lineNum">     852 </span>                :            : void
+<span class="lineNum">     853 </span>                :<span class="lineNoCov">          0 : DG::setup( tk::real v )</span>
+<span class="lineNum">     854 </span>                :            : // *****************************************************************************
+<span class="lineNum">     855 </span>                :            : // Set initial conditions, generate lhs, output mesh
+<span class="lineNum">     856 </span>                :            : //! \param[in] v Total mesh volume
+<span class="lineNum">     857 </span>                :            : // *****************************************************************************
+<span class="lineNum">     858 </span>                :            : {
+<span class="lineNum">     859 </span>                :<span class="lineNoCov">          0 :   tk::destroy(m_msumset);</span>
 <span class="lineNum">     860 </span>                :            : 
-<span class="lineNum">     861 </span>                :            :   // Set initial conditions for all PDEs
-<span class="lineNum">     862 </span>                :<span class="lineNoCov">          0 :   for (const auto&amp; eq : g_dgpde) </span>
-<span class="lineNum">     863 </span>                :<span class="lineNoCov">          0 :     eq.initialize( m_lhs, d-&gt;Inpoel(), d-&gt;Coord(), m_u, d-&gt;T(),</span>
-<span class="lineNum">     864 </span>                :<span class="lineNoCov">          0 :                    m_fd.Esuel().size()/4 );</span>
-<span class="lineNum">     865 </span>                :            :   m_un = m_u;
-<span class="lineNum">     866 </span>                :            : 
-<span class="lineNum">     867 </span>                :<span class="lineNoCov">          0 :   for (std::size_t e=0; e&lt;m_fd.Esuel().size()/4; ++e)</span>
-<span class="lineNum">     868 </span>                :<span class="lineNoCov">          0 :     for (std::size_t c=0; c&lt;m_limFunc.nprop(); ++c)</span>
-<span class="lineNum">     869 </span>                :<span class="lineNoCov">          0 :       m_limFunc(e,c,0)=1.0;</span>
+<span class="lineNum">     861 </span>                :<span class="lineNoCov">          0 :   auto d = Disc();</span>
+<span class="lineNum">     862 </span>                :            : 
+<span class="lineNum">     863 </span>                :            :   // Store total mesh volume
+<span class="lineNum">     864 </span>                :<span class="lineNoCov">          0 :   m_vol = v;</span>
+<span class="lineNum">     865 </span>                :            : 
+<span class="lineNum">     866 </span>                :            :   // Basic error checking on sizes of element geometry data and connectivity
+<span class="lineNum">     867 </span>                :            :   Assert( m_geoElem.nunk() == m_lhs.nunk(), &quot;Size mismatch in DG::setup()&quot; );
+<span class="lineNum">     868 </span>                :            :   Assert( d-&gt;Inpoel().size()/4 == m_lhs.nunk(),
+<span class="lineNum">     869 </span>                :            :           &quot;Size mismatch in DG::setup()&quot; );
 <span class="lineNum">     870 </span>                :            : 
-<span class="lineNum">     871 </span>                :            :   // Communicate for initial solution limiting
-<span class="lineNum">     872 </span>                :<span class="lineNoCov">          0 :   contribute( CkCallback(CkReductionTarget(Transporter,sendinit), d-&gt;Tr()) );</span>
-<span class="lineNum">     873 </span>                :<span class="lineNoCov">          0 : }</span>
-<a name="874"><span class="lineNum">     874 </span>                :            : </a>
-<span class="lineNum">     875 </span>                :            : void
-<span class="lineNum">     876 </span>                :<span class="lineNoCov">          0 : DG::limitIC()</span>
-<span class="lineNum">     877 </span>                :            : // *****************************************************************************
-<span class="lineNum">     878 </span>                :            : //  Limit initial solution and prepare for time stepping
-<span class="lineNum">     879 </span>                :            : //! \details This function applies limiter to initial solution and then proceeds
-<span class="lineNum">     880 </span>                :            : //!   to communicate this limited solution and begin time stepping
-<span class="lineNum">     881 </span>                :            : // *****************************************************************************
-<span class="lineNum">     882 </span>                :            : {
-<span class="lineNum">     883 </span>                :            :   // Limit initial solution
-<span class="lineNum">     884 </span>                :<span class="lineNoCov">          0 :   const auto limiter = g_inputdeck.get&lt; tag::discr, tag::limiter &gt;();</span>
-<span class="lineNum">     885 </span>                :<span class="lineNoCov">          0 :   if (limiter == ctr::LimiterType::WENOP1)</span>
-<span class="lineNum">     886 </span>                :            :   {
-<span class="lineNum">     887 </span>                :<span class="lineNoCov">          0 :     WENO_P1( m_fd.Esuel(), 0, m_u, m_limFunc );</span>
-<span class="lineNum">     888 </span>                :            : 
-<span class="lineNum">     889 </span>                :<span class="lineNoCov">          0 :     const auto ndof = inciter::g_inputdeck.get&lt; tag::discr, tag::ndof &gt;();</span>
-<span class="lineNum">     890 </span>                :<span class="lineNoCov">          0 :     const auto ncomp= m_u.nprop()/ndof;</span>
-<span class="lineNum">     891 </span>                :<span class="lineNoCov">          0 :     for (inciter::ncomp_t c=0; c&lt;ncomp; ++c)</span>
-<span class="lineNum">     892 </span>                :            :     {
-<span class="lineNum">     893 </span>                :<span class="lineNoCov">          0 :       auto mark = c*ndof;</span>
-<span class="lineNum">     894 </span>                :<span class="lineNoCov">          0 :       auto lmark = c*(ndof-1);</span>
-<span class="lineNum">     895 </span>                :<span class="lineNoCov">          0 :       for (std::size_t e=0; e&lt;m_u.nunk(); ++e)</span>
-<span class="lineNum">     896 </span>                :            :       {
-<span class="lineNum">     897 </span>                :            :         // limit P1 dofs
-<span class="lineNum">     898 </span>                :<span class="lineNoCov">          0 :         m_u( e, mark+1, 0 ) = m_limFunc( e, lmark  , 0 ) * m_u( e, mark+1, 0 );</span>
-<span class="lineNum">     899 </span>                :<span class="lineNoCov">          0 :         m_u( e, mark+2, 0 ) = m_limFunc( e, lmark+1, 0 ) * m_u( e, mark+2, 0 );</span>
-<span class="lineNum">     900 </span>                :<span class="lineNoCov">          0 :         m_u( e, mark+3, 0 ) = m_limFunc( e, lmark+2, 0 ) * m_u( e, mark+3, 0 );</span>
-<span class="lineNum">     901 </span>                :            :       }
-<span class="lineNum">     902 </span>                :            :     }
-<span class="lineNum">     903 </span>                :            :   }
-<span class="lineNum">     904 </span>                :            : 
-<span class="lineNum">     905 </span>                :            :   // Output initial conditions to file (regardless of whether it was requested)
-<span class="lineNum">     906 </span>                :<span class="lineNoCov">          0 :   writeFields( CkCallback(CkIndex_DG::start(), thisProxy[thisIndex]) );</span>
-<span class="lineNum">     907 </span>                :<span class="lineNoCov">          0 : }</span>
-<a name="908"><span class="lineNum">     908 </span>                :            : </a>
-<span class="lineNum">     909 </span>                :            : void
-<span class="lineNum">     910 </span>                :<span class="lineNoCov">          0 : DG::start()</span>
-<span class="lineNum">     911 </span>                :            : // *****************************************************************************
-<span class="lineNum">     912 </span>                :            : //  Start time stepping
-<span class="lineNum">     913 </span>                :            : // *****************************************************************************
-<span class="lineNum">     914 </span>                :            : {
-<span class="lineNum">     915 </span>                :<span class="lineNoCov">          0 :   auto d = Disc();</span>
-<span class="lineNum">     916 </span>                :            : 
-<span class="lineNum">     917 </span>                :            :   // Start timer measuring time stepping wall clock time
-<span class="lineNum">     918 </span>                :<span class="lineNoCov">          0 :   d-&gt;Timer().zero();</span>
-<span class="lineNum">     919 </span>                :            : 
-<span class="lineNum">     920 </span>                :<span class="lineNoCov">          0 :   tk::real fdt = 0.0;</span>
-<span class="lineNum">     921 </span>                :            :   // Start time stepping
-<span class="lineNum">     922 </span>                :            :   contribute( sizeof(tk::real), &amp;fdt, CkReduction::nop,
-<span class="lineNum">     923 </span>                :<span class="lineNoCov">          0 :               CkCallback(CkReductionTarget(Transporter,advance), d-&gt;Tr()) );</span>
-<span class="lineNum">     924 </span>                :<span class="lineNoCov">          0 : }</span>
-<span class="lineNum">     925 </span>                :            : 
-<span class="lineNum">     926 </span>                :            : void
-<span class="lineNum">     927 </span>                :<span class="lineNoCov">          0 : DG::sendinit()</span>
-<span class="lineNum">     928 </span>                :            : // *****************************************************************************
-<span class="lineNum">     929 </span>                :            : // Send own chare-boundary data to neighboring chares
-<span class="lineNum">     930 </span>                :            : // *****************************************************************************
-<span class="lineNum">     931 </span>                :            : {
-<span class="lineNum">     932 </span>                :            : //   if (g_inputdeck.get&lt; tag::cmd, tag::chare &gt;() ||
-<span class="lineNum">     933 </span>                :            : //       g_inputdeck.get&lt; tag::cmd, tag::quiescence &gt;())
-<span class="lineNum">     934 </span>                :            : //     stateProxy.ckLocalBranch()-&gt;insert( &quot;DG&quot;, thisIndex, CkMyPe(), Disc()-&gt;It(),
-<span class="lineNum">     935 </span>                :            : //                                         &quot;advance&quot; );
-<span class="lineNum">     936 </span>                :            : 
-<span class="lineNum">     937 </span>                :            :   // communicate solution ghost data (if any)
-<span class="lineNum">     938 </span>                :<span class="lineNoCov">          0 :   if (m_ghostData.empty())</span>
-<span class="lineNum">     939 </span>                :<span class="lineNoCov">          0 :     cominit_complete();</span>
-<span class="lineNum">     940 </span>                :            :   else
-<span class="lineNum">     941 </span>                :<span class="lineNoCov">          0 :     for(const auto&amp; n : m_ghostData) {</span>
-<span class="lineNum">     942 </span>                :            :       std::vector&lt; std::size_t &gt; tetid;
-<span class="lineNum">     943 </span>                :<span class="lineNoCov">          0 :       std::vector&lt; std::vector&lt; tk::real &gt; &gt; u;</span>
-<span class="lineNum">     944 </span>                :<span class="lineNoCov">          0 :       for(const auto&amp; i : n.second) {</span>
-<span class="lineNum">     945 </span>                :            :         Assert( i.first &lt; m_fd.Esuel().size()/4, &quot;Sending solution ghost data&quot; );
-<span class="lineNum">     946 </span>                :<span class="lineNoCov">          0 :         tetid.push_back( i.first );</span>
-<span class="lineNum">     947 </span>                :<span class="lineNoCov">          0 :         u.push_back( m_u[i.first] );</span>
-<span class="lineNum">     948 </span>                :            :       }
-<span class="lineNum">     949 </span>                :<span class="lineNoCov">          0 :       thisProxy[ n.first ].cominit( thisIndex, tetid, u );</span>
-<span class="lineNum">     950 </span>                :            :     }
-<span class="lineNum">     951 </span>                :            : 
-<span class="lineNum">     952 </span>                :<span class="lineNoCov">          0 :   owninit_complete();</span>
-<span class="lineNum">     953 </span>                :<span class="lineNoCov">          0 : }</span>
-<a name="954"><span class="lineNum">     954 </span>                :            : </a>
-<span class="lineNum">     955 </span>                :            : void
-<span class="lineNum">     956 </span>                :<span class="lineNoCov">          0 : DG::cominit( int fromch,</span>
-<span class="lineNum">     957 </span>                :<span class="lineNoCov">          0 :              const std::vector&lt; std::size_t &gt;&amp; tetid,</span>
-<span class="lineNum">     958 </span>                :<span class="lineNoCov">          0 :              const std::vector&lt; std::vector&lt; tk::real &gt; &gt;&amp; u )</span>
-<span class="lineNum">     959 </span>                :            : // *****************************************************************************
-<span class="lineNum">     960 </span>                :            : //  Receive chare-boundary solution ghost data from neighboring chares
-<span class="lineNum">     961 </span>                :            : //! \param[in] fromch Sender chare id
-<span class="lineNum">     962 </span>                :            : //! \param[in] tetid Ghost tet ids we receive solution data for
-<span class="lineNum">     963 </span>                :            : //! \param[in] u Solution ghost data
-<span class="lineNum">     964 </span>                :            : //! \details This function receives contributions to m_u from fellow chares.
-<span class="lineNum">     965 </span>                :            : // *****************************************************************************
-<span class="lineNum">     966 </span>                :            : {
-<span class="lineNum">     967 </span>                :            : //   if (g_inputdeck.get&lt; tag::cmd, tag::chare &gt;() ||
-<span class="lineNum">     968 </span>                :            : //       g_inputdeck.get&lt; tag::cmd, tag::quiescence &gt;())
-<span class="lineNum">     969 </span>                :            : //     stateProxy.ckLocalBranch()-&gt;insert( &quot;DG&quot;, thisIndex, CkMyPe(), Disc()-&gt;It(),
-<span class="lineNum">     970 </span>                :            : //                                         &quot;cominit&quot; );
-<span class="lineNum">     971 </span>                :            : 
-<span class="lineNum">     972 </span>                :            :   Assert( u.size() == tetid.size(), &quot;Size mismatch in DG::cominit()&quot; );
-<span class="lineNum">     973 </span>                :            : 
-<span class="lineNum">     974 </span>                :            :   // Find local-to-ghost tet id map for sender chare
-<span class="lineNum">     975 </span>                :<span class="lineNoCov">          0 :   const auto&amp; n = tk::cref_find( m_ghost, fromch );</span>
-<span class="lineNum">     976 </span>                :            : 
-<span class="lineNum">     977 </span>                :<span class="lineNoCov">          0 :   for (std::size_t i=0; i&lt;tetid.size(); ++i) {</span>
-<span class="lineNum">     978 </span>                :<span class="lineNoCov">          0 :     auto j = tk::cref_find( n, tetid[i] );</span>
-<span class="lineNum">     979 </span>                :            :     Assert( j &gt;= m_fd.Esuel().size()/4, &quot;Receiving solution non-ghost data&quot; );
-<span class="lineNum">     980 </span>                :            :     Assert( j &lt; m_u.nunk(), &quot;Indexing out of bounds in DG::cominit()&quot; );
-<span class="lineNum">     981 </span>                :            :     Assert( m_recvGhost.insert( j ).second,
-<span class="lineNum">     982 </span>                :            :             &quot;Failed to store local tetid of received ghost tetid&quot; );
-<span class="lineNum">     983 </span>                :<span class="lineNoCov">          0 :     for (std::size_t c=0; c&lt;m_u.nprop(); ++c)</span>
-<span class="lineNum">     984 </span>                :<span class="lineNoCov">          0 :       m_u(j,c,0) = u[i][c];</span>
-<span class="lineNum">     985 </span>                :            :   }
+<span class="lineNum">     871 </span>                :            :   // Compute left-hand side of discrete PDEs
+<span class="lineNum">     872 </span>                :<span class="lineNoCov">          0 :   lhs();</span>
+<span class="lineNum">     873 </span>                :            : 
+<span class="lineNum">     874 </span>                :            :   // Set initial conditions for all PDEs
+<span class="lineNum">     875 </span>                :<span class="lineNoCov">          0 :   for (const auto&amp; eq : g_dgpde) </span>
+<span class="lineNum">     876 </span>                :<span class="lineNoCov">          0 :     eq.initialize( m_lhs, d-&gt;Inpoel(), d-&gt;Coord(), m_u, d-&gt;T(),</span>
+<span class="lineNum">     877 </span>                :<span class="lineNoCov">          0 :                    m_fd.Esuel().size()/4 );</span>
+<span class="lineNum">     878 </span>                :            :   m_un = m_u;
+<span class="lineNum">     879 </span>                :            : 
+<span class="lineNum">     880 </span>                :<span class="lineNoCov">          0 :   for (std::size_t e=0; e&lt;m_fd.Esuel().size()/4; ++e)</span>
+<span class="lineNum">     881 </span>                :<span class="lineNoCov">          0 :     for (std::size_t c=0; c&lt;m_limFunc.nprop(); ++c)</span>
+<span class="lineNum">     882 </span>                :<span class="lineNoCov">          0 :       m_limFunc(e,c,0)=1.0;</span>
+<span class="lineNum">     883 </span>                :            : 
+<span class="lineNum">     884 </span>                :            :   // Communicate for initial solution limiting
+<span class="lineNum">     885 </span>                :<span class="lineNoCov">          0 :   contribute( CkCallback(CkReductionTarget(Transporter,sendinit), d-&gt;Tr()) );</span>
+<span class="lineNum">     886 </span>                :<span class="lineNoCov">          0 : }</span>
+<a name="887"><span class="lineNum">     887 </span>                :            : </a>
+<span class="lineNum">     888 </span>                :            : void
+<span class="lineNum">     889 </span>                :<span class="lineNoCov">          0 : DG::limitIC()</span>
+<span class="lineNum">     890 </span>                :            : // *****************************************************************************
+<span class="lineNum">     891 </span>                :            : //  Limit initial solution and prepare for time stepping
+<span class="lineNum">     892 </span>                :            : //! \details This function applies limiter to initial solution and then proceeds
+<span class="lineNum">     893 </span>                :            : //!   to communicate this limited solution and begin time stepping
+<span class="lineNum">     894 </span>                :            : // *****************************************************************************
+<span class="lineNum">     895 </span>                :            : {
+<span class="lineNum">     896 </span>                :            :   // Limit initial solution
+<span class="lineNum">     897 </span>                :<span class="lineNoCov">          0 :   const auto limiter = g_inputdeck.get&lt; tag::discr, tag::limiter &gt;();</span>
+<span class="lineNum">     898 </span>                :<span class="lineNoCov">          0 :   if (limiter == ctr::LimiterType::WENOP1)</span>
+<span class="lineNum">     899 </span>                :            :   {
+<span class="lineNum">     900 </span>                :<span class="lineNoCov">          0 :     WENO_P1( m_fd.Esuel(), 0, m_u, m_limFunc );</span>
+<span class="lineNum">     901 </span>                :            : 
+<span class="lineNum">     902 </span>                :<span class="lineNoCov">          0 :     const auto ndof = inciter::g_inputdeck.get&lt; tag::discr, tag::ndof &gt;();</span>
+<span class="lineNum">     903 </span>                :<span class="lineNoCov">          0 :     const auto ncomp= m_u.nprop()/ndof;</span>
+<span class="lineNum">     904 </span>                :<span class="lineNoCov">          0 :     for (inciter::ncomp_t c=0; c&lt;ncomp; ++c)</span>
+<span class="lineNum">     905 </span>                :            :     {
+<span class="lineNum">     906 </span>                :<span class="lineNoCov">          0 :       auto mark = c*ndof;</span>
+<span class="lineNum">     907 </span>                :<span class="lineNoCov">          0 :       auto lmark = c*(ndof-1);</span>
+<span class="lineNum">     908 </span>                :<span class="lineNoCov">          0 :       for (std::size_t e=0; e&lt;m_u.nunk(); ++e)</span>
+<span class="lineNum">     909 </span>                :            :       {
+<span class="lineNum">     910 </span>                :            :         // limit P1 dofs
+<span class="lineNum">     911 </span>                :<span class="lineNoCov">          0 :         m_u( e, mark+1, 0 ) = m_limFunc( e, lmark  , 0 ) * m_u( e, mark+1, 0 );</span>
+<span class="lineNum">     912 </span>                :<span class="lineNoCov">          0 :         m_u( e, mark+2, 0 ) = m_limFunc( e, lmark+1, 0 ) * m_u( e, mark+2, 0 );</span>
+<span class="lineNum">     913 </span>                :<span class="lineNoCov">          0 :         m_u( e, mark+3, 0 ) = m_limFunc( e, lmark+2, 0 ) * m_u( e, mark+3, 0 );</span>
+<span class="lineNum">     914 </span>                :            :       }
+<span class="lineNum">     915 </span>                :            :     }
+<span class="lineNum">     916 </span>                :            :   }
+<span class="lineNum">     917 </span>                :            : 
+<span class="lineNum">     918 </span>                :            :   // Output initial conditions to file (regardless of whether it was requested)
+<span class="lineNum">     919 </span>                :<span class="lineNoCov">          0 :   writeFields( CkCallback(CkIndex_DG::start(), thisProxy[thisIndex]) );</span>
+<span class="lineNum">     920 </span>                :<span class="lineNoCov">          0 : }</span>
+<a name="921"><span class="lineNum">     921 </span>                :            : </a>
+<span class="lineNum">     922 </span>                :            : void
+<span class="lineNum">     923 </span>                :<span class="lineNoCov">          0 : DG::start()</span>
+<span class="lineNum">     924 </span>                :            : // *****************************************************************************
+<span class="lineNum">     925 </span>                :            : //  Start time stepping
+<span class="lineNum">     926 </span>                :            : // *****************************************************************************
+<span class="lineNum">     927 </span>                :            : {
+<span class="lineNum">     928 </span>                :<span class="lineNoCov">          0 :   auto d = Disc();</span>
+<span class="lineNum">     929 </span>                :            : 
+<span class="lineNum">     930 </span>                :            :   // Start timer measuring time stepping wall clock time
+<span class="lineNum">     931 </span>                :<span class="lineNoCov">          0 :   d-&gt;Timer().zero();</span>
+<span class="lineNum">     932 </span>                :            : 
+<span class="lineNum">     933 </span>                :<span class="lineNoCov">          0 :   tk::real fdt = 0.0;</span>
+<span class="lineNum">     934 </span>                :            :   // Start time stepping
+<span class="lineNum">     935 </span>                :            :   contribute( sizeof(tk::real), &amp;fdt, CkReduction::nop,
+<span class="lineNum">     936 </span>                :<span class="lineNoCov">          0 :               CkCallback(CkReductionTarget(Transporter,advance), d-&gt;Tr()) );</span>
+<span class="lineNum">     937 </span>                :<span class="lineNoCov">          0 : }</span>
+<span class="lineNum">     938 </span>                :            : 
+<span class="lineNum">     939 </span>                :            : void
+<span class="lineNum">     940 </span>                :<span class="lineNoCov">          0 : DG::sendinit()</span>
+<span class="lineNum">     941 </span>                :            : // *****************************************************************************
+<span class="lineNum">     942 </span>                :            : // Send own chare-boundary data to neighboring chares
+<span class="lineNum">     943 </span>                :            : // *****************************************************************************
+<span class="lineNum">     944 </span>                :            : {
+<span class="lineNum">     945 </span>                :            : //   if (g_inputdeck.get&lt; tag::cmd, tag::chare &gt;() ||
+<span class="lineNum">     946 </span>                :            : //       g_inputdeck.get&lt; tag::cmd, tag::quiescence &gt;())
+<span class="lineNum">     947 </span>                :            : //     stateProxy.ckLocalBranch()-&gt;insert( &quot;DG&quot;, thisIndex, CkMyPe(), Disc()-&gt;It(),
+<span class="lineNum">     948 </span>                :            : //                                         &quot;advance&quot; );
+<span class="lineNum">     949 </span>                :            : 
+<span class="lineNum">     950 </span>                :            :   // communicate solution ghost data (if any)
+<span class="lineNum">     951 </span>                :<span class="lineNoCov">          0 :   if (m_ghostData.empty())</span>
+<span class="lineNum">     952 </span>                :<span class="lineNoCov">          0 :     cominit_complete();</span>
+<span class="lineNum">     953 </span>                :            :   else
+<span class="lineNum">     954 </span>                :<span class="lineNoCov">          0 :     for(const auto&amp; n : m_ghostData) {</span>
+<span class="lineNum">     955 </span>                :            :       std::vector&lt; std::size_t &gt; tetid;
+<span class="lineNum">     956 </span>                :<span class="lineNoCov">          0 :       std::vector&lt; std::vector&lt; tk::real &gt; &gt; u;</span>
+<span class="lineNum">     957 </span>                :<span class="lineNoCov">          0 :       for(const auto&amp; i : n.second) {</span>
+<span class="lineNum">     958 </span>                :            :         Assert( i.first &lt; m_fd.Esuel().size()/4, &quot;Sending solution ghost data&quot; );
+<span class="lineNum">     959 </span>                :<span class="lineNoCov">          0 :         tetid.push_back( i.first );</span>
+<span class="lineNum">     960 </span>                :<span class="lineNoCov">          0 :         u.push_back( m_u[i.first] );</span>
+<span class="lineNum">     961 </span>                :            :       }
+<span class="lineNum">     962 </span>                :<span class="lineNoCov">          0 :       thisProxy[ n.first ].cominit( thisIndex, tetid, u );</span>
+<span class="lineNum">     963 </span>                :            :     }
+<span class="lineNum">     964 </span>                :            : 
+<span class="lineNum">     965 </span>                :<span class="lineNoCov">          0 :   owninit_complete();</span>
+<span class="lineNum">     966 </span>                :<span class="lineNoCov">          0 : }</span>
+<a name="967"><span class="lineNum">     967 </span>                :            : </a>
+<span class="lineNum">     968 </span>                :            : void
+<span class="lineNum">     969 </span>                :<span class="lineNoCov">          0 : DG::cominit( int fromch,</span>
+<span class="lineNum">     970 </span>                :<span class="lineNoCov">          0 :              const std::vector&lt; std::size_t &gt;&amp; tetid,</span>
+<span class="lineNum">     971 </span>                :<span class="lineNoCov">          0 :              const std::vector&lt; std::vector&lt; tk::real &gt; &gt;&amp; u )</span>
+<span class="lineNum">     972 </span>                :            : // *****************************************************************************
+<span class="lineNum">     973 </span>                :            : //  Receive chare-boundary solution ghost data from neighboring chares
+<span class="lineNum">     974 </span>                :            : //! \param[in] fromch Sender chare id
+<span class="lineNum">     975 </span>                :            : //! \param[in] tetid Ghost tet ids we receive solution data for
+<span class="lineNum">     976 </span>                :            : //! \param[in] u Solution ghost data
+<span class="lineNum">     977 </span>                :            : //! \details This function receives contributions to m_u from fellow chares.
+<span class="lineNum">     978 </span>                :            : // *****************************************************************************
+<span class="lineNum">     979 </span>                :            : {
+<span class="lineNum">     980 </span>                :            : //   if (g_inputdeck.get&lt; tag::cmd, tag::chare &gt;() ||
+<span class="lineNum">     981 </span>                :            : //       g_inputdeck.get&lt; tag::cmd, tag::quiescence &gt;())
+<span class="lineNum">     982 </span>                :            : //     stateProxy.ckLocalBranch()-&gt;insert( &quot;DG&quot;, thisIndex, CkMyPe(), Disc()-&gt;It(),
+<span class="lineNum">     983 </span>                :            : //                                         &quot;cominit&quot; );
+<span class="lineNum">     984 </span>                :            : 
+<span class="lineNum">     985 </span>                :            :   Assert( u.size() == tetid.size(), &quot;Size mismatch in DG::cominit()&quot; );
 <span class="lineNum">     986 </span>                :            : 
-<span class="lineNum">     987 </span>                :            :   // if we have received all solution ghost contributions from those chares we
-<span class="lineNum">     988 </span>                :            :   // communicate along chare-boundary faces with, solve the system
-<span class="lineNum">     989 </span>                :<span class="lineNoCov">          0 :   if (++m_ninitsol == m_ghostData.size()) {</span>
-<span class="lineNum">     990 </span>                :            :     Assert( m_exptGhost == m_recvGhost,
-<span class="lineNum">     991 </span>                :            :             &quot;Expected/received ghost tet id mismatch&quot; );
-<span class="lineNum">     992 </span>                :            :     m_recvGhost.clear();
-<span class="lineNum">     993 </span>                :<span class="lineNoCov">          0 :     m_ninitsol = 0;</span>
-<span class="lineNum">     994 </span>                :<span class="lineNoCov">          0 :     cominit_complete();</span>
-<span class="lineNum">     995 </span>                :            :   }
-<span class="lineNum">     996 </span>                :<span class="lineNoCov">          0 : }</span>
-<a name="997"><span class="lineNum">     997 </span>                :            : </a>
-<span class="lineNum">     998 </span>                :            : void
-<span class="lineNum">     999 </span>                :<span class="lineNoCov">          0 : DG::dt()</span>
-<span class="lineNum">    1000 </span>                :            : // *****************************************************************************
-<span class="lineNum">    1001 </span>                :            : // Compute time step size
-<span class="lineNum">    1002 </span>                :            : // *****************************************************************************
-<span class="lineNum">    1003 </span>                :            : {
-<span class="lineNum">    1004 </span>                :<span class="lineNoCov">          0 :   auto mindt = std::numeric_limits&lt; tk::real &gt;::max();</span>
-<span class="lineNum">    1005 </span>                :            : 
-<span class="lineNum">    1006 </span>                :<span class="lineNoCov">          0 :   auto d = Disc();</span>
-<span class="lineNum">    1007 </span>                :            : 
-<span class="lineNum">    1008 </span>                :<span class="lineNoCov">          0 :   if (m_stage == 0)</span>
-<span class="lineNum">    1009 </span>                :            :   {
-<span class="lineNum">    1010 </span>                :<span class="lineNoCov">          0 :     auto const_dt = g_inputdeck.get&lt; tag::discr, tag::dt &gt;();</span>
-<span class="lineNum">    1011 </span>                :<span class="lineNoCov">          0 :     auto def_const_dt = g_inputdeck_defaults.get&lt; tag::discr, tag::dt &gt;();</span>
-<span class="lineNum">    1012 </span>                :            :     auto eps = std::numeric_limits&lt; tk::real &gt;::epsilon();
-<span class="lineNum">    1013 </span>                :            : 
-<span class="lineNum">    1014 </span>                :            :     // use constant dt if configured
-<span class="lineNum">    1015 </span>                :<span class="lineNoCov">          0 :     if (std::abs(const_dt - def_const_dt) &gt; eps) {</span>
-<span class="lineNum">    1016 </span>                :            : 
-<span class="lineNum">    1017 </span>                :<span class="lineNoCov">          0 :       mindt = const_dt;</span>
+<span class="lineNum">     987 </span>                :            :   // Find local-to-ghost tet id map for sender chare
+<span class="lineNum">     988 </span>                :<span class="lineNoCov">          0 :   const auto&amp; n = tk::cref_find( m_ghost, fromch );</span>
+<span class="lineNum">     989 </span>                :            : 
+<span class="lineNum">     990 </span>                :<span class="lineNoCov">          0 :   for (std::size_t i=0; i&lt;tetid.size(); ++i) {</span>
+<span class="lineNum">     991 </span>                :<span class="lineNoCov">          0 :     auto j = tk::cref_find( n, tetid[i] );</span>
+<span class="lineNum">     992 </span>                :            :     Assert( j &gt;= m_fd.Esuel().size()/4, &quot;Receiving solution non-ghost data&quot; );
+<span class="lineNum">     993 </span>                :            :     Assert( j &lt; m_u.nunk(), &quot;Indexing out of bounds in DG::cominit()&quot; );
+<span class="lineNum">     994 </span>                :            :     Assert( m_recvGhost.insert( j ).second,
+<span class="lineNum">     995 </span>                :            :             &quot;Failed to store local tetid of received ghost tetid&quot; );
+<span class="lineNum">     996 </span>                :<span class="lineNoCov">          0 :     for (std::size_t c=0; c&lt;m_u.nprop(); ++c)</span>
+<span class="lineNum">     997 </span>                :<span class="lineNoCov">          0 :       m_u(j,c,0) = u[i][c];</span>
+<span class="lineNum">     998 </span>                :            :   }
+<span class="lineNum">     999 </span>                :            : 
+<span class="lineNum">    1000 </span>                :            :   // if we have received all solution ghost contributions from those chares we
+<span class="lineNum">    1001 </span>                :            :   // communicate along chare-boundary faces with, solve the system
+<span class="lineNum">    1002 </span>                :<span class="lineNoCov">          0 :   if (++m_ninitsol == m_ghostData.size()) {</span>
+<span class="lineNum">    1003 </span>                :            :     Assert( m_exptGhost == m_recvGhost,
+<span class="lineNum">    1004 </span>                :            :             &quot;Expected/received ghost tet id mismatch&quot; );
+<span class="lineNum">    1005 </span>                :            :     m_recvGhost.clear();
+<span class="lineNum">    1006 </span>                :<span class="lineNoCov">          0 :     m_ninitsol = 0;</span>
+<span class="lineNum">    1007 </span>                :<span class="lineNoCov">          0 :     cominit_complete();</span>
+<span class="lineNum">    1008 </span>                :            :   }
+<span class="lineNum">    1009 </span>                :<span class="lineNoCov">          0 : }</span>
+<a name="1010"><span class="lineNum">    1010 </span>                :            : </a>
+<span class="lineNum">    1011 </span>                :            : void
+<span class="lineNum">    1012 </span>                :<span class="lineNoCov">          0 : DG::dt()</span>
+<span class="lineNum">    1013 </span>                :            : // *****************************************************************************
+<span class="lineNum">    1014 </span>                :            : // Compute time step size
+<span class="lineNum">    1015 </span>                :            : // *****************************************************************************
+<span class="lineNum">    1016 </span>                :            : {
+<span class="lineNum">    1017 </span>                :<span class="lineNoCov">          0 :   auto mindt = std::numeric_limits&lt; tk::real &gt;::max();</span>
 <span class="lineNum">    1018 </span>                :            : 
-<span class="lineNum">    1019 </span>                :            :     } else {      // compute dt based on CFL
+<span class="lineNum">    1019 </span>                :<span class="lineNoCov">          0 :   auto d = Disc();</span>
 <span class="lineNum">    1020 </span>                :            : 
-<span class="lineNum">    1021 </span>                :            :       // find the minimum dt across all PDEs integrated
-<span class="lineNum">    1022 </span>                :<span class="lineNoCov">          0 :       for (const auto&amp; eq : g_dgpde) {</span>
-<span class="lineNum">    1023 </span>                :<span class="lineNoCov">          0 :         auto eqdt = eq.dt( d-&gt;Coord(), d-&gt;Inpoel(), m_fd, m_geoFace, m_geoElem,</span>
-<span class="lineNum">    1024 </span>                :<span class="lineNoCov">          0 :                            m_limFunc, m_u );</span>
-<span class="lineNum">    1025 </span>                :<span class="lineNoCov">          0 :         if (eqdt &lt; mindt) mindt = eqdt;</span>
-<span class="lineNum">    1026 </span>                :            :       }
-<span class="lineNum">    1027 </span>                :            : 
-<span class="lineNum">    1028 </span>                :            :       // Scale smallest dt with CFL coefficient
-<span class="lineNum">    1029 </span>                :<span class="lineNoCov">          0 :       mindt *= g_inputdeck.get&lt; tag::discr, tag::cfl &gt;();</span>
-<span class="lineNum">    1030 </span>                :            : 
-<span class="lineNum">    1031 </span>                :            :     }
-<span class="lineNum">    1032 </span>                :            :   }
-<span class="lineNum">    1033 </span>                :            :   else
-<span class="lineNum">    1034 </span>                :            :   {
-<span class="lineNum">    1035 </span>                :<span class="lineNoCov">          0 :     mindt = d-&gt;Dt();</span>
-<span class="lineNum">    1036 </span>                :            :   }
-<span class="lineNum">    1037 </span>                :            : 
-<span class="lineNum">    1038 </span>                :            :   // Contribute to minimum dt across all chares then advance to next step
-<span class="lineNum">    1039 </span>                :            :   contribute( sizeof(tk::real), &amp;mindt, CkReduction::min_double,
-<span class="lineNum">    1040 </span>                :<span class="lineNoCov">          0 :               CkCallback(CkReductionTarget(DG,solve), thisProxy) );</span>
-<span class="lineNum">    1041 </span>                :<span class="lineNoCov">          0 : }</span>
-<span class="lineNum">    1042 </span>                :            : 
-<span class="lineNum">    1043 </span>                :            : void
-<span class="lineNum">    1044 </span>                :<span class="lineNoCov">          0 : DG::advance( tk::real )</span>
-<span class="lineNum">    1045 </span>                :            : // *****************************************************************************
-<span class="lineNum">    1046 </span>                :            : // Advance equations to next time step
-<span class="lineNum">    1047 </span>                :            : // *****************************************************************************
-<span class="lineNum">    1048 </span>                :            : {
-<span class="lineNum">    1049 </span>                :            :   // communicate solution ghost data (if any)
-<span class="lineNum">    1050 </span>                :<span class="lineNoCov">          0 :   if (m_ghostData.empty())</span>
-<span class="lineNum">    1051 </span>                :<span class="lineNoCov">          0 :     comsol_complete();</span>
-<span class="lineNum">    1052 </span>                :            :   else
-<span class="lineNum">    1053 </span>                :<span class="lineNoCov">          0 :     for(const auto&amp; n : m_ghostData) {</span>
-<span class="lineNum">    1054 </span>                :            :       std::vector&lt; std::size_t &gt; tetid;
-<span class="lineNum">    1055 </span>                :<span class="lineNoCov">          0 :       std::vector&lt; std::vector&lt; tk::real &gt; &gt; u;</span>
-<span class="lineNum">    1056 </span>                :<span class="lineNoCov">          0 :       for(const auto&amp; i : n.second) {</span>
-<span class="lineNum">    1057 </span>                :            :         Assert( i.first &lt; m_fd.Esuel().size()/4, &quot;Sending solution ghost data&quot; );
-<span class="lineNum">    1058 </span>                :<span class="lineNoCov">          0 :         tetid.push_back( i.first );</span>
-<span class="lineNum">    1059 </span>                :<span class="lineNoCov">          0 :         u.push_back( m_u[i.first] );</span>
-<span class="lineNum">    1060 </span>                :            :       }
-<span class="lineNum">    1061 </span>                :<span class="lineNoCov">          0 :       thisProxy[ n.first ].comsol( thisIndex, tetid, u );</span>
-<span class="lineNum">    1062 </span>                :            :     }
-<span class="lineNum">    1063 </span>                :            : 
-<span class="lineNum">    1064 </span>                :<span class="lineNoCov">          0 :   ownsol_complete();</span>
-<span class="lineNum">    1065 </span>                :<span class="lineNoCov">          0 : }</span>
-<a name="1066"><span class="lineNum">    1066 </span>                :            : </a>
-<span class="lineNum">    1067 </span>                :            : void
-<span class="lineNum">    1068 </span>                :<span class="lineNoCov">          0 : DG::comsol( int fromch,</span>
-<span class="lineNum">    1069 </span>                :<span class="lineNoCov">          0 :             const std::vector&lt; std::size_t &gt;&amp; tetid,</span>
-<span class="lineNum">    1070 </span>                :<span class="lineNoCov">          0 :             const std::vector&lt; std::vector&lt; tk::real &gt; &gt;&amp; u )</span>
-<span class="lineNum">    1071 </span>                :            : // *****************************************************************************
-<span class="lineNum">    1072 </span>                :            : //  Receive chare-boundary solution ghost data from neighboring chares
-<span class="lineNum">    1073 </span>                :            : //! \param[in] fromch Sender chare id
-<span class="lineNum">    1074 </span>                :            : //! \param[in] tetid Ghost tet ids we receive solution data for
-<span class="lineNum">    1075 </span>                :            : //! \param[in] u Solution ghost data
-<span class="lineNum">    1076 </span>                :            : //! \details This function receives contributions to m_u from fellow chares.
-<span class="lineNum">    1077 </span>                :            : // *****************************************************************************
-<span class="lineNum">    1078 </span>                :            : {
-<span class="lineNum">    1079 </span>                :            :   Assert( u.size() == tetid.size(), &quot;Size mismatch in DG::comsol()&quot; );
-<span class="lineNum">    1080 </span>                :            : 
-<span class="lineNum">    1081 </span>                :            :   // Find local-to-ghost tet id map for sender chare
-<span class="lineNum">    1082 </span>                :<span class="lineNoCov">          0 :   const auto&amp; n = tk::cref_find( m_ghost, fromch );</span>
-<span class="lineNum">    1083 </span>                :            : 
-<span class="lineNum">    1084 </span>                :<span class="lineNoCov">          0 :   for (std::size_t i=0; i&lt;tetid.size(); ++i) {</span>
-<span class="lineNum">    1085 </span>                :<span class="lineNoCov">          0 :     auto j = tk::cref_find( n, tetid[i] );</span>
-<span class="lineNum">    1086 </span>                :            :     Assert( j &gt;= m_fd.Esuel().size()/4, &quot;Receiving solution non-ghost data&quot; );
-<span class="lineNum">    1087 </span>                :            :     Assert( j &lt; m_u.nunk(), &quot;Indexing out of bounds in DG::comsol()&quot; );
-<span class="lineNum">    1088 </span>                :<span class="lineNoCov">          0 :     for (std::size_t c=0; c&lt;m_u.nprop(); ++c)</span>
-<span class="lineNum">    1089 </span>                :<span class="lineNoCov">          0 :       m_u(j,c,0) = u[i][c];</span>
-<span class="lineNum">    1090 </span>                :            :   }
-<span class="lineNum">    1091 </span>                :            : 
-<span class="lineNum">    1092 </span>                :            :   // if we have received all solution ghost contributions from those chares we
-<span class="lineNum">    1093 </span>                :            :   // communicate along chare-boundary faces with, solve the system
-<span class="lineNum">    1094 </span>                :<span class="lineNoCov">          0 :   if (++m_nsol == m_ghostData.size()) {</span>
-<span class="lineNum">    1095 </span>                :<span class="lineNoCov">          0 :     m_nsol = 0;</span>
-<span class="lineNum">    1096 </span>                :<span class="lineNoCov">          0 :     comsol_complete();</span>
-<span class="lineNum">    1097 </span>                :            :   }
-<span class="lineNum">    1098 </span>                :<span class="lineNoCov">          0 : }</span>
-<span class="lineNum">    1099 </span>                :            : 
-<span class="lineNum">    1100 </span>                :            : void
-<span class="lineNum">    1101 </span>                :<span class="lineNoCov">          0 : DG::writeFields( CkCallback c )</span>
-<span class="lineNum">    1102 </span>                :            : // *****************************************************************************
-<span class="lineNum">    1103 </span>                :            : // Output mesh-based fields to file
-<span class="lineNum">    1104 </span>                :            : //! \param[in] c Function to continue with after the write
-<span class="lineNum">    1105 </span>                :            : // *****************************************************************************
-<span class="lineNum">    1106 </span>                :            : {
-<span class="lineNum">    1107 </span>                :<span class="lineNoCov">          0 :   auto d = Disc();</span>
-<span class="lineNum">    1108 </span>                :            : 
-<span class="lineNum">    1109 </span>                :<span class="lineNoCov">          0 :   const auto&amp; esuel = m_fd.Esuel();</span>
-<span class="lineNum">    1110 </span>                :            : 
-<span class="lineNum">    1111 </span>                :            :   // Copy mesh form Discretization object and chop off ghosts for dump
-<span class="lineNum">    1112 </span>                :<span class="lineNoCov">          0 :   auto inpoel = d-&gt;Inpoel();</span>
-<span class="lineNum">    1113 </span>                :<span class="lineNoCov">          0 :   inpoel.resize( esuel.size() );</span>
-<span class="lineNum">    1114 </span>                :<span class="lineNoCov">          0 :   auto coord = d-&gt;Coord();</span>
-<span class="lineNum">    1115 </span>                :<span class="lineNoCov">          0 :   for (std::size_t i=0; i&lt;3; ++i) coord[i].resize( m_ncoord );</span>
-<span class="lineNum">    1116 </span>                :            : 
-<span class="lineNum">    1117 </span>                :            :   // Query fields names from all PDEs integrated
-<span class="lineNum">    1118 </span>                :<span class="lineNoCov">          0 :   std::vector&lt; std::string &gt; names;</span>
-<span class="lineNum">    1119 </span>                :<span class="lineNoCov">          0 :   for (const auto&amp; eq : g_dgpde) {</span>
-<span class="lineNum">    1120 </span>                :            :     auto n = eq.fieldNames();
-<span class="lineNum">    1121 </span>                :<span class="lineNoCov">          0 :     names.insert( end(names), begin(n), end(n) );</span>
-<span class="lineNum">    1122 </span>                :<span class="lineNoCov">          0 :   }</span>
+<span class="lineNum">    1021 </span>                :<span class="lineNoCov">          0 :   if (m_stage == 0)</span>
+<span class="lineNum">    1022 </span>                :            :   {
+<span class="lineNum">    1023 </span>                :<span class="lineNoCov">          0 :     auto const_dt = g_inputdeck.get&lt; tag::discr, tag::dt &gt;();</span>
+<span class="lineNum">    1024 </span>                :<span class="lineNoCov">          0 :     auto def_const_dt = g_inputdeck_defaults.get&lt; tag::discr, tag::dt &gt;();</span>
+<span class="lineNum">    1025 </span>                :            :     auto eps = std::numeric_limits&lt; tk::real &gt;::epsilon();
+<span class="lineNum">    1026 </span>                :            : 
+<span class="lineNum">    1027 </span>                :            :     // use constant dt if configured
+<span class="lineNum">    1028 </span>                :<span class="lineNoCov">          0 :     if (std::abs(const_dt - def_const_dt) &gt; eps) {</span>
+<span class="lineNum">    1029 </span>                :            : 
+<span class="lineNum">    1030 </span>                :<span class="lineNoCov">          0 :       mindt = const_dt;</span>
+<span class="lineNum">    1031 </span>                :            : 
+<span class="lineNum">    1032 </span>                :            :     } else {      // compute dt based on CFL
+<span class="lineNum">    1033 </span>                :            : 
+<span class="lineNum">    1034 </span>                :            :       // find the minimum dt across all PDEs integrated
+<span class="lineNum">    1035 </span>                :<span class="lineNoCov">          0 :       for (const auto&amp; eq : g_dgpde) {</span>
+<span class="lineNum">    1036 </span>                :<span class="lineNoCov">          0 :         auto eqdt = eq.dt( d-&gt;Coord(), d-&gt;Inpoel(), m_fd, m_geoFace, m_geoElem,</span>
+<span class="lineNum">    1037 </span>                :<span class="lineNoCov">          0 :                            m_limFunc, m_u );</span>
+<span class="lineNum">    1038 </span>                :<span class="lineNoCov">          0 :         if (eqdt &lt; mindt) mindt = eqdt;</span>
+<span class="lineNum">    1039 </span>                :            :       }
+<span class="lineNum">    1040 </span>                :            : 
+<span class="lineNum">    1041 </span>                :            :       // Scale smallest dt with CFL coefficient
+<span class="lineNum">    1042 </span>                :<span class="lineNoCov">          0 :       mindt *= g_inputdeck.get&lt; tag::discr, tag::cfl &gt;();</span>
+<span class="lineNum">    1043 </span>                :            : 
+<span class="lineNum">    1044 </span>                :            :     }
+<span class="lineNum">    1045 </span>                :            :   }
+<span class="lineNum">    1046 </span>                :            :   else
+<span class="lineNum">    1047 </span>                :            :   {
+<span class="lineNum">    1048 </span>                :<span class="lineNoCov">          0 :     mindt = d-&gt;Dt();</span>
+<span class="lineNum">    1049 </span>                :            :   }
+<span class="lineNum">    1050 </span>                :            : 
+<span class="lineNum">    1051 </span>                :            :   // Contribute to minimum dt across all chares then advance to next step
+<span class="lineNum">    1052 </span>                :            :   contribute( sizeof(tk::real), &amp;mindt, CkReduction::min_double,
+<span class="lineNum">    1053 </span>                :<span class="lineNoCov">          0 :               CkCallback(CkReductionTarget(DG,solve), thisProxy) );</span>
+<span class="lineNum">    1054 </span>                :<span class="lineNoCov">          0 : }</span>
+<span class="lineNum">    1055 </span>                :            : 
+<span class="lineNum">    1056 </span>                :            : void
+<span class="lineNum">    1057 </span>                :<span class="lineNoCov">          0 : DG::advance( tk::real )</span>
+<span class="lineNum">    1058 </span>                :            : // *****************************************************************************
+<span class="lineNum">    1059 </span>                :            : // Advance equations to next time step
+<span class="lineNum">    1060 </span>                :            : // *****************************************************************************
+<span class="lineNum">    1061 </span>                :            : {
+<span class="lineNum">    1062 </span>                :            :   // communicate solution ghost data (if any)
+<span class="lineNum">    1063 </span>                :<span class="lineNoCov">          0 :   if (m_ghostData.empty())</span>
+<span class="lineNum">    1064 </span>                :<span class="lineNoCov">          0 :     comsol_complete();</span>
+<span class="lineNum">    1065 </span>                :            :   else
+<span class="lineNum">    1066 </span>                :<span class="lineNoCov">          0 :     for(const auto&amp; n : m_ghostData) {</span>
+<span class="lineNum">    1067 </span>                :            :       std::vector&lt; std::size_t &gt; tetid;
+<span class="lineNum">    1068 </span>                :<span class="lineNoCov">          0 :       std::vector&lt; std::vector&lt; tk::real &gt; &gt; u;</span>
+<span class="lineNum">    1069 </span>                :<span class="lineNoCov">          0 :       for(const auto&amp; i : n.second) {</span>
+<span class="lineNum">    1070 </span>                :            :         Assert( i.first &lt; m_fd.Esuel().size()/4, &quot;Sending solution ghost data&quot; );
+<span class="lineNum">    1071 </span>                :<span class="lineNoCov">          0 :         tetid.push_back( i.first );</span>
+<span class="lineNum">    1072 </span>                :<span class="lineNoCov">          0 :         u.push_back( m_u[i.first] );</span>
+<span class="lineNum">    1073 </span>                :            :       }
+<span class="lineNum">    1074 </span>                :<span class="lineNoCov">          0 :       thisProxy[ n.first ].comsol( thisIndex, tetid, u );</span>
+<span class="lineNum">    1075 </span>                :            :     }
+<span class="lineNum">    1076 </span>                :            : 
+<span class="lineNum">    1077 </span>                :<span class="lineNoCov">          0 :   ownsol_complete();</span>
+<span class="lineNum">    1078 </span>                :<span class="lineNoCov">          0 : }</span>
+<a name="1079"><span class="lineNum">    1079 </span>                :            : </a>
+<span class="lineNum">    1080 </span>                :            : void
+<span class="lineNum">    1081 </span>                :<span class="lineNoCov">          0 : DG::comsol( int fromch,</span>
+<span class="lineNum">    1082 </span>                :<span class="lineNoCov">          0 :             const std::vector&lt; std::size_t &gt;&amp; tetid,</span>
+<span class="lineNum">    1083 </span>                :<span class="lineNoCov">          0 :             const std::vector&lt; std::vector&lt; tk::real &gt; &gt;&amp; u )</span>
+<span class="lineNum">    1084 </span>                :            : // *****************************************************************************
+<span class="lineNum">    1085 </span>                :            : //  Receive chare-boundary solution ghost data from neighboring chares
+<span class="lineNum">    1086 </span>                :            : //! \param[in] fromch Sender chare id
+<span class="lineNum">    1087 </span>                :            : //! \param[in] tetid Ghost tet ids we receive solution data for
+<span class="lineNum">    1088 </span>                :            : //! \param[in] u Solution ghost data
+<span class="lineNum">    1089 </span>                :            : //! \details This function receives contributions to m_u from fellow chares.
+<span class="lineNum">    1090 </span>                :            : // *****************************************************************************
+<span class="lineNum">    1091 </span>                :            : {
+<span class="lineNum">    1092 </span>                :            :   Assert( u.size() == tetid.size(), &quot;Size mismatch in DG::comsol()&quot; );
+<span class="lineNum">    1093 </span>                :            : 
+<span class="lineNum">    1094 </span>                :            :   // Find local-to-ghost tet id map for sender chare
+<span class="lineNum">    1095 </span>                :<span class="lineNoCov">          0 :   const auto&amp; n = tk::cref_find( m_ghost, fromch );</span>
+<span class="lineNum">    1096 </span>                :            : 
+<span class="lineNum">    1097 </span>                :<span class="lineNoCov">          0 :   for (std::size_t i=0; i&lt;tetid.size(); ++i) {</span>
+<span class="lineNum">    1098 </span>                :<span class="lineNoCov">          0 :     auto j = tk::cref_find( n, tetid[i] );</span>
+<span class="lineNum">    1099 </span>                :            :     Assert( j &gt;= m_fd.Esuel().size()/4, &quot;Receiving solution non-ghost data&quot; );
+<span class="lineNum">    1100 </span>                :            :     Assert( j &lt; m_u.nunk(), &quot;Indexing out of bounds in DG::comsol()&quot; );
+<span class="lineNum">    1101 </span>                :<span class="lineNoCov">          0 :     for (std::size_t c=0; c&lt;m_u.nprop(); ++c)</span>
+<span class="lineNum">    1102 </span>                :<span class="lineNoCov">          0 :       m_u(j,c,0) = u[i][c];</span>
+<span class="lineNum">    1103 </span>                :            :   }
+<span class="lineNum">    1104 </span>                :            : 
+<span class="lineNum">    1105 </span>                :            :   // if we have received all solution ghost contributions from those chares we
+<span class="lineNum">    1106 </span>                :            :   // communicate along chare-boundary faces with, solve the system
+<span class="lineNum">    1107 </span>                :<span class="lineNoCov">          0 :   if (++m_nsol == m_ghostData.size()) {</span>
+<span class="lineNum">    1108 </span>                :<span class="lineNoCov">          0 :     m_nsol = 0;</span>
+<span class="lineNum">    1109 </span>                :<span class="lineNoCov">          0 :     comsol_complete();</span>
+<span class="lineNum">    1110 </span>                :            :   }
+<span class="lineNum">    1111 </span>                :<span class="lineNoCov">          0 : }</span>
+<span class="lineNum">    1112 </span>                :            : 
+<span class="lineNum">    1113 </span>                :            : void
+<span class="lineNum">    1114 </span>                :<span class="lineNoCov">          0 : DG::writeFields( CkCallback c )</span>
+<span class="lineNum">    1115 </span>                :            : // *****************************************************************************
+<span class="lineNum">    1116 </span>                :            : // Output mesh-based fields to file
+<span class="lineNum">    1117 </span>                :            : //! \param[in] c Function to continue with after the write
+<span class="lineNum">    1118 </span>                :            : // *****************************************************************************
+<span class="lineNum">    1119 </span>                :            : {
+<span class="lineNum">    1120 </span>                :<span class="lineNoCov">          0 :   auto d = Disc();</span>
+<span class="lineNum">    1121 </span>                :            : 
+<span class="lineNum">    1122 </span>                :<span class="lineNoCov">          0 :   const auto&amp; esuel = m_fd.Esuel();</span>
 <span class="lineNum">    1123 </span>                :            : 
-<span class="lineNum">    1124 </span>                :            :   // Collect element field solution
-<span class="lineNum">    1125 </span>                :<span class="lineNoCov">          0 :   std::vector&lt; std::vector&lt; tk::real &gt; &gt; fields;</span>
-<span class="lineNum">    1126 </span>                :            :   auto u = m_u;
-<span class="lineNum">    1127 </span>                :<span class="lineNoCov">          0 :   for (const auto&amp; eq : g_dgpde) {</span>
-<span class="lineNum">    1128 </span>                :            :     auto o =
-<span class="lineNum">    1129 </span>                :<span class="lineNoCov">          0 :       eq.fieldOutput( d-&gt;T(), m_geoElem, u );</span>
-<span class="lineNum">    1130 </span>                :            :     // cut off ghost elements
-<span class="lineNum">    1131 </span>                :<span class="lineNoCov">          0 :     for (auto&amp; field : o) field.resize( esuel.size()/4 );</span>
-<span class="lineNum">    1132 </span>                :<span class="lineNoCov">          0 :     fields.insert( end(fields), begin(o), end(o) );</span>
-<span class="lineNum">    1133 </span>                :<span class="lineNoCov">          0 :   }</span>
-<span class="lineNum">    1134 </span>                :            : 
-<span class="lineNum">    1135 </span>                :            :   // // Collect node field solution
-<span class="lineNum">    1136 </span>                :            :   // std::vector&lt; std::vector&lt; tk::real &gt; &gt; nodefields;
-<span class="lineNum">    1137 </span>                :            :   // for (const auto&amp; eq : g_dgpde) {
-<span class="lineNum">    1138 </span>                :            :   //   auto fields =
-<span class="lineNum">    1139 </span>                :            :   //     eq.avgElemToNode( d-&gt;Inpoel(), d-&gt;Coord(), m_geoElem, m_limFunc, m_u );
-<span class="lineNum">    1140 </span>                :            :   //   nodefields.insert( end(nodefields), begin(fields), end(fields) );
-<span class="lineNum">    1141 </span>                :            :   // }
-<span class="lineNum">    1142 </span>                :            : 
-<span class="lineNum">    1143 </span>                :            :   // Output chare mesh and fields metadata to file
-<span class="lineNum">    1144 </span>                :<span class="lineNoCov">          0 :   d-&gt;write( inpoel, coord, m_fd.Bface(), m_fd.Triinpoel(), m_fd.Bnode(),</span>
-<span class="lineNum">    1145 </span>                :<span class="lineNoCov">          0 :             names, fields, tk::Centering::ELEM, c );</span>
-<span class="lineNum">    1146 </span>                :<span class="lineNoCov">          0 : }</span>
-<a name="1147"><span class="lineNum">    1147 </span>                :            : </a>
-<span class="lineNum">    1148 </span>                :            : void
-<span class="lineNum">    1149 </span>                :<span class="lineNoCov">          0 : DG::lhs()</span>
-<span class="lineNum">    1150 </span>                :            : // *****************************************************************************
-<span class="lineNum">    1151 </span>                :            : // Compute left-hand side of discrete transport equations
-<span class="lineNum">    1152 </span>                :            : // *****************************************************************************
-<span class="lineNum">    1153 </span>                :            : {
-<span class="lineNum">    1154 </span>                :<span class="lineNoCov">          0 :   for (const auto&amp; eq : g_dgpde) eq.lhs( m_geoElem, m_lhs );</span>
-<span class="lineNum">    1155 </span>                :<span class="lineNoCov">          0 : }</span>
-<span class="lineNum">    1156 </span>                :            : 
-<span class="lineNum">    1157 </span>                :            : void
-<span class="lineNum">    1158 </span>                :<span class="lineNoCov">          0 : DG::lim()</span>
-<span class="lineNum">    1159 </span>                :            : // *****************************************************************************
-<span class="lineNum">    1160 </span>                :            : // Compute limiter function
-<span class="lineNum">    1161 </span>                :            : // *****************************************************************************
-<span class="lineNum">    1162 </span>                :            : {
-<span class="lineNum">    1163 </span>                :<span class="lineNoCov">          0 :   if (g_inputdeck.get&lt; tag::discr, tag::ndof &gt;() &gt; 1) {</span>
-<span class="lineNum">    1164 </span>                :            :   
-<span class="lineNum">    1165 </span>                :            :     Assert( m_u.nunk() == m_limFunc.nunk(), &quot;Number of unknowns in solution &quot;
-<span class="lineNum">    1166 </span>                :            :             &quot;vector and limiter at recent time step incorrect&quot; );
-<span class="lineNum">    1167 </span>                :            :   
-<span class="lineNum">    1168 </span>                :            :     Assert( m_u.nprop() == m_limFunc.nprop() + 
-<span class="lineNum">    1169 </span>                :            :             (m_u.nprop()/g_inputdeck.get&lt; tag::discr, tag::ndof &gt;()),
-<span class="lineNum">    1170 </span>                :            :             &quot;Number of components in solution vector and limiter at recent &quot;
-<span class="lineNum">    1171 </span>                :            :             &quot;time step incorrect&quot; );
-<span class="lineNum">    1172 </span>                :            : 
-<span class="lineNum">    1173 </span>                :<span class="lineNoCov">          0 :     for (std::size_t e=0; e&lt;m_fd.Esuel().size()/4; ++e)</span>
-<span class="lineNum">    1174 </span>                :<span class="lineNoCov">          0 :       for (std::size_t c=0; c&lt;m_limFunc.nprop(); ++c)</span>
-<span class="lineNum">    1175 </span>                :<span class="lineNoCov">          0 :         m_limFunc(e,c,0)=1.0;</span>
-<span class="lineNum">    1176 </span>                :            :   
-<span class="lineNum">    1177 </span>                :<span class="lineNoCov">          0 :     const auto limiter = g_inputdeck.get&lt; tag::discr, tag::limiter &gt;();</span>
-<span class="lineNum">    1178 </span>                :<span class="lineNoCov">          0 :     if (limiter == ctr::LimiterType::WENOP1)</span>
-<span class="lineNum">    1179 </span>                :<span class="lineNoCov">          0 :       WENO_P1( m_fd.Esuel(), 0, m_u, m_limFunc );</span>
+<span class="lineNum">    1124 </span>                :            :   // Copy mesh form Discretization object and chop off ghosts for dump
+<span class="lineNum">    1125 </span>                :<span class="lineNoCov">          0 :   auto inpoel = d-&gt;Inpoel();</span>
+<span class="lineNum">    1126 </span>                :<span class="lineNoCov">          0 :   inpoel.resize( esuel.size() );</span>
+<span class="lineNum">    1127 </span>                :<span class="lineNoCov">          0 :   auto coord = d-&gt;Coord();</span>
+<span class="lineNum">    1128 </span>                :<span class="lineNoCov">          0 :   for (std::size_t i=0; i&lt;3; ++i) coord[i].resize( m_ncoord );</span>
+<span class="lineNum">    1129 </span>                :            : 
+<span class="lineNum">    1130 </span>                :            :   // Query fields names from all PDEs integrated
+<span class="lineNum">    1131 </span>                :<span class="lineNoCov">          0 :   std::vector&lt; std::string &gt; names;</span>
+<span class="lineNum">    1132 </span>                :<span class="lineNoCov">          0 :   for (const auto&amp; eq : g_dgpde) {</span>
+<span class="lineNum">    1133 </span>                :            :     auto n = eq.fieldNames();
+<span class="lineNum">    1134 </span>                :<span class="lineNoCov">          0 :     names.insert( end(names), begin(n), end(n) );</span>
+<span class="lineNum">    1135 </span>                :<span class="lineNoCov">          0 :   }</span>
+<span class="lineNum">    1136 </span>                :            : 
+<span class="lineNum">    1137 </span>                :            :   // Collect element field solution
+<span class="lineNum">    1138 </span>                :<span class="lineNoCov">          0 :   std::vector&lt; std::vector&lt; tk::real &gt; &gt; fields;</span>
+<span class="lineNum">    1139 </span>                :            :   auto u = m_u;
+<span class="lineNum">    1140 </span>                :<span class="lineNoCov">          0 :   for (const auto&amp; eq : g_dgpde) {</span>
+<span class="lineNum">    1141 </span>                :            :     auto o =
+<span class="lineNum">    1142 </span>                :<span class="lineNoCov">          0 :       eq.fieldOutput( d-&gt;T(), m_geoElem, u );</span>
+<span class="lineNum">    1143 </span>                :            :     // cut off ghost elements
+<span class="lineNum">    1144 </span>                :<span class="lineNoCov">          0 :     for (auto&amp; field : o) field.resize( esuel.size()/4 );</span>
+<span class="lineNum">    1145 </span>                :<span class="lineNoCov">          0 :     fields.insert( end(fields), begin(o), end(o) );</span>
+<span class="lineNum">    1146 </span>                :<span class="lineNoCov">          0 :   }</span>
+<span class="lineNum">    1147 </span>                :            : 
+<span class="lineNum">    1148 </span>                :            :   // // Collect node field solution
+<span class="lineNum">    1149 </span>                :            :   // std::vector&lt; std::vector&lt; tk::real &gt; &gt; nodefields;
+<span class="lineNum">    1150 </span>                :            :   // for (const auto&amp; eq : g_dgpde) {
+<span class="lineNum">    1151 </span>                :            :   //   auto fields =
+<span class="lineNum">    1152 </span>                :            :   //     eq.avgElemToNode( d-&gt;Inpoel(), d-&gt;Coord(), m_geoElem, m_limFunc, m_u );
+<span class="lineNum">    1153 </span>                :            :   //   nodefields.insert( end(nodefields), begin(fields), end(fields) );
+<span class="lineNum">    1154 </span>                :            :   // }
+<span class="lineNum">    1155 </span>                :            : 
+<span class="lineNum">    1156 </span>                :            :   // Output chare mesh and fields metadata to file
+<span class="lineNum">    1157 </span>                :<span class="lineNoCov">          0 :   d-&gt;write( inpoel, coord, m_fd.Bface(), m_fd.Triinpoel(), m_fd.Bnode(),</span>
+<span class="lineNum">    1158 </span>                :<span class="lineNoCov">          0 :             names, fields, tk::Centering::ELEM, c );</span>
+<span class="lineNum">    1159 </span>                :<span class="lineNoCov">          0 : }</span>
+<a name="1160"><span class="lineNum">    1160 </span>                :            : </a>
+<span class="lineNum">    1161 </span>                :            : void
+<span class="lineNum">    1162 </span>                :<span class="lineNoCov">          0 : DG::lhs()</span>
+<span class="lineNum">    1163 </span>                :            : // *****************************************************************************
+<span class="lineNum">    1164 </span>                :            : // Compute left-hand side of discrete transport equations
+<span class="lineNum">    1165 </span>                :            : // *****************************************************************************
+<span class="lineNum">    1166 </span>                :            : {
+<span class="lineNum">    1167 </span>                :<span class="lineNoCov">          0 :   for (const auto&amp; eq : g_dgpde) eq.lhs( m_geoElem, m_lhs );</span>
+<span class="lineNum">    1168 </span>                :<span class="lineNoCov">          0 : }</span>
+<span class="lineNum">    1169 </span>                :            : 
+<span class="lineNum">    1170 </span>                :            : void
+<span class="lineNum">    1171 </span>                :<span class="lineNoCov">          0 : DG::lim()</span>
+<span class="lineNum">    1172 </span>                :            : // *****************************************************************************
+<span class="lineNum">    1173 </span>                :            : // Compute limiter function
+<span class="lineNum">    1174 </span>                :            : // *****************************************************************************
+<span class="lineNum">    1175 </span>                :            : {
+<span class="lineNum">    1176 </span>                :<span class="lineNoCov">          0 :   if (g_inputdeck.get&lt; tag::discr, tag::ndof &gt;() &gt; 1) {</span>
+<span class="lineNum">    1177 </span>                :            :   
+<span class="lineNum">    1178 </span>                :            :     Assert( m_u.nunk() == m_limFunc.nunk(), &quot;Number of unknowns in solution &quot;
+<span class="lineNum">    1179 </span>                :            :             &quot;vector and limiter at recent time step incorrect&quot; );
 <span class="lineNum">    1180 </span>                :            :   
-<span class="lineNum">    1181 </span>                :            :     // communicate solution ghost data (if any)
-<span class="lineNum">    1182 </span>                :<span class="lineNoCov">          0 :     if (m_ghostData.empty())</span>
-<span class="lineNum">    1183 </span>                :<span class="lineNoCov">          0 :       comlim_complete();</span>
-<span class="lineNum">    1184 </span>                :            :     else
-<span class="lineNum">    1185 </span>                :<span class="lineNoCov">          0 :       for(const auto&amp; n : m_ghostData) {</span>
-<span class="lineNum">    1186 </span>                :            :         std::vector&lt; std::size_t &gt; tetid;
-<span class="lineNum">    1187 </span>                :<span class="lineNoCov">          0 :         std::vector&lt; std::vector&lt; tk::real &gt; &gt; limfunc;</span>
-<span class="lineNum">    1188 </span>                :<span class="lineNoCov">          0 :         for(const auto&amp; i : n.second) {</span>
-<span class="lineNum">    1189 </span>                :            :           Assert( i.first &lt; m_fd.Esuel().size()/4, &quot;Sending limiter ghost data&quot; );
-<span class="lineNum">    1190 </span>                :<span class="lineNoCov">          0 :           tetid.push_back( i.first );</span>
-<span class="lineNum">    1191 </span>                :<span class="lineNoCov">          0 :           limfunc.push_back( m_limFunc[i.first] );</span>
-<span class="lineNum">    1192 </span>                :            :         }
-<span class="lineNum">    1193 </span>                :<span class="lineNoCov">          0 :         thisProxy[ n.first ].comlim( thisIndex, tetid, limfunc );</span>
-<span class="lineNum">    1194 </span>                :            :       }
-<span class="lineNum">    1195 </span>                :            : 
-<span class="lineNum">    1196 </span>                :            :   } else {
-<span class="lineNum">    1197 </span>                :            : 
-<span class="lineNum">    1198 </span>                :<span class="lineNoCov">          0 :     comlim_complete();</span>
-<span class="lineNum">    1199 </span>                :            : 
-<span class="lineNum">    1200 </span>                :            :   }
-<span class="lineNum">    1201 </span>                :            : 
-<span class="lineNum">    1202 </span>                :<span class="lineNoCov">          0 :   ownlim_complete();</span>
-<span class="lineNum">    1203 </span>                :<span class="lineNoCov">          0 : }</span>
-<a name="1204"><span class="lineNum">    1204 </span>                :            : </a>
-<span class="lineNum">    1205 </span>                :            : void
-<span class="lineNum">    1206 </span>                :<span class="lineNoCov">          0 : DG::comlim( int fromch,</span>
-<span class="lineNum">    1207 </span>                :<span class="lineNoCov">          0 :             const std::vector&lt; std::size_t &gt;&amp; tetid,</span>
-<span class="lineNum">    1208 </span>                :<span class="lineNoCov">          0 :             const std::vector&lt; std::vector&lt; tk::real &gt; &gt;&amp; lfn )</span>
-<span class="lineNum">    1209 </span>                :            : // *****************************************************************************
-<span class="lineNum">    1210 </span>                :            : //  Receive chare-boundary limiter ghost data from neighboring chares
-<span class="lineNum">    1211 </span>                :            : //! \param[in] fromch Sender chare id
-<span class="lineNum">    1212 </span>                :            : //! \param[in] tetid Ghost tet ids we receive solution data for
-<span class="lineNum">    1213 </span>                :            : //! \param[in] lfn Limiter function ghost data
-<span class="lineNum">    1214 </span>                :            : //! \details This function receives contributions to m_limFunc from fellow
-<span class="lineNum">    1215 </span>                :            : //    chares.
-<span class="lineNum">    1216 </span>                :            : // *****************************************************************************
-<span class="lineNum">    1217 </span>                :            : {
-<span class="lineNum">    1218 </span>                :            :   Assert( lfn.size() == tetid.size(), &quot;Size mismatch in DG::comlim()&quot; );
-<span class="lineNum">    1219 </span>                :            : 
-<span class="lineNum">    1220 </span>                :            :   // Find local-to-ghost tet id map for sender chare
-<span class="lineNum">    1221 </span>                :<span class="lineNoCov">          0 :   const auto&amp; n = tk::cref_find( m_ghost, fromch );</span>
-<span class="lineNum">    1222 </span>                :            : 
-<span class="lineNum">    1223 </span>                :<span class="lineNoCov">          0 :   for (std::size_t i=0; i&lt;tetid.size(); ++i) {</span>
-<span class="lineNum">    1224 </span>                :<span class="lineNoCov">          0 :     auto j = tk::cref_find( n, tetid[i] );</span>
-<span class="lineNum">    1225 </span>                :            :     Assert( j &gt;= m_fd.Esuel().size()/4, &quot;Receiving solution non-ghost data&quot; );
-<span class="lineNum">    1226 </span>                :            :     Assert( j &lt; m_limFunc.nunk(), &quot;Indexing out of bounds in DG::comlim()&quot; );
-<span class="lineNum">    1227 </span>                :            :     Assert( lfn[i].size() == m_limFunc.nprop(), &quot;size mismatch in received &quot;
-<span class="lineNum">    1228 </span>                :            :            &quot;limfunc in DG::comlim()&quot; );
-<span class="lineNum">    1229 </span>                :<span class="lineNoCov">          0 :     for (std::size_t c=0; c&lt;m_limFunc.nprop(); ++c)</span>
-<span class="lineNum">    1230 </span>                :<span class="lineNoCov">          0 :       m_limFunc(j,c,0) = lfn[i][c];</span>
-<span class="lineNum">    1231 </span>                :            :   }
+<span class="lineNum">    1181 </span>                :            :     Assert( m_u.nprop() == m_limFunc.nprop() + 
+<span class="lineNum">    1182 </span>                :            :             (m_u.nprop()/g_inputdeck.get&lt; tag::discr, tag::ndof &gt;()),
+<span class="lineNum">    1183 </span>                :            :             &quot;Number of components in solution vector and limiter at recent &quot;
+<span class="lineNum">    1184 </span>                :            :             &quot;time step incorrect&quot; );
+<span class="lineNum">    1185 </span>                :            : 
+<span class="lineNum">    1186 </span>                :<span class="lineNoCov">          0 :     for (std::size_t e=0; e&lt;m_fd.Esuel().size()/4; ++e)</span>
+<span class="lineNum">    1187 </span>                :<span class="lineNoCov">          0 :       for (std::size_t c=0; c&lt;m_limFunc.nprop(); ++c)</span>
+<span class="lineNum">    1188 </span>                :<span class="lineNoCov">          0 :         m_limFunc(e,c,0)=1.0;</span>
+<span class="lineNum">    1189 </span>                :            :   
+<span class="lineNum">    1190 </span>                :<span class="lineNoCov">          0 :     const auto limiter = g_inputdeck.get&lt; tag::discr, tag::limiter &gt;();</span>
+<span class="lineNum">    1191 </span>                :<span class="lineNoCov">          0 :     if (limiter == ctr::LimiterType::WENOP1)</span>
+<span class="lineNum">    1192 </span>                :<span class="lineNoCov">          0 :       WENO_P1( m_fd.Esuel(), 0, m_u, m_limFunc );</span>
+<span class="lineNum">    1193 </span>                :            :   
+<span class="lineNum">    1194 </span>                :            :     // communicate solution ghost data (if any)
+<span class="lineNum">    1195 </span>                :<span class="lineNoCov">          0 :     if (m_ghostData.empty())</span>
+<span class="lineNum">    1196 </span>                :<span class="lineNoCov">          0 :       comlim_complete();</span>
+<span class="lineNum">    1197 </span>                :            :     else
+<span class="lineNum">    1198 </span>                :<span class="lineNoCov">          0 :       for(const auto&amp; n : m_ghostData) {</span>
+<span class="lineNum">    1199 </span>                :            :         std::vector&lt; std::size_t &gt; tetid;
+<span class="lineNum">    1200 </span>                :<span class="lineNoCov">          0 :         std::vector&lt; std::vector&lt; tk::real &gt; &gt; limfunc;</span>
+<span class="lineNum">    1201 </span>                :<span class="lineNoCov">          0 :         for(const auto&amp; i : n.second) {</span>
+<span class="lineNum">    1202 </span>                :            :           Assert( i.first &lt; m_fd.Esuel().size()/4, &quot;Sending limiter ghost data&quot; );
+<span class="lineNum">    1203 </span>                :<span class="lineNoCov">          0 :           tetid.push_back( i.first );</span>
+<span class="lineNum">    1204 </span>                :<span class="lineNoCov">          0 :           limfunc.push_back( m_limFunc[i.first] );</span>
+<span class="lineNum">    1205 </span>                :            :         }
+<span class="lineNum">    1206 </span>                :<span class="lineNoCov">          0 :         thisProxy[ n.first ].comlim( thisIndex, tetid, limfunc );</span>
+<span class="lineNum">    1207 </span>                :            :       }
+<span class="lineNum">    1208 </span>                :            : 
+<span class="lineNum">    1209 </span>                :            :   } else {
+<span class="lineNum">    1210 </span>                :            : 
+<span class="lineNum">    1211 </span>                :<span class="lineNoCov">          0 :     comlim_complete();</span>
+<span class="lineNum">    1212 </span>                :            : 
+<span class="lineNum">    1213 </span>                :            :   }
+<span class="lineNum">    1214 </span>                :            : 
+<span class="lineNum">    1215 </span>                :<span class="lineNoCov">          0 :   ownlim_complete();</span>
+<span class="lineNum">    1216 </span>                :<span class="lineNoCov">          0 : }</span>
+<a name="1217"><span class="lineNum">    1217 </span>                :            : </a>
+<span class="lineNum">    1218 </span>                :            : void
+<span class="lineNum">    1219 </span>                :<span class="lineNoCov">          0 : DG::comlim( int fromch,</span>
+<span class="lineNum">    1220 </span>                :<span class="lineNoCov">          0 :             const std::vector&lt; std::size_t &gt;&amp; tetid,</span>
+<span class="lineNum">    1221 </span>                :<span class="lineNoCov">          0 :             const std::vector&lt; std::vector&lt; tk::real &gt; &gt;&amp; lfn )</span>
+<span class="lineNum">    1222 </span>                :            : // *****************************************************************************
+<span class="lineNum">    1223 </span>                :            : //  Receive chare-boundary limiter ghost data from neighboring chares
+<span class="lineNum">    1224 </span>                :            : //! \param[in] fromch Sender chare id
+<span class="lineNum">    1225 </span>                :            : //! \param[in] tetid Ghost tet ids we receive solution data for
+<span class="lineNum">    1226 </span>                :            : //! \param[in] lfn Limiter function ghost data
+<span class="lineNum">    1227 </span>                :            : //! \details This function receives contributions to m_limFunc from fellow
+<span class="lineNum">    1228 </span>                :            : //    chares.
+<span class="lineNum">    1229 </span>                :            : // *****************************************************************************
+<span class="lineNum">    1230 </span>                :            : {
+<span class="lineNum">    1231 </span>                :            :   Assert( lfn.size() == tetid.size(), &quot;Size mismatch in DG::comlim()&quot; );
 <span class="lineNum">    1232 </span>                :            : 
-<span class="lineNum">    1233 </span>                :            :   // if we have received all solution ghost contributions from those chares we
-<span class="lineNum">    1234 </span>                :            :   // communicate along chare-boundary faces with, solve the system
-<span class="lineNum">    1235 </span>                :<span class="lineNoCov">          0 :   if (++m_nlim == m_ghostData.size()) {</span>
-<span class="lineNum">    1236 </span>                :<span class="lineNoCov">          0 :     m_nlim = 0;</span>
-<span class="lineNum">    1237 </span>                :<span class="lineNoCov">          0 :     comlim_complete();</span>
-<span class="lineNum">    1238 </span>                :            :   }
-<span class="lineNum">    1239 </span>                :<span class="lineNoCov">          0 : }</span>
-<span class="lineNum">    1240 </span>                :            : 
-<span class="lineNum">    1241 </span>                :            : void
-<span class="lineNum">    1242 </span>                :<span class="lineNoCov">          0 : DG::solve( tk::real newdt )</span>
-<span class="lineNum">    1243 </span>                :            : // *****************************************************************************
-<span class="lineNum">    1244 </span>                :            : // Compute right-hand side of discrete transport equations
-<span class="lineNum">    1245 </span>                :            : //! \param[in] newdt Size of this new time step
-<span class="lineNum">    1246 </span>                :            : // *****************************************************************************
-<span class="lineNum">    1247 </span>                :            : {
-<span class="lineNum">    1248 </span>                :            :   // Enable SDAG wait for building the solution vector during the next stage
-<span class="lineNum">    1249 </span>                :<span class="lineNoCov">          0 :   thisProxy[ thisIndex ].wait4sol();</span>
-<span class="lineNum">    1250 </span>                :<span class="lineNoCov">          0 :   thisProxy[ thisIndex ].wait4lim();</span>
-<span class="lineNum">    1251 </span>                :            : 
-<span class="lineNum">    1252 </span>                :<span class="lineNoCov">          0 :   auto d = Disc();</span>
+<span class="lineNum">    1233 </span>                :            :   // Find local-to-ghost tet id map for sender chare
+<span class="lineNum">    1234 </span>                :<span class="lineNoCov">          0 :   const auto&amp; n = tk::cref_find( m_ghost, fromch );</span>
+<span class="lineNum">    1235 </span>                :            : 
+<span class="lineNum">    1236 </span>                :<span class="lineNoCov">          0 :   for (std::size_t i=0; i&lt;tetid.size(); ++i) {</span>
+<span class="lineNum">    1237 </span>                :<span class="lineNoCov">          0 :     auto j = tk::cref_find( n, tetid[i] );</span>
+<span class="lineNum">    1238 </span>                :            :     Assert( j &gt;= m_fd.Esuel().size()/4, &quot;Receiving solution non-ghost data&quot; );
+<span class="lineNum">    1239 </span>                :            :     Assert( j &lt; m_limFunc.nunk(), &quot;Indexing out of bounds in DG::comlim()&quot; );
+<span class="lineNum">    1240 </span>                :            :     Assert( lfn[i].size() == m_limFunc.nprop(), &quot;size mismatch in received &quot;
+<span class="lineNum">    1241 </span>                :            :            &quot;limfunc in DG::comlim()&quot; );
+<span class="lineNum">    1242 </span>                :<span class="lineNoCov">          0 :     for (std::size_t c=0; c&lt;m_limFunc.nprop(); ++c)</span>
+<span class="lineNum">    1243 </span>                :<span class="lineNoCov">          0 :       m_limFunc(j,c,0) = lfn[i][c];</span>
+<span class="lineNum">    1244 </span>                :            :   }
+<span class="lineNum">    1245 </span>                :            : 
+<span class="lineNum">    1246 </span>                :            :   // if we have received all solution ghost contributions from those chares we
+<span class="lineNum">    1247 </span>                :            :   // communicate along chare-boundary faces with, solve the system
+<span class="lineNum">    1248 </span>                :<span class="lineNoCov">          0 :   if (++m_nlim == m_ghostData.size()) {</span>
+<span class="lineNum">    1249 </span>                :<span class="lineNoCov">          0 :     m_nlim = 0;</span>
+<span class="lineNum">    1250 </span>                :<span class="lineNoCov">          0 :     comlim_complete();</span>
+<span class="lineNum">    1251 </span>                :            :   }
+<span class="lineNum">    1252 </span>                :<span class="lineNoCov">          0 : }</span>
 <span class="lineNum">    1253 </span>                :            : 
-<span class="lineNum">    1254 </span>                :            :   // Set new time step size
-<span class="lineNum">    1255 </span>                :<span class="lineNoCov">          0 :   d-&gt;setdt( newdt );</span>
-<span class="lineNum">    1256 </span>                :            : 
-<span class="lineNum">    1257 </span>                :<span class="lineNoCov">          0 :   for (const auto&amp; eq : g_dgpde)</span>
-<span class="lineNum">    1258 </span>                :<span class="lineNoCov">          0 :     eq.rhs( d-&gt;T(), m_geoFace, m_geoElem, m_fd, d-&gt;Inpoel(), d-&gt;Coord(), m_u,</span>
-<span class="lineNum">    1259 </span>                :<span class="lineNoCov">          0 :             m_limFunc, m_rhs );</span>
-<span class="lineNum">    1260 </span>                :            : 
-<span class="lineNum">    1261 </span>                :            :   // Explicit time-stepping using RK3 to discretize time-derivative
-<span class="lineNum">    1262 </span>                :<span class="lineNoCov">          0 :   m_u =  m_rkcoef[0][m_stage] * m_un</span>
-<span class="lineNum">    1263 </span>                :<span class="lineNoCov">          0 :        + m_rkcoef[1][m_stage] * ( m_u + d-&gt;Dt() * m_rhs/m_lhs );</span>
+<span class="lineNum">    1254 </span>                :            : void
+<span class="lineNum">    1255 </span>                :<span class="lineNoCov">          0 : DG::solve( tk::real newdt )</span>
+<span class="lineNum">    1256 </span>                :            : // *****************************************************************************
+<span class="lineNum">    1257 </span>                :            : // Compute right-hand side of discrete transport equations
+<span class="lineNum">    1258 </span>                :            : //! \param[in] newdt Size of this new time step
+<span class="lineNum">    1259 </span>                :            : // *****************************************************************************
+<span class="lineNum">    1260 </span>                :            : {
+<span class="lineNum">    1261 </span>                :            :   // Enable SDAG wait for building the solution vector during the next stage
+<span class="lineNum">    1262 </span>                :<span class="lineNoCov">          0 :   thisProxy[ thisIndex ].wait4sol();</span>
+<span class="lineNum">    1263 </span>                :<span class="lineNoCov">          0 :   thisProxy[ thisIndex ].wait4lim();</span>
 <span class="lineNum">    1264 </span>                :            : 
-<span class="lineNum">    1265 </span>                :<span class="lineNoCov">          0 :   if (m_stage &lt; 2) {</span>
+<span class="lineNum">    1265 </span>                :<span class="lineNoCov">          0 :   auto d = Disc();</span>
 <span class="lineNum">    1266 </span>                :            : 
-<span class="lineNum">    1267 </span>                :            :     // continue with next tims step stage
-<span class="lineNum">    1268 </span>                :<span class="lineNoCov">          0 :     stage();</span>
+<span class="lineNum">    1267 </span>                :            :   // Set new time step size
+<span class="lineNum">    1268 </span>                :<span class="lineNoCov">          0 :   d-&gt;setdt( newdt );</span>
 <span class="lineNum">    1269 </span>                :            : 
-<span class="lineNum">    1270 </span>                :            :   } else {
-<span class="lineNum">    1271 </span>                :            : 
-<span class="lineNum">    1272 </span>                :<span class="lineNoCov">          0 :     thisProxy[ thisIndex ].wait4stage();</span>
+<span class="lineNum">    1270 </span>                :<span class="lineNoCov">          0 :   for (const auto&amp; eq : g_dgpde)</span>
+<span class="lineNum">    1271 </span>                :<span class="lineNoCov">          0 :     eq.rhs( d-&gt;T(), m_geoFace, m_geoElem, m_fd, d-&gt;Inpoel(), d-&gt;Coord(), m_u,</span>
+<span class="lineNum">    1272 </span>                :<span class="lineNoCov">          0 :             m_limFunc, m_rhs );</span>
 <span class="lineNum">    1273 </span>                :            : 
-<span class="lineNum">    1274 </span>                :            :     // Compute diagnostics, e.g., residuals
-<span class="lineNum">    1275 </span>                :            :     auto diag_computed =
-<span class="lineNum">    1276 </span>                :<span class="lineNoCov">          0 :       m_diag.compute( *d, m_u.nunk()-m_fd.Esuel().size()/4, m_geoElem, m_u );</span>
-<span class="lineNum">    1277 </span>                :            :     // Increase number of iterations and physical time
-<span class="lineNum">    1278 </span>                :<span class="lineNoCov">          0 :     d-&gt;next();</span>
-<span class="lineNum">    1279 </span>                :            :     // Update Un
-<span class="lineNum">    1280 </span>                :            :     m_un = m_u;
-<span class="lineNum">    1281 </span>                :            :     // Signal that diagnostics have been computed (or in this case, skipped)
-<span class="lineNum">    1282 </span>                :<span class="lineNoCov">          0 :     if (!diag_computed) diag();</span>
-<span class="lineNum">    1283 </span>                :            :     // Optionally refine mesh
-<span class="lineNum">    1284 </span>                :<span class="lineNoCov">          0 :     refine();</span>
-<span class="lineNum">    1285 </span>                :            : 
-<span class="lineNum">    1286 </span>                :            :   }
-<span class="lineNum">    1287 </span>                :<span class="lineNoCov">          0 : }</span>
-<a name="1288"><span class="lineNum">    1288 </span>                :            : </a>
-<span class="lineNum">    1289 </span>                :            : void
-<span class="lineNum">    1290 </span>                :<span class="lineNoCov">          0 : DG::resized()</span>
-<span class="lineNum">    1291 </span>                :            : // *****************************************************************************
-<span class="lineNum">    1292 </span>                :            : // Resizing data sutrctures after mesh refinement has been completed
-<span class="lineNum">    1293 </span>                :            : // *****************************************************************************
-<span class="lineNum">    1294 </span>                :            : {
-<span class="lineNum">    1295 </span>                :<span class="lineNoCov">          0 :   resize_complete();</span>
-<span class="lineNum">    1296 </span>                :<span class="lineNoCov">          0 : }</span>
-<a name="1297"><span class="lineNum">    1297 </span>                :            : </a>
-<span class="lineNum">    1298 </span>                :            : void
-<span class="lineNum">    1299 </span>                :<span class="lineNoCov">          0 : DG::diag()</span>
-<span class="lineNum">    1300 </span>                :            : // *****************************************************************************
-<span class="lineNum">    1301 </span>                :            : // Signal the runtime system that diagnostics have been computed
-<span class="lineNum">    1302 </span>                :            : // *****************************************************************************
-<span class="lineNum">    1303 </span>                :            : {
-<span class="lineNum">    1304 </span>                :<span class="lineNoCov">          0 :   diag_complete();</span>
-<span class="lineNum">    1305 </span>                :<span class="lineNoCov">          0 : }</span>
-<a name="1306"><span class="lineNum">    1306 </span>                :            : </a>
-<span class="lineNum">    1307 </span>                :            : void
-<span class="lineNum">    1308 </span>                :<span class="lineNoCov">          0 : DG::refine()</span>
-<span class="lineNum">    1309 </span>                :            : // *****************************************************************************
-<span class="lineNum">    1310 </span>                :            : // Optionally refine/derefine mesh
-<span class="lineNum">    1311 </span>                :            : // *****************************************************************************
-<span class="lineNum">    1312 </span>                :            : {
-<span class="lineNum">    1313 </span>                :<span class="lineNoCov">          0 :   auto d = Disc();</span>
-<span class="lineNum">    1314 </span>                :            : 
-<span class="lineNum">    1315 </span>                :<span class="lineNoCov">          0 :   auto dtref = g_inputdeck.get&lt; tag::amr, tag::dtref &gt;();</span>
-<span class="lineNum">    1316 </span>                :<span class="lineNoCov">          0 :   auto dtfreq = g_inputdeck.get&lt; tag::amr, tag::dtfreq &gt;();</span>
-<span class="lineNum">    1317 </span>                :            : 
-<span class="lineNum">    1318 </span>                :            :   // if t&gt;0 refinement enabled and we hit the frequency
-<span class="lineNum">    1319 </span>                :<span class="lineNoCov">          0 :   if (dtref &amp;&amp; !(d-&gt;It() % dtfreq)) {   // refine</span>
-<span class="lineNum">    1320 </span>                :            : 
-<span class="lineNum">    1321 </span>                :<span class="lineNoCov">          0 :     d-&gt;Ref()-&gt;dtref( d-&gt;T(), m_fd.Bnode() );</span>
-<span class="lineNum">    1322 </span>                :            : 
-<span class="lineNum">    1323 </span>                :            :   } else {      // do not refine
-<span class="lineNum">    1324 </span>                :            : 
-<span class="lineNum">    1325 </span>                :<span class="lineNoCov">          0 :     ref_complete();</span>
-<span class="lineNum">    1326 </span>                :<span class="lineNoCov">          0 :     lhs_complete();</span>
-<span class="lineNum">    1327 </span>                :<span class="lineNoCov">          0 :     resize_complete();</span>
-<span class="lineNum">    1328 </span>                :            : 
-<span class="lineNum">    1329 </span>                :            :   }
-<span class="lineNum">    1330 </span>                :<span class="lineNoCov">          0 : }</span>
-<a name="1331"><span class="lineNum">    1331 </span>                :            : </a>
-<span class="lineNum">    1332 </span>                :            : void
-<span class="lineNum">    1333 </span>                :<span class="lineNoCov">          0 : DG::resize( const tk::UnsMesh::Chunk&amp; /*chunk*/,</span>
-<span class="lineNum">    1334 </span>                :            :             const tk::UnsMesh::Coords&amp; /*coord*/,
-<span class="lineNum">    1335 </span>                :            :             const tk::Fields&amp; /*u*/,
-<span class="lineNum">    1336 </span>                :            :             const std::unordered_map&lt; int,
-<span class="lineNum">    1337 </span>                :            :                     std::vector&lt; std::size_t &gt; &gt;&amp; /*msum*/,
-<span class="lineNum">    1338 </span>                :            :             const std::map&lt; int, std::vector&lt; std::size_t &gt; &gt;&amp; /*bnode*/ )
-<span class="lineNum">    1339 </span>                :            : // *****************************************************************************
-<span class="lineNum">    1340 </span>                :            : //  Receive new mesh from refiner
-<span class="lineNum">    1341 </span>                :            : //! \param[in] chunk New mesh chunk (connectivity and global&lt;-&gt;local id maps)
-<span class="lineNum">    1342 </span>                :            : //! \param[in] coord New mesh node coordinates
-<span class="lineNum">    1343 </span>                :            : //! \param[in] u New solution on new mesh
-<span class="lineNum">    1344 </span>                :            : //! \param[in] msum New node communication map
-<span class="lineNum">    1345 </span>                :            : //! \param[in] bnode Map of boundary-node lists mapped to corresponding
-<span class="lineNum">    1346 </span>                :            : //!   side set ids for this mesh chunk
-<span class="lineNum">    1347 </span>                :            : // *****************************************************************************
-<span class="lineNum">    1348 </span>                :            : {
-<span class="lineNum">    1349 </span>                :            :   //auto d = Disc();
-<span class="lineNum">    1350 </span>                :            : 
-<span class="lineNum">    1351 </span>                :            :   //d-&gt;Inpoel() = inpoel;
-<span class="lineNum">    1352 </span>                :            :   //d-&gt;Coord() = coord;
-<span class="lineNum">    1353 </span>                :            : 
-<span class="lineNum">    1354 </span>                :<span class="lineNoCov">          0 :   ref_complete();</span>
-<span class="lineNum">    1355 </span>                :<span class="lineNoCov">          0 : }</span>
-<a name="1356"><span class="lineNum">    1356 </span>                :            : </a>
-<span class="lineNum">    1357 </span>                :            : void
-<span class="lineNum">    1358 </span>                :<span class="lineNoCov">          0 : DG::next()</span>
-<span class="lineNum">    1359 </span>                :            : // *****************************************************************************
-<span class="lineNum">    1360 </span>                :            : // Continue to next time step stage
-<span class="lineNum">    1361 </span>                :            : // *****************************************************************************
-<span class="lineNum">    1362 </span>                :            : {
-<span class="lineNum">    1363 </span>                :<span class="lineNoCov">          0 :   auto d = Disc();</span>
-<span class="lineNum">    1364 </span>                :            : 
-<span class="lineNum">    1365 </span>                :<span class="lineNoCov">          0 :   tk::real fdt = 0.0;</span>
-<span class="lineNum">    1366 </span>                :            :   d-&gt;contribute( sizeof(tk::real), &amp;fdt, CkReduction::nop,
-<span class="lineNum">    1367 </span>                :<span class="lineNoCov">          0 :                  CkCallback(CkReductionTarget(Transporter,advance), d-&gt;Tr()) );</span>
+<span class="lineNum">    1274 </span>                :            :   // Explicit time-stepping using RK3 to discretize time-derivative
+<span class="lineNum">    1275 </span>                :<span class="lineNoCov">          0 :   m_u =  m_rkcoef[0][m_stage] * m_un</span>
+<span class="lineNum">    1276 </span>                :<span class="lineNoCov">          0 :        + m_rkcoef[1][m_stage] * ( m_u + d-&gt;Dt() * m_rhs/m_lhs );</span>
+<span class="lineNum">    1277 </span>                :            : 
+<span class="lineNum">    1278 </span>                :<span class="lineNoCov">          0 :   if (m_stage &lt; 2) {</span>
+<span class="lineNum">    1279 </span>                :            : 
+<span class="lineNum">    1280 </span>                :            :     // continue with next tims step stage
+<span class="lineNum">    1281 </span>                :<span class="lineNoCov">          0 :     stage();</span>
+<span class="lineNum">    1282 </span>                :            : 
+<span class="lineNum">    1283 </span>                :            :   } else {
+<span class="lineNum">    1284 </span>                :            : 
+<span class="lineNum">    1285 </span>                :<span class="lineNoCov">          0 :     thisProxy[ thisIndex ].wait4stage();</span>
+<span class="lineNum">    1286 </span>                :            : 
+<span class="lineNum">    1287 </span>                :            :     // Compute diagnostics, e.g., residuals
+<span class="lineNum">    1288 </span>                :            :     auto diag_computed =
+<span class="lineNum">    1289 </span>                :<span class="lineNoCov">          0 :       m_diag.compute( *d, m_u.nunk()-m_fd.Esuel().size()/4, m_geoElem, m_u );</span>
+<span class="lineNum">    1290 </span>                :            :     // Increase number of iterations and physical time
+<span class="lineNum">    1291 </span>                :<span class="lineNoCov">          0 :     d-&gt;next();</span>
+<span class="lineNum">    1292 </span>                :            :     // Update Un
+<span class="lineNum">    1293 </span>                :            :     m_un = m_u;
+<span class="lineNum">    1294 </span>                :            :     // Signal that diagnostics have been computed (or in this case, skipped)
+<span class="lineNum">    1295 </span>                :<span class="lineNoCov">          0 :     if (!diag_computed) diag();</span>
+<span class="lineNum">    1296 </span>                :            :     // Optionally refine mesh
+<span class="lineNum">    1297 </span>                :<span class="lineNoCov">          0 :     refine();</span>
+<span class="lineNum">    1298 </span>                :            : 
+<span class="lineNum">    1299 </span>                :            :   }
+<span class="lineNum">    1300 </span>                :<span class="lineNoCov">          0 : }</span>
+<a name="1301"><span class="lineNum">    1301 </span>                :            : </a>
+<span class="lineNum">    1302 </span>                :            : void
+<span class="lineNum">    1303 </span>                :<span class="lineNoCov">          0 : DG::resized()</span>
+<span class="lineNum">    1304 </span>                :            : // *****************************************************************************
+<span class="lineNum">    1305 </span>                :            : // Resizing data sutrctures after mesh refinement has been completed
+<span class="lineNum">    1306 </span>                :            : // *****************************************************************************
+<span class="lineNum">    1307 </span>                :            : {
+<span class="lineNum">    1308 </span>                :<span class="lineNoCov">          0 :   resize_complete();</span>
+<span class="lineNum">    1309 </span>                :<span class="lineNoCov">          0 : }</span>
+<a name="1310"><span class="lineNum">    1310 </span>                :            : </a>
+<span class="lineNum">    1311 </span>                :            : void
+<span class="lineNum">    1312 </span>                :<span class="lineNoCov">          0 : DG::diag()</span>
+<span class="lineNum">    1313 </span>                :            : // *****************************************************************************
+<span class="lineNum">    1314 </span>                :            : // Signal the runtime system that diagnostics have been computed
+<span class="lineNum">    1315 </span>                :            : // *****************************************************************************
+<span class="lineNum">    1316 </span>                :            : {
+<span class="lineNum">    1317 </span>                :<span class="lineNoCov">          0 :   diag_complete();</span>
+<span class="lineNum">    1318 </span>                :<span class="lineNoCov">          0 : }</span>
+<a name="1319"><span class="lineNum">    1319 </span>                :            : </a>
+<span class="lineNum">    1320 </span>                :            : void
+<span class="lineNum">    1321 </span>                :<span class="lineNoCov">          0 : DG::refine()</span>
+<span class="lineNum">    1322 </span>                :            : // *****************************************************************************
+<span class="lineNum">    1323 </span>                :            : // Optionally refine/derefine mesh
+<span class="lineNum">    1324 </span>                :            : // *****************************************************************************
+<span class="lineNum">    1325 </span>                :            : {
+<span class="lineNum">    1326 </span>                :<span class="lineNoCov">          0 :   auto d = Disc();</span>
+<span class="lineNum">    1327 </span>                :            : 
+<span class="lineNum">    1328 </span>                :<span class="lineNoCov">          0 :   auto dtref = g_inputdeck.get&lt; tag::amr, tag::dtref &gt;();</span>
+<span class="lineNum">    1329 </span>                :<span class="lineNoCov">          0 :   auto dtfreq = g_inputdeck.get&lt; tag::amr, tag::dtfreq &gt;();</span>
+<span class="lineNum">    1330 </span>                :            : 
+<span class="lineNum">    1331 </span>                :            :   // if t&gt;0 refinement enabled and we hit the frequency
+<span class="lineNum">    1332 </span>                :<span class="lineNoCov">          0 :   if (dtref &amp;&amp; !(d-&gt;It() % dtfreq)) {   // refine</span>
+<span class="lineNum">    1333 </span>                :            : 
+<span class="lineNum">    1334 </span>                :<span class="lineNoCov">          0 :     d-&gt;Ref()-&gt;dtref( d-&gt;T(), m_fd.Bnode() );</span>
+<span class="lineNum">    1335 </span>                :            : 
+<span class="lineNum">    1336 </span>                :            :   } else {      // do not refine
+<span class="lineNum">    1337 </span>                :            : 
+<span class="lineNum">    1338 </span>                :<span class="lineNoCov">          0 :     ref_complete();</span>
+<span class="lineNum">    1339 </span>                :<span class="lineNoCov">          0 :     lhs_complete();</span>
+<span class="lineNum">    1340 </span>                :<span class="lineNoCov">          0 :     resize_complete();</span>
+<span class="lineNum">    1341 </span>                :            : 
+<span class="lineNum">    1342 </span>                :            :   }
+<span class="lineNum">    1343 </span>                :<span class="lineNoCov">          0 : }</span>
+<a name="1344"><span class="lineNum">    1344 </span>                :            : </a>
+<span class="lineNum">    1345 </span>                :            : void
+<span class="lineNum">    1346 </span>                :<span class="lineNoCov">          0 : DG::resize( const tk::UnsMesh::Chunk&amp; /*chunk*/,</span>
+<span class="lineNum">    1347 </span>                :            :             const tk::UnsMesh::Coords&amp; /*coord*/,
+<span class="lineNum">    1348 </span>                :            :             const tk::Fields&amp; /*u*/,
+<span class="lineNum">    1349 </span>                :            :             const std::unordered_map&lt; int,
+<span class="lineNum">    1350 </span>                :            :                     std::vector&lt; std::size_t &gt; &gt;&amp; /*msum*/,
+<span class="lineNum">    1351 </span>                :            :             const std::map&lt; int, std::vector&lt; std::size_t &gt; &gt;&amp; /*bnode*/ )
+<span class="lineNum">    1352 </span>                :            : // *****************************************************************************
+<span class="lineNum">    1353 </span>                :            : //  Receive new mesh from refiner
+<span class="lineNum">    1354 </span>                :            : //! \param[in] chunk New mesh chunk (connectivity and global&lt;-&gt;local id maps)
+<span class="lineNum">    1355 </span>                :            : //! \param[in] coord New mesh node coordinates
+<span class="lineNum">    1356 </span>                :            : //! \param[in] u New solution on new mesh
+<span class="lineNum">    1357 </span>                :            : //! \param[in] msum New node communication map
+<span class="lineNum">    1358 </span>                :            : //! \param[in] bnode Map of boundary-node lists mapped to corresponding
+<span class="lineNum">    1359 </span>                :            : //!   side set ids for this mesh chunk
+<span class="lineNum">    1360 </span>                :            : // *****************************************************************************
+<span class="lineNum">    1361 </span>                :            : {
+<span class="lineNum">    1362 </span>                :            :   //auto d = Disc();
+<span class="lineNum">    1363 </span>                :            : 
+<span class="lineNum">    1364 </span>                :            :   //d-&gt;Inpoel() = inpoel;
+<span class="lineNum">    1365 </span>                :            :   //d-&gt;Coord() = coord;
+<span class="lineNum">    1366 </span>                :            : 
+<span class="lineNum">    1367 </span>                :<span class="lineNoCov">          0 :   ref_complete();</span>
 <span class="lineNum">    1368 </span>                :<span class="lineNoCov">          0 : }</span>
 <a name="1369"><span class="lineNum">    1369 </span>                :            : </a>
 <span class="lineNum">    1370 </span>                :            : void
-<span class="lineNum">    1371 </span>                :<span class="lineNoCov">          0 : DG::out()</span>
+<span class="lineNum">    1371 </span>                :<span class="lineNoCov">          0 : DG::next()</span>
 <span class="lineNum">    1372 </span>                :            : // *****************************************************************************
-<span class="lineNum">    1373 </span>                :            : // Output mesh field data
+<span class="lineNum">    1373 </span>                :            : // Continue to next time step stage
 <span class="lineNum">    1374 </span>                :            : // *****************************************************************************
 <span class="lineNum">    1375 </span>                :            : {
 <span class="lineNum">    1376 </span>                :<span class="lineNoCov">          0 :   auto d = Disc();</span>
 <span class="lineNum">    1377 </span>                :            : 
-<span class="lineNum">    1378 </span>                :<span class="lineNoCov">          0 :   const auto term = g_inputdeck.get&lt; tag::discr, tag::term &gt;();</span>
-<span class="lineNum">    1379 </span>                :<span class="lineNoCov">          0 :   const auto nstep = g_inputdeck.get&lt; tag::discr, tag::nstep &gt;();</span>
-<span class="lineNum">    1380 </span>                :            :   const auto eps = std::numeric_limits&lt; tk::real &gt;::epsilon();
-<span class="lineNum">    1381 </span>                :<span class="lineNoCov">          0 :   const auto fieldfreq = g_inputdeck.get&lt; tag::interval, tag::field &gt;();</span>
-<span class="lineNum">    1382 </span>                :            : 
-<span class="lineNum">    1383 </span>                :            :   // output field data if field iteration count is reached or in the last time
-<span class="lineNum">    1384 </span>                :            :   // step, otherwise continue to next time step
-<span class="lineNum">    1385 </span>                :<span class="lineNoCov">          0 :   if ( !((d-&gt;It()) % fieldfreq) ||</span>
-<span class="lineNum">    1386 </span>                :<span class="lineNoCov">          0 :        (std::fabs(d-&gt;T()-term) &lt; eps || d-&gt;It() &gt;= nstep) )</span>
-<span class="lineNum">    1387 </span>                :<span class="lineNoCov">          0 :     writeFields( CkCallback(CkIndex_DG::step(), thisProxy[thisIndex]) );</span>
-<span class="lineNum">    1388 </span>                :            :   else
-<span class="lineNum">    1389 </span>                :<span class="lineNoCov">          0 :     step();</span>
-<span class="lineNum">    1390 </span>                :<span class="lineNoCov">          0 : }</span>
-<a name="1391"><span class="lineNum">    1391 </span>                :            : </a>
-<span class="lineNum">    1392 </span>                :            : void
-<span class="lineNum">    1393 </span>                :<span class="lineNoCov">          0 : DG::stage()</span>
-<span class="lineNum">    1394 </span>                :            : // *****************************************************************************
-<span class="lineNum">    1395 </span>                :            : // Evaluate whether to continue with next time step stage
-<span class="lineNum">    1396 </span>                :            : // *****************************************************************************
-<span class="lineNum">    1397 </span>                :            : {
-<span class="lineNum">    1398 </span>                :            :   // Increment Runge-Kutta stage counter
-<span class="lineNum">    1399 </span>                :<span class="lineNoCov">          0 :   ++m_stage;</span>
-<span class="lineNum">    1400 </span>                :            : 
-<span class="lineNum">    1401 </span>                :            :   // if not all Runge-Kutta stages complete, continue to next time stage,
-<span class="lineNum">    1402 </span>                :            :   // otherwise output field data to file(s)
-<span class="lineNum">    1403 </span>                :<span class="lineNoCov">          0 :   if (m_stage &lt; 3) next(); else out();</span>
-<span class="lineNum">    1404 </span>                :<span class="lineNoCov">          0 : }</span>
-<a name="1405"><span class="lineNum">    1405 </span>                :            : </a>
-<span class="lineNum">    1406 </span>                :            : void
-<span class="lineNum">    1407 </span>                :<span class="lineNoCov">          0 : DG::step()</span>
-<span class="lineNum">    1408 </span>                :            : // *****************************************************************************
-<span class="lineNum">    1409 </span>                :            : // Evaluate wether to continue with next time step
-<span class="lineNum">    1410 </span>                :            : // *****************************************************************************
-<span class="lineNum">    1411 </span>                :            : {
-<span class="lineNum">    1412 </span>                :<span class="lineNoCov">          0 :   auto d = Disc();</span>
+<span class="lineNum">    1378 </span>                :<span class="lineNoCov">          0 :   tk::real fdt = 0.0;</span>
+<span class="lineNum">    1379 </span>                :            :   d-&gt;contribute( sizeof(tk::real), &amp;fdt, CkReduction::nop,
+<span class="lineNum">    1380 </span>                :<span class="lineNoCov">          0 :                  CkCallback(CkReductionTarget(Transporter,advance), d-&gt;Tr()) );</span>
+<span class="lineNum">    1381 </span>                :<span class="lineNoCov">          0 : }</span>
+<a name="1382"><span class="lineNum">    1382 </span>                :            : </a>
+<span class="lineNum">    1383 </span>                :            : void
+<span class="lineNum">    1384 </span>                :<span class="lineNoCov">          0 : DG::out()</span>
+<span class="lineNum">    1385 </span>                :            : // *****************************************************************************
+<span class="lineNum">    1386 </span>                :            : // Output mesh field data
+<span class="lineNum">    1387 </span>                :            : // *****************************************************************************
+<span class="lineNum">    1388 </span>                :            : {
+<span class="lineNum">    1389 </span>                :<span class="lineNoCov">          0 :   auto d = Disc();</span>
+<span class="lineNum">    1390 </span>                :            : 
+<span class="lineNum">    1391 </span>                :<span class="lineNoCov">          0 :   const auto term = g_inputdeck.get&lt; tag::discr, tag::term &gt;();</span>
+<span class="lineNum">    1392 </span>                :<span class="lineNoCov">          0 :   const auto nstep = g_inputdeck.get&lt; tag::discr, tag::nstep &gt;();</span>
+<span class="lineNum">    1393 </span>                :            :   const auto eps = std::numeric_limits&lt; tk::real &gt;::epsilon();
+<span class="lineNum">    1394 </span>                :<span class="lineNoCov">          0 :   const auto fieldfreq = g_inputdeck.get&lt; tag::interval, tag::field &gt;();</span>
+<span class="lineNum">    1395 </span>                :            : 
+<span class="lineNum">    1396 </span>                :            :   // output field data if field iteration count is reached or in the last time
+<span class="lineNum">    1397 </span>                :            :   // step, otherwise continue to next time step
+<span class="lineNum">    1398 </span>                :<span class="lineNoCov">          0 :   if ( !((d-&gt;It()) % fieldfreq) ||</span>
+<span class="lineNum">    1399 </span>                :<span class="lineNoCov">          0 :        (std::fabs(d-&gt;T()-term) &lt; eps || d-&gt;It() &gt;= nstep) )</span>
+<span class="lineNum">    1400 </span>                :<span class="lineNoCov">          0 :     writeFields( CkCallback(CkIndex_DG::step(), thisProxy[thisIndex]) );</span>
+<span class="lineNum">    1401 </span>                :            :   else
+<span class="lineNum">    1402 </span>                :<span class="lineNoCov">          0 :     step();</span>
+<span class="lineNum">    1403 </span>                :<span class="lineNoCov">          0 : }</span>
+<a name="1404"><span class="lineNum">    1404 </span>                :            : </a>
+<span class="lineNum">    1405 </span>                :            : void
+<span class="lineNum">    1406 </span>                :<span class="lineNoCov">          0 : DG::stage()</span>
+<span class="lineNum">    1407 </span>                :            : // *****************************************************************************
+<span class="lineNum">    1408 </span>                :            : // Evaluate whether to continue with next time step stage
+<span class="lineNum">    1409 </span>                :            : // *****************************************************************************
+<span class="lineNum">    1410 </span>                :            : {
+<span class="lineNum">    1411 </span>                :            :   // Increment Runge-Kutta stage counter
+<span class="lineNum">    1412 </span>                :<span class="lineNoCov">          0 :   ++m_stage;</span>
 <span class="lineNum">    1413 </span>                :            : 
-<span class="lineNum">    1414 </span>                :            :   // Output one-liner status report to screen
-<span class="lineNum">    1415 </span>                :<span class="lineNoCov">          0 :   d-&gt;status();</span>
-<span class="lineNum">    1416 </span>                :            :   // Reset Runge-Kutta stage counter
-<span class="lineNum">    1417 </span>                :<span class="lineNoCov">          0 :   m_stage = 0;</span>
-<span class="lineNum">    1418 </span>                :            : 
-<span class="lineNum">    1419 </span>                :<span class="lineNoCov">          0 :   const auto term = g_inputdeck.get&lt; tag::discr, tag::term &gt;();</span>
-<span class="lineNum">    1420 </span>                :<span class="lineNoCov">          0 :   const auto nstep = g_inputdeck.get&lt; tag::discr, tag::nstep &gt;();</span>
-<span class="lineNum">    1421 </span>                :            :   const auto eps = std::numeric_limits&lt; tk::real &gt;::epsilon();
-<span class="lineNum">    1422 </span>                :            : 
-<span class="lineNum">    1423 </span>                :            :   // If neither max iterations nor max time reached, continue, otherwise finish
-<span class="lineNum">    1424 </span>                :<span class="lineNoCov">          0 :   if (std::fabs(d-&gt;T()-term) &gt; eps &amp;&amp; d-&gt;It() &lt; nstep) {</span>
-<span class="lineNum">    1425 </span>                :<span class="lineNoCov">          0 :     AtSync();   // migrate here if needed</span>
-<span class="lineNum">    1426 </span>                :<span class="lineNoCov">          0 :     next();</span>
-<span class="lineNum">    1427 </span>                :            :   } else {
-<span class="lineNum">    1428 </span>                :<span class="lineNoCov">          0 :     contribute(CkCallback( CkReductionTarget(Transporter,finish), d-&gt;Tr() ));</span>
-<span class="lineNum">    1429 </span>                :            :   }
-<span class="lineNum">    1430 </span>                :<span class="lineNoCov">          0 : }</span>
+<span class="lineNum">    1414 </span>                :            :   // if not all Runge-Kutta stages complete, continue to next time stage,
+<span class="lineNum">    1415 </span>                :            :   // otherwise output field data to file(s)
+<span class="lineNum">    1416 </span>                :<span class="lineNoCov">          0 :   if (m_stage &lt; 3) next(); else out();</span>
+<span class="lineNum">    1417 </span>                :<span class="lineNoCov">          0 : }</span>
+<a name="1418"><span class="lineNum">    1418 </span>                :            : </a>
+<span class="lineNum">    1419 </span>                :            : void
+<span class="lineNum">    1420 </span>                :<span class="lineNoCov">          0 : DG::step()</span>
+<span class="lineNum">    1421 </span>                :            : // *****************************************************************************
+<span class="lineNum">    1422 </span>                :            : // Evaluate wether to continue with next time step
+<span class="lineNum">    1423 </span>                :            : // *****************************************************************************
+<span class="lineNum">    1424 </span>                :            : {
+<span class="lineNum">    1425 </span>                :<span class="lineNoCov">          0 :   auto d = Disc();</span>
+<span class="lineNum">    1426 </span>                :            : 
+<span class="lineNum">    1427 </span>                :            :   // Output one-liner status report to screen
+<span class="lineNum">    1428 </span>                :<span class="lineNoCov">          0 :   d-&gt;status();</span>
+<span class="lineNum">    1429 </span>                :            :   // Reset Runge-Kutta stage counter
+<span class="lineNum">    1430 </span>                :<span class="lineNoCov">          0 :   m_stage = 0;</span>
 <span class="lineNum">    1431 </span>                :            : 
-<span class="lineNum">    1432 </span>                :            : #include &quot;NoWarning/dg.def.h&quot;
+<span class="lineNum">    1432 </span>                :<span class="lineNoCov">          0 :   const auto term = g_inputdeck.get&lt; tag::discr, tag::term &gt;();</span>
+<span class="lineNum">    1433 </span>                :<span class="lineNoCov">          0 :   const auto nstep = g_inputdeck.get&lt; tag::discr, tag::nstep &gt;();</span>
+<span class="lineNum">    1434 </span>                :            :   const auto eps = std::numeric_limits&lt; tk::real &gt;::epsilon();
+<span class="lineNum">    1435 </span>                :            : 
+<span class="lineNum">    1436 </span>                :            :   // If neither max iterations nor max time reached, continue, otherwise finish
+<span class="lineNum">    1437 </span>                :<span class="lineNoCov">          0 :   if (std::fabs(d-&gt;T()-term) &gt; eps &amp;&amp; d-&gt;It() &lt; nstep) {</span>
+<span class="lineNum">    1438 </span>                :            : 
+<span class="lineNum">    1439 </span>                :<span class="lineNoCov">          0 :     AtSync();</span>
+<span class="lineNum">    1440 </span>                :<span class="lineNoCov">          0 :     if (g_inputdeck.get&lt; tag::cmd, tag::nonblocking &gt;()) next();</span>
+<span class="lineNum">    1441 </span>                :            : 
+<span class="lineNum">    1442 </span>                :            :   } else {
+<span class="lineNum">    1443 </span>                :<span class="lineNoCov">          0 :     contribute(CkCallback( CkReductionTarget(Transporter,finish), d-&gt;Tr() ));</span>
+<span class="lineNum">    1444 </span>                :            :   }
+<span class="lineNum">    1445 </span>                :<span class="lineNoCov">          0 : }</span>
+<span class="lineNum">    1446 </span>                :            : 
+<span class="lineNum">    1447 </span>                :            : #include &quot;NoWarning/dg.def.h&quot;
 </pre>
       </td>
     </tr>
