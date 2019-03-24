@@ -102,13 +102,16 @@
 
 <span class="k">using</span> <span class="n">inciter</span><span class="o">::</span><span class="n">ALECG</span><span class="p">;</span>
 
-<span class="n">ALECG</span><span class="o">::</span><span class="n">ALECG</span><span class="p">(</span> <span class="k">const</span> <span class="n">CProxy_Discretization</span><span class="o">&amp;</span> <span class="n">disc</span><span class="p">,</span> <span class="k">const</span> <span class="n">FaceData</span><span class="o">&amp;</span> <span class="n">fd</span> <span class="p">)</span> <span class="o">:</span>
+<span class="n">ALECG</span><span class="o">::</span><span class="n">ALECG</span><span class="p">(</span> <span class="k">const</span> <span class="n">CProxy_Discretization</span><span class="o">&amp;</span> <span class="n">disc</span><span class="p">,</span>
+              <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">map</span><span class="o">&lt;</span> <span class="kt">int</span><span class="p">,</span> <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span> <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="o">&gt;</span> <span class="o">&gt;&amp;</span> <span class="cm">/* bface */</span><span class="p">,</span>
+              <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">map</span><span class="o">&lt;</span> <span class="kt">int</span><span class="p">,</span> <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span> <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="o">&gt;</span> <span class="o">&gt;&amp;</span> <span class="n">bnode</span><span class="p">,</span>
+              <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span> <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="o">&gt;&amp;</span> <span class="cm">/* triinpoel */</span> <span class="p">)</span> <span class="o">:</span>
   <span class="n">m_disc</span><span class="p">(</span> <span class="n">disc</span> <span class="p">),</span>
-  <span class="n">m_initial</span><span class="p">(</span> <span class="nb">true</span> <span class="p">),</span>
+  <span class="n">m_initial</span><span class="p">(</span> <span class="mi">1</span> <span class="p">),</span>
   <span class="n">m_nsol</span><span class="p">(</span> <span class="mi">0</span> <span class="p">),</span>
   <span class="n">m_nlhs</span><span class="p">(</span> <span class="mi">0</span> <span class="p">),</span>
   <span class="n">m_nrhs</span><span class="p">(</span> <span class="mi">0</span> <span class="p">),</span>
-  <span class="n">m_fd</span><span class="p">(</span> <span class="n">fd</span> <span class="p">),</span>
+  <span class="n">m_bnode</span><span class="p">(</span> <span class="n">bnode</span> <span class="p">),</span>
   <span class="n">m_u</span><span class="p">(</span> <span class="n">m_disc</span><span class="p">[</span><span class="n">thisIndex</span><span class="p">].</span><span class="n">ckLocal</span><span class="p">()</span><span class="o">-&gt;</span><span class="n">Gid</span><span class="p">().</span><span class="n">size</span><span class="p">(),</span>
        <span class="n">g_inputdeck</span><span class="p">.</span><span class="n">get</span><span class="o">&lt;</span> <span class="n">tag</span><span class="o">::</span><span class="n">component</span> <span class="o">&gt;</span><span class="p">().</span><span class="n">nprop</span><span class="p">()</span> <span class="p">),</span>
   <span class="n">m_du</span><span class="p">(</span> <span class="n">m_u</span><span class="p">.</span><span class="n">nunk</span><span class="p">(),</span> <span class="n">m_u</span><span class="p">.</span><span class="n">nprop</span><span class="p">()</span> <span class="p">),</span>
@@ -121,7 +124,9 @@
 <span class="c1">// *****************************************************************************</span>
 <span class="c1">//  Constructor</span>
 <span class="c1">//! \param[in] disc Discretization proxy</span>
-<span class="c1">//! \param[in] fd Face data structures</span>
+<span class="c1">//! \param[in] bface Boundary-faces mapped to side set ids</span>
+<span class="c1">//! \param[in] bnode Boundary-node lists mapped to side set ids</span>
+<span class="c1">//! \param[in] triinpoel Boundary-face connectivity</span>
 <span class="c1">// *****************************************************************************</span>
 <span class="c1">//! [Constructor]</span>
 <span class="p">{</span>
@@ -134,7 +139,8 @@
   <span class="n">thisProxy</span><span class="p">[</span> <span class="n">thisIndex</span> <span class="p">].</span><span class="n">wait4lhs</span><span class="p">();</span>
 
   <span class="c1">// Signal the runtime system that the workers have been created</span>
-  <span class="n">contribute</span><span class="p">(</span><span class="n">CkCallback</span><span class="p">(</span><span class="n">CkReductionTarget</span><span class="p">(</span><span class="n">Transporter</span><span class="p">,</span><span class="n">comfinal</span><span class="p">),</span> <span class="n">Disc</span><span class="p">()</span><span class="o">-&gt;</span><span class="n">Tr</span><span class="p">()));</span>
+  <span class="n">contribute</span><span class="p">(</span> <span class="k">sizeof</span><span class="p">(</span><span class="kt">int</span><span class="p">),</span> <span class="o">&amp;</span><span class="n">m_initial</span><span class="p">,</span> <span class="n">CkReduction</span><span class="o">::</span><span class="n">sum_int</span><span class="p">,</span>
+    <span class="n">CkCallback</span><span class="p">(</span><span class="n">CkReductionTarget</span><span class="p">(</span><span class="n">Transporter</span><span class="p">,</span><span class="n">comfinal</span><span class="p">),</span> <span class="n">Disc</span><span class="p">()</span><span class="o">-&gt;</span><span class="n">Tr</span><span class="p">())</span> <span class="p">);</span>
 <span class="p">}</span>
 <span class="c1">//! [Constructor]</span>
 
@@ -487,8 +493,8 @@
   <span class="p">}</span>
 
   <span class="c1">// Send mesh and fields data (solution dump) for output to file</span>
-  <span class="n">d</span><span class="o">-&gt;</span><span class="n">write</span><span class="p">(</span> <span class="n">d</span><span class="o">-&gt;</span><span class="n">Inpoel</span><span class="p">(),</span> <span class="n">d</span><span class="o">-&gt;</span><span class="n">Coord</span><span class="p">(),</span> <span class="n">m_fd</span><span class="p">.</span><span class="n">Bface</span><span class="p">(),</span> <span class="n">m_fd</span><span class="p">.</span><span class="n">Triinpoel</span><span class="p">(),</span>
-            <span class="n">m_fd</span><span class="p">.</span><span class="n">Bnode</span><span class="p">(),</span> <span class="n">names</span><span class="p">,</span> <span class="n">fields</span><span class="p">,</span> <span class="n">tk</span><span class="o">::</span><span class="n">Centering</span><span class="o">::</span><span class="n">NODE</span><span class="p">,</span> <span class="n">c</span> <span class="p">);</span>
+  <span class="n">d</span><span class="o">-&gt;</span><span class="n">write</span><span class="p">(</span> <span class="n">d</span><span class="o">-&gt;</span><span class="n">Inpoel</span><span class="p">(),</span> <span class="n">d</span><span class="o">-&gt;</span><span class="n">Coord</span><span class="p">(),</span> <span class="p">{},</span> <span class="n">m_bnode</span><span class="p">,</span> <span class="p">{},</span> <span class="n">names</span><span class="p">,</span> <span class="n">fields</span><span class="p">,</span>
+            <span class="n">tk</span><span class="o">::</span><span class="n">Centering</span><span class="o">::</span><span class="n">NODE</span><span class="p">,</span> <span class="n">c</span> <span class="p">);</span>
 <span class="p">}</span>
 
 <span class="kt">void</span>
@@ -531,7 +537,7 @@
   <span class="c1">// if t&gt;0 refinement enabled and we hit the frequency</span>
   <span class="k">if</span> <span class="p">(</span><span class="n">dtref</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="p">(</span><span class="n">d</span><span class="o">-&gt;</span><span class="n">It</span><span class="p">()</span> <span class="o">%</span> <span class="n">dtfreq</span><span class="p">))</span> <span class="p">{</span>   <span class="c1">// refine</span>
 
-    <span class="n">d</span><span class="o">-&gt;</span><span class="n">Ref</span><span class="p">()</span><span class="o">-&gt;</span><span class="n">dtref</span><span class="p">(</span> <span class="n">d</span><span class="o">-&gt;</span><span class="n">T</span><span class="p">(),</span> <span class="n">m_fd</span><span class="p">.</span><span class="n">Bnode</span><span class="p">()</span> <span class="p">);</span>
+    <span class="n">d</span><span class="o">-&gt;</span><span class="n">Ref</span><span class="p">()</span><span class="o">-&gt;</span><span class="n">dtref</span><span class="p">(</span> <span class="p">{},</span> <span class="n">m_bnode</span><span class="p">,</span> <span class="p">{}</span> <span class="p">);</span>
 
   <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>      <span class="c1">// do not refine</span>
 
@@ -545,26 +551,33 @@
 
 <span class="c1">//! [Resize]</span>
 <span class="kt">void</span>
-<span class="n">ALECG</span><span class="o">::</span><span class="n">resize</span><span class="p">(</span> <span class="k">const</span> <span class="n">tk</span><span class="o">::</span><span class="n">UnsMesh</span><span class="o">::</span><span class="n">Chunk</span><span class="o">&amp;</span> <span class="n">chunk</span><span class="p">,</span>
-               <span class="k">const</span> <span class="n">tk</span><span class="o">::</span><span class="n">UnsMesh</span><span class="o">::</span><span class="n">Coords</span><span class="o">&amp;</span> <span class="n">coord</span><span class="p">,</span>
-               <span class="k">const</span> <span class="n">tk</span><span class="o">::</span><span class="n">Fields</span><span class="o">&amp;</span> <span class="n">u</span><span class="p">,</span>
-               <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">unordered_map</span><span class="o">&lt;</span> <span class="kt">int</span><span class="p">,</span>
-                     <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span> <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="o">&gt;</span> <span class="o">&gt;&amp;</span> <span class="n">msum</span><span class="p">,</span>
-               <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">map</span><span class="o">&lt;</span> <span class="kt">int</span><span class="p">,</span> <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span> <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="o">&gt;</span> <span class="o">&gt;&amp;</span> <span class="n">bnode</span> <span class="p">)</span>
+<span class="n">ALECG</span><span class="o">::</span><span class="n">resizeAfterRefined</span><span class="p">(</span>
+  <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span> <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="o">&gt;&amp;</span> <span class="cm">/*ginpoel*/</span><span class="p">,</span>
+  <span class="k">const</span> <span class="n">tk</span><span class="o">::</span><span class="n">UnsMesh</span><span class="o">::</span><span class="n">Chunk</span><span class="o">&amp;</span> <span class="n">chunk</span><span class="p">,</span>
+  <span class="k">const</span> <span class="n">tk</span><span class="o">::</span><span class="n">UnsMesh</span><span class="o">::</span><span class="n">Coords</span><span class="o">&amp;</span> <span class="n">coord</span><span class="p">,</span>
+  <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">unordered_map</span><span class="o">&lt;</span> <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="p">,</span> <span class="n">tk</span><span class="o">::</span><span class="n">UnsMesh</span><span class="o">::</span><span class="n">Edge</span> <span class="o">&gt;&amp;</span> <span class="n">addedNodes</span><span class="p">,</span>
+  <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">unordered_map</span><span class="o">&lt;</span> <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="p">,</span> <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="o">&gt;&amp;</span> <span class="cm">/*addedTets*/</span><span class="p">,</span>
+  <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">unordered_map</span><span class="o">&lt;</span> <span class="kt">int</span><span class="p">,</span> <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span> <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="o">&gt;</span> <span class="o">&gt;&amp;</span> <span class="n">msum</span><span class="p">,</span>
+  <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">map</span><span class="o">&lt;</span> <span class="kt">int</span><span class="p">,</span> <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span> <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="o">&gt;</span> <span class="o">&gt;&amp;</span> <span class="cm">/*bface*/</span><span class="p">,</span>
+  <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">map</span><span class="o">&lt;</span> <span class="kt">int</span><span class="p">,</span> <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span> <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="o">&gt;</span> <span class="o">&gt;&amp;</span> <span class="n">bnode</span><span class="p">,</span>
+  <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span> <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="o">&gt;&amp;</span> <span class="cm">/*triinpoel*/</span> <span class="p">)</span>
 <span class="c1">// *****************************************************************************</span>
 <span class="c1">//  Receive new mesh from Refiner</span>
+<span class="c1">//! \param[in] ginpoel Mesh connectivity with global node ids</span>
 <span class="c1">//! \param[in] chunk New mesh chunk (connectivity and global&lt;-&gt;local id maps)</span>
 <span class="c1">//! \param[in] coord New mesh node coordinates</span>
-<span class="c1">//! \param[in] u New solution on new mesh</span>
+<span class="c1">//! \param[in] addedNodes Newly added mesh nodes and their parents (local ids)</span>
+<span class="c1">//! \param[in] addedTets Newly added mesh cells and their parents (local ids)</span>
 <span class="c1">//! \param[in] msum New node communication map</span>
-<span class="c1">//! \param[in] bnode Map of boundary-node lists mapped to corresponding</span>
-<span class="c1">//!   side set ids for this mesh chunk</span>
+<span class="c1">//! \param[in] bface Boundary-faces mapped to side set ids</span>
+<span class="c1">//! \param[in] bnode Boundary-node lists mapped to side set ids</span>
+<span class="c1">//! \param[in] triinpoel Boundary-face connectivity</span>
 <span class="c1">// *****************************************************************************</span>
 <span class="p">{</span>
   <span class="k">auto</span> <span class="n">d</span> <span class="o">=</span> <span class="n">Disc</span><span class="p">();</span>
 
   <span class="c1">// Set flag that indicates that we are during time stepping</span>
-  <span class="n">m_initial</span> <span class="o">=</span> <span class="nb">false</span><span class="p">;</span>
+  <span class="n">m_initial</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
 
   <span class="c1">// Zero field output iteration count between two mesh refinement steps</span>
   <span class="n">d</span><span class="o">-&gt;</span><span class="n">Itf</span><span class="p">()</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
@@ -575,18 +588,21 @@
   <span class="c1">// Resize mesh data structures</span>
   <span class="n">d</span><span class="o">-&gt;</span><span class="n">resize</span><span class="p">(</span> <span class="n">chunk</span><span class="p">,</span> <span class="n">coord</span><span class="p">,</span> <span class="n">msum</span> <span class="p">);</span>
 
-  <span class="c1">// Update (resize) solution on new mesh</span>
-  <span class="n">m_u</span> <span class="o">=</span> <span class="n">u</span><span class="p">;</span>
-
   <span class="c1">// Resize auxiliary solution vectors</span>
   <span class="k">auto</span> <span class="n">npoin</span> <span class="o">=</span> <span class="n">coord</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="n">size</span><span class="p">();</span>
   <span class="k">auto</span> <span class="n">nprop</span> <span class="o">=</span> <span class="n">m_u</span><span class="p">.</span><span class="n">nprop</span><span class="p">();</span>
+  <span class="n">m_u</span><span class="p">.</span><span class="n">resize</span><span class="p">(</span> <span class="n">npoin</span><span class="p">,</span> <span class="n">nprop</span> <span class="p">);</span>
   <span class="n">m_du</span><span class="p">.</span><span class="n">resize</span><span class="p">(</span> <span class="n">npoin</span><span class="p">,</span> <span class="n">nprop</span> <span class="p">);</span>
   <span class="n">m_lhs</span><span class="p">.</span><span class="n">resize</span><span class="p">(</span> <span class="n">npoin</span><span class="p">,</span> <span class="n">nprop</span> <span class="p">);</span>
   <span class="n">m_rhs</span><span class="p">.</span><span class="n">resize</span><span class="p">(</span> <span class="n">npoin</span><span class="p">,</span> <span class="n">nprop</span> <span class="p">);</span>
 
+  <span class="c1">// Update solution on new mesh</span>
+  <span class="k">for</span> <span class="p">(</span><span class="k">const</span> <span class="k">auto</span><span class="o">&amp;</span> <span class="nl">n</span> <span class="p">:</span> <span class="n">addedNodes</span><span class="p">)</span>
+    <span class="k">for</span> <span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="n">c</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">c</span><span class="o">&lt;</span><span class="n">nprop</span><span class="p">;</span> <span class="o">++</span><span class="n">c</span><span class="p">)</span>
+      <span class="n">m_u</span><span class="p">(</span><span class="n">n</span><span class="p">.</span><span class="n">first</span><span class="p">,</span><span class="n">c</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span> <span class="o">=</span> <span class="p">(</span><span class="n">m_u</span><span class="p">(</span><span class="n">n</span><span class="p">.</span><span class="n">second</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">c</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span> <span class="o">+</span> <span class="n">m_u</span><span class="p">(</span><span class="n">n</span><span class="p">.</span><span class="n">second</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span><span class="n">c</span><span class="p">,</span><span class="mi">0</span><span class="p">))</span><span class="o">/</span><span class="mf">2.0</span><span class="p">;</span>
+
   <span class="c1">// Update physical-boundary node lists</span>
-  <span class="n">m_fd</span><span class="p">.</span><span class="n">Bnode</span><span class="p">()</span> <span class="o">=</span> <span class="n">bnode</span><span class="p">;</span>
+  <span class="n">m_bnode</span> <span class="o">=</span> <span class="n">bnode</span><span class="p">;</span>
 
   <span class="c1">// Resize communication buffers</span>
   <span class="n">resizeComm</span><span class="p">();</span>
@@ -693,7 +709,7 @@
   <div class="m-container">
     <div class="m-row">
       <div class="m-col-l-10 m-push-l-1">
-        <p>Quinoa docs, part of the <a href="http://quinoacomputing.org/">Quinoa project</a>. Copyright © J. Bakosi 2012&ndash;2015, Los Alamos National Security, LLC, 2016&ndash;2018, <a href="https://www.triadns.org/">Triad National Security, LLC,</a> 2019. Generated on Friday, Mar 22, 2019 based on <a href="https://github.com/quinoacomputing/quinoa/commit/4852857">4852857</a> by <a href="http://doxygen.org/">Doxygen</a> and <a href="http://mcss.mosra.cz/">m.css</a>. Contact us via <a href="https://github.com/quinoacomputing/quinoa/">GitHub</a>, <a href="mailto:quinoa@lanl.gov">Email</a> or <a href="https://gitter.im/quinoacomputing/quinoa">Gitter</a>.</p>
+        <p>Quinoa docs, part of the <a href="http://quinoacomputing.org/">Quinoa project</a>. Copyright © J. Bakosi 2012&ndash;2015, Los Alamos National Security, LLC, 2016&ndash;2018, <a href="https://www.triadns.org/">Triad National Security, LLC,</a> 2019. Generated on Saturday, Mar 23, 2019 based on <a href="https://github.com/quinoacomputing/quinoa/commit/96d6d8e">96d6d8e</a> by <a href="http://doxygen.org/">Doxygen</a> and <a href="http://mcss.mosra.cz/">m.css</a>. Contact us via <a href="https://github.com/quinoacomputing/quinoa/">GitHub</a>, <a href="mailto:quinoa@lanl.gov">Email</a> or <a href="https://gitter.im/quinoacomputing/quinoa">Gitter</a>.</p>
       </div>
     </div>
   </div>
