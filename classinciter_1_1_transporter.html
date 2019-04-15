@@ -108,9 +108,21 @@
             </dt>
             <dd>Reduction target: all mesh refiner chares have setup their boundary edges.</dd>
             <dt>
-              <span class="m-dox-wrap-bumper">void <a href="#abca930caab051e9dd4100841fda8ec58" class="m-dox">matched</a>(</span><span class="m-dox-wrap">std::size_t extra)</span>
+              <span class="m-dox-wrap-bumper">void <a href="#a38a6708de10befe21af134b05c10eaf8" class="m-dox">compatibility</a>(</span><span class="m-dox-wrap">int modified)</span>
             </dt>
-            <dd>Reduction target: all mesh refiner chares have distributed their newly added node IDs that are shared among chares.</dd>
+            <dd>Reduction target: all mesh refiner chares have received a round of edges, and ran their compatibility algorithm.</dd>
+            <dt>
+              <span class="m-dox-wrap-bumper">void <a href="#a6ad425567e3ed6368475729fa9fe67da" class="m-dox">matched</a>(</span><span class="m-dox-wrap">std::size_t nextra,
+              std::size_t nedge,
+              std::size_t initial)</span>
+            </dt>
+            <dd>Reduction target: all mesh refiner chares have performed a step of matching chare-boundary edges.</dd>
+            <dt>
+              <span class="m-dox-wrap-bumper">void <a href="#ac19b6ef8d289352c5a672dc4c73d7167" class="m-dox">bndint</a>(</span><span class="m-dox-wrap"><a href="namespacetk.html#a1a96ada94b7e2911ecca0a360f305575" class="m-dox">tk::<wbr />real</a> sx,
+              <a href="namespacetk.html#a1a96ada94b7e2911ecca0a360f305575" class="m-dox">tk::<wbr />real</a> sy,
+              <a href="namespacetk.html#a1a96ada94b7e2911ecca0a360f305575" class="m-dox">tk::<wbr />real</a> sz)</span>
+            </dt>
+            <dd>Compute surface integral across the whole problem and perform leak-test.</dd>
             <dt>
               <span class="m-dox-wrap-bumper">void <a href="#aa2948bdc03f5006acadb96a85129da6f" class="m-dox">refined</a>(</span><span class="m-dox-wrap">std::size_t nelem,
               std::size_t npoin)</span>
@@ -273,22 +285,48 @@
               </tbody>
             </table>
           </div></section>
-          <section class="m-dox-details" id="abca930caab051e9dd4100841fda8ec58"><div>
+          <section class="m-dox-details" id="a38a6708de10befe21af134b05c10eaf8"><div>
             <h3>
-              <span class="m-dox-wrap-bumper">void inciter::<wbr />Transporter::<wbr /></span><span class="m-dox-wrap"><span class="m-dox-wrap-bumper"><a href="#abca930caab051e9dd4100841fda8ec58" class="m-dox-self">matched</a>(</span><span class="m-dox-wrap">std::size_t extra)</span></span>
+              <span class="m-dox-wrap-bumper">void inciter::<wbr />Transporter::<wbr /></span><span class="m-dox-wrap"><span class="m-dox-wrap-bumper"><a href="#a38a6708de10befe21af134b05c10eaf8" class="m-dox-self">compatibility</a>(</span><span class="m-dox-wrap">int modified)</span></span>
             </h3>
-            <p>Reduction target: all mesh refiner chares have distributed their newly added node IDs that are shared among chares.</p>
+            <p>Reduction target: all mesh refiner chares have received a round of edges, and ran their compatibility algorithm.</p>
+<p>This is called iteratively, until convergence by <a href="classinciter_1_1_refiner.html" class="m-dox">Refiner</a>. At this point all <a href="classinciter_1_1_refiner.html" class="m-dox">Refiner</a> chares have received a round of edge data (tags whether an edge needs to be refined, etc.), and applied the compatibility algorithm independent of other <a href="classinciter_1_1_refiner.html" class="m-dox">Refiner</a> chares. We keep going until the mesh is no longer modified by the compatibility algorithm (based on a new round of edge data communication started in <a href="classinciter_1_1_refiner.html#a3d7830e14265ab1005c50f0ca54780d6" class="m-dox">Refiner::<wbr />comExtra()</a>.</p>
+          </div></section>
+          <section class="m-dox-details" id="a6ad425567e3ed6368475729fa9fe67da"><div>
+            <h3>
+              <span class="m-dox-wrap-bumper">void inciter::<wbr />Transporter::<wbr /></span><span class="m-dox-wrap"><span class="m-dox-wrap-bumper"><a href="#a6ad425567e3ed6368475729fa9fe67da" class="m-dox-self">matched</a>(</span><span class="m-dox-wrap">std::size_t nextra,
+              std::size_t nedge,
+              std::size_t initial)</span></span>
+            </h3>
+            <p>Reduction target: all mesh refiner chares have performed a step of matching chare-boundary edges.</p>
             <table class="m-table m-fullwidth m-flat">
               <thead>
                 <tr><th colspan="2">Parameters</th></tr>
               </thead>
               <tbody>
                 <tr>
-                  <td style="width: 1%">extra&nbsp;<span class="m-label m-flat m-info">in</span></td>
-                  <td>Max number of edges/chare collected across all chares that correction due to refinement along chare boundaries</td>
+                  <td style="width: 1%">nextra&nbsp;<span class="m-label m-flat m-info">in</span></td>
+                  <td>Sum (across all chares) of the number of edges on each chare that need correction along chare boundaries</td>
+                </tr>
+                <tr>
+                  <td>nedge&nbsp;<span class="m-label m-flat m-info">in</span></td>
+                  <td>Sum (across all chares) of number of edges on each chare. This is not really used for anything meaningful (as it is multiply-counted in parallel), only as a feedback during mesh refinement.</td>
+                </tr>
+                <tr>
+                  <td>initial&nbsp;<span class="m-label m-flat m-info">in</span></td>
+                  <td>Sum of contributions from all chares. If larger than zero, we are during time stepping and if zero we are during setup.</td>
                 </tr>
               </tbody>
             </table>
+          </div></section>
+          <section class="m-dox-details" id="ac19b6ef8d289352c5a672dc4c73d7167"><div>
+            <h3>
+              <span class="m-dox-wrap-bumper">void inciter::<wbr />Transporter::<wbr /></span><span class="m-dox-wrap"><span class="m-dox-wrap-bumper"><a href="#ac19b6ef8d289352c5a672dc4c73d7167" class="m-dox-self">bndint</a>(</span><span class="m-dox-wrap"><a href="namespacetk.html#a1a96ada94b7e2911ecca0a360f305575" class="m-dox">tk::<wbr />real</a> sx,
+              <a href="namespacetk.html#a1a96ada94b7e2911ecca0a360f305575" class="m-dox">tk::<wbr />real</a> sy,
+              <a href="namespacetk.html#a1a96ada94b7e2911ecca0a360f305575" class="m-dox">tk::<wbr />real</a> sz)</span></span>
+            </h3>
+            <p>Compute surface integral across the whole problem and perform leak-test.</p>
+<p>This function aggregates partial surface integrals across the boundary faces of the whole problem. After this global sum a non-zero vector result indicates a leak, e.g., a hole in the boundary, which indicates an error in the boundary face data structures used to compute the partial surface integrals.</p>
           </div></section>
           <section class="m-dox-details" id="aa2948bdc03f5006acadb96a85129da6f"><div>
             <h3>
@@ -519,7 +557,7 @@
   <div class="m-container">
     <div class="m-row">
       <div class="m-col-l-10 m-push-l-1">
-        <p>Quinoa docs, part of the <a href="http://quinoacomputing.org/">Quinoa project</a>. Copyright © J. Bakosi 2012&ndash;2015, Los Alamos National Security, LLC, 2016&ndash;2018, <a href="https://www.triadns.org/">Triad National Security, LLC,</a> 2019. Generated on Monday, Apr 08, 2019 based on <a href="https://github.com/quinoacomputing/quinoa/commit/3db5382">3db5382</a> by <a href="http://doxygen.org/">Doxygen</a> and <a href="http://mcss.mosra.cz/">m.css</a>. Contact us via <a href="https://github.com/quinoacomputing/quinoa/">GitHub</a>, <a href="mailto:quinoa@lanl.gov">Email</a> or <a href="https://gitter.im/quinoacomputing/quinoa">Gitter</a>.</p>
+        <p>Quinoa docs, part of the <a href="http://quinoacomputing.org/">Quinoa project</a>. Copyright © J. Bakosi 2012&ndash;2015, Los Alamos National Security, LLC, 2016&ndash;2018, <a href="https://www.triadns.org/">Triad National Security, LLC,</a> 2019. Generated on Monday, Apr 15, 2019 based on <a href="https://github.com/quinoacomputing/quinoa/commit/0f724d8">0f724d8</a> by <a href="http://doxygen.org/">Doxygen</a> and <a href="http://mcss.mosra.cz/">m.css</a>. Contact us via <a href="https://github.com/quinoacomputing/quinoa/">GitHub</a>, <a href="mailto:quinoa@lanl.gov">Email</a> or <a href="https://gitter.im/quinoacomputing/quinoa">Gitter</a>.</p>
       </div>
     </div>
   </div>
