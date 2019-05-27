@@ -24,7 +24,7 @@
           </tr>
           <tr>
             <td class="headerItem">Commit:</td>
-            <td class="headerValue"><a href="https://github.com/quinoacomputing/quinoa/commit/de39577">Quinoa_v0.2-2841-gde39577</a></td>
+            <td class="headerValue"><a href="https://github.com/quinoacomputing/quinoa/commit/5a428c4">Quinoa_v0.2-2844-g5a428c4</a></td>
             <td></td>
             <td class="headerItem">Lines:</td>
             <td class="headerCovTableEntry">162</td>
@@ -33,7 +33,7 @@
           </tr>
           <tr>
             <td class="headerItem">Date:</td>
-            <td class="headerValue">2019-05-25 13:54:18</td>
+            <td class="headerValue">2019-05-26 20:24:37</td>
             <td></td>
             <td class="headerItem">Functions:</td>
             <td class="headerCovTableEntry">45</td>
@@ -45,16 +45,8 @@
             <td class="headerValueLeg">            Lines:
             <span class="coverLegendCov">hit</span>
             <span class="coverLegendNoCov">not hit</span>
-            | Branches:
-            <span class="coverLegendCov">+</span> taken
-            <span class="coverLegendNoCov">-</span> not taken
-            <span class="coverLegendNoCov">#</span> not executed
 </td>
             <td></td>
-            <td class="headerItem">Branches:</td>
-            <td class="headerCovTableEntry">48</td>
-            <td class="headerCovTableEntry">108</td>
-            <td class="headerCovTableEntryLo">44.4 %</td>
           </tr>
           <tr><td><img src="../glass.png" width=3 height=3 alt=""></td></tr>
         </table>
@@ -70,735 +62,734 @@
     </tr>
     <tr>
       <td>
-<pre class="sourceHeading">           Branch data     Line data    Source code</pre>
+<pre class="sourceHeading">          Line data    Source code</pre>
 <pre class="source">
-<a name="1"><span class="lineNum">       1 </span>                :            : // *****************************************************************************</a>
-<span class="lineNum">       2 </span>                :            : /*!
-<span class="lineNum">       3 </span>                :            :   \file      src/RNGTest/TestU01Stack.cpp
-<span class="lineNum">       4 </span>                :            :   \copyright 2012-2015 J. Bakosi,
-<span class="lineNum">       5 </span>                :            :              2016-2018 Los Alamos National Security, LLC.,
-<span class="lineNum">       6 </span>                :            :              2019 Triad National Security, LLC.
-<span class="lineNum">       7 </span>                :            :              All rights reserved. See the LICENSE file for details.
-<span class="lineNum">       8 </span>                :            :   \brief     Stack of TestU01 RNG statistical tests
-<span class="lineNum">       9 </span>                :            :   \details   Stack of TestU01 RNG statistical tests
-<span class="lineNum">      10 </span>                :            : */
-<span class="lineNum">      11 </span>                :            : // *****************************************************************************
-<span class="lineNum">      12 </span>                :            : 
-<span class="lineNum">      13 </span>                :            : #include &lt;array&gt;
-<span class="lineNum">      14 </span>                :            : #include &lt;iterator&gt;
-<span class="lineNum">      15 </span>                :            : #include &lt;memory&gt;
-<span class="lineNum">      16 </span>                :            : #include &lt;utility&gt;
-<span class="lineNum">      17 </span>                :            : 
-<span class="lineNum">      18 </span>                :            : #include &quot;Tags.hpp&quot;
-<span class="lineNum">      19 </span>                :            : #include &quot;Exception.hpp&quot;
-<span class="lineNum">      20 </span>                :            : #include &quot;TestU01Stack.hpp&quot;
-<span class="lineNum">      21 </span>                :            : #include &quot;TestU01Wrappers.hpp&quot;
-<span class="lineNum">      22 </span>                :            : #include &quot;RNGTest/InputDeck/InputDeck.hpp&quot;
-<span class="lineNum">      23 </span>                :            : #include &quot;QuinoaConfig.hpp&quot;
-<span class="lineNum">      24 </span>                :            : 
-<span class="lineNum">      25 </span>                :            : extern &quot;C&quot; {
-<span class="lineNum">      26 </span>                :            :   #include &lt;svaria.h&gt;
-<span class="lineNum">      27 </span>                :            :   #include &lt;gofw.h&gt;
-<span class="lineNum">      28 </span>                :            :   #include &lt;snpair.h&gt;
-<span class="lineNum">      29 </span>                :            : }
-<span class="lineNum">      30 </span>                :            : 
-<span class="lineNum">      31 </span>                :            : namespace rngtest {
-<span class="lineNum">      32 </span>                :            : 
-<span class="lineNum">      33 </span>                :            : extern ctr::InputDeck g_inputdeck;
-<span class="lineNum">      34 </span>                :            : 
-<span class="lineNum">      35 </span>                :            : } // rngtest::
-<span class="lineNum">      36 </span>                :            : 
-<span class="lineNum">      37 </span>                :            : using rngtest::TestU01Stack;
-<span class="lineNum">      38 </span>                :            : 
-<span class="lineNum">      39 </span>                :<span class="lineCov">        224 : TestU01Stack::TestU01Stack() : m_generator()</span>
-<span class="lineNum">      40 </span>                :            : // *****************************************************************************
-<span class="lineNum">      41 </span>                :            : //  Constructor
-<span class="lineNum">      42 </span>                :            : //! \details Associate RNGs to global-scope wrappers. Admittedly, this code is
-<span class="lineNum">      43 </span>                :            : //!   ugly and looks stupid at first sight. However, this is a translation of
-<span class="lineNum">      44 </span>                :            : //!   runtime information (user-selected RNGs) to compile-time information:
-<span class="lineNum">      45 </span>                :            : //!   associating RNG ids from an enum class, tk::ctr::RNGType::value, to a
-<span class="lineNum">      46 </span>                :            : //!   compile-time constant, underlying_type value, facilitating a different
-<span class="lineNum">      47 </span>                :            : //!   pair of global-scope RNG wrappers (uniform and uniform_bits) with code
-<span class="lineNum">      48 </span>                :            : //!   reuse. Note that uniform and uniform_bits wrappers must be global-scope as
-<span class="lineNum">      49 </span>                :            : //!   they are used as external generators to TestU01. Templating them on the
-<span class="lineNum">      50 </span>                :            : //!   id enables the compiler generate a different wrapper for a different RNG
-<span class="lineNum">      51 </span>                :            : //!   facilitating simultaneous calls to any or all wrappers as they are unique
-<span class="lineNum">      52 </span>                :            : //!   functions.
-<span class="lineNum">      53 </span>                :            : // *****************************************************************************
-<span class="lineNum">      54 </span>                :            : {
-<span class="lineNum">      55 </span>        [<span class="branchCov" title="Branch 0 was taken 176 times"> + </span><span class="branchCov" title="Branch 1 was taken 224 times"> + </span>]:<span class="lineCov">        400 :   for (const auto&amp; r : g_inputdeck.get&lt; tag::selected, tag::rng &gt;()) {</span>
-<span class="lineNum">      56 </span>                :            :     using tk::ctr::RNGType;
-<span class="lineNum">      57 </span>                :            :     using tk::ctr::raw;
-<span class="lineNum">      58 </span>                :            :     #ifdef HAS_MKL
-<span class="lineNum">      59 </span>        [<span class="branchCov" title="Branch 0 was taken 16 times"> + </span><span class="branchCov" title="Branch 1 was taken 160 times"> + </span>]:<span class="lineCov">        176 :     if (r == RNGType::MKL_MCG31)</span>
-<span class="lineNum">      60 </span>        [<span class="branchCov" title="Branch 1 was taken 16 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">         16 :       addRNG&lt; raw(RNGType::MKL_MCG31) &gt;( r );</span>
-<span class="lineNum">      61 </span>        [<span class="branchNoCov" title="Branch 0 was not taken"> - </span><span class="branchCov" title="Branch 1 was taken 160 times"> + </span>]:<span class="lineCov">        160 :     else if (r == RNGType::MKL_R250)</span>
-<span class="lineNum">      62 </span>        [<span class="branchNoExec" title="Branch 1 was not executed"> # </span><span class="branchNoExec" title="Branch 2 was not executed"> # </span>]:<span class="lineNoCov">          0 :       addRNG&lt; raw(RNGType::MKL_R250) &gt;( r );</span>
-<span class="lineNum">      63 </span>        [<span class="branchNoCov" title="Branch 0 was not taken"> - </span><span class="branchCov" title="Branch 1 was taken 160 times"> + </span>]:<span class="lineCov">        160 :     else if (r == RNGType::MKL_MRG32K3A)</span>
-<span class="lineNum">      64 </span>        [<span class="branchNoExec" title="Branch 1 was not executed"> # </span><span class="branchNoExec" title="Branch 2 was not executed"> # </span>]:<span class="lineNoCov">          0 :       addRNG&lt; raw(RNGType::MKL_MRG32K3A) &gt;( r );</span>
-<span class="lineNum">      65 </span>        [<span class="branchCov" title="Branch 0 was taken 28 times"> + </span><span class="branchCov" title="Branch 1 was taken 132 times"> + </span>]:<span class="lineCov">        160 :     else if (r == RNGType::MKL_MCG59)</span>
-<span class="lineNum">      66 </span>        [<span class="branchCov" title="Branch 1 was taken 28 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">         28 :       addRNG&lt; raw(RNGType::MKL_MCG59) &gt;( r );</span>
-<span class="lineNum">      67 </span>        [<span class="branchCov" title="Branch 0 was taken 8 times"> + </span><span class="branchCov" title="Branch 1 was taken 124 times"> + </span>]:<span class="lineCov">        132 :     else if (r == RNGType::MKL_WH)</span>
-<span class="lineNum">      68 </span>        [<span class="branchCov" title="Branch 1 was taken 8 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">          8 :       addRNG&lt; raw(RNGType::MKL_WH) &gt;( r );</span>
-<span class="lineNum">      69 </span>        [<span class="branchNoCov" title="Branch 0 was not taken"> - </span><span class="branchCov" title="Branch 1 was taken 124 times"> + </span>]:<span class="lineCov">        124 :     else if (r == RNGType::MKL_MT19937)</span>
-<span class="lineNum">      70 </span>        [<span class="branchNoExec" title="Branch 1 was not executed"> # </span><span class="branchNoExec" title="Branch 2 was not executed"> # </span>]:<span class="lineNoCov">          0 :       addRNG&lt; raw(RNGType::MKL_MT19937) &gt;( r );</span>
-<span class="lineNum">      71 </span>        [<span class="branchNoCov" title="Branch 0 was not taken"> - </span><span class="branchCov" title="Branch 1 was taken 124 times"> + </span>]:<span class="lineCov">        124 :     else if (r == RNGType::MKL_MT2203)</span>
-<span class="lineNum">      72 </span>        [<span class="branchNoExec" title="Branch 1 was not executed"> # </span><span class="branchNoExec" title="Branch 2 was not executed"> # </span>]:<span class="lineNoCov">          0 :       addRNG&lt; raw(RNGType::MKL_MT2203) &gt;( r );</span>
-<span class="lineNum">      73 </span>        [<span class="branchNoCov" title="Branch 0 was not taken"> - </span><span class="branchCov" title="Branch 1 was taken 124 times"> + </span>]:<span class="lineCov">        124 :     else if (r == RNGType::MKL_SFMT19937)</span>
-<span class="lineNum">      74 </span>        [<span class="branchNoExec" title="Branch 1 was not executed"> # </span><span class="branchNoExec" title="Branch 2 was not executed"> # </span>]:<span class="lineNoCov">          0 :       addRNG&lt; raw(RNGType::MKL_SFMT19937) &gt;( r );</span>
-<span class="lineNum">      75 </span>        [<span class="branchNoCov" title="Branch 0 was not taken"> - </span><span class="branchCov" title="Branch 1 was taken 124 times"> + </span>]:<span class="lineCov">        124 :     else if (r == RNGType::MKL_SOBOL)</span>
-<span class="lineNum">      76 </span>        [<span class="branchNoExec" title="Branch 1 was not executed"> # </span><span class="branchNoExec" title="Branch 2 was not executed"> # </span>]:<span class="lineNoCov">          0 :       addRNG&lt; raw(RNGType::MKL_SOBOL) &gt;( r );</span>
-<span class="lineNum">      77 </span>        [<span class="branchNoCov" title="Branch 0 was not taken"> - </span><span class="branchCov" title="Branch 1 was taken 124 times"> + </span>]:<span class="lineCov">        124 :     else if (r == RNGType::MKL_NIEDERR)</span>
-<span class="lineNum">      78 </span>        [<span class="branchNoExec" title="Branch 1 was not executed"> # </span><span class="branchNoExec" title="Branch 2 was not executed"> # </span>]:<span class="lineNoCov">          0 :       addRNG&lt; raw(RNGType::MKL_NIEDERR) &gt;( r );</span>
-<span class="lineNum">      79 </span>                :            :     //else if (r == RNGType::MKL_IABSTRACT)
-<span class="lineNum">      80 </span>                :            :     //  addRNG&lt; raw(RNGType::MKL_IABSTRACT) &gt;( r );
-<span class="lineNum">      81 </span>                :            :     //else if (r == RNGType::MKL_DABSTRACT)
-<span class="lineNum">      82 </span>                :            :     //  addRNG&lt; raw(RNGType::MKL_DABSTRACT) &gt;( r );
-<span class="lineNum">      83 </span>                :            :     //else if (r == RNGType::MKL_SABSTRACT)
-<span class="lineNum">      84 </span>                :            :     //  addRNG&lt; raw(RNGType::MKL_SABSTRACT) &gt;( r );
-<span class="lineNum">      85 </span>        [<span class="branchNoCov" title="Branch 0 was not taken"> - </span><span class="branchCov" title="Branch 1 was taken 124 times"> + </span>]:<span class="lineCov">        124 :     else if (r == RNGType::MKL_NONDETERM)</span>
-<span class="lineNum">      86 </span>        [<span class="branchNoExec" title="Branch 1 was not executed"> # </span><span class="branchNoExec" title="Branch 2 was not executed"> # </span>]:<span class="lineNoCov">          0 :       addRNG&lt; raw(RNGType::MKL_NONDETERM) &gt;( r );</span>
-<span class="lineNum">      87 </span>                :            :     else
-<span class="lineNum">      88 </span>                :            :     #endif
-<span class="lineNum">      89 </span>                :            :     #ifdef HAS_RNGSSE2
-<span class="lineNum">      90 </span>        [<span class="branchNoCov" title="Branch 0 was not taken"> - </span><span class="branchCov" title="Branch 1 was taken 124 times"> + </span>]:<span class="lineCov">        124 :     if (r == RNGType::RNGSSE_GM19)</span>
-<span class="lineNum">      91 </span>        [<span class="branchNoExec" title="Branch 1 was not executed"> # </span><span class="branchNoExec" title="Branch 2 was not executed"> # </span>]:<span class="lineNoCov">          0 :       addRNG&lt; raw(RNGType::RNGSSE_GM19) &gt;( r );</span>
-<span class="lineNum">      92 </span>        [<span class="branchNoCov" title="Branch 0 was not taken"> - </span><span class="branchCov" title="Branch 1 was taken 124 times"> + </span>]:<span class="lineCov">        124 :     else if (r == RNGType::RNGSSE_GM29)    </span>
-<span class="lineNum">      93 </span>        [<span class="branchNoExec" title="Branch 1 was not executed"> # </span><span class="branchNoExec" title="Branch 2 was not executed"> # </span>]:<span class="lineNoCov">          0 :       addRNG&lt; raw(RNGType::RNGSSE_GM29) &gt;( r );</span>
-<span class="lineNum">      94 </span>        [<span class="branchCov" title="Branch 0 was taken 8 times"> + </span><span class="branchCov" title="Branch 1 was taken 116 times"> + </span>]:<span class="lineCov">        124 :     else if (r == RNGType::RNGSSE_GM31)    </span>
-<span class="lineNum">      95 </span>        [<span class="branchCov" title="Branch 1 was taken 8 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">          8 :       addRNG&lt; raw(RNGType::RNGSSE_GM31) &gt;( r );</span>
-<span class="lineNum">      96 </span>        [<span class="branchCov" title="Branch 0 was taken 8 times"> + </span><span class="branchCov" title="Branch 1 was taken 108 times"> + </span>]:<span class="lineCov">        116 :     else if (r == RNGType::RNGSSE_GM55)    </span>
-<span class="lineNum">      97 </span>        [<span class="branchCov" title="Branch 1 was taken 8 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">          8 :       addRNG&lt; raw(RNGType::RNGSSE_GM55) &gt;( r );</span>
-<span class="lineNum">      98 </span>        [<span class="branchNoCov" title="Branch 0 was not taken"> - </span><span class="branchCov" title="Branch 1 was taken 108 times"> + </span>]:<span class="lineCov">        108 :     else if (r == RNGType::RNGSSE_GM61)    </span>
-<span class="lineNum">      99 </span>        [<span class="branchNoExec" title="Branch 1 was not executed"> # </span><span class="branchNoExec" title="Branch 2 was not executed"> # </span>]:<span class="lineNoCov">          0 :       addRNG&lt; raw(RNGType::RNGSSE_GM61) &gt;( r );</span>
-<span class="lineNum">     100 </span>        [<span class="branchCov" title="Branch 0 was taken 8 times"> + </span><span class="branchCov" title="Branch 1 was taken 100 times"> + </span>]:<span class="lineCov">        108 :     else if (r == RNGType::RNGSSE_GQ581)   </span>
-<span class="lineNum">     101 </span>        [<span class="branchCov" title="Branch 1 was taken 8 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">          8 :       addRNG&lt; raw(RNGType::RNGSSE_GQ581) &gt;( r );</span>
-<span class="lineNum">     102 </span>        [<span class="branchNoCov" title="Branch 0 was not taken"> - </span><span class="branchCov" title="Branch 1 was taken 100 times"> + </span>]:<span class="lineCov">        100 :     else if (r == RNGType::RNGSSE_GQ583)   </span>
-<span class="lineNum">     103 </span>        [<span class="branchNoExec" title="Branch 1 was not executed"> # </span><span class="branchNoExec" title="Branch 2 was not executed"> # </span>]:<span class="lineNoCov">          0 :       addRNG&lt; raw(RNGType::RNGSSE_GQ583) &gt;( r );</span>
-<span class="lineNum">     104 </span>        [<span class="branchNoCov" title="Branch 0 was not taken"> - </span><span class="branchCov" title="Branch 1 was taken 100 times"> + </span>]:<span class="lineCov">        100 :     else if (r == RNGType::RNGSSE_GQ584)   </span>
-<span class="lineNum">     105 </span>        [<span class="branchNoExec" title="Branch 1 was not executed"> # </span><span class="branchNoExec" title="Branch 2 was not executed"> # </span>]:<span class="lineNoCov">          0 :       addRNG&lt; raw(RNGType::RNGSSE_GQ584) &gt;( r );</span>
-<span class="lineNum">     106 </span>        [<span class="branchNoCov" title="Branch 0 was not taken"> - </span><span class="branchCov" title="Branch 1 was taken 100 times"> + </span>]:<span class="lineCov">        100 :     else if (r == RNGType::RNGSSE_MT19937) </span>
-<span class="lineNum">     107 </span>        [<span class="branchNoExec" title="Branch 1 was not executed"> # </span><span class="branchNoExec" title="Branch 2 was not executed"> # </span>]:<span class="lineNoCov">          0 :       addRNG&lt; raw(RNGType::RNGSSE_MT19937) &gt;( r );</span>
-<span class="lineNum">     108 </span>        [<span class="branchCov" title="Branch 0 was taken 8 times"> + </span><span class="branchCov" title="Branch 1 was taken 92 times"> + </span>]:<span class="lineCov">        100 :     else if (r == RNGType::RNGSSE_LFSR113) </span>
-<span class="lineNum">     109 </span>        [<span class="branchCov" title="Branch 1 was taken 8 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">          8 :       addRNG&lt; raw(RNGType::RNGSSE_LFSR113) &gt;( r );</span>
-<span class="lineNum">     110 </span>        [<span class="branchCov" title="Branch 0 was taken 8 times"> + </span><span class="branchCov" title="Branch 1 was taken 84 times"> + </span>]:<span class="lineCov">         92 :     else if (r == RNGType::RNGSSE_MRG32K3A)</span>
-<span class="lineNum">     111 </span>        [<span class="branchCov" title="Branch 1 was taken 8 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">          8 :       addRNG&lt; raw(RNGType::RNGSSE_MRG32K3A) &gt;( r );</span>
-<span class="lineNum">     112 </span>                :            :     else
-<span class="lineNum">     113 </span>                :            :     #endif
-<span class="lineNum">     114 </span>        [<span class="branchCov" title="Branch 0 was taken 28 times"> + </span><span class="branchCov" title="Branch 1 was taken 56 times"> + </span>]:<span class="lineCov">         84 :     if (r == RNGType::R123_THREEFRY)</span>
-<span class="lineNum">     115 </span>        [<span class="branchCov" title="Branch 1 was taken 28 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">         28 :       addRNG&lt; raw(RNGType::R123_THREEFRY) &gt;( r );</span>
-<span class="lineNum">     116 </span>        [<span class="branchCov" title="Branch 0 was taken 56 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">         56 :     else if (r == RNGType::R123_PHILOX)</span>
-<span class="lineNum">     117 </span>        [<span class="branchCov" title="Branch 1 was taken 56 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">         56 :       addRNG&lt; raw(RNGType::R123_PHILOX) &gt;( r );</span>
-<span class="lineNum">     118 </span>                :            :   }
-<span class="lineNum">     119 </span>                :<span class="lineCov">        224 : }</span>
-<span class="lineNum">     120 </span>                :            : 
-<span class="lineNum">     121 </span>                :            : template&lt; tk::ctr::RawRNGType id &gt;
-<span class="lineNum">     122 </span>                :<span class="lineCov">        176 : void TestU01Stack::addRNG( tk::ctr::RNGType r )</span>
-<span class="lineNum">     123 </span>                :            : // *****************************************************************************
-<span class="lineNum">     124 </span>                :            : //! Create TestU01 RNG wrapper
-<span class="lineNum">     125 </span>                :            : //! \param[in] r RNG ID enum
-<span class="lineNum">     126 </span>                :            : // *****************************************************************************
-<span class="lineNum">     127 </span>                :            : {
-<span class="lineNum">     128 </span>                :            :   m_generator.emplace( r,
-<span class="lineNum">     129 </span>                :<span class="lineCov">        352 :     Gen01Ptr( createTestU01Gen&lt;id&gt;( tk::ctr::RNG().name(r) ) ) );</span>
-<span class="lineNum">     130 </span>                :<span class="lineCov">        176 : }</span>
-<a name="131"><span class="lineNum">     131 </span>                :            : </a>
-<span class="lineNum">     132 </span>                :            : unif01_Gen*
-<span class="lineNum">     133 </span>                :<span class="lineCov">        435 : TestU01Stack::generator( tk::ctr::RNGType r ) const</span>
-<span class="lineNum">     134 </span>                :            : // *****************************************************************************
-<span class="lineNum">     135 </span>                :            : //! Find TestU01 RNG wrapper based on RNG id
-<span class="lineNum">     136 </span>                :            : //! \param[in] r RNG ID enum
-<span class="lineNum">     137 </span>                :            : //! \return Raw function pointer to TestU01 statistical test
-<span class="lineNum">     138 </span>                :            : // *****************************************************************************
-<span class="lineNum">     139 </span>                :            : {
-<span class="lineNum">     140 </span>                :<span class="lineCov">        435 :   const auto&amp; gen = m_generator.find( r );</span>
-<span class="lineNum">     141 </span>[<span class="branchNoCov" title="Branch 0 was not taken"> - </span><span class="branchCov" title="Branch 1 was taken 435 times"> + </span>][<span class="branchNoExec" title="Branch 4 was not executed"> # </span><span class="branchNoExec" title="Branch 5 was not executed"> # </span>]:<span class="lineCov">        435 :   if (gen == end(m_generator)) Throw( &quot;RNG not found&quot; );</span>
-<span class="lineNum">         </span>[<span class="branchNoExec" title="Branch 7 was not executed"> # </span><span class="branchNoExec" title="Branch 8 was not executed"> # </span>][<span class="branchNoExec" title="Branch 10 was not executed"> # </span><span class="branchNoExec" title="Branch 11 was not executed"> # </span>]
-<span class="lineNum">     142 </span>                :<span class="lineCov">        435 :   return gen-&gt;second.get();</span>
-<span class="lineNum">     143 </span>                :            : }
-<a name="144"><span class="lineNum">     144 </span>                :            : </a>
-<span class="lineNum">     145 </span>                :            : std::vector&lt; double &gt;
-<span class="lineNum">     146 </span>                :<span class="lineCov">         35 : TestU01Stack::BirthdaySpacings( unif01_Gen* gen, sres_Poisson* res,</span>
-<span class="lineNum">     147 </span>                :            :   const std::tuple&lt;long, long, int, long, int, int&gt;&amp; xargs )
-<span class="lineNum">     148 </span>                :            : // *****************************************************************************
-<span class="lineNum">     149 </span>                :            : //  Run Marsaglia's BirthdaySpacings test
-<span class="lineNum">     150 </span>                :            : //! \param[in] gen Raw function pointer to TestU01 statistical test
-<span class="lineNum">     151 </span>                :            : //! \param[in] res Pointer to test results object
-<span class="lineNum">     152 </span>                :            : //! \param[in] xargs Test arguments
-<span class="lineNum">     153 </span>                :            : //! \return Vector p-values as a result of the statistical test
-<span class="lineNum">     154 </span>                :            : // *****************************************************************************
-<span class="lineNum">     155 </span>                :            : {
-<span class="lineNum">     156 </span>                :            :   using std::get;
-<span class="lineNum">     157 </span>                :            :   smarsa_BirthdaySpacings( gen, res, get&lt;0&gt;(xargs), get&lt;1&gt;(xargs),
-<span class="lineNum">     158 </span>                :            :                            get&lt;2&gt;(xargs), get&lt;3&gt;(xargs), get&lt;4&gt;(xargs),
-<span class="lineNum">     159 </span>                :<span class="lineCov">         35 :                            get&lt;5&gt;(xargs) );</span>
-<span class="lineNum">     160 </span>                :<span class="lineCov">         35 :   return { res-&gt;pVal2 };</span>
-<span class="lineNum">     161 </span>                :            : }
-<a name="162"><span class="lineNum">     162 </span>                :            : </a>
-<span class="lineNum">     163 </span>                :            : std::vector&lt; double &gt;
-<span class="lineNum">     164 </span>                :<span class="lineCov">         12 : TestU01Stack::Collision( unif01_Gen* gen, sknuth_Res2* res,</span>
-<span class="lineNum">     165 </span>                :            :   const std::tuple&lt;long, long, int, long, int&gt;&amp; xargs )
-<span class="lineNum">     166 </span>                :            : // *****************************************************************************
-<span class="lineNum">     167 </span>                :            : //  Run Knuth's Collision test
-<span class="lineNum">     168 </span>                :            : //! \param[in] gen Raw function pointer to TestU01 statistical test
-<span class="lineNum">     169 </span>                :            : //! \param[in] res Pointer to test results object
-<span class="lineNum">     170 </span>                :            : //! \param[in] xargs Test arguments
-<span class="lineNum">     171 </span>                :            : //! \return Vector p-values as a result of the statistical test
-<span class="lineNum">     172 </span>                :            : // *****************************************************************************
-<span class="lineNum">     173 </span>                :            : {
-<span class="lineNum">     174 </span>                :            :   using std::get;
-<span class="lineNum">     175 </span>                :            :   sknuth_Collision( gen, res, get&lt;0&gt;(xargs), get&lt;1&gt;(xargs), get&lt;2&gt;(xargs),
-<span class="lineNum">     176 </span>                :<span class="lineCov">         12 :                     get&lt;3&gt;(xargs), get&lt;4&gt;(xargs) );</span>
-<span class="lineNum">     177 </span>                :<span class="lineCov">         12 :   return { res-&gt;Pois-&gt;pVal2 };</span>
-<span class="lineNum">     178 </span>                :            : }
-<a name="179"><span class="lineNum">     179 </span>                :            : </a>
-<span class="lineNum">     180 </span>                :            : std::vector&lt; double &gt;
-<span class="lineNum">     181 </span>                :<span class="lineCov">         24 : TestU01Stack::Gap( unif01_Gen* gen, sres_Chi2* res,</span>
-<span class="lineNum">     182 </span>                :            :   const std::tuple&lt;long, long, int, double, double&gt;&amp; xargs )
-<span class="lineNum">     183 </span>                :            : // *****************************************************************************
-<span class="lineNum">     184 </span>                :            : //  Run Knuth's Gap test
-<span class="lineNum">     185 </span>                :            : //! \param[in] gen Raw function pointer to TestU01 statistical test
-<span class="lineNum">     186 </span>                :            : //! \param[in] res Pointer to test results object
-<span class="lineNum">     187 </span>                :            : //! \param[in] xargs Test arguments
-<span class="lineNum">     188 </span>                :            : //! \return Vector p-values as a result of the statistical test
-<span class="lineNum">     189 </span>                :            : // *****************************************************************************
-<span class="lineNum">     190 </span>                :            : {
-<span class="lineNum">     191 </span>                :            :   using std::get;
-<span class="lineNum">     192 </span>                :            :   sknuth_Gap( gen, res, get&lt;0&gt;(xargs), get&lt;1&gt;(xargs), get&lt;2&gt;(xargs),
-<span class="lineNum">     193 </span>                :<span class="lineCov">         24 :               get&lt;3&gt;(xargs), get&lt;4&gt;(xargs) );</span>
-<span class="lineNum">     194 </span>                :<span class="lineCov">         24 :   return { res-&gt;pVal2[gofw_Mean] };</span>
-<span class="lineNum">     195 </span>                :            : }
-<a name="196"><span class="lineNum">     196 </span>                :            : </a>
-<span class="lineNum">     197 </span>                :            : std::vector&lt; double &gt;
-<span class="lineNum">     198 </span>                :<span class="lineCov">         24 : TestU01Stack::SimplePoker( unif01_Gen* gen, sres_Chi2* res,</span>
-<span class="lineNum">     199 </span>                :            :   const std::tuple&lt;long, long, int, int, int&gt;&amp; xargs )
-<span class="lineNum">     200 </span>                :            : // *****************************************************************************
-<span class="lineNum">     201 </span>                :            : //  Run Knuth's Simplified Poker test
-<span class="lineNum">     202 </span>                :            : //! \param[in] gen Raw function pointer to TestU01 statistical test
-<span class="lineNum">     203 </span>                :            : //! \param[in] res Pointer to test results object
-<span class="lineNum">     204 </span>                :            : //! \param[in] xargs Test arguments
-<span class="lineNum">     205 </span>                :            : //! \return Vector p-values as a result of the statistical test
-<span class="lineNum">     206 </span>                :            : // *****************************************************************************
-<span class="lineNum">     207 </span>                :            : {
-<span class="lineNum">     208 </span>                :            :   using std::get;
-<span class="lineNum">     209 </span>                :            :   sknuth_SimpPoker( gen, res, get&lt;0&gt;(xargs), get&lt;1&gt;(xargs), get&lt;2&gt;(xargs),
-<span class="lineNum">     210 </span>                :<span class="lineCov">         24 :                     get&lt;3&gt;(xargs), get&lt;4&gt;(xargs) );</span>
-<span class="lineNum">     211 </span>                :<span class="lineCov">         24 :   return { res-&gt;pVal2[gofw_Mean] };</span>
-<span class="lineNum">     212 </span>                :            : }
-<a name="213"><span class="lineNum">     213 </span>                :            : </a>
-<span class="lineNum">     214 </span>                :            : std::vector&lt; double &gt;
-<span class="lineNum">     215 </span>                :<span class="lineCov">         24 : TestU01Stack::CouponCollector( unif01_Gen* gen, sres_Chi2* res,</span>
-<span class="lineNum">     216 </span>                :            :   const std::tuple&lt;long, long, int, int&gt;&amp; xargs )
-<span class="lineNum">     217 </span>                :            : // *****************************************************************************
-<span class="lineNum">     218 </span>                :            : //  Run Knuth's Coupon Collector test
-<span class="lineNum">     219 </span>                :            : //! \param[in] gen Raw function pointer to TestU01 statistical test
-<span class="lineNum">     220 </span>                :            : //! \param[in] res Pointer to test results object
-<span class="lineNum">     221 </span>                :            : //! \param[in] xargs Test arguments
-<span class="lineNum">     222 </span>                :            : //! \return Vector p-values as a result of the statistical test
-<span class="lineNum">     223 </span>                :            : // *****************************************************************************
-<span class="lineNum">     224 </span>                :            : {
-<span class="lineNum">     225 </span>                :            :   using std::get;
-<span class="lineNum">     226 </span>                :            :   sknuth_CouponCollector( gen, res, get&lt;0&gt;(xargs), get&lt;1&gt;(xargs), get&lt;2&gt;(xargs),
-<span class="lineNum">     227 </span>                :<span class="lineCov">         24 :                           get&lt;3&gt;(xargs) );</span>
-<span class="lineNum">     228 </span>                :<span class="lineCov">         24 :   return { res-&gt;pVal2[gofw_Mean] };</span>
-<span class="lineNum">     229 </span>                :            : }
-<a name="230"><span class="lineNum">     230 </span>                :            : </a>
-<span class="lineNum">     231 </span>                :            : std::vector&lt; double &gt;
-<span class="lineNum">     232 </span>                :<span class="lineCov">         24 : TestU01Stack::MaxOft( unif01_Gen* gen, sknuth_Res1* res,</span>
-<span class="lineNum">     233 </span>                :            :   const std::tuple&lt;long, long, int, int, int, int, int&gt;&amp; xargs )
-<span class="lineNum">     234 </span>                :            : // *****************************************************************************
-<span class="lineNum">     235 </span>                :            : //  Run Knuth's Maximum-of-t test
-<span class="lineNum">     236 </span>                :            : //! \param[in] gen Raw function pointer to TestU01 statistical test
-<span class="lineNum">     237 </span>                :            : //! \param[in] res Pointer to test results object
-<span class="lineNum">     238 </span>                :            : //! \param[in] xargs Test arguments
-<span class="lineNum">     239 </span>                :            : //! \return Vector p-values as a result of the statistical test
-<span class="lineNum">     240 </span>                :            : // *****************************************************************************
-<span class="lineNum">     241 </span>                :            : {
-<span class="lineNum">     242 </span>                :            :   using std::get;
-<span class="lineNum">     243 </span>                :            :   sknuth_MaxOft( gen, res, get&lt;0&gt;(xargs), get&lt;1&gt;(xargs), get&lt;2&gt;(xargs),
-<span class="lineNum">     244 </span>                :<span class="lineCov">         24 :                  get&lt;3&gt;(xargs), get&lt;4&gt;(xargs) );</span>
-<span class="lineNum">     245 </span>                :<span class="lineCov">         24 :   return { res-&gt;Chi-&gt;pVal2[get&lt;5&gt;(xargs)],</span>
-<span class="lineNum">     246 </span>                :<span class="lineCov">         24 :            res-&gt;Bas-&gt;pVal2[get&lt;6&gt;(xargs)] };</span>
-<span class="lineNum">     247 </span>                :            : }
-<a name="248"><span class="lineNum">     248 </span>                :            : </a>
-<span class="lineNum">     249 </span>                :            : std::vector&lt; double &gt;
-<span class="lineNum">     250 </span>                :<span class="lineCov">         26 : TestU01Stack::WeightDistrib( unif01_Gen* gen, sres_Chi2* res,</span>
-<span class="lineNum">     251 </span>                :            :   const std::tuple&lt;long, long, int, long, double, double&gt;&amp; xargs )
-<span class="lineNum">     252 </span>                :            : // *****************************************************************************
-<span class="lineNum">     253 </span>                :            : //  Run Matsumoto's Weight Distribution test
-<span class="lineNum">     254 </span>                :            : //! \param[in] gen Raw function pointer to TestU01 statistical test
-<span class="lineNum">     255 </span>                :            : //! \param[in] res Pointer to test results object
-<span class="lineNum">     256 </span>                :            : //! \param[in] xargs Test arguments
-<span class="lineNum">     257 </span>                :            : //! \return Vector p-values as a result of the statistical test
-<span class="lineNum">     258 </span>                :            : // *****************************************************************************
-<span class="lineNum">     259 </span>                :            : {
-<span class="lineNum">     260 </span>                :            :   using std::get;
-<span class="lineNum">     261 </span>                :            :   svaria_WeightDistrib( gen, res, get&lt;0&gt;(xargs), get&lt;1&gt;(xargs), get&lt;2&gt;(xargs),
-<span class="lineNum">     262 </span>                :<span class="lineCov">         26 :                         get&lt;3&gt;(xargs), get&lt;4&gt;(xargs), get&lt;5&gt;(xargs) );</span>
-<span class="lineNum">     263 </span>                :<span class="lineCov">         26 :   return { res-&gt;pVal2[gofw_Mean] };</span>
-<span class="lineNum">     264 </span>                :            : }
-<a name="265"><span class="lineNum">     265 </span>                :            : </a>
-<span class="lineNum">     266 </span>                :            : std::vector&lt; double &gt;
-<span class="lineNum">     267 </span>                :<span class="lineCov">         30 : TestU01Stack::MatrixRank( unif01_Gen* gen, sres_Chi2* res,</span>
-<span class="lineNum">     268 </span>                :            :   const std::tuple&lt;long, long, int, int, int, int&gt;&amp; xargs )
-<span class="lineNum">     269 </span>                :            : // *****************************************************************************
-<span class="lineNum">     270 </span>                :            : //  Run Marsaglia's Matrix Rank test
-<span class="lineNum">     271 </span>                :            : //! \param[in] gen Raw function pointer to TestU01 statistical test
-<span class="lineNum">     272 </span>                :            : //! \param[in] res Pointer to test results object
-<span class="lineNum">     273 </span>                :            : //! \param[in] xargs Test arguments
-<span class="lineNum">     274 </span>                :            : //! \return Vector p-values as a result of the statistical test
-<span class="lineNum">     275 </span>                :            : // *****************************************************************************
-<span class="lineNum">     276 </span>                :            : {
-<span class="lineNum">     277 </span>                :            :   using std::get;
-<span class="lineNum">     278 </span>                :            :   smarsa_MatrixRank( gen, res, get&lt;0&gt;(xargs), get&lt;1&gt;(xargs), get&lt;2&gt;(xargs),
-<span class="lineNum">     279 </span>                :<span class="lineCov">         30 :                      get&lt;3&gt;(xargs), get&lt;4&gt;(xargs), get&lt;5&gt;(xargs) );</span>
-<span class="lineNum">     280 </span>                :<span class="lineCov">         30 :   return { res-&gt;pVal2[gofw_Mean] };</span>
-<span class="lineNum">     281 </span>                :            : }
-<a name="282"><span class="lineNum">     282 </span>                :            : </a>
-<span class="lineNum">     283 </span>                :            : std::vector&lt; double &gt;
-<span class="lineNum">     284 </span>                :<span class="lineCov">         30 : TestU01Stack::HammingIndep( unif01_Gen* gen, sstring_Res* res,</span>
-<span class="lineNum">     285 </span>                :            :   const std::tuple&lt;long, long, int, int, int, int&gt;&amp; xargs )
-<span class="lineNum">     286 </span>                :            : // *****************************************************************************
-<span class="lineNum">     287 </span>                :            : //  Run L'Ecuyer's Hamming Independence test
-<span class="lineNum">     288 </span>                :            : //! \param[in] gen Raw function pointer to TestU01 statistical test
-<span class="lineNum">     289 </span>                :            : //! \param[in] res Pointer to test results object
-<span class="lineNum">     290 </span>                :            : //! \param[in] xargs Test arguments
-<span class="lineNum">     291 </span>                :            : //! \return Vector p-values as a result of the statistical test
-<span class="lineNum">     292 </span>                :            : // *****************************************************************************
-<span class="lineNum">     293 </span>                :            : {
-<span class="lineNum">     294 </span>                :            :   using std::get;
-<span class="lineNum">     295 </span>                :            :   sstring_HammingIndep( gen, res, get&lt;0&gt;(xargs), get&lt;1&gt;(xargs), get&lt;2&gt;(xargs),
-<span class="lineNum">     296 </span>                :<span class="lineCov">         30 :                         get&lt;3&gt;(xargs), get&lt;4&gt;(xargs), get&lt;5&gt;(xargs) );</span>
-<span class="lineNum">     297 </span>                :<span class="lineCov">         30 :   return { res-&gt;Bas-&gt;pVal2[gofw_Mean] };</span>
-<span class="lineNum">     298 </span>                :            : }
-<a name="299"><span class="lineNum">     299 </span>                :            : </a>
-<span class="lineNum">     300 </span>                :            : std::vector&lt; double &gt;
-<span class="lineNum">     301 </span>                :<span class="lineCov">         30 : TestU01Stack::RandomWalk1( unif01_Gen* gen, swalk_Res* res,</span>
-<span class="lineNum">     302 </span>                :            :   const std::tuple&lt;long, long, int, int, long, long&gt;&amp; xargs )
-<span class="lineNum">     303 </span>                :            : // *****************************************************************************
-<span class="lineNum">     304 </span>                :            : //  Run Random Walk 1 test
-<span class="lineNum">     305 </span>                :            : //! \param[in] gen Raw function pointer to TestU01 statistical test
-<span class="lineNum">     306 </span>                :            : //! \param[in] res Pointer to test results object
-<span class="lineNum">     307 </span>                :            : //! \param[in] xargs Test arguments
-<span class="lineNum">     308 </span>                :            : //! \return Vector p-values as a result of the statistical test
-<span class="lineNum">     309 </span>                :            : // *****************************************************************************
-<span class="lineNum">     310 </span>                :            : {
-<span class="lineNum">     311 </span>                :            :   using std::get;
-<span class="lineNum">     312 </span>                :            :   swalk_RandomWalk1( gen, res, get&lt;0&gt;(xargs), get&lt;1&gt;(xargs), get&lt;2&gt;(xargs),
-<span class="lineNum">     313 </span>                :<span class="lineCov">         30 :                      get&lt;3&gt;(xargs), get&lt;4&gt;(xargs), get&lt;5&gt;(xargs) );</span>
-<span class="lineNum">     314 </span>                :<span class="lineCov">         30 :   return { res-&gt;H[0]-&gt;pVal2[gofw_Mean],</span>
-<span class="lineNum">     315 </span>                :<span class="lineCov">         30 :            res-&gt;M[0]-&gt;pVal2[gofw_Mean],</span>
-<span class="lineNum">     316 </span>                :<span class="lineCov">         30 :            res-&gt;J[0]-&gt;pVal2[gofw_Mean],</span>
-<span class="lineNum">     317 </span>                :<span class="lineCov">         30 :            res-&gt;R[0]-&gt;pVal2[gofw_Mean],</span>
-<span class="lineNum">     318 </span>                :<span class="lineCov">         30 :            res-&gt;C[0]-&gt;pVal2[gofw_Mean] };</span>
-<span class="lineNum">     319 </span>                :            : }
-<a name="320"><span class="lineNum">     320 </span>                :            : </a>
-<span class="lineNum">     321 </span>                :            : std::vector&lt; double &gt;
-<span class="lineNum">     322 </span>                :<span class="lineCov">          6 : TestU01Stack::SerialOver( unif01_Gen* gen, sres_Basic* res,</span>
-<span class="lineNum">     323 </span>                :            :   const std::tuple&lt;long, long, int, long, int&gt;&amp; xargs )
-<span class="lineNum">     324 </span>                :            : // *****************************************************************************
-<span class="lineNum">     325 </span>                :            : //  Run Marsaglia's Serial Over test, t = 2
-<span class="lineNum">     326 </span>                :            : //! \param[in] gen Raw function pointer to TestU01 statistical test
-<span class="lineNum">     327 </span>                :            : //! \param[in] res Pointer to test results object
-<span class="lineNum">     328 </span>                :            : //! \param[in] xargs Test arguments
-<span class="lineNum">     329 </span>                :            : //! \return Vector p-values as a result of the statistical test
-<span class="lineNum">     330 </span>                :            : // *****************************************************************************
-<span class="lineNum">     331 </span>                :            : {
-<span class="lineNum">     332 </span>                :            :   using std::get;
-<span class="lineNum">     333 </span>                :            :   smarsa_SerialOver( gen, res, get&lt;0&gt;(xargs), get&lt;1&gt;(xargs), get&lt;2&gt;(xargs),
-<span class="lineNum">     334 </span>                :<span class="lineCov">          6 :                      get&lt;3&gt;(xargs), get&lt;4&gt;(xargs) );</span>
-<span class="lineNum">     335 </span>                :<span class="lineCov">          6 :   return { res-&gt;pVal2[gofw_Mean] };</span>
-<span class="lineNum">     336 </span>                :            : }
-<a name="337"><span class="lineNum">     337 </span>                :            : </a>
-<span class="lineNum">     338 </span>                :            : std::vector&lt; double &gt;
-<span class="lineNum">     339 </span>                :<span class="lineCov">         27 : TestU01Stack::CollisionOver( unif01_Gen* gen, smarsa_Res* res,</span>
-<span class="lineNum">     340 </span>                :            :   const std::tuple&lt;long, long, int, long, int&gt;&amp; xargs )
-<span class="lineNum">     341 </span>                :            : // *****************************************************************************
-<span class="lineNum">     342 </span>                :            : //  Run Marsaglia's Serial Over test, t = 2
-<span class="lineNum">     343 </span>                :            : //! \param[in] gen Raw function pointer to TestU01 statistical test
-<span class="lineNum">     344 </span>                :            : //! \param[in] res Pointer to test results object
-<span class="lineNum">     345 </span>                :            : //! \param[in] xargs Test arguments
-<span class="lineNum">     346 </span>                :            : //! \return Vector p-values as a result of the statistical test
-<span class="lineNum">     347 </span>                :            : // *****************************************************************************
-<span class="lineNum">     348 </span>                :            : {
-<span class="lineNum">     349 </span>                :            :   using std::get;
-<span class="lineNum">     350 </span>                :            :   smarsa_CollisionOver( gen, res, get&lt;0&gt;(xargs), get&lt;1&gt;(xargs), get&lt;2&gt;(xargs),
-<span class="lineNum">     351 </span>                :<span class="lineCov">         27 :                         get&lt;3&gt;(xargs), get&lt;4&gt;(xargs) );</span>
-<span class="lineNum">     352 </span>                :<span class="lineCov">         27 :   return { res-&gt;Pois-&gt;pVal2 };</span>
-<span class="lineNum">     353 </span>                :            : }
-<a name="354"><span class="lineNum">     354 </span>                :            : </a>
-<span class="lineNum">     355 </span>                :            : std::vector&lt; double &gt;
-<span class="lineNum">     356 </span>                :<span class="lineCov">         10 : TestU01Stack::ClosePairs( unif01_Gen* gen, snpair_Res* res,</span>
-<span class="lineNum">     357 </span>                :            :   const std::tuple&lt;long, long, int, int, int, int, int&gt;&amp; xargs )
-<span class="lineNum">     358 </span>                :            : // *****************************************************************************
-<span class="lineNum">     359 </span>                :            : //  Run the close-pairs test, t = 2
-<span class="lineNum">     360 </span>                :            : //! \param[in] gen Raw function pointer to TestU01 statistical test
-<span class="lineNum">     361 </span>                :            : //! \param[in] res Pointer to test results object
-<span class="lineNum">     362 </span>                :            : //! \param[in] xargs Test arguments
-<span class="lineNum">     363 </span>                :            : //! \return Vector p-values as a result of the statistical test
-<span class="lineNum">     364 </span>                :            : // *****************************************************************************
-<span class="lineNum">     365 </span>                :            : {
-<span class="lineNum">     366 </span>                :            :   using std::get;
-<span class="lineNum">     367 </span>                :            :   snpair_ClosePairs( gen, res, get&lt;0&gt;(xargs), get&lt;1&gt;(xargs), get&lt;2&gt;(xargs),
-<span class="lineNum">     368 </span>                :<span class="lineCov">         10 :                         get&lt;3&gt;(xargs), get&lt;4&gt;(xargs), get&lt;5&gt;(xargs) );</span>
-<span class="lineNum">     369 </span>        [<span class="branchCov" title="Branch 0 was taken 8 times"> + </span><span class="branchCov" title="Branch 1 was taken 2 times"> + </span>]:<span class="lineCov">         10 :   if (get&lt;6&gt;(xargs)) {</span>
-<span class="lineNum">     370 </span>                :<span class="lineCov">          8 :     return { res-&gt;pVal[snpair_NP],</span>
-<span class="lineNum">     371 </span>                :<span class="lineCov">          8 :              res-&gt;pVal[snpair_mNP],</span>
-<span class="lineNum">     372 </span>                :<span class="lineCov">          8 :              res-&gt;pVal[snpair_mNP1],</span>
-<span class="lineNum">     373 </span>                :<span class="lineCov">          8 :              res-&gt;pVal[snpair_mNP2],</span>
-<span class="lineNum">     374 </span>                :<span class="lineCov">          8 :              res-&gt;pVal[snpair_NJumps],</span>
-<span class="lineNum">     375 </span>                :<span class="lineCov">          8 :              res-&gt;pVal[snpair_mNP2S] };</span>
-<span class="lineNum">     376 </span>                :            :   } else {
-<span class="lineNum">     377 </span>                :<span class="lineCov">          2 :     return { res-&gt;pVal[snpair_NP],</span>
-<span class="lineNum">     378 </span>                :<span class="lineCov">          2 :              res-&gt;pVal[snpair_mNP],</span>
-<span class="lineNum">     379 </span>                :<span class="lineCov">          2 :              res-&gt;pVal[snpair_mNP1],</span>
-<span class="lineNum">     380 </span>                :<span class="lineCov">          2 :              res-&gt;pVal[snpair_mNP2],</span>
-<span class="lineNum">     381 </span>                :<span class="lineCov">          2 :              res-&gt;pVal[snpair_NJumps] };</span>
-<span class="lineNum">     382 </span>                :            :   }
-<span class="lineNum">     383 </span>                :            : }
-<a name="384"><span class="lineNum">     384 </span>                :            : </a>
-<span class="lineNum">     385 </span>                :            : std::vector&lt; double &gt;
-<span class="lineNum">     386 </span>                :<span class="lineCov">          4 : TestU01Stack::ClosePairsBitMatch( unif01_Gen* gen, snpair_Res* res,</span>
-<span class="lineNum">     387 </span>                :            :   const std::tuple&lt;long, long, int, int&gt;&amp; xargs )
-<span class="lineNum">     388 </span>                :            : // *****************************************************************************
-<span class="lineNum">     389 </span>                :            : //  Run the close-pairs test using bit match distance, t = 2
-<span class="lineNum">     390 </span>                :            : //! \param[in] gen Raw function pointer to TestU01 statistical test
-<span class="lineNum">     391 </span>                :            : //! \param[in] res Pointer to test results object
-<span class="lineNum">     392 </span>                :            : //! \param[in] xargs Test arguments
-<span class="lineNum">     393 </span>                :            : //! \return Vector p-values as a result of the statistical test
-<span class="lineNum">     394 </span>                :            : // *****************************************************************************
-<span class="lineNum">     395 </span>                :            : {
-<span class="lineNum">     396 </span>                :            :   using std::get;
-<span class="lineNum">     397 </span>                :            :   snpair_ClosePairsBitMatch( gen, res, get&lt;0&gt;(xargs), get&lt;1&gt;(xargs),
-<span class="lineNum">     398 </span>                :<span class="lineCov">          4 :                              get&lt;2&gt;(xargs), get&lt;3&gt;(xargs) );</span>
-<span class="lineNum">     399 </span>                :<span class="lineCov">          4 :   return { res-&gt;pVal[snpair_BM] };</span>
-<span class="lineNum">     400 </span>                :            : }
-<a name="401"><span class="lineNum">     401 </span>                :            : </a>
-<span class="lineNum">     402 </span>                :            : std::vector&lt; double &gt;
-<span class="lineNum">     403 </span>                :<span class="lineCov">          6 : TestU01Stack::Run( unif01_Gen* gen, sres_Chi2* res,</span>
-<span class="lineNum">     404 </span>                :            :   const std::tuple&lt;long, long, int, int&gt;&amp; xargs )
-<span class="lineNum">     405 </span>                :            : // *****************************************************************************
-<span class="lineNum">     406 </span>                :            : //  Run Knuth's Run test
-<span class="lineNum">     407 </span>                :            : //! \param[in] gen Raw function pointer to TestU01 statistical test
-<span class="lineNum">     408 </span>                :            : //! \param[in] res Pointer to test results object
-<span class="lineNum">     409 </span>                :            : //! \param[in] xargs Test arguments
-<span class="lineNum">     410 </span>                :            : //! \return Vector p-values as a result of the statistical test
-<span class="lineNum">     411 </span>                :            : // *****************************************************************************
-<span class="lineNum">     412 </span>                :            : {
-<span class="lineNum">     413 </span>                :            :   using std::get;
-<span class="lineNum">     414 </span>                :            :   sknuth_Run( gen, res, get&lt;0&gt;(xargs), get&lt;1&gt;(xargs), get&lt;2&gt;(xargs),
-<span class="lineNum">     415 </span>                :<span class="lineCov">          6 :               get&lt;3&gt;(xargs) );</span>
-<span class="lineNum">     416 </span>                :<span class="lineCov">          6 :   return { res-&gt;pVal2[gofw_Mean] };</span>
-<span class="lineNum">     417 </span>                :            : }
-<a name="418"><span class="lineNum">     418 </span>                :            : </a>
-<span class="lineNum">     419 </span>                :            : std::vector&lt; double &gt;
-<span class="lineNum">     420 </span>                :<span class="lineCov">          8 : TestU01Stack::Permutation( unif01_Gen* gen, sres_Chi2* res,</span>
-<span class="lineNum">     421 </span>                :            :   const std::tuple&lt;long, long, int, int&gt;&amp; xargs )
-<span class="lineNum">     422 </span>                :            : // *****************************************************************************
-<span class="lineNum">     423 </span>                :            : //  Run Knuth's Permutation test
-<span class="lineNum">     424 </span>                :            : //! \param[in] gen Raw function pointer to TestU01 statistical test
-<span class="lineNum">     425 </span>                :            : //! \param[in] res Pointer to test results object
-<span class="lineNum">     426 </span>                :            : //! \param[in] xargs Test arguments
-<span class="lineNum">     427 </span>                :            : //! \return Vector p-values as a result of the statistical test
-<span class="lineNum">     428 </span>                :            : // *****************************************************************************
-<span class="lineNum">     429 </span>                :            : {
-<span class="lineNum">     430 </span>                :            :   using std::get;
-<span class="lineNum">     431 </span>                :            :   sknuth_Permutation( gen, res, get&lt;0&gt;(xargs), get&lt;1&gt;(xargs), get&lt;2&gt;(xargs),
-<span class="lineNum">     432 </span>                :<span class="lineCov">          8 :                       get&lt;3&gt;(xargs) );</span>
-<span class="lineNum">     433 </span>                :<span class="lineCov">          8 :   return { res-&gt;pVal2[gofw_Mean] };</span>
-<span class="lineNum">     434 </span>                :            : }
-<a name="435"><span class="lineNum">     435 </span>                :            : </a>
-<span class="lineNum">     436 </span>                :            : std::vector&lt; double &gt;
-<span class="lineNum">     437 </span>                :<span class="lineCov">          6 : TestU01Stack::CollisionPermut( unif01_Gen* gen, sknuth_Res2* res,</span>
-<span class="lineNum">     438 </span>                :            :   const std::tuple&lt;long, long, int, int&gt;&amp; xargs )
-<span class="lineNum">     439 </span>                :            : // *****************************************************************************
-<span class="lineNum">     440 </span>                :            : //  Run Knuth's Collision test with permutations
-<span class="lineNum">     441 </span>                :            : //! \param[in] gen Raw function pointer to TestU01 statistical test
-<span class="lineNum">     442 </span>                :            : //! \param[in] res Pointer to test results object
-<span class="lineNum">     443 </span>                :            : //! \param[in] xargs Test arguments
-<span class="lineNum">     444 </span>                :            : //! \return Vector p-values as a result of the statistical test
-<span class="lineNum">     445 </span>                :            : // *****************************************************************************
-<span class="lineNum">     446 </span>                :            : {
-<span class="lineNum">     447 </span>                :            :   using std::get;
-<span class="lineNum">     448 </span>                :            :   sknuth_CollisionPermut( gen, res, get&lt;0&gt;(xargs), get&lt;1&gt;(xargs), get&lt;2&gt;(xargs),
-<span class="lineNum">     449 </span>                :<span class="lineCov">          6 :                           get&lt;3&gt;(xargs) );</span>
-<span class="lineNum">     450 </span>                :<span class="lineCov">          6 :   return { res-&gt;Pois-&gt;pVal2 };</span>
-<span class="lineNum">     451 </span>                :            : }
-<a name="452"><span class="lineNum">     452 </span>                :            : </a>
-<span class="lineNum">     453 </span>                :            : std::vector&lt; double &gt;
-<span class="lineNum">     454 </span>                :<span class="lineCov">          7 : TestU01Stack::SampleProd( unif01_Gen* gen, sres_Basic* res,</span>
-<span class="lineNum">     455 </span>                :            :   const std::tuple&lt;long, long, int, int&gt;&amp; xargs )
-<span class="lineNum">     456 </span>                :            : // *****************************************************************************
-<span class="lineNum">     457 </span>                :            : //  Run Sample Products test
-<span class="lineNum">     458 </span>                :            : //! \param[in] gen Raw function pointer to TestU01 statistical test
-<span class="lineNum">     459 </span>                :            : //! \param[in] res Pointer to test results object
-<span class="lineNum">     460 </span>                :            : //! \param[in] xargs Test arguments
-<span class="lineNum">     461 </span>                :            : //! \return Vector p-values as a result of the statistical test
-<span class="lineNum">     462 </span>                :            : // *****************************************************************************
-<span class="lineNum">     463 </span>                :            : {
-<span class="lineNum">     464 </span>                :            :   using std::get;
-<span class="lineNum">     465 </span>                :            :   svaria_SampleProd( gen, res, get&lt;0&gt;(xargs), get&lt;1&gt;(xargs), get&lt;2&gt;(xargs),
-<span class="lineNum">     466 </span>                :<span class="lineCov">          7 :                      get&lt;3&gt;(xargs) );</span>
-<span class="lineNum">     467 </span>                :<span class="lineCov">          7 :   return { res-&gt;pVal2[gofw_Mean] };</span>
-<span class="lineNum">     468 </span>                :            : }
-<a name="469"><span class="lineNum">     469 </span>                :            : </a>
-<span class="lineNum">     470 </span>                :            : std::vector&lt; double &gt;
-<span class="lineNum">     471 </span>                :<span class="lineCov">          4 : TestU01Stack::SampleMean( unif01_Gen* gen, sres_Basic* res,</span>
-<span class="lineNum">     472 </span>                :            :   const std::tuple&lt;long, long, int&gt;&amp; xargs )
-<span class="lineNum">     473 </span>                :            : // *****************************************************************************
-<span class="lineNum">     474 </span>                :            : //  Run Sample Mean test
-<span class="lineNum">     475 </span>                :            : //! \param[in] gen Raw function pointer to TestU01 statistical test
-<span class="lineNum">     476 </span>                :            : //! \param[in] res Pointer to test results object
-<span class="lineNum">     477 </span>                :            : //! \param[in] xargs Test arguments
-<span class="lineNum">     478 </span>                :            : //! \return Vector p-values as a result of the statistical test
-<span class="lineNum">     479 </span>                :            : // *****************************************************************************
-<span class="lineNum">     480 </span>                :            : {
-<span class="lineNum">     481 </span>                :            :   using std::get;
-<span class="lineNum">     482 </span>                :<span class="lineCov">          4 :   svaria_SampleMean( gen, res, get&lt;0&gt;(xargs), get&lt;1&gt;(xargs), get&lt;2&gt;(xargs) );</span>
-<span class="lineNum">     483 </span>                :<span class="lineCov">          4 :   return { res-&gt;pVal2[gofw_AD] };</span>
-<span class="lineNum">     484 </span>                :            : }
-<a name="485"><span class="lineNum">     485 </span>                :            : </a>
-<span class="lineNum">     486 </span>                :            : std::vector&lt; double &gt;
-<span class="lineNum">     487 </span>                :<span class="lineCov">          4 : TestU01Stack::SampleCorr( unif01_Gen* gen, sres_Basic* res,</span>
-<span class="lineNum">     488 </span>                :            :   const std::tuple&lt;long, long, int, int&gt;&amp; xargs )
-<span class="lineNum">     489 </span>                :            : // *****************************************************************************
-<span class="lineNum">     490 </span>                :            : //  Run Sample Autocorrelation test
-<span class="lineNum">     491 </span>                :            : //! \param[in] gen Raw function pointer to TestU01 statistical test
-<span class="lineNum">     492 </span>                :            : //! \param[in] res Pointer to test results object
-<span class="lineNum">     493 </span>                :            : //! \param[in] xargs Test arguments
-<span class="lineNum">     494 </span>                :            : //! \return Vector p-values as a result of the statistical test
-<span class="lineNum">     495 </span>                :            : // *****************************************************************************
-<span class="lineNum">     496 </span>                :            : {
-<span class="lineNum">     497 </span>                :            :   using std::get;
-<span class="lineNum">     498 </span>                :            :   svaria_SampleCorr( gen, res, get&lt;0&gt;(xargs), get&lt;1&gt;(xargs), get&lt;2&gt;(xargs),
-<span class="lineNum">     499 </span>                :<span class="lineCov">          4 :                      get&lt;3&gt;(xargs) );</span>
-<span class="lineNum">     500 </span>                :<span class="lineCov">          4 :   return { res-&gt;pVal2[gofw_Mean] };</span>
-<span class="lineNum">     501 </span>                :            : }
-<a name="502"><span class="lineNum">     502 </span>                :            : </a>
-<span class="lineNum">     503 </span>                :            : std::vector&lt; double &gt;
-<span class="lineNum">     504 </span>                :<span class="lineCov">          7 : TestU01Stack::AppearanceSpacings( unif01_Gen* gen, sres_Basic* res,</span>
-<span class="lineNum">     505 </span>                :            :   const std::tuple&lt;long, long, long, int, int, int&gt;&amp; xargs )
-<span class="lineNum">     506 </span>                :            : // *****************************************************************************
-<span class="lineNum">     507 </span>                :            : //  Run Maurer's &quot;universal&quot; test
-<span class="lineNum">     508 </span>                :            : //! \param[in] gen Raw function pointer to TestU01 statistical test
-<span class="lineNum">     509 </span>                :            : //! \param[in] res Pointer to test results object
-<span class="lineNum">     510 </span>                :            : //! \param[in] xargs Test arguments
-<span class="lineNum">     511 </span>                :            : //! \return Vector p-values as a result of the statistical test
-<span class="lineNum">     512 </span>                :            : // *****************************************************************************
-<span class="lineNum">     513 </span>                :            : {
-<span class="lineNum">     514 </span>                :            :   using std::get;
-<span class="lineNum">     515 </span>                :            :   svaria_AppearanceSpacings( gen, res, get&lt;0&gt;(xargs), get&lt;1&gt;(xargs),
-<span class="lineNum">     516 </span>                :            :                              get&lt;2&gt;(xargs), get&lt;3&gt;(xargs), get&lt;4&gt;(xargs),
-<span class="lineNum">     517 </span>                :<span class="lineCov">          7 :                              get&lt;5&gt;(xargs) );</span>
-<span class="lineNum">     518 </span>                :<span class="lineCov">          7 :   return { res-&gt;pVal2[gofw_Mean] };</span>
-<span class="lineNum">     519 </span>                :            : }
-<a name="520"><span class="lineNum">     520 </span>                :            : </a>
-<span class="lineNum">     521 </span>                :            : std::vector&lt; double &gt;
-<span class="lineNum">     522 </span>                :<span class="lineCov">          3 : TestU01Stack::SumCollector( unif01_Gen* gen, sres_Chi2* res,</span>
-<span class="lineNum">     523 </span>                :            :   const std::tuple&lt;long, long, int, double&gt;&amp; xargs )
-<span class="lineNum">     524 </span>                :            : // *****************************************************************************
-<span class="lineNum">     525 </span>                :            : //  Run Sum Collector test
-<span class="lineNum">     526 </span>                :            : //! \param[in] gen Raw function pointer to TestU01 statistical test
-<span class="lineNum">     527 </span>                :            : //! \param[in] res Pointer to test results object
-<span class="lineNum">     528 </span>                :            : //! \param[in] xargs Test arguments
-<span class="lineNum">     529 </span>                :            : //! \return Vector p-values as a result of the statistical test
-<span class="lineNum">     530 </span>                :            : // *****************************************************************************
-<span class="lineNum">     531 </span>                :            : {
-<span class="lineNum">     532 </span>                :            :   using std::get;
-<span class="lineNum">     533 </span>                :            :   svaria_SumCollector( gen, res, get&lt;0&gt;(xargs), get&lt;1&gt;(xargs), get&lt;2&gt;(xargs),
-<span class="lineNum">     534 </span>                :<span class="lineCov">          3 :                        get&lt;3&gt;(xargs) );</span>
-<span class="lineNum">     535 </span>                :<span class="lineCov">          3 :   return { res-&gt;pVal2[gofw_Mean] };</span>
-<span class="lineNum">     536 </span>                :            : }
-<a name="537"><span class="lineNum">     537 </span>                :            : </a>
-<span class="lineNum">     538 </span>                :            : std::vector&lt; double &gt;
-<span class="lineNum">     539 </span>                :<span class="lineCov">          3 : TestU01Stack::Savir2( unif01_Gen* gen, sres_Chi2* res,</span>
-<span class="lineNum">     540 </span>                :            :   const std::tuple&lt;long, long, int, long, int&gt;&amp; xargs )
-<span class="lineNum">     541 </span>                :            : // *****************************************************************************
-<span class="lineNum">     542 </span>                :            : //  Run Marsaglia's modified Savir test
-<span class="lineNum">     543 </span>                :            : //! \param[in] gen Raw function pointer to TestU01 statistical test
-<span class="lineNum">     544 </span>                :            : //! \param[in] res Pointer to test results object
-<span class="lineNum">     545 </span>                :            : //! \param[in] xargs Test arguments
-<span class="lineNum">     546 </span>                :            : //! \return Vector p-values as a result of the statistical test
-<span class="lineNum">     547 </span>                :            : // *****************************************************************************
-<span class="lineNum">     548 </span>                :            : {
-<span class="lineNum">     549 </span>                :            :   using std::get;
-<span class="lineNum">     550 </span>                :            :   smarsa_Savir2( gen, res, get&lt;0&gt;(xargs), get&lt;1&gt;(xargs), get&lt;2&gt;(xargs),
-<span class="lineNum">     551 </span>                :<span class="lineCov">          3 :                  get&lt;3&gt;(xargs), get&lt;4&gt;(xargs) );</span>
-<span class="lineNum">     552 </span>                :<span class="lineCov">          3 :   return { res-&gt;pVal2[gofw_Mean] };</span>
-<span class="lineNum">     553 </span>                :            : }
-<a name="554"><span class="lineNum">     554 </span>                :            : </a>
-<span class="lineNum">     555 </span>                :            : std::vector&lt; double &gt;
-<span class="lineNum">     556 </span>                :<span class="lineCov">          5 : TestU01Stack::GCD( unif01_Gen* gen, smarsa_Res2* res,</span>
-<span class="lineNum">     557 </span>                :            :   const std::tuple&lt;long, long, int, int&gt;&amp; xargs )
-<span class="lineNum">     558 </span>                :            : // *****************************************************************************
-<span class="lineNum">     559 </span>                :            : //  Run Marsaglia's greatest common divisor test
-<span class="lineNum">     560 </span>                :            : //! \param[in] gen Raw function pointer to TestU01 statistical test
-<span class="lineNum">     561 </span>                :            : //! \param[in] res Pointer to test results object
-<span class="lineNum">     562 </span>                :            : //! \param[in] xargs Test arguments
-<span class="lineNum">     563 </span>                :            : //! \return Vector p-values as a result of the statistical test
-<span class="lineNum">     564 </span>                :            : // *****************************************************************************
-<span class="lineNum">     565 </span>                :            : {
-<span class="lineNum">     566 </span>                :            :   using std::get;
-<span class="lineNum">     567 </span>                :            :   smarsa_GCD( gen, res, get&lt;0&gt;(xargs), get&lt;1&gt;(xargs), get&lt;2&gt;(xargs),
-<span class="lineNum">     568 </span>                :<span class="lineCov">          5 :               get&lt;3&gt;(xargs) );</span>
-<span class="lineNum">     569 </span>                :<span class="lineCov">          5 :   return { res-&gt;GCD-&gt;pVal2[gofw_Mean] };</span>
-<span class="lineNum">     570 </span>                :            : }
-<a name="571"><span class="lineNum">     571 </span>                :            : </a>
-<span class="lineNum">     572 </span>                :            : std::vector&lt; double &gt;
-<span class="lineNum">     573 </span>                :<span class="lineCov">          6 : TestU01Stack::LinearComp( unif01_Gen* gen, scomp_Res* res,</span>
-<span class="lineNum">     574 </span>                :            :   const std::tuple&lt;long, long, int, int&gt;&amp; xargs )
-<span class="lineNum">     575 </span>                :            : // *****************************************************************************
-<span class="lineNum">     576 </span>                :            : //  Run Linear Complexity test
-<span class="lineNum">     577 </span>                :            : //! \param[in] gen Raw function pointer to TestU01 statistical test
-<span class="lineNum">     578 </span>                :            : //! \param[in] res Pointer to test results object
-<span class="lineNum">     579 </span>                :            : //! \param[in] xargs Test arguments
-<span class="lineNum">     580 </span>                :            : //! \return Vector p-values as a result of the statistical test
-<span class="lineNum">     581 </span>                :            : // *****************************************************************************
-<span class="lineNum">     582 </span>                :            : {
-<span class="lineNum">     583 </span>                :            :   using std::get;
-<span class="lineNum">     584 </span>                :            :   scomp_LinearComp( gen, res, get&lt;0&gt;(xargs), get&lt;1&gt;(xargs), get&lt;2&gt;(xargs),
-<span class="lineNum">     585 </span>                :<span class="lineCov">          6 :                     get&lt;3&gt;(xargs) );</span>
-<span class="lineNum">     586 </span>                :<span class="lineCov">          6 :   return { res-&gt;JumpNum-&gt;pVal2[gofw_Mean],</span>
-<span class="lineNum">     587 </span>                :<span class="lineCov">          6 :            res-&gt;JumpSize-&gt;pVal2[gofw_Mean] };</span>
-<span class="lineNum">     588 </span>                :            : }
-<a name="589"><span class="lineNum">     589 </span>                :            : </a>
-<span class="lineNum">     590 </span>                :            : std::vector&lt; double &gt;
-<span class="lineNum">     591 </span>                :<span class="lineCov">          4 : TestU01Stack::LempelZiv( unif01_Gen* gen, sres_Basic* res,</span>
-<span class="lineNum">     592 </span>                :            :   const std::tuple&lt;long, int, int, int&gt;&amp; xargs )
-<span class="lineNum">     593 </span>                :            : // *****************************************************************************
-<span class="lineNum">     594 </span>                :            : //  Run Lempel-Ziv Compressibility test
-<span class="lineNum">     595 </span>                :            : //! \param[in] gen Raw function pointer to TestU01 statistical test
-<span class="lineNum">     596 </span>                :            : //! \param[in] res Pointer to test results object
-<span class="lineNum">     597 </span>                :            : //! \param[in] xargs Test arguments
-<span class="lineNum">     598 </span>                :            : //! \return Vector p-values as a result of the statistical test
-<span class="lineNum">     599 </span>                :            : // *****************************************************************************
-<span class="lineNum">     600 </span>                :            : {
-<span class="lineNum">     601 </span>                :            :   using std::get;
-<span class="lineNum">     602 </span>                :            :   scomp_LempelZiv( gen, res, get&lt;0&gt;(xargs), get&lt;1&gt;(xargs), get&lt;2&gt;(xargs),
-<span class="lineNum">     603 </span>                :<span class="lineCov">          4 :                    get&lt;3&gt;(xargs) );</span>
-<span class="lineNum">     604 </span>                :<span class="lineCov">          4 :   return { res-&gt;pVal2[gofw_Sum] };</span>
-<span class="lineNum">     605 </span>                :            : }
-<a name="606"><span class="lineNum">     606 </span>                :            : </a>
-<span class="lineNum">     607 </span>                :            : std::vector&lt; double &gt;
-<span class="lineNum">     608 </span>                :<span class="lineCov">          6 : TestU01Stack::Fourier3( unif01_Gen* gen, sspectral_Res* res,</span>
-<span class="lineNum">     609 </span>                :            :   const std::tuple&lt;long, int, int, int&gt;&amp; xargs )
-<span class="lineNum">     610 </span>                :            : // *****************************************************************************
-<span class="lineNum">     611 </span>                :            : //  Run Fourier3 test
-<span class="lineNum">     612 </span>                :            : //! \param[in] gen Raw function pointer to TestU01 statistical test
-<span class="lineNum">     613 </span>                :            : //! \param[in] res Pointer to test results object
-<span class="lineNum">     614 </span>                :            : //! \param[in] xargs Test arguments
-<span class="lineNum">     615 </span>                :            : //! \return Vector p-values as a result of the statistical test
-<span class="lineNum">     616 </span>                :            : // *****************************************************************************
-<span class="lineNum">     617 </span>                :            : {
-<span class="lineNum">     618 </span>                :            :   using std::get;
-<span class="lineNum">     619 </span>                :            :   sspectral_Fourier3( gen, res, get&lt;0&gt;(xargs), get&lt;1&gt;(xargs), get&lt;2&gt;(xargs),
-<span class="lineNum">     620 </span>                :<span class="lineCov">          6 :                       get&lt;3&gt;(xargs) );</span>
-<span class="lineNum">     621 </span>                :<span class="lineCov">          6 :   return { res-&gt;Bas-&gt;pVal2[gofw_AD] };</span>
-<span class="lineNum">     622 </span>                :            : }
-<a name="623"><span class="lineNum">     623 </span>                :            : </a>
-<span class="lineNum">     624 </span>                :            : std::vector&lt; double &gt;
-<span class="lineNum">     625 </span>                :<span class="lineCov">          6 : TestU01Stack::LongestHeadRun( unif01_Gen* gen, sstring_Res2* res,</span>
-<span class="lineNum">     626 </span>                :            :   const std::tuple&lt;long, long, int, int, long&gt;&amp; xargs )
-<span class="lineNum">     627 </span>                :            : // *****************************************************************************
-<span class="lineNum">     628 </span>                :            : //  Run Longest Head Run test
-<span class="lineNum">     629 </span>                :            : //! \param[in] gen Raw function pointer to TestU01 statistical test
-<span class="lineNum">     630 </span>                :            : //! \param[in] res Pointer to test results object
-<span class="lineNum">     631 </span>                :            : //! \param[in] xargs Test arguments
-<span class="lineNum">     632 </span>                :            : //! \return Vector p-values as a result of the statistical test
-<span class="lineNum">     633 </span>                :            : // *****************************************************************************
-<span class="lineNum">     634 </span>                :            : {
-<span class="lineNum">     635 </span>                :            :   using std::get;
-<span class="lineNum">     636 </span>                :            :   sstring_LongestHeadRun( gen, res, get&lt;0&gt;(xargs), get&lt;1&gt;(xargs), get&lt;2&gt;(xargs),
-<span class="lineNum">     637 </span>                :<span class="lineCov">          6 :                           get&lt;3&gt;(xargs), get&lt;4&gt;(xargs) );</span>
-<span class="lineNum">     638 </span>                :<span class="lineCov">          6 :   return { res-&gt;Chi-&gt;pVal2[gofw_Mean],</span>
-<span class="lineNum">     639 </span>                :<span class="lineCov">          6 :            res-&gt;Disc-&gt;pVal2 };</span>
-<span class="lineNum">     640 </span>                :            : }
-<a name="641"><span class="lineNum">     641 </span>                :            : </a>
-<span class="lineNum">     642 </span>                :            : std::vector&lt; double &gt;
-<span class="lineNum">     643 </span>                :<span class="lineCov">          6 : TestU01Stack::PeriodsInStrings( unif01_Gen* gen, sres_Chi2* res,</span>
-<span class="lineNum">     644 </span>                :            :   const std::tuple&lt;long, long, int, int&gt;&amp; xargs )
-<span class="lineNum">     645 </span>                :            : // *****************************************************************************
-<span class="lineNum">     646 </span>                :            : //  Run Periods In Strings test
-<span class="lineNum">     647 </span>                :            : //! \param[in] gen Raw function pointer to TestU01 statistical test
-<span class="lineNum">     648 </span>                :            : //! \param[in] res Pointer to test results object
-<span class="lineNum">     649 </span>                :            : //! \param[in] xargs Test arguments
-<span class="lineNum">     650 </span>                :            : //! \return Vector p-values as a result of the statistical test
-<span class="lineNum">     651 </span>                :            : // *****************************************************************************
-<span class="lineNum">     652 </span>                :            : {
-<span class="lineNum">     653 </span>                :            :   using std::get;
-<span class="lineNum">     654 </span>                :            :   sstring_PeriodsInStrings( gen, res, get&lt;0&gt;(xargs), get&lt;1&gt;(xargs),
-<span class="lineNum">     655 </span>                :<span class="lineCov">          6 :                             get&lt;2&gt;(xargs), get&lt;3&gt;(xargs) );</span>
-<span class="lineNum">     656 </span>                :<span class="lineCov">          6 :   return { res-&gt;pVal2[gofw_Mean] };</span>
-<span class="lineNum">     657 </span>                :            : }
-<a name="658"><span class="lineNum">     658 </span>                :            : </a>
-<span class="lineNum">     659 </span>                :            : std::vector&lt; double &gt;
-<span class="lineNum">     660 </span>                :<span class="lineCov">          6 : TestU01Stack::HammingWeight2( unif01_Gen* gen, sres_Basic* res,</span>
-<span class="lineNum">     661 </span>                :            :   const std::tuple&lt;long, long, int, int, long&gt;&amp; xargs )
-<span class="lineNum">     662 </span>                :            : // *****************************************************************************
-<span class="lineNum">     663 </span>                :            : //  Run Hamming Weight 2 test
-<span class="lineNum">     664 </span>                :            : //! \param[in] gen Raw function pointer to TestU01 statistical test
-<span class="lineNum">     665 </span>                :            : //! \param[in] res Pointer to test results object
-<span class="lineNum">     666 </span>                :            : //! \param[in] xargs Test arguments
-<span class="lineNum">     667 </span>                :            : //! \return Vector p-values as a result of the statistical test
-<span class="lineNum">     668 </span>                :            : // *****************************************************************************
-<span class="lineNum">     669 </span>                :            : {
-<span class="lineNum">     670 </span>                :            :   using std::get;
-<span class="lineNum">     671 </span>                :            :   sstring_HammingWeight2( gen, res, get&lt;0&gt;(xargs), get&lt;1&gt;(xargs), get&lt;2&gt;(xargs),
-<span class="lineNum">     672 </span>                :<span class="lineCov">          6 :                           get&lt;3&gt;(xargs), get&lt;4&gt;(xargs) );</span>
-<span class="lineNum">     673 </span>                :<span class="lineCov">          6 :   return { res-&gt;pVal2[gofw_Sum] };</span>
-<span class="lineNum">     674 </span>                :            : }
-<a name="675"><span class="lineNum">     675 </span>                :            : </a>
-<span class="lineNum">     676 </span>                :            : std::vector&lt; double &gt;
-<span class="lineNum">     677 </span>                :<span class="lineCov">          9 : TestU01Stack::HammingCorr( unif01_Gen* gen, sstring_Res* res,</span>
-<span class="lineNum">     678 </span>                :            :   const std::tuple&lt;long, long, int, int, int&gt;&amp; xargs )
-<span class="lineNum">     679 </span>                :            : // *****************************************************************************
-<span class="lineNum">     680 </span>                :            : //  Run Hamming Weight Correlation test
-<span class="lineNum">     681 </span>                :            : //! \param[in] gen Raw function pointer to TestU01 statistical test
-<span class="lineNum">     682 </span>                :            : //! \param[in] res Pointer to test results object
-<span class="lineNum">     683 </span>                :            : //! \param[in] xargs Test arguments
-<span class="lineNum">     684 </span>                :            : //! \return Vector p-values as a result of the statistical test
-<span class="lineNum">     685 </span>                :            : // *****************************************************************************
-<span class="lineNum">     686 </span>                :            : {
-<span class="lineNum">     687 </span>                :            :   using std::get;
-<span class="lineNum">     688 </span>                :            :   sstring_HammingCorr( gen, res, get&lt;0&gt;(xargs), get&lt;1&gt;(xargs), get&lt;2&gt;(xargs),
-<span class="lineNum">     689 </span>                :<span class="lineCov">          9 :                        get&lt;3&gt;(xargs), get&lt;4&gt;(xargs) );</span>
-<span class="lineNum">     690 </span>                :<span class="lineCov">          9 :   return { res-&gt;Bas-&gt;pVal2[gofw_Mean] };</span>
-<span class="lineNum">     691 </span>                :            : }
-<a name="692"><span class="lineNum">     692 </span>                :            : </a>
-<span class="lineNum">     693 </span>                :            : std::vector&lt; double &gt;
-<span class="lineNum">     694 </span>                :<span class="lineCov">          6 : TestU01Stack::StringRun( unif01_Gen* gen, sstring_Res3* res,</span>
-<span class="lineNum">     695 </span>                :            :   const std::tuple&lt;long, long, int, int&gt;&amp; xargs )
-<span class="lineNum">     696 </span>                :            : // *****************************************************************************
-<span class="lineNum">     697 </span>                :            : //  Run String Run test
-<span class="lineNum">     698 </span>                :            : //! \param[in] gen Raw function pointer to TestU01 statistical test
-<span class="lineNum">     699 </span>                :            : //! \param[in] res Pointer to test results object
-<span class="lineNum">     700 </span>                :            : //! \param[in] xargs Test arguments
-<span class="lineNum">     701 </span>                :            : //! \return Vector p-values as a result of the statistical test
-<span class="lineNum">     702 </span>                :            : // *****************************************************************************
-<span class="lineNum">     703 </span>                :            : {
-<span class="lineNum">     704 </span>                :            :   using std::get;
-<span class="lineNum">     705 </span>                :            :   sstring_Run( gen, res, get&lt;0&gt;(xargs), get&lt;1&gt;(xargs), get&lt;2&gt;(xargs),
-<span class="lineNum">     706 </span>                :<span class="lineCov">          6 :                get&lt;3&gt;(xargs) );</span>
-<span class="lineNum">     707 </span>                :<span class="lineCov">          6 :   return { res-&gt;NRuns-&gt;pVal2[gofw_Mean],</span>
-<span class="lineNum">     708 </span>                :<span class="lineCov">          6 :            res-&gt;NBits-&gt;pVal2[gofw_Mean] };</span>
-<span class="lineNum">     709 </span>                :            : }
-<a name="710"><span class="lineNum">     710 </span>                :            : </a>
-<span class="lineNum">     711 </span>                :            : std::vector&lt; double &gt;
-<span class="lineNum">     712 </span>                :<span class="lineCov">         12 : TestU01Stack::AutoCorr( unif01_Gen* gen, sres_Basic* res,</span>
-<span class="lineNum">     713 </span>                :            :   const std::tuple&lt;long, long, int, int, int&gt;&amp; xargs )
-<span class="lineNum">     714 </span>                :            : // *****************************************************************************
-<span class="lineNum">     715 </span>                :            : //  Run Autocorrelation test
-<span class="lineNum">     716 </span>                :            : //! \param[in] gen Raw function pointer to TestU01 statistical test
-<span class="lineNum">     717 </span>                :            : //! \param[in] res Pointer to test results object
-<span class="lineNum">     718 </span>                :            : //! \param[in] xargs Test arguments
-<span class="lineNum">     719 </span>                :            : //! \return Vector p-values as a result of the statistical test
-<span class="lineNum">     720 </span>                :            : // *****************************************************************************
-<span class="lineNum">     721 </span>                :            : {
-<span class="lineNum">     722 </span>                :            :   using std::get;
-<span class="lineNum">     723 </span>                :            :   sstring_AutoCor( gen, res, get&lt;0&gt;(xargs), get&lt;1&gt;(xargs), get&lt;2&gt;(xargs),
-<a name="724"><span class="lineNum">     724 </span>                :<span class="lineCov">         12 :                    get&lt;3&gt;(xargs), get&lt;4&gt;(xargs) );</span></a>
-<span class="lineNum">     725 </span>                :<span class="lineCov">         12 :   return { res-&gt;pVal2[gofw_Sum] };</span>
-<span class="lineNum">     726 </span>                :<span class="lineNoCov">          0 : }</span>
+<a name="1"><span class="lineNum">       1 </span>            : // *****************************************************************************</a>
+<span class="lineNum">       2 </span>            : /*!
+<span class="lineNum">       3 </span>            :   \file      src/RNGTest/TestU01Stack.cpp
+<span class="lineNum">       4 </span>            :   \copyright 2012-2015 J. Bakosi,
+<span class="lineNum">       5 </span>            :              2016-2018 Los Alamos National Security, LLC.,
+<span class="lineNum">       6 </span>            :              2019 Triad National Security, LLC.
+<span class="lineNum">       7 </span>            :              All rights reserved. See the LICENSE file for details.
+<span class="lineNum">       8 </span>            :   \brief     Stack of TestU01 RNG statistical tests
+<span class="lineNum">       9 </span>            :   \details   Stack of TestU01 RNG statistical tests
+<span class="lineNum">      10 </span>            : */
+<span class="lineNum">      11 </span>            : // *****************************************************************************
+<span class="lineNum">      12 </span>            : 
+<span class="lineNum">      13 </span>            : #include &lt;array&gt;
+<span class="lineNum">      14 </span>            : #include &lt;iterator&gt;
+<span class="lineNum">      15 </span>            : #include &lt;memory&gt;
+<span class="lineNum">      16 </span>            : #include &lt;utility&gt;
+<span class="lineNum">      17 </span>            : 
+<span class="lineNum">      18 </span>            : #include &quot;Tags.hpp&quot;
+<span class="lineNum">      19 </span>            : #include &quot;Exception.hpp&quot;
+<span class="lineNum">      20 </span>            : #include &quot;TestU01Stack.hpp&quot;
+<span class="lineNum">      21 </span>            : #include &quot;TestU01Wrappers.hpp&quot;
+<span class="lineNum">      22 </span>            : #include &quot;RNGTest/InputDeck/InputDeck.hpp&quot;
+<span class="lineNum">      23 </span>            : #include &quot;QuinoaConfig.hpp&quot;
+<span class="lineNum">      24 </span>            : 
+<span class="lineNum">      25 </span>            : extern &quot;C&quot; {
+<span class="lineNum">      26 </span>            :   #include &lt;svaria.h&gt;
+<span class="lineNum">      27 </span>            :   #include &lt;gofw.h&gt;
+<span class="lineNum">      28 </span>            :   #include &lt;snpair.h&gt;
+<span class="lineNum">      29 </span>            : }
+<span class="lineNum">      30 </span>            : 
+<span class="lineNum">      31 </span>            : namespace rngtest {
+<span class="lineNum">      32 </span>            : 
+<span class="lineNum">      33 </span>            : extern ctr::InputDeck g_inputdeck;
+<span class="lineNum">      34 </span>            : 
+<span class="lineNum">      35 </span>            : } // rngtest::
+<span class="lineNum">      36 </span>            : 
+<span class="lineNum">      37 </span>            : using rngtest::TestU01Stack;
+<span class="lineNum">      38 </span>            : 
+<span class="lineNum">      39 </span><span class="lineCov">        224 : TestU01Stack::TestU01Stack() : m_generator()</span>
+<span class="lineNum">      40 </span>            : // *****************************************************************************
+<span class="lineNum">      41 </span>            : //  Constructor
+<span class="lineNum">      42 </span>            : //! \details Associate RNGs to global-scope wrappers. Admittedly, this code is
+<span class="lineNum">      43 </span>            : //!   ugly and looks stupid at first sight. However, this is a translation of
+<span class="lineNum">      44 </span>            : //!   runtime information (user-selected RNGs) to compile-time information:
+<span class="lineNum">      45 </span>            : //!   associating RNG ids from an enum class, tk::ctr::RNGType::value, to a
+<span class="lineNum">      46 </span>            : //!   compile-time constant, underlying_type value, facilitating a different
+<span class="lineNum">      47 </span>            : //!   pair of global-scope RNG wrappers (uniform and uniform_bits) with code
+<span class="lineNum">      48 </span>            : //!   reuse. Note that uniform and uniform_bits wrappers must be global-scope as
+<span class="lineNum">      49 </span>            : //!   they are used as external generators to TestU01. Templating them on the
+<span class="lineNum">      50 </span>            : //!   id enables the compiler generate a different wrapper for a different RNG
+<span class="lineNum">      51 </span>            : //!   facilitating simultaneous calls to any or all wrappers as they are unique
+<span class="lineNum">      52 </span>            : //!   functions.
+<span class="lineNum">      53 </span>            : // *****************************************************************************
+<span class="lineNum">      54 </span>            : {
+<span class="lineNum">      55 </span><span class="lineCov">        624 :   for (const auto&amp; r : g_inputdeck.get&lt; tag::selected, tag::rng &gt;()) {</span>
+<span class="lineNum">      56 </span>            :     using tk::ctr::RNGType;
+<span class="lineNum">      57 </span>            :     using tk::ctr::raw;
+<span class="lineNum">      58 </span>            :     #ifdef HAS_MKL
+<span class="lineNum">      59 </span><span class="lineCov">        176 :     if (r == RNGType::MKL_MCG31)</span>
+<span class="lineNum">      60 </span><span class="lineCov">         16 :       addRNG&lt; raw(RNGType::MKL_MCG31) &gt;( r );</span>
+<span class="lineNum">      61 </span><span class="lineCov">        160 :     else if (r == RNGType::MKL_R250)</span>
+<span class="lineNum">      62 </span><span class="lineNoCov">          0 :       addRNG&lt; raw(RNGType::MKL_R250) &gt;( r );</span>
+<span class="lineNum">      63 </span><span class="lineCov">        160 :     else if (r == RNGType::MKL_MRG32K3A)</span>
+<span class="lineNum">      64 </span><span class="lineNoCov">          0 :       addRNG&lt; raw(RNGType::MKL_MRG32K3A) &gt;( r );</span>
+<span class="lineNum">      65 </span><span class="lineCov">        160 :     else if (r == RNGType::MKL_MCG59)</span>
+<span class="lineNum">      66 </span><span class="lineCov">         28 :       addRNG&lt; raw(RNGType::MKL_MCG59) &gt;( r );</span>
+<span class="lineNum">      67 </span><span class="lineCov">        132 :     else if (r == RNGType::MKL_WH)</span>
+<span class="lineNum">      68 </span><span class="lineCov">          8 :       addRNG&lt; raw(RNGType::MKL_WH) &gt;( r );</span>
+<span class="lineNum">      69 </span><span class="lineCov">        124 :     else if (r == RNGType::MKL_MT19937)</span>
+<span class="lineNum">      70 </span><span class="lineNoCov">          0 :       addRNG&lt; raw(RNGType::MKL_MT19937) &gt;( r );</span>
+<span class="lineNum">      71 </span><span class="lineCov">        124 :     else if (r == RNGType::MKL_MT2203)</span>
+<span class="lineNum">      72 </span><span class="lineNoCov">          0 :       addRNG&lt; raw(RNGType::MKL_MT2203) &gt;( r );</span>
+<span class="lineNum">      73 </span><span class="lineCov">        124 :     else if (r == RNGType::MKL_SFMT19937)</span>
+<span class="lineNum">      74 </span><span class="lineNoCov">          0 :       addRNG&lt; raw(RNGType::MKL_SFMT19937) &gt;( r );</span>
+<span class="lineNum">      75 </span><span class="lineCov">        124 :     else if (r == RNGType::MKL_SOBOL)</span>
+<span class="lineNum">      76 </span><span class="lineNoCov">          0 :       addRNG&lt; raw(RNGType::MKL_SOBOL) &gt;( r );</span>
+<span class="lineNum">      77 </span><span class="lineCov">        124 :     else if (r == RNGType::MKL_NIEDERR)</span>
+<span class="lineNum">      78 </span><span class="lineNoCov">          0 :       addRNG&lt; raw(RNGType::MKL_NIEDERR) &gt;( r );</span>
+<span class="lineNum">      79 </span>            :     //else if (r == RNGType::MKL_IABSTRACT)
+<span class="lineNum">      80 </span>            :     //  addRNG&lt; raw(RNGType::MKL_IABSTRACT) &gt;( r );
+<span class="lineNum">      81 </span>            :     //else if (r == RNGType::MKL_DABSTRACT)
+<span class="lineNum">      82 </span>            :     //  addRNG&lt; raw(RNGType::MKL_DABSTRACT) &gt;( r );
+<span class="lineNum">      83 </span>            :     //else if (r == RNGType::MKL_SABSTRACT)
+<span class="lineNum">      84 </span>            :     //  addRNG&lt; raw(RNGType::MKL_SABSTRACT) &gt;( r );
+<span class="lineNum">      85 </span><span class="lineCov">        124 :     else if (r == RNGType::MKL_NONDETERM)</span>
+<span class="lineNum">      86 </span><span class="lineNoCov">          0 :       addRNG&lt; raw(RNGType::MKL_NONDETERM) &gt;( r );</span>
+<span class="lineNum">      87 </span>            :     else
+<span class="lineNum">      88 </span>            :     #endif
+<span class="lineNum">      89 </span>            :     #ifdef HAS_RNGSSE2
+<span class="lineNum">      90 </span><span class="lineCov">        124 :     if (r == RNGType::RNGSSE_GM19)</span>
+<span class="lineNum">      91 </span><span class="lineNoCov">          0 :       addRNG&lt; raw(RNGType::RNGSSE_GM19) &gt;( r );</span>
+<span class="lineNum">      92 </span><span class="lineCov">        124 :     else if (r == RNGType::RNGSSE_GM29)    </span>
+<span class="lineNum">      93 </span><span class="lineNoCov">          0 :       addRNG&lt; raw(RNGType::RNGSSE_GM29) &gt;( r );</span>
+<span class="lineNum">      94 </span><span class="lineCov">        124 :     else if (r == RNGType::RNGSSE_GM31)    </span>
+<span class="lineNum">      95 </span><span class="lineCov">          8 :       addRNG&lt; raw(RNGType::RNGSSE_GM31) &gt;( r );</span>
+<span class="lineNum">      96 </span><span class="lineCov">        116 :     else if (r == RNGType::RNGSSE_GM55)    </span>
+<span class="lineNum">      97 </span><span class="lineCov">          8 :       addRNG&lt; raw(RNGType::RNGSSE_GM55) &gt;( r );</span>
+<span class="lineNum">      98 </span><span class="lineCov">        108 :     else if (r == RNGType::RNGSSE_GM61)    </span>
+<span class="lineNum">      99 </span><span class="lineNoCov">          0 :       addRNG&lt; raw(RNGType::RNGSSE_GM61) &gt;( r );</span>
+<span class="lineNum">     100 </span><span class="lineCov">        108 :     else if (r == RNGType::RNGSSE_GQ581)   </span>
+<span class="lineNum">     101 </span><span class="lineCov">          8 :       addRNG&lt; raw(RNGType::RNGSSE_GQ581) &gt;( r );</span>
+<span class="lineNum">     102 </span><span class="lineCov">        100 :     else if (r == RNGType::RNGSSE_GQ583)   </span>
+<span class="lineNum">     103 </span><span class="lineNoCov">          0 :       addRNG&lt; raw(RNGType::RNGSSE_GQ583) &gt;( r );</span>
+<span class="lineNum">     104 </span><span class="lineCov">        100 :     else if (r == RNGType::RNGSSE_GQ584)   </span>
+<span class="lineNum">     105 </span><span class="lineNoCov">          0 :       addRNG&lt; raw(RNGType::RNGSSE_GQ584) &gt;( r );</span>
+<span class="lineNum">     106 </span><span class="lineCov">        100 :     else if (r == RNGType::RNGSSE_MT19937) </span>
+<span class="lineNum">     107 </span><span class="lineNoCov">          0 :       addRNG&lt; raw(RNGType::RNGSSE_MT19937) &gt;( r );</span>
+<span class="lineNum">     108 </span><span class="lineCov">        100 :     else if (r == RNGType::RNGSSE_LFSR113) </span>
+<span class="lineNum">     109 </span><span class="lineCov">          8 :       addRNG&lt; raw(RNGType::RNGSSE_LFSR113) &gt;( r );</span>
+<span class="lineNum">     110 </span><span class="lineCov">         92 :     else if (r == RNGType::RNGSSE_MRG32K3A)</span>
+<span class="lineNum">     111 </span><span class="lineCov">          8 :       addRNG&lt; raw(RNGType::RNGSSE_MRG32K3A) &gt;( r );</span>
+<span class="lineNum">     112 </span>            :     else
+<span class="lineNum">     113 </span>            :     #endif
+<span class="lineNum">     114 </span><span class="lineCov">         84 :     if (r == RNGType::R123_THREEFRY)</span>
+<span class="lineNum">     115 </span><span class="lineCov">         28 :       addRNG&lt; raw(RNGType::R123_THREEFRY) &gt;( r );</span>
+<span class="lineNum">     116 </span><span class="lineCov">         56 :     else if (r == RNGType::R123_PHILOX)</span>
+<span class="lineNum">     117 </span><span class="lineCov">         56 :       addRNG&lt; raw(RNGType::R123_PHILOX) &gt;( r );</span>
+<span class="lineNum">     118 </span>            :   }
+<span class="lineNum">     119 </span><span class="lineCov">        224 : }</span>
+<span class="lineNum">     120 </span>            : 
+<span class="lineNum">     121 </span>            : template&lt; tk::ctr::RawRNGType id &gt;
+<span class="lineNum">     122 </span><span class="lineCov">        176 : void TestU01Stack::addRNG( tk::ctr::RNGType r )</span>
+<span class="lineNum">     123 </span>            : // *****************************************************************************
+<span class="lineNum">     124 </span>            : //! Create TestU01 RNG wrapper
+<span class="lineNum">     125 </span>            : //! \param[in] r RNG ID enum
+<span class="lineNum">     126 </span>            : // *****************************************************************************
+<span class="lineNum">     127 </span>            : {
+<span class="lineNum">     128 </span>            :   m_generator.emplace( r,
+<span class="lineNum">     129 </span><span class="lineCov">        352 :     Gen01Ptr( createTestU01Gen&lt;id&gt;( tk::ctr::RNG().name(r) ) ) );</span>
+<span class="lineNum">     130 </span><span class="lineCov">        176 : }</span>
+<a name="131"><span class="lineNum">     131 </span>            : </a>
+<span class="lineNum">     132 </span>            : unif01_Gen*
+<span class="lineNum">     133 </span><span class="lineCov">        435 : TestU01Stack::generator( tk::ctr::RNGType r ) const</span>
+<span class="lineNum">     134 </span>            : // *****************************************************************************
+<span class="lineNum">     135 </span>            : //! Find TestU01 RNG wrapper based on RNG id
+<span class="lineNum">     136 </span>            : //! \param[in] r RNG ID enum
+<span class="lineNum">     137 </span>            : //! \return Raw function pointer to TestU01 statistical test
+<span class="lineNum">     138 </span>            : // *****************************************************************************
+<span class="lineNum">     139 </span>            : {
+<span class="lineNum">     140 </span><span class="lineCov">        435 :   const auto&amp; gen = m_generator.find( r );</span>
+<span class="lineNum">     141 </span><span class="lineCov">        435 :   if (gen == end(m_generator)) Throw( &quot;RNG not found&quot; );</span>
+<span class="lineNum">     142 </span><span class="lineCov">        435 :   return gen-&gt;second.get();</span>
+<span class="lineNum">     143 </span>            : }
+<a name="144"><span class="lineNum">     144 </span>            : </a>
+<span class="lineNum">     145 </span>            : std::vector&lt; double &gt;
+<span class="lineNum">     146 </span><span class="lineCov">         35 : TestU01Stack::BirthdaySpacings( unif01_Gen* gen, sres_Poisson* res,</span>
+<span class="lineNum">     147 </span>            :   const std::tuple&lt;long, long, int, long, int, int&gt;&amp; xargs )
+<span class="lineNum">     148 </span>            : // *****************************************************************************
+<span class="lineNum">     149 </span>            : //  Run Marsaglia's BirthdaySpacings test
+<span class="lineNum">     150 </span>            : //! \param[in] gen Raw function pointer to TestU01 statistical test
+<span class="lineNum">     151 </span>            : //! \param[in] res Pointer to test results object
+<span class="lineNum">     152 </span>            : //! \param[in] xargs Test arguments
+<span class="lineNum">     153 </span>            : //! \return Vector p-values as a result of the statistical test
+<span class="lineNum">     154 </span>            : // *****************************************************************************
+<span class="lineNum">     155 </span>            : {
+<span class="lineNum">     156 </span>            :   using std::get;
+<span class="lineNum">     157 </span>            :   smarsa_BirthdaySpacings( gen, res, get&lt;0&gt;(xargs), get&lt;1&gt;(xargs),
+<span class="lineNum">     158 </span>            :                            get&lt;2&gt;(xargs), get&lt;3&gt;(xargs), get&lt;4&gt;(xargs),
+<span class="lineNum">     159 </span><span class="lineCov">         35 :                            get&lt;5&gt;(xargs) );</span>
+<span class="lineNum">     160 </span><span class="lineCov">         35 :   return { res-&gt;pVal2 };</span>
+<span class="lineNum">     161 </span>            : }
+<a name="162"><span class="lineNum">     162 </span>            : </a>
+<span class="lineNum">     163 </span>            : std::vector&lt; double &gt;
+<span class="lineNum">     164 </span><span class="lineCov">         12 : TestU01Stack::Collision( unif01_Gen* gen, sknuth_Res2* res,</span>
+<span class="lineNum">     165 </span>            :   const std::tuple&lt;long, long, int, long, int&gt;&amp; xargs )
+<span class="lineNum">     166 </span>            : // *****************************************************************************
+<span class="lineNum">     167 </span>            : //  Run Knuth's Collision test
+<span class="lineNum">     168 </span>            : //! \param[in] gen Raw function pointer to TestU01 statistical test
+<span class="lineNum">     169 </span>            : //! \param[in] res Pointer to test results object
+<span class="lineNum">     170 </span>            : //! \param[in] xargs Test arguments
+<span class="lineNum">     171 </span>            : //! \return Vector p-values as a result of the statistical test
+<span class="lineNum">     172 </span>            : // *****************************************************************************
+<span class="lineNum">     173 </span>            : {
+<span class="lineNum">     174 </span>            :   using std::get;
+<span class="lineNum">     175 </span>            :   sknuth_Collision( gen, res, get&lt;0&gt;(xargs), get&lt;1&gt;(xargs), get&lt;2&gt;(xargs),
+<span class="lineNum">     176 </span><span class="lineCov">         12 :                     get&lt;3&gt;(xargs), get&lt;4&gt;(xargs) );</span>
+<span class="lineNum">     177 </span><span class="lineCov">         12 :   return { res-&gt;Pois-&gt;pVal2 };</span>
+<span class="lineNum">     178 </span>            : }
+<a name="179"><span class="lineNum">     179 </span>            : </a>
+<span class="lineNum">     180 </span>            : std::vector&lt; double &gt;
+<span class="lineNum">     181 </span><span class="lineCov">         24 : TestU01Stack::Gap( unif01_Gen* gen, sres_Chi2* res,</span>
+<span class="lineNum">     182 </span>            :   const std::tuple&lt;long, long, int, double, double&gt;&amp; xargs )
+<span class="lineNum">     183 </span>            : // *****************************************************************************
+<span class="lineNum">     184 </span>            : //  Run Knuth's Gap test
+<span class="lineNum">     185 </span>            : //! \param[in] gen Raw function pointer to TestU01 statistical test
+<span class="lineNum">     186 </span>            : //! \param[in] res Pointer to test results object
+<span class="lineNum">     187 </span>            : //! \param[in] xargs Test arguments
+<span class="lineNum">     188 </span>            : //! \return Vector p-values as a result of the statistical test
+<span class="lineNum">     189 </span>            : // *****************************************************************************
+<span class="lineNum">     190 </span>            : {
+<span class="lineNum">     191 </span>            :   using std::get;
+<span class="lineNum">     192 </span>            :   sknuth_Gap( gen, res, get&lt;0&gt;(xargs), get&lt;1&gt;(xargs), get&lt;2&gt;(xargs),
+<span class="lineNum">     193 </span><span class="lineCov">         24 :               get&lt;3&gt;(xargs), get&lt;4&gt;(xargs) );</span>
+<span class="lineNum">     194 </span><span class="lineCov">         24 :   return { res-&gt;pVal2[gofw_Mean] };</span>
+<span class="lineNum">     195 </span>            : }
+<a name="196"><span class="lineNum">     196 </span>            : </a>
+<span class="lineNum">     197 </span>            : std::vector&lt; double &gt;
+<span class="lineNum">     198 </span><span class="lineCov">         24 : TestU01Stack::SimplePoker( unif01_Gen* gen, sres_Chi2* res,</span>
+<span class="lineNum">     199 </span>            :   const std::tuple&lt;long, long, int, int, int&gt;&amp; xargs )
+<span class="lineNum">     200 </span>            : // *****************************************************************************
+<span class="lineNum">     201 </span>            : //  Run Knuth's Simplified Poker test
+<span class="lineNum">     202 </span>            : //! \param[in] gen Raw function pointer to TestU01 statistical test
+<span class="lineNum">     203 </span>            : //! \param[in] res Pointer to test results object
+<span class="lineNum">     204 </span>            : //! \param[in] xargs Test arguments
+<span class="lineNum">     205 </span>            : //! \return Vector p-values as a result of the statistical test
+<span class="lineNum">     206 </span>            : // *****************************************************************************
+<span class="lineNum">     207 </span>            : {
+<span class="lineNum">     208 </span>            :   using std::get;
+<span class="lineNum">     209 </span>            :   sknuth_SimpPoker( gen, res, get&lt;0&gt;(xargs), get&lt;1&gt;(xargs), get&lt;2&gt;(xargs),
+<span class="lineNum">     210 </span><span class="lineCov">         24 :                     get&lt;3&gt;(xargs), get&lt;4&gt;(xargs) );</span>
+<span class="lineNum">     211 </span><span class="lineCov">         24 :   return { res-&gt;pVal2[gofw_Mean] };</span>
+<span class="lineNum">     212 </span>            : }
+<a name="213"><span class="lineNum">     213 </span>            : </a>
+<span class="lineNum">     214 </span>            : std::vector&lt; double &gt;
+<span class="lineNum">     215 </span><span class="lineCov">         24 : TestU01Stack::CouponCollector( unif01_Gen* gen, sres_Chi2* res,</span>
+<span class="lineNum">     216 </span>            :   const std::tuple&lt;long, long, int, int&gt;&amp; xargs )
+<span class="lineNum">     217 </span>            : // *****************************************************************************
+<span class="lineNum">     218 </span>            : //  Run Knuth's Coupon Collector test
+<span class="lineNum">     219 </span>            : //! \param[in] gen Raw function pointer to TestU01 statistical test
+<span class="lineNum">     220 </span>            : //! \param[in] res Pointer to test results object
+<span class="lineNum">     221 </span>            : //! \param[in] xargs Test arguments
+<span class="lineNum">     222 </span>            : //! \return Vector p-values as a result of the statistical test
+<span class="lineNum">     223 </span>            : // *****************************************************************************
+<span class="lineNum">     224 </span>            : {
+<span class="lineNum">     225 </span>            :   using std::get;
+<span class="lineNum">     226 </span>            :   sknuth_CouponCollector( gen, res, get&lt;0&gt;(xargs), get&lt;1&gt;(xargs), get&lt;2&gt;(xargs),
+<span class="lineNum">     227 </span><span class="lineCov">         24 :                           get&lt;3&gt;(xargs) );</span>
+<span class="lineNum">     228 </span><span class="lineCov">         24 :   return { res-&gt;pVal2[gofw_Mean] };</span>
+<span class="lineNum">     229 </span>            : }
+<a name="230"><span class="lineNum">     230 </span>            : </a>
+<span class="lineNum">     231 </span>            : std::vector&lt; double &gt;
+<span class="lineNum">     232 </span><span class="lineCov">         24 : TestU01Stack::MaxOft( unif01_Gen* gen, sknuth_Res1* res,</span>
+<span class="lineNum">     233 </span>            :   const std::tuple&lt;long, long, int, int, int, int, int&gt;&amp; xargs )
+<span class="lineNum">     234 </span>            : // *****************************************************************************
+<span class="lineNum">     235 </span>            : //  Run Knuth's Maximum-of-t test
+<span class="lineNum">     236 </span>            : //! \param[in] gen Raw function pointer to TestU01 statistical test
+<span class="lineNum">     237 </span>            : //! \param[in] res Pointer to test results object
+<span class="lineNum">     238 </span>            : //! \param[in] xargs Test arguments
+<span class="lineNum">     239 </span>            : //! \return Vector p-values as a result of the statistical test
+<span class="lineNum">     240 </span>            : // *****************************************************************************
+<span class="lineNum">     241 </span>            : {
+<span class="lineNum">     242 </span>            :   using std::get;
+<span class="lineNum">     243 </span>            :   sknuth_MaxOft( gen, res, get&lt;0&gt;(xargs), get&lt;1&gt;(xargs), get&lt;2&gt;(xargs),
+<span class="lineNum">     244 </span><span class="lineCov">         24 :                  get&lt;3&gt;(xargs), get&lt;4&gt;(xargs) );</span>
+<span class="lineNum">     245 </span><span class="lineCov">         24 :   return { res-&gt;Chi-&gt;pVal2[get&lt;5&gt;(xargs)],</span>
+<span class="lineNum">     246 </span><span class="lineCov">         24 :            res-&gt;Bas-&gt;pVal2[get&lt;6&gt;(xargs)] };</span>
+<span class="lineNum">     247 </span>            : }
+<a name="248"><span class="lineNum">     248 </span>            : </a>
+<span class="lineNum">     249 </span>            : std::vector&lt; double &gt;
+<span class="lineNum">     250 </span><span class="lineCov">         26 : TestU01Stack::WeightDistrib( unif01_Gen* gen, sres_Chi2* res,</span>
+<span class="lineNum">     251 </span>            :   const std::tuple&lt;long, long, int, long, double, double&gt;&amp; xargs )
+<span class="lineNum">     252 </span>            : // *****************************************************************************
+<span class="lineNum">     253 </span>            : //  Run Matsumoto's Weight Distribution test
+<span class="lineNum">     254 </span>            : //! \param[in] gen Raw function pointer to TestU01 statistical test
+<span class="lineNum">     255 </span>            : //! \param[in] res Pointer to test results object
+<span class="lineNum">     256 </span>            : //! \param[in] xargs Test arguments
+<span class="lineNum">     257 </span>            : //! \return Vector p-values as a result of the statistical test
+<span class="lineNum">     258 </span>            : // *****************************************************************************
+<span class="lineNum">     259 </span>            : {
+<span class="lineNum">     260 </span>            :   using std::get;
+<span class="lineNum">     261 </span>            :   svaria_WeightDistrib( gen, res, get&lt;0&gt;(xargs), get&lt;1&gt;(xargs), get&lt;2&gt;(xargs),
+<span class="lineNum">     262 </span><span class="lineCov">         26 :                         get&lt;3&gt;(xargs), get&lt;4&gt;(xargs), get&lt;5&gt;(xargs) );</span>
+<span class="lineNum">     263 </span><span class="lineCov">         26 :   return { res-&gt;pVal2[gofw_Mean] };</span>
+<span class="lineNum">     264 </span>            : }
+<a name="265"><span class="lineNum">     265 </span>            : </a>
+<span class="lineNum">     266 </span>            : std::vector&lt; double &gt;
+<span class="lineNum">     267 </span><span class="lineCov">         30 : TestU01Stack::MatrixRank( unif01_Gen* gen, sres_Chi2* res,</span>
+<span class="lineNum">     268 </span>            :   const std::tuple&lt;long, long, int, int, int, int&gt;&amp; xargs )
+<span class="lineNum">     269 </span>            : // *****************************************************************************
+<span class="lineNum">     270 </span>            : //  Run Marsaglia's Matrix Rank test
+<span class="lineNum">     271 </span>            : //! \param[in] gen Raw function pointer to TestU01 statistical test
+<span class="lineNum">     272 </span>            : //! \param[in] res Pointer to test results object
+<span class="lineNum">     273 </span>            : //! \param[in] xargs Test arguments
+<span class="lineNum">     274 </span>            : //! \return Vector p-values as a result of the statistical test
+<span class="lineNum">     275 </span>            : // *****************************************************************************
+<span class="lineNum">     276 </span>            : {
+<span class="lineNum">     277 </span>            :   using std::get;
+<span class="lineNum">     278 </span>            :   smarsa_MatrixRank( gen, res, get&lt;0&gt;(xargs), get&lt;1&gt;(xargs), get&lt;2&gt;(xargs),
+<span class="lineNum">     279 </span><span class="lineCov">         30 :                      get&lt;3&gt;(xargs), get&lt;4&gt;(xargs), get&lt;5&gt;(xargs) );</span>
+<span class="lineNum">     280 </span><span class="lineCov">         30 :   return { res-&gt;pVal2[gofw_Mean] };</span>
+<span class="lineNum">     281 </span>            : }
+<a name="282"><span class="lineNum">     282 </span>            : </a>
+<span class="lineNum">     283 </span>            : std::vector&lt; double &gt;
+<span class="lineNum">     284 </span><span class="lineCov">         30 : TestU01Stack::HammingIndep( unif01_Gen* gen, sstring_Res* res,</span>
+<span class="lineNum">     285 </span>            :   const std::tuple&lt;long, long, int, int, int, int&gt;&amp; xargs )
+<span class="lineNum">     286 </span>            : // *****************************************************************************
+<span class="lineNum">     287 </span>            : //  Run L'Ecuyer's Hamming Independence test
+<span class="lineNum">     288 </span>            : //! \param[in] gen Raw function pointer to TestU01 statistical test
+<span class="lineNum">     289 </span>            : //! \param[in] res Pointer to test results object
+<span class="lineNum">     290 </span>            : //! \param[in] xargs Test arguments
+<span class="lineNum">     291 </span>            : //! \return Vector p-values as a result of the statistical test
+<span class="lineNum">     292 </span>            : // *****************************************************************************
+<span class="lineNum">     293 </span>            : {
+<span class="lineNum">     294 </span>            :   using std::get;
+<span class="lineNum">     295 </span>            :   sstring_HammingIndep( gen, res, get&lt;0&gt;(xargs), get&lt;1&gt;(xargs), get&lt;2&gt;(xargs),
+<span class="lineNum">     296 </span><span class="lineCov">         30 :                         get&lt;3&gt;(xargs), get&lt;4&gt;(xargs), get&lt;5&gt;(xargs) );</span>
+<span class="lineNum">     297 </span><span class="lineCov">         30 :   return { res-&gt;Bas-&gt;pVal2[gofw_Mean] };</span>
+<span class="lineNum">     298 </span>            : }
+<a name="299"><span class="lineNum">     299 </span>            : </a>
+<span class="lineNum">     300 </span>            : std::vector&lt; double &gt;
+<span class="lineNum">     301 </span><span class="lineCov">         30 : TestU01Stack::RandomWalk1( unif01_Gen* gen, swalk_Res* res,</span>
+<span class="lineNum">     302 </span>            :   const std::tuple&lt;long, long, int, int, long, long&gt;&amp; xargs )
+<span class="lineNum">     303 </span>            : // *****************************************************************************
+<span class="lineNum">     304 </span>            : //  Run Random Walk 1 test
+<span class="lineNum">     305 </span>            : //! \param[in] gen Raw function pointer to TestU01 statistical test
+<span class="lineNum">     306 </span>            : //! \param[in] res Pointer to test results object
+<span class="lineNum">     307 </span>            : //! \param[in] xargs Test arguments
+<span class="lineNum">     308 </span>            : //! \return Vector p-values as a result of the statistical test
+<span class="lineNum">     309 </span>            : // *****************************************************************************
+<span class="lineNum">     310 </span>            : {
+<span class="lineNum">     311 </span>            :   using std::get;
+<span class="lineNum">     312 </span>            :   swalk_RandomWalk1( gen, res, get&lt;0&gt;(xargs), get&lt;1&gt;(xargs), get&lt;2&gt;(xargs),
+<span class="lineNum">     313 </span><span class="lineCov">         30 :                      get&lt;3&gt;(xargs), get&lt;4&gt;(xargs), get&lt;5&gt;(xargs) );</span>
+<span class="lineNum">     314 </span><span class="lineCov">         30 :   return { res-&gt;H[0]-&gt;pVal2[gofw_Mean],</span>
+<span class="lineNum">     315 </span><span class="lineCov">         30 :            res-&gt;M[0]-&gt;pVal2[gofw_Mean],</span>
+<span class="lineNum">     316 </span><span class="lineCov">         30 :            res-&gt;J[0]-&gt;pVal2[gofw_Mean],</span>
+<span class="lineNum">     317 </span><span class="lineCov">         30 :            res-&gt;R[0]-&gt;pVal2[gofw_Mean],</span>
+<span class="lineNum">     318 </span><span class="lineCov">        120 :            res-&gt;C[0]-&gt;pVal2[gofw_Mean] };</span>
+<span class="lineNum">     319 </span>            : }
+<a name="320"><span class="lineNum">     320 </span>            : </a>
+<span class="lineNum">     321 </span>            : std::vector&lt; double &gt;
+<span class="lineNum">     322 </span><span class="lineCov">          6 : TestU01Stack::SerialOver( unif01_Gen* gen, sres_Basic* res,</span>
+<span class="lineNum">     323 </span>            :   const std::tuple&lt;long, long, int, long, int&gt;&amp; xargs )
+<span class="lineNum">     324 </span>            : // *****************************************************************************
+<span class="lineNum">     325 </span>            : //  Run Marsaglia's Serial Over test, t = 2
+<span class="lineNum">     326 </span>            : //! \param[in] gen Raw function pointer to TestU01 statistical test
+<span class="lineNum">     327 </span>            : //! \param[in] res Pointer to test results object
+<span class="lineNum">     328 </span>            : //! \param[in] xargs Test arguments
+<span class="lineNum">     329 </span>            : //! \return Vector p-values as a result of the statistical test
+<span class="lineNum">     330 </span>            : // *****************************************************************************
+<span class="lineNum">     331 </span>            : {
+<span class="lineNum">     332 </span>            :   using std::get;
+<span class="lineNum">     333 </span>            :   smarsa_SerialOver( gen, res, get&lt;0&gt;(xargs), get&lt;1&gt;(xargs), get&lt;2&gt;(xargs),
+<span class="lineNum">     334 </span><span class="lineCov">          6 :                      get&lt;3&gt;(xargs), get&lt;4&gt;(xargs) );</span>
+<span class="lineNum">     335 </span><span class="lineCov">          6 :   return { res-&gt;pVal2[gofw_Mean] };</span>
+<span class="lineNum">     336 </span>            : }
+<a name="337"><span class="lineNum">     337 </span>            : </a>
+<span class="lineNum">     338 </span>            : std::vector&lt; double &gt;
+<span class="lineNum">     339 </span><span class="lineCov">         27 : TestU01Stack::CollisionOver( unif01_Gen* gen, smarsa_Res* res,</span>
+<span class="lineNum">     340 </span>            :   const std::tuple&lt;long, long, int, long, int&gt;&amp; xargs )
+<span class="lineNum">     341 </span>            : // *****************************************************************************
+<span class="lineNum">     342 </span>            : //  Run Marsaglia's Serial Over test, t = 2
+<span class="lineNum">     343 </span>            : //! \param[in] gen Raw function pointer to TestU01 statistical test
+<span class="lineNum">     344 </span>            : //! \param[in] res Pointer to test results object
+<span class="lineNum">     345 </span>            : //! \param[in] xargs Test arguments
+<span class="lineNum">     346 </span>            : //! \return Vector p-values as a result of the statistical test
+<span class="lineNum">     347 </span>            : // *****************************************************************************
+<span class="lineNum">     348 </span>            : {
+<span class="lineNum">     349 </span>            :   using std::get;
+<span class="lineNum">     350 </span>            :   smarsa_CollisionOver( gen, res, get&lt;0&gt;(xargs), get&lt;1&gt;(xargs), get&lt;2&gt;(xargs),
+<span class="lineNum">     351 </span><span class="lineCov">         27 :                         get&lt;3&gt;(xargs), get&lt;4&gt;(xargs) );</span>
+<span class="lineNum">     352 </span><span class="lineCov">         27 :   return { res-&gt;Pois-&gt;pVal2 };</span>
+<span class="lineNum">     353 </span>            : }
+<a name="354"><span class="lineNum">     354 </span>            : </a>
+<span class="lineNum">     355 </span>            : std::vector&lt; double &gt;
+<span class="lineNum">     356 </span><span class="lineCov">         10 : TestU01Stack::ClosePairs( unif01_Gen* gen, snpair_Res* res,</span>
+<span class="lineNum">     357 </span>            :   const std::tuple&lt;long, long, int, int, int, int, int&gt;&amp; xargs )
+<span class="lineNum">     358 </span>            : // *****************************************************************************
+<span class="lineNum">     359 </span>            : //  Run the close-pairs test, t = 2
+<span class="lineNum">     360 </span>            : //! \param[in] gen Raw function pointer to TestU01 statistical test
+<span class="lineNum">     361 </span>            : //! \param[in] res Pointer to test results object
+<span class="lineNum">     362 </span>            : //! \param[in] xargs Test arguments
+<span class="lineNum">     363 </span>            : //! \return Vector p-values as a result of the statistical test
+<span class="lineNum">     364 </span>            : // *****************************************************************************
+<span class="lineNum">     365 </span>            : {
+<span class="lineNum">     366 </span>            :   using std::get;
+<span class="lineNum">     367 </span>            :   snpair_ClosePairs( gen, res, get&lt;0&gt;(xargs), get&lt;1&gt;(xargs), get&lt;2&gt;(xargs),
+<span class="lineNum">     368 </span><span class="lineCov">         10 :                         get&lt;3&gt;(xargs), get&lt;4&gt;(xargs), get&lt;5&gt;(xargs) );</span>
+<span class="lineNum">     369 </span><span class="lineCov">         10 :   if (get&lt;6&gt;(xargs)) {</span>
+<span class="lineNum">     370 </span><span class="lineCov">          8 :     return { res-&gt;pVal[snpair_NP],</span>
+<span class="lineNum">     371 </span><span class="lineCov">          8 :              res-&gt;pVal[snpair_mNP],</span>
+<span class="lineNum">     372 </span><span class="lineCov">          8 :              res-&gt;pVal[snpair_mNP1],</span>
+<span class="lineNum">     373 </span><span class="lineCov">          8 :              res-&gt;pVal[snpair_mNP2],</span>
+<span class="lineNum">     374 </span><span class="lineCov">          8 :              res-&gt;pVal[snpair_NJumps],</span>
+<span class="lineNum">     375 </span><span class="lineCov">         40 :              res-&gt;pVal[snpair_mNP2S] };</span>
+<span class="lineNum">     376 </span>            :   } else {
+<span class="lineNum">     377 </span><span class="lineCov">          2 :     return { res-&gt;pVal[snpair_NP],</span>
+<span class="lineNum">     378 </span><span class="lineCov">          2 :              res-&gt;pVal[snpair_mNP],</span>
+<span class="lineNum">     379 </span><span class="lineCov">          2 :              res-&gt;pVal[snpair_mNP1],</span>
+<span class="lineNum">     380 </span><span class="lineCov">          2 :              res-&gt;pVal[snpair_mNP2],</span>
+<span class="lineNum">     381 </span><span class="lineCov">          8 :              res-&gt;pVal[snpair_NJumps] };</span>
+<span class="lineNum">     382 </span>            :   }
+<span class="lineNum">     383 </span>            : }
+<a name="384"><span class="lineNum">     384 </span>            : </a>
+<span class="lineNum">     385 </span>            : std::vector&lt; double &gt;
+<span class="lineNum">     386 </span><span class="lineCov">          4 : TestU01Stack::ClosePairsBitMatch( unif01_Gen* gen, snpair_Res* res,</span>
+<span class="lineNum">     387 </span>            :   const std::tuple&lt;long, long, int, int&gt;&amp; xargs )
+<span class="lineNum">     388 </span>            : // *****************************************************************************
+<span class="lineNum">     389 </span>            : //  Run the close-pairs test using bit match distance, t = 2
+<span class="lineNum">     390 </span>            : //! \param[in] gen Raw function pointer to TestU01 statistical test
+<span class="lineNum">     391 </span>            : //! \param[in] res Pointer to test results object
+<span class="lineNum">     392 </span>            : //! \param[in] xargs Test arguments
+<span class="lineNum">     393 </span>            : //! \return Vector p-values as a result of the statistical test
+<span class="lineNum">     394 </span>            : // *****************************************************************************
+<span class="lineNum">     395 </span>            : {
+<span class="lineNum">     396 </span>            :   using std::get;
+<span class="lineNum">     397 </span>            :   snpair_ClosePairsBitMatch( gen, res, get&lt;0&gt;(xargs), get&lt;1&gt;(xargs),
+<span class="lineNum">     398 </span><span class="lineCov">          4 :                              get&lt;2&gt;(xargs), get&lt;3&gt;(xargs) );</span>
+<span class="lineNum">     399 </span><span class="lineCov">          4 :   return { res-&gt;pVal[snpair_BM] };</span>
+<span class="lineNum">     400 </span>            : }
+<a name="401"><span class="lineNum">     401 </span>            : </a>
+<span class="lineNum">     402 </span>            : std::vector&lt; double &gt;
+<span class="lineNum">     403 </span><span class="lineCov">          6 : TestU01Stack::Run( unif01_Gen* gen, sres_Chi2* res,</span>
+<span class="lineNum">     404 </span>            :   const std::tuple&lt;long, long, int, int&gt;&amp; xargs )
+<span class="lineNum">     405 </span>            : // *****************************************************************************
+<span class="lineNum">     406 </span>            : //  Run Knuth's Run test
+<span class="lineNum">     407 </span>            : //! \param[in] gen Raw function pointer to TestU01 statistical test
+<span class="lineNum">     408 </span>            : //! \param[in] res Pointer to test results object
+<span class="lineNum">     409 </span>            : //! \param[in] xargs Test arguments
+<span class="lineNum">     410 </span>            : //! \return Vector p-values as a result of the statistical test
+<span class="lineNum">     411 </span>            : // *****************************************************************************
+<span class="lineNum">     412 </span>            : {
+<span class="lineNum">     413 </span>            :   using std::get;
+<span class="lineNum">     414 </span>            :   sknuth_Run( gen, res, get&lt;0&gt;(xargs), get&lt;1&gt;(xargs), get&lt;2&gt;(xargs),
+<span class="lineNum">     415 </span><span class="lineCov">          6 :               get&lt;3&gt;(xargs) );</span>
+<span class="lineNum">     416 </span><span class="lineCov">          6 :   return { res-&gt;pVal2[gofw_Mean] };</span>
+<span class="lineNum">     417 </span>            : }
+<a name="418"><span class="lineNum">     418 </span>            : </a>
+<span class="lineNum">     419 </span>            : std::vector&lt; double &gt;
+<span class="lineNum">     420 </span><span class="lineCov">          8 : TestU01Stack::Permutation( unif01_Gen* gen, sres_Chi2* res,</span>
+<span class="lineNum">     421 </span>            :   const std::tuple&lt;long, long, int, int&gt;&amp; xargs )
+<span class="lineNum">     422 </span>            : // *****************************************************************************
+<span class="lineNum">     423 </span>            : //  Run Knuth's Permutation test
+<span class="lineNum">     424 </span>            : //! \param[in] gen Raw function pointer to TestU01 statistical test
+<span class="lineNum">     425 </span>            : //! \param[in] res Pointer to test results object
+<span class="lineNum">     426 </span>            : //! \param[in] xargs Test arguments
+<span class="lineNum">     427 </span>            : //! \return Vector p-values as a result of the statistical test
+<span class="lineNum">     428 </span>            : // *****************************************************************************
+<span class="lineNum">     429 </span>            : {
+<span class="lineNum">     430 </span>            :   using std::get;
+<span class="lineNum">     431 </span>            :   sknuth_Permutation( gen, res, get&lt;0&gt;(xargs), get&lt;1&gt;(xargs), get&lt;2&gt;(xargs),
+<span class="lineNum">     432 </span><span class="lineCov">          8 :                       get&lt;3&gt;(xargs) );</span>
+<span class="lineNum">     433 </span><span class="lineCov">          8 :   return { res-&gt;pVal2[gofw_Mean] };</span>
+<span class="lineNum">     434 </span>            : }
+<a name="435"><span class="lineNum">     435 </span>            : </a>
+<span class="lineNum">     436 </span>            : std::vector&lt; double &gt;
+<span class="lineNum">     437 </span><span class="lineCov">          6 : TestU01Stack::CollisionPermut( unif01_Gen* gen, sknuth_Res2* res,</span>
+<span class="lineNum">     438 </span>            :   const std::tuple&lt;long, long, int, int&gt;&amp; xargs )
+<span class="lineNum">     439 </span>            : // *****************************************************************************
+<span class="lineNum">     440 </span>            : //  Run Knuth's Collision test with permutations
+<span class="lineNum">     441 </span>            : //! \param[in] gen Raw function pointer to TestU01 statistical test
+<span class="lineNum">     442 </span>            : //! \param[in] res Pointer to test results object
+<span class="lineNum">     443 </span>            : //! \param[in] xargs Test arguments
+<span class="lineNum">     444 </span>            : //! \return Vector p-values as a result of the statistical test
+<span class="lineNum">     445 </span>            : // *****************************************************************************
+<span class="lineNum">     446 </span>            : {
+<span class="lineNum">     447 </span>            :   using std::get;
+<span class="lineNum">     448 </span>            :   sknuth_CollisionPermut( gen, res, get&lt;0&gt;(xargs), get&lt;1&gt;(xargs), get&lt;2&gt;(xargs),
+<span class="lineNum">     449 </span><span class="lineCov">          6 :                           get&lt;3&gt;(xargs) );</span>
+<span class="lineNum">     450 </span><span class="lineCov">          6 :   return { res-&gt;Pois-&gt;pVal2 };</span>
+<span class="lineNum">     451 </span>            : }
+<a name="452"><span class="lineNum">     452 </span>            : </a>
+<span class="lineNum">     453 </span>            : std::vector&lt; double &gt;
+<span class="lineNum">     454 </span><span class="lineCov">          7 : TestU01Stack::SampleProd( unif01_Gen* gen, sres_Basic* res,</span>
+<span class="lineNum">     455 </span>            :   const std::tuple&lt;long, long, int, int&gt;&amp; xargs )
+<span class="lineNum">     456 </span>            : // *****************************************************************************
+<span class="lineNum">     457 </span>            : //  Run Sample Products test
+<span class="lineNum">     458 </span>            : //! \param[in] gen Raw function pointer to TestU01 statistical test
+<span class="lineNum">     459 </span>            : //! \param[in] res Pointer to test results object
+<span class="lineNum">     460 </span>            : //! \param[in] xargs Test arguments
+<span class="lineNum">     461 </span>            : //! \return Vector p-values as a result of the statistical test
+<span class="lineNum">     462 </span>            : // *****************************************************************************
+<span class="lineNum">     463 </span>            : {
+<span class="lineNum">     464 </span>            :   using std::get;
+<span class="lineNum">     465 </span>            :   svaria_SampleProd( gen, res, get&lt;0&gt;(xargs), get&lt;1&gt;(xargs), get&lt;2&gt;(xargs),
+<span class="lineNum">     466 </span><span class="lineCov">          7 :                      get&lt;3&gt;(xargs) );</span>
+<span class="lineNum">     467 </span><span class="lineCov">          7 :   return { res-&gt;pVal2[gofw_Mean] };</span>
+<span class="lineNum">     468 </span>            : }
+<a name="469"><span class="lineNum">     469 </span>            : </a>
+<span class="lineNum">     470 </span>            : std::vector&lt; double &gt;
+<span class="lineNum">     471 </span><span class="lineCov">          4 : TestU01Stack::SampleMean( unif01_Gen* gen, sres_Basic* res,</span>
+<span class="lineNum">     472 </span>            :   const std::tuple&lt;long, long, int&gt;&amp; xargs )
+<span class="lineNum">     473 </span>            : // *****************************************************************************
+<span class="lineNum">     474 </span>            : //  Run Sample Mean test
+<span class="lineNum">     475 </span>            : //! \param[in] gen Raw function pointer to TestU01 statistical test
+<span class="lineNum">     476 </span>            : //! \param[in] res Pointer to test results object
+<span class="lineNum">     477 </span>            : //! \param[in] xargs Test arguments
+<span class="lineNum">     478 </span>            : //! \return Vector p-values as a result of the statistical test
+<span class="lineNum">     479 </span>            : // *****************************************************************************
+<span class="lineNum">     480 </span>            : {
+<span class="lineNum">     481 </span>            :   using std::get;
+<span class="lineNum">     482 </span><span class="lineCov">          4 :   svaria_SampleMean( gen, res, get&lt;0&gt;(xargs), get&lt;1&gt;(xargs), get&lt;2&gt;(xargs) );</span>
+<span class="lineNum">     483 </span><span class="lineCov">          4 :   return { res-&gt;pVal2[gofw_AD] };</span>
+<span class="lineNum">     484 </span>            : }
+<a name="485"><span class="lineNum">     485 </span>            : </a>
+<span class="lineNum">     486 </span>            : std::vector&lt; double &gt;
+<span class="lineNum">     487 </span><span class="lineCov">          4 : TestU01Stack::SampleCorr( unif01_Gen* gen, sres_Basic* res,</span>
+<span class="lineNum">     488 </span>            :   const std::tuple&lt;long, long, int, int&gt;&amp; xargs )
+<span class="lineNum">     489 </span>            : // *****************************************************************************
+<span class="lineNum">     490 </span>            : //  Run Sample Autocorrelation test
+<span class="lineNum">     491 </span>            : //! \param[in] gen Raw function pointer to TestU01 statistical test
+<span class="lineNum">     492 </span>            : //! \param[in] res Pointer to test results object
+<span class="lineNum">     493 </span>            : //! \param[in] xargs Test arguments
+<span class="lineNum">     494 </span>            : //! \return Vector p-values as a result of the statistical test
+<span class="lineNum">     495 </span>            : // *****************************************************************************
+<span class="lineNum">     496 </span>            : {
+<span class="lineNum">     497 </span>            :   using std::get;
+<span class="lineNum">     498 </span>            :   svaria_SampleCorr( gen, res, get&lt;0&gt;(xargs), get&lt;1&gt;(xargs), get&lt;2&gt;(xargs),
+<span class="lineNum">     499 </span><span class="lineCov">          4 :                      get&lt;3&gt;(xargs) );</span>
+<span class="lineNum">     500 </span><span class="lineCov">          4 :   return { res-&gt;pVal2[gofw_Mean] };</span>
+<span class="lineNum">     501 </span>            : }
+<a name="502"><span class="lineNum">     502 </span>            : </a>
+<span class="lineNum">     503 </span>            : std::vector&lt; double &gt;
+<span class="lineNum">     504 </span><span class="lineCov">          7 : TestU01Stack::AppearanceSpacings( unif01_Gen* gen, sres_Basic* res,</span>
+<span class="lineNum">     505 </span>            :   const std::tuple&lt;long, long, long, int, int, int&gt;&amp; xargs )
+<span class="lineNum">     506 </span>            : // *****************************************************************************
+<span class="lineNum">     507 </span>            : //  Run Maurer's &quot;universal&quot; test
+<span class="lineNum">     508 </span>            : //! \param[in] gen Raw function pointer to TestU01 statistical test
+<span class="lineNum">     509 </span>            : //! \param[in] res Pointer to test results object
+<span class="lineNum">     510 </span>            : //! \param[in] xargs Test arguments
+<span class="lineNum">     511 </span>            : //! \return Vector p-values as a result of the statistical test
+<span class="lineNum">     512 </span>            : // *****************************************************************************
+<span class="lineNum">     513 </span>            : {
+<span class="lineNum">     514 </span>            :   using std::get;
+<span class="lineNum">     515 </span>            :   svaria_AppearanceSpacings( gen, res, get&lt;0&gt;(xargs), get&lt;1&gt;(xargs),
+<span class="lineNum">     516 </span>            :                              get&lt;2&gt;(xargs), get&lt;3&gt;(xargs), get&lt;4&gt;(xargs),
+<span class="lineNum">     517 </span><span class="lineCov">          7 :                              get&lt;5&gt;(xargs) );</span>
+<span class="lineNum">     518 </span><span class="lineCov">          7 :   return { res-&gt;pVal2[gofw_Mean] };</span>
+<span class="lineNum">     519 </span>            : }
+<a name="520"><span class="lineNum">     520 </span>            : </a>
+<span class="lineNum">     521 </span>            : std::vector&lt; double &gt;
+<span class="lineNum">     522 </span><span class="lineCov">          3 : TestU01Stack::SumCollector( unif01_Gen* gen, sres_Chi2* res,</span>
+<span class="lineNum">     523 </span>            :   const std::tuple&lt;long, long, int, double&gt;&amp; xargs )
+<span class="lineNum">     524 </span>            : // *****************************************************************************
+<span class="lineNum">     525 </span>            : //  Run Sum Collector test
+<span class="lineNum">     526 </span>            : //! \param[in] gen Raw function pointer to TestU01 statistical test
+<span class="lineNum">     527 </span>            : //! \param[in] res Pointer to test results object
+<span class="lineNum">     528 </span>            : //! \param[in] xargs Test arguments
+<span class="lineNum">     529 </span>            : //! \return Vector p-values as a result of the statistical test
+<span class="lineNum">     530 </span>            : // *****************************************************************************
+<span class="lineNum">     531 </span>            : {
+<span class="lineNum">     532 </span>            :   using std::get;
+<span class="lineNum">     533 </span>            :   svaria_SumCollector( gen, res, get&lt;0&gt;(xargs), get&lt;1&gt;(xargs), get&lt;2&gt;(xargs),
+<span class="lineNum">     534 </span><span class="lineCov">          3 :                        get&lt;3&gt;(xargs) );</span>
+<span class="lineNum">     535 </span><span class="lineCov">          3 :   return { res-&gt;pVal2[gofw_Mean] };</span>
+<span class="lineNum">     536 </span>            : }
+<a name="537"><span class="lineNum">     537 </span>            : </a>
+<span class="lineNum">     538 </span>            : std::vector&lt; double &gt;
+<span class="lineNum">     539 </span><span class="lineCov">          3 : TestU01Stack::Savir2( unif01_Gen* gen, sres_Chi2* res,</span>
+<span class="lineNum">     540 </span>            :   const std::tuple&lt;long, long, int, long, int&gt;&amp; xargs )
+<span class="lineNum">     541 </span>            : // *****************************************************************************
+<span class="lineNum">     542 </span>            : //  Run Marsaglia's modified Savir test
+<span class="lineNum">     543 </span>            : //! \param[in] gen Raw function pointer to TestU01 statistical test
+<span class="lineNum">     544 </span>            : //! \param[in] res Pointer to test results object
+<span class="lineNum">     545 </span>            : //! \param[in] xargs Test arguments
+<span class="lineNum">     546 </span>            : //! \return Vector p-values as a result of the statistical test
+<span class="lineNum">     547 </span>            : // *****************************************************************************
+<span class="lineNum">     548 </span>            : {
+<span class="lineNum">     549 </span>            :   using std::get;
+<span class="lineNum">     550 </span>            :   smarsa_Savir2( gen, res, get&lt;0&gt;(xargs), get&lt;1&gt;(xargs), get&lt;2&gt;(xargs),
+<span class="lineNum">     551 </span><span class="lineCov">          3 :                  get&lt;3&gt;(xargs), get&lt;4&gt;(xargs) );</span>
+<span class="lineNum">     552 </span><span class="lineCov">          3 :   return { res-&gt;pVal2[gofw_Mean] };</span>
+<span class="lineNum">     553 </span>            : }
+<a name="554"><span class="lineNum">     554 </span>            : </a>
+<span class="lineNum">     555 </span>            : std::vector&lt; double &gt;
+<span class="lineNum">     556 </span><span class="lineCov">          5 : TestU01Stack::GCD( unif01_Gen* gen, smarsa_Res2* res,</span>
+<span class="lineNum">     557 </span>            :   const std::tuple&lt;long, long, int, int&gt;&amp; xargs )
+<span class="lineNum">     558 </span>            : // *****************************************************************************
+<span class="lineNum">     559 </span>            : //  Run Marsaglia's greatest common divisor test
+<span class="lineNum">     560 </span>            : //! \param[in] gen Raw function pointer to TestU01 statistical test
+<span class="lineNum">     561 </span>            : //! \param[in] res Pointer to test results object
+<span class="lineNum">     562 </span>            : //! \param[in] xargs Test arguments
+<span class="lineNum">     563 </span>            : //! \return Vector p-values as a result of the statistical test
+<span class="lineNum">     564 </span>            : // *****************************************************************************
+<span class="lineNum">     565 </span>            : {
+<span class="lineNum">     566 </span>            :   using std::get;
+<span class="lineNum">     567 </span>            :   smarsa_GCD( gen, res, get&lt;0&gt;(xargs), get&lt;1&gt;(xargs), get&lt;2&gt;(xargs),
+<span class="lineNum">     568 </span><span class="lineCov">          5 :               get&lt;3&gt;(xargs) );</span>
+<span class="lineNum">     569 </span><span class="lineCov">          5 :   return { res-&gt;GCD-&gt;pVal2[gofw_Mean] };</span>
+<span class="lineNum">     570 </span>            : }
+<a name="571"><span class="lineNum">     571 </span>            : </a>
+<span class="lineNum">     572 </span>            : std::vector&lt; double &gt;
+<span class="lineNum">     573 </span><span class="lineCov">          6 : TestU01Stack::LinearComp( unif01_Gen* gen, scomp_Res* res,</span>
+<span class="lineNum">     574 </span>            :   const std::tuple&lt;long, long, int, int&gt;&amp; xargs )
+<span class="lineNum">     575 </span>            : // *****************************************************************************
+<span class="lineNum">     576 </span>            : //  Run Linear Complexity test
+<span class="lineNum">     577 </span>            : //! \param[in] gen Raw function pointer to TestU01 statistical test
+<span class="lineNum">     578 </span>            : //! \param[in] res Pointer to test results object
+<span class="lineNum">     579 </span>            : //! \param[in] xargs Test arguments
+<span class="lineNum">     580 </span>            : //! \return Vector p-values as a result of the statistical test
+<span class="lineNum">     581 </span>            : // *****************************************************************************
+<span class="lineNum">     582 </span>            : {
+<span class="lineNum">     583 </span>            :   using std::get;
+<span class="lineNum">     584 </span>            :   scomp_LinearComp( gen, res, get&lt;0&gt;(xargs), get&lt;1&gt;(xargs), get&lt;2&gt;(xargs),
+<span class="lineNum">     585 </span><span class="lineCov">          6 :                     get&lt;3&gt;(xargs) );</span>
+<span class="lineNum">     586 </span><span class="lineCov">          6 :   return { res-&gt;JumpNum-&gt;pVal2[gofw_Mean],</span>
+<span class="lineNum">     587 </span><span class="lineCov">          6 :            res-&gt;JumpSize-&gt;pVal2[gofw_Mean] };</span>
+<span class="lineNum">     588 </span>            : }
+<a name="589"><span class="lineNum">     589 </span>            : </a>
+<span class="lineNum">     590 </span>            : std::vector&lt; double &gt;
+<span class="lineNum">     591 </span><span class="lineCov">          4 : TestU01Stack::LempelZiv( unif01_Gen* gen, sres_Basic* res,</span>
+<span class="lineNum">     592 </span>            :   const std::tuple&lt;long, int, int, int&gt;&amp; xargs )
+<span class="lineNum">     593 </span>            : // *****************************************************************************
+<span class="lineNum">     594 </span>            : //  Run Lempel-Ziv Compressibility test
+<span class="lineNum">     595 </span>            : //! \param[in] gen Raw function pointer to TestU01 statistical test
+<span class="lineNum">     596 </span>            : //! \param[in] res Pointer to test results object
+<span class="lineNum">     597 </span>            : //! \param[in] xargs Test arguments
+<span class="lineNum">     598 </span>            : //! \return Vector p-values as a result of the statistical test
+<span class="lineNum">     599 </span>            : // *****************************************************************************
+<span class="lineNum">     600 </span>            : {
+<span class="lineNum">     601 </span>            :   using std::get;
+<span class="lineNum">     602 </span>            :   scomp_LempelZiv( gen, res, get&lt;0&gt;(xargs), get&lt;1&gt;(xargs), get&lt;2&gt;(xargs),
+<span class="lineNum">     603 </span><span class="lineCov">          4 :                    get&lt;3&gt;(xargs) );</span>
+<span class="lineNum">     604 </span><span class="lineCov">          4 :   return { res-&gt;pVal2[gofw_Sum] };</span>
+<span class="lineNum">     605 </span>            : }
+<a name="606"><span class="lineNum">     606 </span>            : </a>
+<span class="lineNum">     607 </span>            : std::vector&lt; double &gt;
+<span class="lineNum">     608 </span><span class="lineCov">          6 : TestU01Stack::Fourier3( unif01_Gen* gen, sspectral_Res* res,</span>
+<span class="lineNum">     609 </span>            :   const std::tuple&lt;long, int, int, int&gt;&amp; xargs )
+<span class="lineNum">     610 </span>            : // *****************************************************************************
+<span class="lineNum">     611 </span>            : //  Run Fourier3 test
+<span class="lineNum">     612 </span>            : //! \param[in] gen Raw function pointer to TestU01 statistical test
+<span class="lineNum">     613 </span>            : //! \param[in] res Pointer to test results object
+<span class="lineNum">     614 </span>            : //! \param[in] xargs Test arguments
+<span class="lineNum">     615 </span>            : //! \return Vector p-values as a result of the statistical test
+<span class="lineNum">     616 </span>            : // *****************************************************************************
+<span class="lineNum">     617 </span>            : {
+<span class="lineNum">     618 </span>            :   using std::get;
+<span class="lineNum">     619 </span>            :   sspectral_Fourier3( gen, res, get&lt;0&gt;(xargs), get&lt;1&gt;(xargs), get&lt;2&gt;(xargs),
+<span class="lineNum">     620 </span><span class="lineCov">          6 :                       get&lt;3&gt;(xargs) );</span>
+<span class="lineNum">     621 </span><span class="lineCov">          6 :   return { res-&gt;Bas-&gt;pVal2[gofw_AD] };</span>
+<span class="lineNum">     622 </span>            : }
+<a name="623"><span class="lineNum">     623 </span>            : </a>
+<span class="lineNum">     624 </span>            : std::vector&lt; double &gt;
+<span class="lineNum">     625 </span><span class="lineCov">          6 : TestU01Stack::LongestHeadRun( unif01_Gen* gen, sstring_Res2* res,</span>
+<span class="lineNum">     626 </span>            :   const std::tuple&lt;long, long, int, int, long&gt;&amp; xargs )
+<span class="lineNum">     627 </span>            : // *****************************************************************************
+<span class="lineNum">     628 </span>            : //  Run Longest Head Run test
+<span class="lineNum">     629 </span>            : //! \param[in] gen Raw function pointer to TestU01 statistical test
+<span class="lineNum">     630 </span>            : //! \param[in] res Pointer to test results object
+<span class="lineNum">     631 </span>            : //! \param[in] xargs Test arguments
+<span class="lineNum">     632 </span>            : //! \return Vector p-values as a result of the statistical test
+<span class="lineNum">     633 </span>            : // *****************************************************************************
+<span class="lineNum">     634 </span>            : {
+<span class="lineNum">     635 </span>            :   using std::get;
+<span class="lineNum">     636 </span>            :   sstring_LongestHeadRun( gen, res, get&lt;0&gt;(xargs), get&lt;1&gt;(xargs), get&lt;2&gt;(xargs),
+<span class="lineNum">     637 </span><span class="lineCov">          6 :                           get&lt;3&gt;(xargs), get&lt;4&gt;(xargs) );</span>
+<span class="lineNum">     638 </span><span class="lineCov">          6 :   return { res-&gt;Chi-&gt;pVal2[gofw_Mean],</span>
+<span class="lineNum">     639 </span><span class="lineCov">          6 :            res-&gt;Disc-&gt;pVal2 };</span>
+<span class="lineNum">     640 </span>            : }
+<a name="641"><span class="lineNum">     641 </span>            : </a>
+<span class="lineNum">     642 </span>            : std::vector&lt; double &gt;
+<span class="lineNum">     643 </span><span class="lineCov">          6 : TestU01Stack::PeriodsInStrings( unif01_Gen* gen, sres_Chi2* res,</span>
+<span class="lineNum">     644 </span>            :   const std::tuple&lt;long, long, int, int&gt;&amp; xargs )
+<span class="lineNum">     645 </span>            : // *****************************************************************************
+<span class="lineNum">     646 </span>            : //  Run Periods In Strings test
+<span class="lineNum">     647 </span>            : //! \param[in] gen Raw function pointer to TestU01 statistical test
+<span class="lineNum">     648 </span>            : //! \param[in] res Pointer to test results object
+<span class="lineNum">     649 </span>            : //! \param[in] xargs Test arguments
+<span class="lineNum">     650 </span>            : //! \return Vector p-values as a result of the statistical test
+<span class="lineNum">     651 </span>            : // *****************************************************************************
+<span class="lineNum">     652 </span>            : {
+<span class="lineNum">     653 </span>            :   using std::get;
+<span class="lineNum">     654 </span>            :   sstring_PeriodsInStrings( gen, res, get&lt;0&gt;(xargs), get&lt;1&gt;(xargs),
+<span class="lineNum">     655 </span><span class="lineCov">          6 :                             get&lt;2&gt;(xargs), get&lt;3&gt;(xargs) );</span>
+<span class="lineNum">     656 </span><span class="lineCov">          6 :   return { res-&gt;pVal2[gofw_Mean] };</span>
+<span class="lineNum">     657 </span>            : }
+<a name="658"><span class="lineNum">     658 </span>            : </a>
+<span class="lineNum">     659 </span>            : std::vector&lt; double &gt;
+<span class="lineNum">     660 </span><span class="lineCov">          6 : TestU01Stack::HammingWeight2( unif01_Gen* gen, sres_Basic* res,</span>
+<span class="lineNum">     661 </span>            :   const std::tuple&lt;long, long, int, int, long&gt;&amp; xargs )
+<span class="lineNum">     662 </span>            : // *****************************************************************************
+<span class="lineNum">     663 </span>            : //  Run Hamming Weight 2 test
+<span class="lineNum">     664 </span>            : //! \param[in] gen Raw function pointer to TestU01 statistical test
+<span class="lineNum">     665 </span>            : //! \param[in] res Pointer to test results object
+<span class="lineNum">     666 </span>            : //! \param[in] xargs Test arguments
+<span class="lineNum">     667 </span>            : //! \return Vector p-values as a result of the statistical test
+<span class="lineNum">     668 </span>            : // *****************************************************************************
+<span class="lineNum">     669 </span>            : {
+<span class="lineNum">     670 </span>            :   using std::get;
+<span class="lineNum">     671 </span>            :   sstring_HammingWeight2( gen, res, get&lt;0&gt;(xargs), get&lt;1&gt;(xargs), get&lt;2&gt;(xargs),
+<span class="lineNum">     672 </span><span class="lineCov">          6 :                           get&lt;3&gt;(xargs), get&lt;4&gt;(xargs) );</span>
+<span class="lineNum">     673 </span><span class="lineCov">          6 :   return { res-&gt;pVal2[gofw_Sum] };</span>
+<span class="lineNum">     674 </span>            : }
+<a name="675"><span class="lineNum">     675 </span>            : </a>
+<span class="lineNum">     676 </span>            : std::vector&lt; double &gt;
+<span class="lineNum">     677 </span><span class="lineCov">          9 : TestU01Stack::HammingCorr( unif01_Gen* gen, sstring_Res* res,</span>
+<span class="lineNum">     678 </span>            :   const std::tuple&lt;long, long, int, int, int&gt;&amp; xargs )
+<span class="lineNum">     679 </span>            : // *****************************************************************************
+<span class="lineNum">     680 </span>            : //  Run Hamming Weight Correlation test
+<span class="lineNum">     681 </span>            : //! \param[in] gen Raw function pointer to TestU01 statistical test
+<span class="lineNum">     682 </span>            : //! \param[in] res Pointer to test results object
+<span class="lineNum">     683 </span>            : //! \param[in] xargs Test arguments
+<span class="lineNum">     684 </span>            : //! \return Vector p-values as a result of the statistical test
+<span class="lineNum">     685 </span>            : // *****************************************************************************
+<span class="lineNum">     686 </span>            : {
+<span class="lineNum">     687 </span>            :   using std::get;
+<span class="lineNum">     688 </span>            :   sstring_HammingCorr( gen, res, get&lt;0&gt;(xargs), get&lt;1&gt;(xargs), get&lt;2&gt;(xargs),
+<span class="lineNum">     689 </span><span class="lineCov">          9 :                        get&lt;3&gt;(xargs), get&lt;4&gt;(xargs) );</span>
+<span class="lineNum">     690 </span><span class="lineCov">          9 :   return { res-&gt;Bas-&gt;pVal2[gofw_Mean] };</span>
+<span class="lineNum">     691 </span>            : }
+<a name="692"><span class="lineNum">     692 </span>            : </a>
+<span class="lineNum">     693 </span>            : std::vector&lt; double &gt;
+<span class="lineNum">     694 </span><span class="lineCov">          6 : TestU01Stack::StringRun( unif01_Gen* gen, sstring_Res3* res,</span>
+<span class="lineNum">     695 </span>            :   const std::tuple&lt;long, long, int, int&gt;&amp; xargs )
+<span class="lineNum">     696 </span>            : // *****************************************************************************
+<span class="lineNum">     697 </span>            : //  Run String Run test
+<span class="lineNum">     698 </span>            : //! \param[in] gen Raw function pointer to TestU01 statistical test
+<span class="lineNum">     699 </span>            : //! \param[in] res Pointer to test results object
+<span class="lineNum">     700 </span>            : //! \param[in] xargs Test arguments
+<span class="lineNum">     701 </span>            : //! \return Vector p-values as a result of the statistical test
+<span class="lineNum">     702 </span>            : // *****************************************************************************
+<span class="lineNum">     703 </span>            : {
+<span class="lineNum">     704 </span>            :   using std::get;
+<span class="lineNum">     705 </span>            :   sstring_Run( gen, res, get&lt;0&gt;(xargs), get&lt;1&gt;(xargs), get&lt;2&gt;(xargs),
+<span class="lineNum">     706 </span><span class="lineCov">          6 :                get&lt;3&gt;(xargs) );</span>
+<span class="lineNum">     707 </span><span class="lineCov">          6 :   return { res-&gt;NRuns-&gt;pVal2[gofw_Mean],</span>
+<span class="lineNum">     708 </span><span class="lineCov">          6 :            res-&gt;NBits-&gt;pVal2[gofw_Mean] };</span>
+<span class="lineNum">     709 </span>            : }
+<a name="710"><span class="lineNum">     710 </span>            : </a>
+<span class="lineNum">     711 </span>            : std::vector&lt; double &gt;
+<span class="lineNum">     712 </span><span class="lineCov">         12 : TestU01Stack::AutoCorr( unif01_Gen* gen, sres_Basic* res,</span>
+<span class="lineNum">     713 </span>            :   const std::tuple&lt;long, long, int, int, int&gt;&amp; xargs )
+<span class="lineNum">     714 </span>            : // *****************************************************************************
+<span class="lineNum">     715 </span>            : //  Run Autocorrelation test
+<span class="lineNum">     716 </span>            : //! \param[in] gen Raw function pointer to TestU01 statistical test
+<span class="lineNum">     717 </span>            : //! \param[in] res Pointer to test results object
+<span class="lineNum">     718 </span>            : //! \param[in] xargs Test arguments
+<span class="lineNum">     719 </span>            : //! \return Vector p-values as a result of the statistical test
+<span class="lineNum">     720 </span>            : // *****************************************************************************
+<span class="lineNum">     721 </span>            : {
+<span class="lineNum">     722 </span>            :   using std::get;
+<span class="lineNum">     723 </span>            :   sstring_AutoCor( gen, res, get&lt;0&gt;(xargs), get&lt;1&gt;(xargs), get&lt;2&gt;(xargs),
+<a name="724"><span class="lineNum">     724 </span><span class="lineCov">         12 :                    get&lt;3&gt;(xargs), get&lt;4&gt;(xargs) );</span></a>
+<span class="lineNum">     725 </span><span class="lineCov">         12 :   return { res-&gt;pVal2[gofw_Sum] };</span>
+<span class="lineNum">     726 </span><span class="lineNoCov">          0 : }</span>
 </pre>
       </td>
     </tr>

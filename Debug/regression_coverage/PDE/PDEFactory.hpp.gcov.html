@@ -24,7 +24,7 @@
           </tr>
           <tr>
             <td class="headerItem">Commit:</td>
-            <td class="headerValue"><a href="https://github.com/quinoacomputing/quinoa/commit/de39577">Quinoa_v0.2-2841-gde39577</a></td>
+            <td class="headerValue"><a href="https://github.com/quinoacomputing/quinoa/commit/5a428c4">Quinoa_v0.2-2844-g5a428c4</a></td>
             <td></td>
             <td class="headerItem">Lines:</td>
             <td class="headerCovTableEntry">17</td>
@@ -33,7 +33,7 @@
           </tr>
           <tr>
             <td class="headerItem">Date:</td>
-            <td class="headerValue">2019-05-25 16:07:10</td>
+            <td class="headerValue">2019-05-26 23:09:38</td>
             <td></td>
             <td class="headerItem">Functions:</td>
             <td class="headerCovTableEntry">51</td>
@@ -45,16 +45,8 @@
             <td class="headerValueLeg">            Lines:
             <span class="coverLegendCov">hit</span>
             <span class="coverLegendNoCov">not hit</span>
-            | Branches:
-            <span class="coverLegendCov">+</span> taken
-            <span class="coverLegendNoCov">-</span> not taken
-            <span class="coverLegendNoCov">#</span> not executed
 </td>
             <td></td>
-            <td class="headerItem">Branches:</td>
-            <td class="headerCovTableEntry">81</td>
-            <td class="headerCovTableEntry">159</td>
-            <td class="headerCovTableEntryLo">50.9 %</td>
           </tr>
           <tr><td><img src="../glass.png" width=3 height=3 alt=""></td></tr>
         </table>
@@ -70,166 +62,132 @@
     </tr>
     <tr>
       <td>
-<pre class="sourceHeading">           Branch data     Line data    Source code</pre>
+<pre class="sourceHeading">          Line data    Source code</pre>
 <pre class="source">
-<a name="1"><span class="lineNum">       1 </span>                :            : // *****************************************************************************</a>
-<span class="lineNum">       2 </span>                :            : /*!
-<span class="lineNum">       3 </span>                :            :   \file      src/PDE/PDEFactory.hpp
-<span class="lineNum">       4 </span>                :            :   \copyright 2012-2015 J. Bakosi,
-<span class="lineNum">       5 </span>                :            :              2016-2018 Los Alamos National Security, LLC.,
-<span class="lineNum">       6 </span>                :            :              2019 Triad National Security, LLC.
-<span class="lineNum">       7 </span>                :            :              All rights reserved. See the LICENSE file for details.
-<span class="lineNum">       8 </span>                :            :   \brief     Differential equations factory
-<span class="lineNum">       9 </span>                :            :   \details   This file declares the type for a differential equations factory.
-<span class="lineNum">      10 </span>                :            : */
-<span class="lineNum">      11 </span>                :            : // *****************************************************************************
-<span class="lineNum">      12 </span>                :            : #ifndef PDEFactory_h
-<span class="lineNum">      13 </span>                :            : #define PDEFactory_h
-<span class="lineNum">      14 </span>                :            : 
-<span class="lineNum">      15 </span>                :            : #include &lt;map&gt;
-<span class="lineNum">      16 </span>                :            : #include &lt;set&gt;
-<span class="lineNum">      17 </span>                :            : 
-<span class="lineNum">      18 </span>                :            : #include &lt;brigand/algorithms/for_each.hpp&gt;
-<span class="lineNum">      19 </span>                :            : 
-<span class="lineNum">      20 </span>                :            : #include &quot;CGPDE.hpp&quot;
-<span class="lineNum">      21 </span>                :            : #include &quot;DGPDE.hpp&quot;
-<span class="lineNum">      22 </span>                :            : #include &quot;Factory.hpp&quot;
-<span class="lineNum">      23 </span>                :            : #include &quot;SystemComponents.hpp&quot;
-<span class="lineNum">      24 </span>                :            : #include &quot;Inciter/Options/PDE.hpp&quot;
-<span class="lineNum">      25 </span>                :            : 
-<span class="lineNum">      26 </span>                :            : namespace inciter {
-<span class="lineNum">      27 </span>                :            : 
-<span class="lineNum">      28 </span>                :            : //! \brief Factory for PDEs using continuous Galerkin discretization storing
-<span class="lineNum">      29 </span>                :            : //!   keys associated to their constructors
-<span class="lineNum">      30 </span>                :            : using CGFactory =
-<span class="lineNum">      31 </span>                :            :   std::map&lt; ctr::PDEKey, std::function&lt; CGPDE(const tk::ctr::ncomp_type&amp;) &gt; &gt;;
-<span class="lineNum">      32 </span>                :            : 
-<span class="lineNum">      33 </span>                :            : //! \brief Factory for PDEs using discontinuous Galerkin discretization storing
-<span class="lineNum">      34 </span>                :            : //!   keys associated to their constructors
-<span class="lineNum">      35 </span>                :            : using DGFactory =
-<span class="lineNum">      36 </span>                :            :   std::map&lt; ctr::PDEKey, std::function&lt; DGPDE(const tk::ctr::ncomp_type&amp;) &gt; &gt;;
-<span class="lineNum">      37 </span>                :            : 
-<span class="lineNum">      38 </span>                :            : //! \brief Function object for registering a partial differential equation
-<span class="lineNum">      39 </span>                :            : //!   into the partial differential equation factory
-<span class="lineNum">      40 </span>                :            : //! \details This functor is repeatedly called by MPL's cartesian_product,
-<span class="lineNum">      41 </span>                :            : //!   sweeping all combinations of the partial differential equation
-<span class="lineNum">      42 </span>                :            : //!   policies. The purpose of template template is to simplify client code
-<span class="lineNum">      43 </span>                :            : //!   as that will not have to specify the template arguments of the
-<span class="lineNum">      44 </span>                :            : //!   template argument (the policies of Eq), since we can figure it out
-<span class="lineNum">      45 </span>                :            : //!   here. See also http://stackoverflow.com/a/214900. The template
-<span class="lineNum">      46 </span>                :            : //!   argument Eq specifies a &quot;child&quot; class that is used polymorphically
-<span class="lineNum">      47 </span>                :            : //!   with a &quot;base&quot; class modeling a concept defined in the base. The base
-<span class="lineNum">      48 </span>                :            : //!   is given by the template argument PDE. The template argument Factory
-<span class="lineNum">      49 </span>                :            : //!   specifies which factory to store the registered and configured child
-<span class="lineNum">      50 </span>                :            : //1   PDE.
-<span class="lineNum">      51 </span>                :            : template&lt; template&lt; class, class &gt; class Eq, class Factory, class PDE &gt;
-<span class="lineNum">      52 </span>                :            : struct registerPDE {
-<span class="lineNum">      53 </span>                :            :   //! Need to store the reference to factory we are registering into
-<span class="lineNum">      54 </span>                :            :   Factory&amp; factory;
-<span class="lineNum">      55 </span>                :            :   //! Need to store which differential equation we are registering
-<span class="lineNum">      56 </span>                :            :   const ctr::PDEType type;
-<span class="lineNum">      57 </span>                :            :   //! Constructor, also count number of unique equation types registered
-<span class="lineNum">      58 </span>                :            :   //! \param[in,out] f Factory into which to register PDE
-<a name="59"><span class="lineNum">      59 </span>                :            :   //! \param[in] t Enum selecting PDE type, Control/Inciter/Options/PDE.h</a>
-<span class="lineNum">      60 </span>                :            :   //! \param[in] eqTypes Equation type counters
-<span class="lineNum">      61 </span>                :<span class="lineCov">      10365 :   explicit registerPDE( Factory&amp; f,</span>
-<span class="lineNum">      62 </span>                :            :                         ctr::PDEType t,
-<span class="lineNum">      63 </span>                :            :                         std::set&lt; ctr::PDEType &gt;&amp; eqTypes ) :
-<span class="lineNum">      64 </span>                :<span class="lineCov">      10365 :     factory( f ), type( t ) { eqTypes.insert( t ); }</span>
-<a name="65"><span class="lineNum">      65 </span>                :            :   //! \brief Function call operator called with tk::cartesian_product for</a>
-<span class="lineNum">      66 </span>                :            :   //!   each unique sequence of policy combinations
-<span class="lineNum">      67 </span>                :<span class="lineCov">      78774 :   template&lt; typename U &gt; void operator()( brigand::type_&lt;U&gt; ) {</span>
-<span class="lineNum">      68 </span>                :            :     // Get problem policy: first type of brigand::list U
-<span class="lineNum">      69 </span>                :            :     using Physics = typename brigand::front&lt; U &gt;;
-<span class="lineNum">      70 </span>                :            :     // Get problem policy: last type of brigand::list U
-<span class="lineNum">      71 </span>                :            :     using Problem = typename brigand::back&lt; U &gt;;
-<span class="lineNum">      72 </span>                :            :     // Build differential equation key
-<span class="lineNum">      73 </span>[<span class="branchCov" title="Branch 3 was taken 6219 times"> + </span><span class="branchNoCov" title="Branch 4 was not taken"> - </span>][<span class="branchCov" title="Branch 8 was taken 6219 times"> + </span><span class="branchNoCov" title="Branch 9 was not taken"> - </span>]:<span class="lineCov">      78774 :     ctr::PDEKey key{ type, Physics::type(), Problem::type() };</span>
-<span class="lineNum">         </span>[<span class="branchCov" title="Branch 13 was taken 4146 times"> + </span><span class="branchNoCov" title="Branch 14 was not taken"> - </span>][<span class="branchCov" title="Branch 18 was taken 4146 times"> + </span><span class="branchNoCov" title="Branch 19 was not taken"> - </span>]
-<span class="lineNum">         </span>[<span class="branchCov" title="Branch 23 was taken 4146 times"> + </span><span class="branchNoCov" title="Branch 24 was not taken"> - </span>][<span class="branchCov" title="Branch 28 was taken 4146 times"> + </span><span class="branchNoCov" title="Branch 29 was not taken"> - </span>]
-<span class="lineNum">         </span>[<span class="branchCov" title="Branch 33 was taken 4146 times"> + </span><span class="branchNoCov" title="Branch 34 was not taken"> - </span>][<span class="branchCov" title="Branch 38 was taken 4146 times"> + </span><span class="branchNoCov" title="Branch 39 was not taken"> - </span>]
-<span class="lineNum">         </span>[<span class="branchCov" title="Branch 43 was taken 4146 times"> + </span><span class="branchNoCov" title="Branch 44 was not taken"> - </span>][<span class="branchCov" title="Branch 48 was taken 4146 times"> + </span><span class="branchNoCov" title="Branch 49 was not taken"> - </span>]
-<span class="lineNum">         </span>[<span class="branchCov" title="Branch 53 was taken 4146 times"> + </span><span class="branchNoCov" title="Branch 54 was not taken"> - </span>][<span class="branchCov" title="Branch 58 was taken 4146 times"> + </span><span class="branchNoCov" title="Branch 59 was not taken"> - </span>]
-<span class="lineNum">         </span>[<span class="branchCov" title="Branch 63 was taken 2073 times"> + </span><span class="branchNoCov" title="Branch 64 was not taken"> - </span>][<span class="branchCov" title="Branch 68 was taken 2073 times"> + </span><span class="branchNoCov" title="Branch 69 was not taken"> - </span>]
-<span class="lineNum">         </span>[<span class="branchCov" title="Branch 73 was taken 2073 times"> + </span><span class="branchNoCov" title="Branch 74 was not taken"> - </span>][<span class="branchCov" title="Branch 78 was taken 2073 times"> + </span><span class="branchNoCov" title="Branch 79 was not taken"> - </span>]
-<span class="lineNum">         </span>[<span class="branchCov" title="Branch 83 was taken 2073 times"> + </span><span class="branchNoCov" title="Branch 84 was not taken"> - </span>][<span class="branchCov" title="Branch 88 was taken 2073 times"> + </span><span class="branchNoCov" title="Branch 89 was not taken"> - </span>]
-<span class="lineNum">         </span>[<span class="branchCov" title="Branch 93 was taken 2073 times"> + </span><span class="branchNoCov" title="Branch 94 was not taken"> - </span>][<span class="branchCov" title="Branch 98 was taken 2073 times"> + </span><span class="branchNoCov" title="Branch 99 was not taken"> - </span>]
-<span class="lineNum">         </span>[<span class="branchCov" title="Branch 103 was taken 2073 times"> + </span><span class="branchNoCov" title="Branch 104 was not taken"> - </span>][<span class="branchCov" title="Branch 108 was taken 2073 times"> + </span><span class="branchNoCov" title="Branch 109 was not taken"> - </span>]
-<span class="lineNum">         </span>[<span class="branchCov" title="Branch 113 was taken 2073 times"> + </span><span class="branchNoCov" title="Branch 114 was not taken"> - </span>][<span class="branchCov" title="Branch 118 was taken 2073 times"> + </span><span class="branchNoCov" title="Branch 119 was not taken"> - </span>]
-<span class="lineNum">      74 </span>                :            :     // Register equation (with policies given by brigand::list U) into factory
-<span class="lineNum">      75 </span>[<span class="branchCov" title="Branch 1 was taken 6219 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 4 was taken 6219 times"> + </span><span class="branchNoCov" title="Branch 5 was not taken"> - </span>]:<span class="lineCov">      78774 :     tk::recordModelLate&lt; PDE, Eq&lt; Physics, Problem &gt; &gt;</span>
-<span class="lineNum">         </span>[<span class="branchCov" title="Branch 7 was taken 4146 times"> + </span><span class="branchNoCov" title="Branch 8 was not taken"> - </span>][<span class="branchCov" title="Branch 10 was taken 4146 times"> + </span><span class="branchNoCov" title="Branch 11 was not taken"> - </span>]
-<span class="lineNum">         </span>[<span class="branchCov" title="Branch 13 was taken 4146 times"> + </span><span class="branchNoCov" title="Branch 14 was not taken"> - </span>][<span class="branchCov" title="Branch 16 was taken 4146 times"> + </span><span class="branchNoCov" title="Branch 17 was not taken"> - </span>]
-<span class="lineNum">         </span>[<span class="branchCov" title="Branch 19 was taken 4146 times"> + </span><span class="branchNoCov" title="Branch 20 was not taken"> - </span>][<span class="branchCov" title="Branch 22 was taken 4146 times"> + </span><span class="branchNoCov" title="Branch 23 was not taken"> - </span>]
-<span class="lineNum">         </span>[<span class="branchCov" title="Branch 25 was taken 4146 times"> + </span><span class="branchNoCov" title="Branch 26 was not taken"> - </span>][<span class="branchCov" title="Branch 28 was taken 4146 times"> + </span><span class="branchNoCov" title="Branch 29 was not taken"> - </span>]
-<span class="lineNum">         </span>[<span class="branchCov" title="Branch 31 was taken 4146 times"> + </span><span class="branchNoCov" title="Branch 32 was not taken"> - </span>][<span class="branchCov" title="Branch 34 was taken 4146 times"> + </span><span class="branchNoCov" title="Branch 35 was not taken"> - </span>]
-<span class="lineNum">         </span>[<span class="branchCov" title="Branch 37 was taken 2073 times"> + </span><span class="branchNoCov" title="Branch 38 was not taken"> - </span>][<span class="branchCov" title="Branch 40 was taken 2073 times"> + </span><span class="branchNoCov" title="Branch 41 was not taken"> - </span>]
-<span class="lineNum">         </span>[<span class="branchCov" title="Branch 43 was taken 2073 times"> + </span><span class="branchNoCov" title="Branch 44 was not taken"> - </span>][<span class="branchCov" title="Branch 46 was taken 2073 times"> + </span><span class="branchNoCov" title="Branch 47 was not taken"> - </span>]
-<span class="lineNum">         </span>[<span class="branchCov" title="Branch 49 was taken 2073 times"> + </span><span class="branchNoCov" title="Branch 50 was not taken"> - </span>][<span class="branchCov" title="Branch 52 was taken 2073 times"> + </span><span class="branchNoCov" title="Branch 53 was not taken"> - </span>]
-<span class="lineNum">         </span>[<span class="branchCov" title="Branch 55 was taken 2073 times"> + </span><span class="branchNoCov" title="Branch 56 was not taken"> - </span>][<span class="branchCov" title="Branch 58 was taken 2073 times"> + </span><span class="branchNoCov" title="Branch 59 was not taken"> - </span>]
-<span class="lineNum">         </span>[<span class="branchCov" title="Branch 61 was taken 2073 times"> + </span><span class="branchNoCov" title="Branch 62 was not taken"> - </span>][<span class="branchCov" title="Branch 64 was taken 2073 times"> + </span><span class="branchNoCov" title="Branch 65 was not taken"> - </span>]
-<span class="lineNum">         </span>[<span class="branchCov" title="Branch 67 was taken 2073 times"> + </span><span class="branchNoCov" title="Branch 68 was not taken"> - </span>][<span class="branchCov" title="Branch 70 was taken 2073 times"> + </span><span class="branchNoCov" title="Branch 71 was not taken"> - </span>]
-<span class="lineNum">      76 </span>                :<span class="lineCov">      78774 :                        ( factory, key, static_cast&lt;tk::ctr::ncomp_type&gt;(0) );</span>
-<span class="lineNum">      77 </span>                :<span class="lineCov">      78774 :   }</span>
-<span class="lineNum">      78 </span>                :            : };
-<span class="lineNum">      79 </span>                :            : 
-<span class="lineNum">      80 </span>                :            : //! Wrapper of registerPDE specialized for registering CG PDEs
-<span class="lineNum">      81 </span>                :            : //! \details The sole reason for this functor is to simplify client-code
-<span class="lineNum">      82 </span>                :            : //!   calling registerPDE specialized to CG PDEs
-<span class="lineNum">      83 </span>                :            : template&lt; template&lt; class, class &gt; class Eq &gt;
-<span class="lineNum">      84 </span>                :            : struct registerCG : registerPDE&lt; Eq, CGFactory, CGPDE &gt; {
-<span class="lineNum">      85 </span>                :            :   //! Delegate constructor to base and specialize to CG
-<span class="lineNum">      86 </span>                :            :   //! \param[in] f Factory to register to
-<a name="87"><span class="lineNum">      87 </span>                :            :   //! \param[in] eqtypes Counters for equation types in factory</a>
-<span class="lineNum">      88 </span>                :            :   //! \param[in] t Enum selecting PDE type, Control/Inciter/Options/PDE.h
-<span class="lineNum">      89 </span>                :<span class="lineCov">       4146 :   explicit registerCG( CGFactory&amp; f,</span>
-<span class="lineNum">      90 </span>                :            :                        std::set&lt; ctr::PDEType &gt;&amp; eqtypes,
-<span class="lineNum">      91 </span>                :            :                        ctr::PDEType t ) :
-<span class="lineNum">      92 </span>                :<span class="lineCov">       4146 :     registerPDE&lt; Eq, CGFactory, CGPDE &gt;( f, t, eqtypes ) {}</span>
-<span class="lineNum">      93 </span>                :            : };
-<span class="lineNum">      94 </span>                :            : 
-<span class="lineNum">      95 </span>                :            : //! Wrapper of registerPDE specialized for registering DG PDEs
-<span class="lineNum">      96 </span>                :            : //! \details The sole reason for this functor is to simplify client-code
-<span class="lineNum">      97 </span>                :            : //!   calling registerPDE specialized to DG PDEs
-<span class="lineNum">      98 </span>                :            : template&lt; template&lt; class, class &gt; class Eq &gt;
-<span class="lineNum">      99 </span>                :            : struct registerDG : registerPDE&lt; Eq, DGFactory, DGPDE &gt; {
-<span class="lineNum">     100 </span>                :            :   //! Delegate constructor to base and specialize to CG
-<span class="lineNum">     101 </span>                :            :   //! \param[in] f Factory to register to
-<a name="102"><span class="lineNum">     102 </span>                :            :   //! \param[in] eqtypes Counters for equation types in factory</a>
-<span class="lineNum">     103 </span>                :            :   //! \param[in] t Enum selecting PDE type, Control/Inciter/Options/PDE.h
-<span class="lineNum">     104 </span>                :<span class="lineCov">       6219 :   explicit registerDG( DGFactory&amp; f,</span>
-<span class="lineNum">     105 </span>                :            :                        std::set&lt; ctr::PDEType &gt;&amp; eqtypes,
-<span class="lineNum">     106 </span>                :            :                        ctr::PDEType t ) :
-<span class="lineNum">     107 </span>                :<span class="lineCov">       6219 :     registerPDE&lt; Eq, DGFactory, DGPDE &gt;( f, t, eqtypes ) {}</span>
-<span class="lineNum">     108 </span>                :            : };
-<span class="lineNum">     109 </span>                :            : 
-<span class="lineNum">     110 </span>                :            : //! \brief Convert and return values from vector as string
-<span class="lineNum">     111 </span>                :            : //! \param[in] v Vector whose components to return as a string
-<a name="112"><span class="lineNum">     112 </span>                :            : //! \return Concatenated string of values read from a vector</a>
-<span class="lineNum">     113 </span>                :            : template&lt; typename V &gt;
-<span class="lineNum">     114 </span>                :<span class="lineCov">        395 : std::string parameters( const V&amp; v ) {</span>
-<span class="lineNum">     115 </span>[<span class="branchCov" title="Branch 1 was taken 148 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 4 was taken 148 times"> + </span><span class="branchNoCov" title="Branch 5 was not taken"> - </span>]:<span class="lineCov">        395 :   std::stringstream s;</span>
-<span class="lineNum">         </span>[<span class="branchCov" title="Branch 7 was taken 247 times"> + </span><span class="branchNoCov" title="Branch 8 was not taken"> - </span>][<span class="branchCov" title="Branch 10 was taken 247 times"> + </span><span class="branchNoCov" title="Branch 11 was not taken"> - </span>]
-<span class="lineNum">     116 </span>[<span class="branchCov" title="Branch 1 was taken 148 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 4 was taken 247 times"> + </span><span class="branchNoCov" title="Branch 5 was not taken"> - </span>]:<span class="lineCov">        395 :   s &lt;&lt; &quot;{ &quot;;</span>
-<span class="lineNum">     117 </span>[<span class="branchCov" title="Branch 3 was taken 188 times"> + </span><span class="branchNoCov" title="Branch 4 was not taken"> - </span>][<span class="branchCov" title="Branch 6 was taken 188 times"> + </span><span class="branchNoCov" title="Branch 7 was not taken"> - </span>]:<span class="lineCov">        857 :   for (auto p : v) s &lt;&lt; p &lt;&lt; ' ';</span>
-<span class="lineNum">         </span>[<span class="branchCov" title="Branch 9 was taken 188 times"> + </span><span class="branchNoCov" title="Branch 10 was not taken"> - </span>][<span class="branchCov" title="Branch 12 was taken 188 times"> + </span><span class="branchNoCov" title="Branch 13 was not taken"> - </span>]
-<span class="lineNum">         </span>     [<span class="branchNoExec" title="Branch 15 was not executed"> # </span><span class="branchCov" title="Branch 16 was taken 188 times"> + </span><span class="branchNoCov" title="Branch 17 was not taken"> - </span>]
-<span class="lineNum">         </span>  [<span class="branchNoExec" title="Branch 17 was not executed"> # </span><span class="branchNoExec" title="Branch 18 was not executed"> # </span><span class="branchCov" title="Branch 19 was taken 336 times"> + </span><span class="branchNoCov" title="Branch 20 was not taken"> - </span>]
-<span class="lineNum">         </span>[<span class="branchCov" title="Branch 21 was taken 188 times"> + </span><span class="branchCov" title="Branch 22 was taken 148 times"> + </span>][<span class="branchCov" title="Branch 22 was taken 39 times"> + </span><span class="branchNoCov" title="Branch 23 was not taken"> - </span>]
-<span class="lineNum">         </span>[<span class="branchCov" title="Branch 25 was taken 39 times"> + </span><span class="branchNoCov" title="Branch 26 was not taken"> - </span>][<span class="branchCov" title="Branch 28 was taken 39 times"> + </span><span class="branchNoCov" title="Branch 29 was not taken"> - </span>]
-<span class="lineNum">         </span>  [<span class="branchCov" title="Branch 27 was taken 235 times"> + </span><span class="branchNoCov" title="Branch 28 was not taken"> - </span><span class="branchCov" title="Branch 31 was taken 39 times"> + </span><span class="branchNoCov" title="Branch 32 was not taken"> - </span>]
-<span class="lineNum">         </span>  [<span class="branchCov" title="Branch 30 was taken 235 times"> + </span><span class="branchNoCov" title="Branch 31 was not taken"> - </span><span class="branchCov" title="Branch 34 was taken 78 times"> + </span><span class="branchNoCov" title="Branch 35 was not taken"> - </span>]
-<span class="lineNum">         </span>  [<span class="branchCov" title="Branch 33 was taken 235 times"> + </span><span class="branchNoCov" title="Branch 34 was not taken"> - </span><span class="branchCov" title="Branch 36 was taken 39 times"> + </span><span class="branchCov" title="Branch 37 was taken 39 times"> + </span>]
-<span class="lineNum">         </span>[<span class="branchCov" title="Branch 36 was taken 235 times"> + </span><span class="branchNoCov" title="Branch 37 was not taken"> - </span>][<span class="branchCov" title="Branch 39 was taken 443 times"> + </span><span class="branchNoCov" title="Branch 40 was not taken"> - </span>]
-<span class="lineNum">         </span>        [<span class="branchCov" title="Branch 41 was taken 235 times"> + </span><span class="branchCov" title="Branch 42 was taken 208 times"> + </span>]
-<span class="lineNum">     118 </span>[<span class="branchCov" title="Branch 1 was taken 148 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 4 was taken 247 times"> + </span><span class="branchNoCov" title="Branch 5 was not taken"> - </span>]:<span class="lineCov">        395 :   s &lt;&lt; &quot;}&quot;;</span>
-<span class="lineNum">     119 </span>[<span class="branchCov" title="Branch 1 was taken 148 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 6 was taken 208 times"> + </span><span class="branchNoCov" title="Branch 7 was not taken"> - </span>]:<span class="lineCov">        395 :   return s.str();</span>
-<span class="lineNum">         </span>        [<span class="branchCov" title="Branch 6 was taken 39 times"> + </span><span class="branchNoCov" title="Branch 7 was not taken"> - </span>]
-<span class="lineNum">     120 </span>                :            : }
-<span class="lineNum">     121 </span>                :            : 
-<span class="lineNum">     122 </span>                :            : } // inciter::
-<span class="lineNum">     123 </span>                :            : 
-<span class="lineNum">     124 </span>                :            : #endif // PDEFactory_h
+<a name="1"><span class="lineNum">       1 </span>            : // *****************************************************************************</a>
+<span class="lineNum">       2 </span>            : /*!
+<span class="lineNum">       3 </span>            :   \file      src/PDE/PDEFactory.hpp
+<span class="lineNum">       4 </span>            :   \copyright 2012-2015 J. Bakosi,
+<span class="lineNum">       5 </span>            :              2016-2018 Los Alamos National Security, LLC.,
+<span class="lineNum">       6 </span>            :              2019 Triad National Security, LLC.
+<span class="lineNum">       7 </span>            :              All rights reserved. See the LICENSE file for details.
+<span class="lineNum">       8 </span>            :   \brief     Differential equations factory
+<span class="lineNum">       9 </span>            :   \details   This file declares the type for a differential equations factory.
+<span class="lineNum">      10 </span>            : */
+<span class="lineNum">      11 </span>            : // *****************************************************************************
+<span class="lineNum">      12 </span>            : #ifndef PDEFactory_h
+<span class="lineNum">      13 </span>            : #define PDEFactory_h
+<span class="lineNum">      14 </span>            : 
+<span class="lineNum">      15 </span>            : #include &lt;map&gt;
+<span class="lineNum">      16 </span>            : #include &lt;set&gt;
+<span class="lineNum">      17 </span>            : 
+<span class="lineNum">      18 </span>            : #include &lt;brigand/algorithms/for_each.hpp&gt;
+<span class="lineNum">      19 </span>            : 
+<span class="lineNum">      20 </span>            : #include &quot;CGPDE.hpp&quot;
+<span class="lineNum">      21 </span>            : #include &quot;DGPDE.hpp&quot;
+<span class="lineNum">      22 </span>            : #include &quot;Factory.hpp&quot;
+<span class="lineNum">      23 </span>            : #include &quot;SystemComponents.hpp&quot;
+<span class="lineNum">      24 </span>            : #include &quot;Inciter/Options/PDE.hpp&quot;
+<span class="lineNum">      25 </span>            : 
+<span class="lineNum">      26 </span>            : namespace inciter {
+<span class="lineNum">      27 </span>            : 
+<span class="lineNum">      28 </span>            : //! \brief Factory for PDEs using continuous Galerkin discretization storing
+<span class="lineNum">      29 </span>            : //!   keys associated to their constructors
+<span class="lineNum">      30 </span>            : using CGFactory =
+<span class="lineNum">      31 </span>            :   std::map&lt; ctr::PDEKey, std::function&lt; CGPDE(const tk::ctr::ncomp_type&amp;) &gt; &gt;;
+<span class="lineNum">      32 </span>            : 
+<span class="lineNum">      33 </span>            : //! \brief Factory for PDEs using discontinuous Galerkin discretization storing
+<span class="lineNum">      34 </span>            : //!   keys associated to their constructors
+<span class="lineNum">      35 </span>            : using DGFactory =
+<span class="lineNum">      36 </span>            :   std::map&lt; ctr::PDEKey, std::function&lt; DGPDE(const tk::ctr::ncomp_type&amp;) &gt; &gt;;
+<span class="lineNum">      37 </span>            : 
+<span class="lineNum">      38 </span>            : //! \brief Function object for registering a partial differential equation
+<span class="lineNum">      39 </span>            : //!   into the partial differential equation factory
+<span class="lineNum">      40 </span>            : //! \details This functor is repeatedly called by MPL's cartesian_product,
+<span class="lineNum">      41 </span>            : //!   sweeping all combinations of the partial differential equation
+<span class="lineNum">      42 </span>            : //!   policies. The purpose of template template is to simplify client code
+<span class="lineNum">      43 </span>            : //!   as that will not have to specify the template arguments of the
+<span class="lineNum">      44 </span>            : //!   template argument (the policies of Eq), since we can figure it out
+<span class="lineNum">      45 </span>            : //!   here. See also http://stackoverflow.com/a/214900. The template
+<span class="lineNum">      46 </span>            : //!   argument Eq specifies a &quot;child&quot; class that is used polymorphically
+<span class="lineNum">      47 </span>            : //!   with a &quot;base&quot; class modeling a concept defined in the base. The base
+<span class="lineNum">      48 </span>            : //!   is given by the template argument PDE. The template argument Factory
+<span class="lineNum">      49 </span>            : //!   specifies which factory to store the registered and configured child
+<span class="lineNum">      50 </span>            : //1   PDE.
+<span class="lineNum">      51 </span>            : template&lt; template&lt; class, class &gt; class Eq, class Factory, class PDE &gt;
+<span class="lineNum">      52 </span>            : struct registerPDE {
+<span class="lineNum">      53 </span>            :   //! Need to store the reference to factory we are registering into
+<span class="lineNum">      54 </span>            :   Factory&amp; factory;
+<span class="lineNum">      55 </span>            :   //! Need to store which differential equation we are registering
+<span class="lineNum">      56 </span>            :   const ctr::PDEType type;
+<span class="lineNum">      57 </span>            :   //! Constructor, also count number of unique equation types registered
+<span class="lineNum">      58 </span>            :   //! \param[in,out] f Factory into which to register PDE
+<a name="59"><span class="lineNum">      59 </span>            :   //! \param[in] t Enum selecting PDE type, Control/Inciter/Options/PDE.h</a>
+<span class="lineNum">      60 </span>            :   //! \param[in] eqTypes Equation type counters
+<span class="lineNum">      61 </span><span class="lineCov">      10365 :   explicit registerPDE( Factory&amp; f,</span>
+<span class="lineNum">      62 </span>            :                         ctr::PDEType t,
+<span class="lineNum">      63 </span>            :                         std::set&lt; ctr::PDEType &gt;&amp; eqTypes ) :
+<span class="lineNum">      64 </span><span class="lineCov">      10365 :     factory( f ), type( t ) { eqTypes.insert( t ); }</span>
+<a name="65"><span class="lineNum">      65 </span>            :   //! \brief Function call operator called with tk::cartesian_product for</a>
+<span class="lineNum">      66 </span>            :   //!   each unique sequence of policy combinations
+<span class="lineNum">      67 </span><span class="lineCov">      78774 :   template&lt; typename U &gt; void operator()( brigand::type_&lt;U&gt; ) {</span>
+<span class="lineNum">      68 </span>            :     // Get problem policy: first type of brigand::list U
+<span class="lineNum">      69 </span>            :     using Physics = typename brigand::front&lt; U &gt;;
+<span class="lineNum">      70 </span>            :     // Get problem policy: last type of brigand::list U
+<span class="lineNum">      71 </span>            :     using Problem = typename brigand::back&lt; U &gt;;
+<span class="lineNum">      72 </span>            :     // Build differential equation key
+<span class="lineNum">      73 </span><span class="lineCov">      78774 :     ctr::PDEKey key{ type, Physics::type(), Problem::type() };</span>
+<span class="lineNum">      74 </span>            :     // Register equation (with policies given by brigand::list U) into factory
+<span class="lineNum">      75 </span><span class="lineCov">      78774 :     tk::recordModelLate&lt; PDE, Eq&lt; Physics, Problem &gt; &gt;</span>
+<span class="lineNum">      76 </span><span class="lineCov">      78774 :                        ( factory, key, static_cast&lt;tk::ctr::ncomp_type&gt;(0) );</span>
+<span class="lineNum">      77 </span><span class="lineCov">      78774 :   }</span>
+<span class="lineNum">      78 </span>            : };
+<span class="lineNum">      79 </span>            : 
+<span class="lineNum">      80 </span>            : //! Wrapper of registerPDE specialized for registering CG PDEs
+<span class="lineNum">      81 </span>            : //! \details The sole reason for this functor is to simplify client-code
+<span class="lineNum">      82 </span>            : //!   calling registerPDE specialized to CG PDEs
+<span class="lineNum">      83 </span>            : template&lt; template&lt; class, class &gt; class Eq &gt;
+<span class="lineNum">      84 </span>            : struct registerCG : registerPDE&lt; Eq, CGFactory, CGPDE &gt; {
+<span class="lineNum">      85 </span>            :   //! Delegate constructor to base and specialize to CG
+<span class="lineNum">      86 </span>            :   //! \param[in] f Factory to register to
+<a name="87"><span class="lineNum">      87 </span>            :   //! \param[in] eqtypes Counters for equation types in factory</a>
+<span class="lineNum">      88 </span>            :   //! \param[in] t Enum selecting PDE type, Control/Inciter/Options/PDE.h
+<span class="lineNum">      89 </span><span class="lineCov">       4146 :   explicit registerCG( CGFactory&amp; f,</span>
+<span class="lineNum">      90 </span>            :                        std::set&lt; ctr::PDEType &gt;&amp; eqtypes,
+<span class="lineNum">      91 </span>            :                        ctr::PDEType t ) :
+<span class="lineNum">      92 </span><span class="lineCov">       4146 :     registerPDE&lt; Eq, CGFactory, CGPDE &gt;( f, t, eqtypes ) {}</span>
+<span class="lineNum">      93 </span>            : };
+<span class="lineNum">      94 </span>            : 
+<span class="lineNum">      95 </span>            : //! Wrapper of registerPDE specialized for registering DG PDEs
+<span class="lineNum">      96 </span>            : //! \details The sole reason for this functor is to simplify client-code
+<span class="lineNum">      97 </span>            : //!   calling registerPDE specialized to DG PDEs
+<span class="lineNum">      98 </span>            : template&lt; template&lt; class, class &gt; class Eq &gt;
+<span class="lineNum">      99 </span>            : struct registerDG : registerPDE&lt; Eq, DGFactory, DGPDE &gt; {
+<span class="lineNum">     100 </span>            :   //! Delegate constructor to base and specialize to CG
+<span class="lineNum">     101 </span>            :   //! \param[in] f Factory to register to
+<a name="102"><span class="lineNum">     102 </span>            :   //! \param[in] eqtypes Counters for equation types in factory</a>
+<span class="lineNum">     103 </span>            :   //! \param[in] t Enum selecting PDE type, Control/Inciter/Options/PDE.h
+<span class="lineNum">     104 </span><span class="lineCov">       6219 :   explicit registerDG( DGFactory&amp; f,</span>
+<span class="lineNum">     105 </span>            :                        std::set&lt; ctr::PDEType &gt;&amp; eqtypes,
+<span class="lineNum">     106 </span>            :                        ctr::PDEType t ) :
+<span class="lineNum">     107 </span><span class="lineCov">       6219 :     registerPDE&lt; Eq, DGFactory, DGPDE &gt;( f, t, eqtypes ) {}</span>
+<span class="lineNum">     108 </span>            : };
+<span class="lineNum">     109 </span>            : 
+<span class="lineNum">     110 </span>            : //! \brief Convert and return values from vector as string
+<span class="lineNum">     111 </span>            : //! \param[in] v Vector whose components to return as a string
+<a name="112"><span class="lineNum">     112 </span>            : //! \return Concatenated string of values read from a vector</a>
+<span class="lineNum">     113 </span>            : template&lt; typename V &gt;
+<span class="lineNum">     114 </span><span class="lineCov">        395 : std::string parameters( const V&amp; v ) {</span>
+<span class="lineNum">     115 </span><span class="lineCov">        395 :   std::stringstream s;</span>
+<span class="lineNum">     116 </span><span class="lineCov">        395 :   s &lt;&lt; &quot;{ &quot;;</span>
+<span class="lineNum">     117 </span><span class="lineCov">        395 :   for (auto p : v) s &lt;&lt; p &lt;&lt; ' ';</span>
+<span class="lineNum">     118 </span><span class="lineCov">        395 :   s &lt;&lt; &quot;}&quot;;</span>
+<span class="lineNum">     119 </span><span class="lineCov">        395 :   return s.str();</span>
+<span class="lineNum">     120 </span>            : }
+<span class="lineNum">     121 </span>            : 
+<span class="lineNum">     122 </span>            : } // inciter::
+<span class="lineNum">     123 </span>            : 
+<span class="lineNum">     124 </span>            : #endif // PDEFactory_h
 </pre>
       </td>
     </tr>

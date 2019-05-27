@@ -24,7 +24,7 @@
           </tr>
           <tr>
             <td class="headerItem">Commit:</td>
-            <td class="headerValue"><a href="https://github.com/quinoacomputing/quinoa/commit/de39577">Quinoa_v0.2-2841-gde39577</a></td>
+            <td class="headerValue"><a href="https://github.com/quinoacomputing/quinoa/commit/5a428c4">Quinoa_v0.2-2844-g5a428c4</a></td>
             <td></td>
             <td class="headerItem">Lines:</td>
             <td class="headerCovTableEntry">65</td>
@@ -33,7 +33,7 @@
           </tr>
           <tr>
             <td class="headerItem">Date:</td>
-            <td class="headerValue">2019-05-25 13:54:18</td>
+            <td class="headerValue">2019-05-26 20:24:37</td>
             <td></td>
             <td class="headerItem">Functions:</td>
             <td class="headerCovTableEntry">5</td>
@@ -45,16 +45,8 @@
             <td class="headerValueLeg">            Lines:
             <span class="coverLegendCov">hit</span>
             <span class="coverLegendNoCov">not hit</span>
-            | Branches:
-            <span class="coverLegendCov">+</span> taken
-            <span class="coverLegendNoCov">-</span> not taken
-            <span class="coverLegendNoCov">#</span> not executed
 </td>
             <td></td>
-            <td class="headerItem">Branches:</td>
-            <td class="headerCovTableEntry">29</td>
-            <td class="headerCovTableEntry">42</td>
-            <td class="headerCovTableEntryLo">69.0 %</td>
           </tr>
           <tr><td><img src="../../glass.png" width=3 height=3 alt=""></td></tr>
         </table>
@@ -70,209 +62,209 @@
     </tr>
     <tr>
       <td>
-<pre class="sourceHeading">           Branch data     Line data    Source code</pre>
+<pre class="sourceHeading">          Line data    Source code</pre>
 <pre class="source">
-<a name="1"><span class="lineNum">       1 </span>                :            : // *****************************************************************************</a>
-<span class="lineNum">       2 </span>                :            : /*!
-<span class="lineNum">       3 </span>                :            :   \file      src/PDE/Integrate/Initialize.cpp
-<span class="lineNum">       4 </span>                :            :   \copyright 2012-2015 J. Bakosi,
-<span class="lineNum">       5 </span>                :            :              2016-2018 Los Alamos National Security, LLC.,
-<span class="lineNum">       6 </span>                :            :              2019 Triad National Security, LLC.
-<span class="lineNum">       7 </span>                :            :              All rights reserved. See the LICENSE file for details.
-<span class="lineNum">       8 </span>                :            :   \brief     Functions for initialization of system of PDEs in DG methods
-<span class="lineNum">       9 </span>                :            :   \details   This file contains functionality for setting initial conditions
-<span class="lineNum">      10 </span>                :            :      and evaluating known solutions used in discontinuous Galerkin methods for
-<span class="lineNum">      11 </span>                :            :      various orders of numerical representation.
-<span class="lineNum">      12 </span>                :            : */
-<span class="lineNum">      13 </span>                :            : // *****************************************************************************
-<span class="lineNum">      14 </span>                :            : 
-<span class="lineNum">      15 </span>                :            : #include &lt;array&gt;
-<span class="lineNum">      16 </span>                :            : #include &lt;vector&gt;
-<span class="lineNum">      17 </span>                :            : #include &lt;iostream&gt;
-<span class="lineNum">      18 </span>                :            : #include &quot;Data.hpp&quot;
-<span class="lineNum">      19 </span>                :            : #include &quot;Initialize.hpp&quot;
-<span class="lineNum">      20 </span>                :            : #include &quot;Quadrature.hpp&quot;
-<span class="lineNum">      21 </span>                :            : #include &quot;Inciter/InputDeck/InputDeck.hpp&quot;
-<span class="lineNum">      22 </span>                :            : 
-<span class="lineNum">      23 </span>                :            : namespace inciter {
-<span class="lineNum">      24 </span>                :            : 
-<span class="lineNum">      25 </span>                :            : extern ctr::InputDeck g_inputdeck;
-<span class="lineNum">      26 </span>                :            : 
-<span class="lineNum">      27 </span>                :            : } // inciter::
-<span class="lineNum">      28 </span>                :            : 
-<span class="lineNum">      29 </span>                :            : void
-<span class="lineNum">      30 </span>                :<span class="lineCov">       1418 : tk::initialize( ncomp_t system,</span>
-<span class="lineNum">      31 </span>                :            :                 ncomp_t ncomp,
-<span class="lineNum">      32 </span>                :            :                 ncomp_t offset,
-<span class="lineNum">      33 </span>                :            :                 const Fields&amp; L,
-<span class="lineNum">      34 </span>                :<span class="lineCov">    1738115 :                 const std::vector&lt; std::size_t &gt;&amp; inpoel,</span>
-<span class="lineNum">      35 </span>                :            :                 const UnsMesh::Coords&amp; coord,
-<span class="lineNum">      36 </span>                :            :                 const SolutionFn&amp; solution,
-<span class="lineNum">      37 </span>                :<span class="lineCov">    1738115 :                 Fields&amp; unk,</span>
-<span class="lineNum">      38 </span>                :            :                 real t,
-<span class="lineNum">      39 </span>                :            :                 const std::size_t nielem )
-<span class="lineNum">      40 </span>                :            : // *****************************************************************************
-<span class="lineNum">      41 </span>                :            : //! Initalize a system of DGPDEs by projecting the exact solution in the DG
-<span class="lineNum">      42 </span>                :            : //! solution space
-<span class="lineNum">      43 </span>                :            : //! \details This is the public interface exposed to client code.
-<span class="lineNum">      44 </span>                :            : //! \param[in] system Equation system index
-<span class="lineNum">      45 </span>                :            : //! \param[in] ncomp Number of scalar components in this PDE system
-<span class="lineNum">      46 </span>                :            : //! \param[in] offset Offset this PDE system operates from
-<span class="lineNum">      47 </span>                :            : //! \param[in] L Block diagonal mass matrix
-<span class="lineNum">      48 </span>                :            : //! \param[in] inpoel Element-node connectivity
-<span class="lineNum">      49 </span>                :            : //! \param[in] coord Array of node coordinates
-<span class="lineNum">      50 </span>                :            : //! \param[in] solution Function to call to evaluate known solution or initial
-<span class="lineNum">      51 </span>                :            : //!   conditions at x,y,z,t
-<span class="lineNum">      52 </span>                :            : //! \param[in,out] unk Array of unknowns
-<span class="lineNum">      53 </span>                :            : //! \param[in] t Physical time
-<span class="lineNum">      54 </span>                :            : //! \param[in] nielem Number of internal elements
-<span class="lineNum">      55 </span>                :            : // *****************************************************************************
-<span class="lineNum">      56 </span>                :            : {
-<span class="lineNum">      57 </span>                :<span class="lineCov">       1418 :   const auto ndof = inciter::g_inputdeck.get&lt; tag::discr, tag::ndof &gt;();</span>
-<span class="lineNum">      58 </span>                :            : 
-<span class="lineNum">      59 </span>                :            :   // Number of quadrature points for volume integration
-<span class="lineNum">      60 </span>                :<span class="lineCov">       1418 :   auto ng = tk::NGinit(ndof);</span>
-<span class="lineNum">      61 </span>                :            : 
-<span class="lineNum">      62 </span>                :            :   // arrays for quadrature points
-<span class="lineNum">      63 </span>                :            :   std::array&lt; std::vector&lt; real &gt;, 3 &gt; coordgp;
-<span class="lineNum">      64 </span>                :            :   std::vector&lt; real &gt; wgp;
-<span class="lineNum">      65 </span>                :            : 
-<span class="lineNum">      66 </span>        [<span class="branchCov" title="Branch 1 was taken 1418 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">       1418 :   coordgp[0].resize( ng );</span>
-<span class="lineNum">      67 </span>        [<span class="branchCov" title="Branch 1 was taken 1418 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">       1418 :   coordgp[1].resize( ng );</span>
-<span class="lineNum">      68 </span>        [<span class="branchCov" title="Branch 1 was taken 1418 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">       1418 :   coordgp[2].resize( ng );</span>
-<span class="lineNum">      69 </span>        [<span class="branchCov" title="Branch 1 was taken 1418 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">       1418 :   wgp.resize( ng );</span>
-<span class="lineNum">      70 </span>                :            : 
-<span class="lineNum">      71 </span>                :            :   // get quadrature point weights and coordinates for triangle
-<span class="lineNum">      72 </span>        [<span class="branchCov" title="Branch 1 was taken 1418 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">       1418 :   GaussQuadratureTet( ng, coordgp, wgp );</span>
-<span class="lineNum">      73 </span>                :            : 
-<span class="lineNum">      74 </span>                :<span class="lineCov">    1738115 :   const auto&amp; cx = coord[0];</span>
-<span class="lineNum">      75 </span>                :<span class="lineCov">    1738115 :   const auto&amp; cy = coord[1];</span>
-<span class="lineNum">      76 </span>                :<span class="lineCov">    1738115 :   const auto&amp; cz = coord[2];</span>
-<span class="lineNum">      77 </span>                :            : 
-<span class="lineNum">      78 </span>        [<span class="branchCov" title="Branch 0 was taken 1738115 times"> + </span><span class="branchCov" title="Branch 1 was taken 1418 times"> + </span>]:<span class="lineCov">    1739533 :   for (std::size_t e=0; e&lt;nielem; ++e) {    // for all tets</span>
-<span class="lineNum">      79 </span>                :            :     // The volume of tetrahedron
-<span class="lineNum">      80 </span>                :<span class="lineCov">    1738115 :     auto vole = L(e, 0, offset);</span>
-<span class="lineNum">      81 </span>                :            : 
-<span class="lineNum">      82 </span>                :            :     // Extract the element coordinates
-<span class="lineNum">      83 </span>                :            :     std::array&lt; std::array&lt; real, 3&gt;, 4 &gt; coordel {{
-<span class="lineNum">      84 </span>                :<span class="lineCov">    3476230 :       {{ cx[ inpoel[4*e  ] ], cy[ inpoel[4*e  ] ], cz[ inpoel[4*e  ] ] }},</span>
-<span class="lineNum">      85 </span>                :<span class="lineCov">    3476230 :       {{ cx[ inpoel[4*e+1] ], cy[ inpoel[4*e+1] ], cz[ inpoel[4*e+1] ] }},</span>
-<span class="lineNum">      86 </span>                :<span class="lineCov">    3476230 :       {{ cx[ inpoel[4*e+2] ], cy[ inpoel[4*e+2] ], cz[ inpoel[4*e+2] ] }},</span>
-<span class="lineNum">      87 </span>                :<span class="lineCov">   22595495 :       {{ cx[ inpoel[4*e+3] ], cy[ inpoel[4*e+3] ], cz[ inpoel[4*e+3] ] }} }};</span>
-<span class="lineNum">      88 </span>                :            : 
-<span class="lineNum">      89 </span>                :            :     // right hand side vector
-<span class="lineNum">      90 </span>        [<span class="branchCov" title="Branch 1 was taken 1738115 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">    1738115 :     std::vector&lt; real &gt; R( unk.nprop(), 0.0 );</span>
-<span class="lineNum">      91 </span>                :            : 
-<span class="lineNum">      92 </span>                :            :     // Gaussian quadrature
-<span class="lineNum">      93 </span>        [<span class="branchCov" title="Branch 0 was taken 2704366 times"> + </span><span class="branchCov" title="Branch 1 was taken 1738115 times"> + </span>]:<span class="lineCov">    4442481 :     for (std::size_t igp=0; igp&lt;ng; ++igp)</span>
-<span class="lineNum">      94 </span>                :            :     {
-<span class="lineNum">      95 </span>                :            :       // Compute the coordinates of quadrature point at physical domain
-<span class="lineNum">      96 </span>        [<span class="branchCov" title="Branch 1 was taken 2704366 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">    2704366 :       auto gp = eval_gp( igp, coordel, coordgp );</span>
-<span class="lineNum">      97 </span>                :            : 
-<span class="lineNum">      98 </span>                :            :       // Compute the basis function
-<span class="lineNum">      99 </span>                :            :       auto B =
-<span class="lineNum">     100 </span>        [<span class="branchCov" title="Branch 1 was taken 2704366 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">    2704366 :         eval_basis( ndof, coordgp[0][igp], coordgp[1][igp], coordgp[2][igp] );</span>
-<span class="lineNum">     101 </span>                :            : 
-<span class="lineNum">     102 </span>        [<span class="branchCov" title="Branch 1 was taken 2704366 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">    2704366 :       const auto s = solution( system, ncomp, gp[0], gp[1], gp[2], t );</span>
-<span class="lineNum">     103 </span>                :            : 
-<span class="lineNum">     104 </span>                :<span class="lineCov">    5408732 :       auto wt = wgp[igp] * vole;</span>
-<span class="lineNum">     105 </span>                :            : 
-<span class="lineNum">     106 </span>        [<span class="branchCov" title="Branch 1 was taken 2704366 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">    2704366 :       update_rhs( ncomp, ndof, wt, B, s, R );</span>
-<span class="lineNum">     107 </span>                :            :     }
-<span class="lineNum">     108 </span>                :            : 
-<span class="lineNum">     109 </span>                :            :     // Compute the initial conditions
-<span class="lineNum">     110 </span>        [<span class="branchCov" title="Branch 1 was taken 1738115 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">    1738115 :     eval_init(ncomp, offset, ndof, e, R, L, unk);</span>
-<span class="lineNum">     111 </span>                :<span class="lineCov">       1418 :   }</span>
-<span class="lineNum">     112 </span>                :<span class="lineCov">       1418 : }</span>
-<span class="lineNum">     113 </span>                :            : 
-<span class="lineNum">     114 </span>                :            : void
-<span class="lineNum">     115 </span>                :<span class="lineCov">    2704366 : tk::update_rhs( ncomp_t ncomp,</span>
-<span class="lineNum">     116 </span>                :            :                 const std::size_t ndof,
-<span class="lineNum">     117 </span>                :            :                 const tk::real wt,
-<span class="lineNum">     118 </span>                :<span class="lineCov">    2346778 :                 const std::vector&lt; tk::real &gt;&amp; B,</span>
-<span class="lineNum">     119 </span>                :<span class="lineCov">    4130734 :                 const std::vector&lt; tk::real &gt;&amp; s,</span>
-<span class="lineNum">     120 </span>                :<span class="lineCov">    4130734 :                 std::vector&lt; tk::real &gt;&amp; R )</span>
-<span class="lineNum">     121 </span>                :            : // *****************************************************************************
-<span class="lineNum">     122 </span>                :            : //  Update the rhs by adding the initial analytical solution term
-<span class="lineNum">     123 </span>                :            : //! \param[in] ncomp Number of scalar components in this PDE system
-<span class="lineNum">     124 </span>                :            : //! \param[in] ndof Number of degrees of freedom
-<span class="lineNum">     125 </span>                :            : //! \param[in] wt Weight of gauss quadrature point
-<span class="lineNum">     126 </span>                :            : //! \param[in] B Vector of basis functions
-<span class="lineNum">     127 </span>                :            : //! \param[in] s Vector of analytical solution at quadrature point
-<span class="lineNum">     128 </span>                :            : //! \param[in,out] R Right-hand side vector
-<span class="lineNum">     129 </span>                :            : // *****************************************************************************
-<span class="lineNum">     130 </span>                :            : {
-<span class="lineNum">     131 </span>                :            :   Assert( B.size() == ndof, &quot;Size mismatch for basis function&quot; );
-<span class="lineNum">     132 </span>                :            :   Assert( s.size() == ncomp, &quot;Size mismatch for source term&quot; );
-<span class="lineNum">     133 </span>                :            : 
-<span class="lineNum">     134 </span>        [<span class="branchCov" title="Branch 0 was taken 4130734 times"> + </span><span class="branchCov" title="Branch 1 was taken 2704366 times"> + </span>]:<span class="lineCov">    6835100 :   for (ncomp_t c=0; c&lt;ncomp; ++c)</span>
-<span class="lineNum">     135 </span>                :            :   {
-<span class="lineNum">     136 </span>                :            :     // DG(P0)
-<span class="lineNum">     137 </span>                :<span class="lineCov">    4130734 :     auto mark = c*ndof;</span>
-<span class="lineNum">     138 </span>                :<span class="lineCov">    8261468 :     R[mark] += wt * s[c];</span>
-<span class="lineNum">     139 </span>                :            : 
-<span class="lineNum">     140 </span>        [<span class="branchCov" title="Branch 0 was taken 2346778 times"> + </span><span class="branchCov" title="Branch 1 was taken 1783956 times"> + </span>]:<span class="lineCov">    4130734 :     if(ndof &gt; 1)         //DG(P1)</span>
-<span class="lineNum">     141 </span>                :            :     {
-<span class="lineNum">     142 </span>                :<span class="lineCov">    7040334 :       R[mark+1] += wt * s[c] * B[1];</span>
-<span class="lineNum">     143 </span>                :<span class="lineCov">    4693556 :       R[mark+2] += wt * s[c] * B[2];</span>
-<span class="lineNum">     144 </span>                :<span class="lineCov">    4693556 :       R[mark+3] += wt * s[c] * B[3];</span>
-<span class="lineNum">     145 </span>                :            : 
-<span class="lineNum">     146 </span>        [<span class="branchCov" title="Branch 0 was taken 306404 times"> + </span><span class="branchCov" title="Branch 1 was taken 2040374 times"> + </span>]:<span class="lineCov">    2346778 :       if(ndof &gt; 4)      //DG(P2)</span>
-<span class="lineNum">     147 </span>                :            :       {
-<span class="lineNum">     148 </span>                :<span class="lineCov">     612808 :         R[mark+4] += wt * s[c] * B[4];</span>
-<span class="lineNum">     149 </span>                :<span class="lineCov">     612808 :         R[mark+5] += wt * s[c] * B[5];</span>
-<span class="lineNum">     150 </span>                :<span class="lineCov">     612808 :         R[mark+6] += wt * s[c] * B[6];</span>
-<span class="lineNum">     151 </span>                :<span class="lineCov">     612808 :         R[mark+7] += wt * s[c] * B[7];</span>
-<span class="lineNum">     152 </span>                :<span class="lineCov">     612808 :         R[mark+8] += wt * s[c] * B[8];</span>
-<span class="lineNum">     153 </span>                :<span class="lineCov">     306404 :         R[mark+9] += wt * s[c] * B[9];</span>
-<span class="lineNum">     154 </span>                :            :       }
-<span class="lineNum">     155 </span>                :            :     }
-<span class="lineNum">     156 </span>                :            :   }
-<span class="lineNum">     157 </span>                :<span class="lineCov">    2704366 : }</span>
-<span class="lineNum">     158 </span>                :            : 
-<span class="lineNum">     159 </span>                :            : void
-<span class="lineNum">     160 </span>                :<span class="lineCov">    1738115 : tk::eval_init( ncomp_t ncomp,</span>
-<span class="lineNum">     161 </span>                :            :                ncomp_t offset,
-<span class="lineNum">     162 </span>                :            :                const std::size_t ndof,
-<span class="lineNum">     163 </span>                :            :                const std::size_t e,
-<span class="lineNum">     164 </span>                :<span class="lineCov">    1951583 :                const std::vector&lt; tk::real &gt;&amp; R,</span>
-<span class="lineNum">     165 </span>                :            :                const Fields&amp; L,
-<span class="lineNum">     166 </span>                :            :                Fields&amp; unk )
-<span class="lineNum">     167 </span>                :            : // *****************************************************************************
-<span class="lineNum">     168 </span>                :            : //  Compute the initial conditions
-<span class="lineNum">     169 </span>                :            : //! \param[in] ncomp Number of scalar components in this PDE system
-<span class="lineNum">     170 </span>                :            : //! \param[in] offset Offset this PDE system operates from
-<span class="lineNum">     171 </span>                :            : //! \param[in] ndof Number of degrees of freedom
-<span class="lineNum">     172 </span>                :            : //! \param[in] e Element index
-<span class="lineNum">     173 </span>                :            : //! \param[in] R Right-hand side vector
-<span class="lineNum">     174 </span>                :            : //! \param[in] L Block diagonal mass matrix
-<span class="lineNum">     175 </span>                :            : //! \param[in,out] unk Array of unknowns
-<span class="lineNum">     176 </span>                :            : // *****************************************************************************
-<span class="lineNum">     177 </span>                :            : {
-<span class="lineNum">     178 </span>        [<span class="branchCov" title="Branch 0 was taken 1951583 times"> + </span><span class="branchCov" title="Branch 1 was taken 1738115 times"> + </span>]:<span class="lineCov">    3689698 :   for (ncomp_t c=0; c&lt;ncomp; ++c)</span>
-<span class="lineNum">     179 </span>                :            :   {
-<span class="lineNum">     180 </span>                :            :     // DG(P0)
-<span class="lineNum">     181 </span>                :<span class="lineCov">    1951583 :     auto mark = c*ndof;</span>
-<span class="lineNum">     182 </span>                :<span class="lineCov">    3903166 :     unk(e, mark, offset) = R[mark] / L(e, mark,   offset);</span>
-<span class="lineNum">     183 </span>                :            : 
-<span class="lineNum">     184 </span>        [<span class="branchCov" title="Branch 0 was taken 167627 times"> + </span><span class="branchCov" title="Branch 1 was taken 1783956 times"> + </span>]:<span class="lineCov">    1951583 :     if(ndof &gt; 1)          // DG(P1)</span>
-<span class="lineNum">     185 </span>                :            :     {
-<span class="lineNum">     186 </span>                :<span class="lineCov">     502881 :       unk(e, mark+1, offset) = R[mark+1] / L(e, mark+1, offset);</span>
-<span class="lineNum">     187 </span>                :<span class="lineCov">     502881 :       unk(e, mark+2, offset) = R[mark+2] / L(e, mark+2, offset);</span>
-<span class="lineNum">     188 </span>                :<span class="lineCov">     502881 :       unk(e, mark+3, offset) = R[mark+3] / L(e, mark+3, offset);</span>
-<span class="lineNum">     189 </span>                :            :  
-<span class="lineNum">     190 </span>        [<span class="branchCov" title="Branch 0 was taken 21886 times"> + </span><span class="branchCov" title="Branch 1 was taken 145741 times"> + </span>]:<span class="lineCov">     167627 :       if(ndof &gt; 4)        // DG(P2)</span>
-<span class="lineNum">     191 </span>                :            :       {
-<span class="lineNum">     192 </span>                :<span class="lineCov">      65658 :         unk(e, mark+4, offset) = R[mark+4] / L(e, mark+4, offset);</span>
-<span class="lineNum">     193 </span>                :<span class="lineCov">      65658 :         unk(e, mark+5, offset) = R[mark+5] / L(e, mark+5, offset);</span>
-<span class="lineNum">     194 </span>                :<span class="lineCov">      65658 :         unk(e, mark+6, offset) = R[mark+6] / L(e, mark+6, offset);</span>
-<span class="lineNum">     195 </span>                :<span class="lineCov">      65658 :         unk(e, mark+7, offset) = R[mark+7] / L(e, mark+7, offset);</span>
-<span class="lineNum">     196 </span>                :<span class="lineCov">      65658 :         unk(e, mark+8, offset) = R[mark+8] / L(e, mark+8, offset);</span>
-<span class="lineNum">     197 </span>                :<span class="lineCov">      21886 :         unk(e, mark+9, offset) = R[mark+9] / L(e, mark+9, offset);</span>
-<span class="lineNum">     198 </span>                :            :       }
-<a name="199"><span class="lineNum">     199 </span>                :            :     }</a>
-<span class="lineNum">     200 </span>                :            :   }
-<span class="lineNum">     201 </span>[<span class="branchCov" title="Branch 1 was taken 913 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 3 was taken 913 times"> + </span><span class="branchNoCov" title="Branch 4 was not taken"> - </span>]:<span class="lineCov">       3652 : }</span>
+<a name="1"><span class="lineNum">       1 </span>            : // *****************************************************************************</a>
+<span class="lineNum">       2 </span>            : /*!
+<span class="lineNum">       3 </span>            :   \file      src/PDE/Integrate/Initialize.cpp
+<span class="lineNum">       4 </span>            :   \copyright 2012-2015 J. Bakosi,
+<span class="lineNum">       5 </span>            :              2016-2018 Los Alamos National Security, LLC.,
+<span class="lineNum">       6 </span>            :              2019 Triad National Security, LLC.
+<span class="lineNum">       7 </span>            :              All rights reserved. See the LICENSE file for details.
+<span class="lineNum">       8 </span>            :   \brief     Functions for initialization of system of PDEs in DG methods
+<span class="lineNum">       9 </span>            :   \details   This file contains functionality for setting initial conditions
+<span class="lineNum">      10 </span>            :      and evaluating known solutions used in discontinuous Galerkin methods for
+<span class="lineNum">      11 </span>            :      various orders of numerical representation.
+<span class="lineNum">      12 </span>            : */
+<span class="lineNum">      13 </span>            : // *****************************************************************************
+<span class="lineNum">      14 </span>            : 
+<span class="lineNum">      15 </span>            : #include &lt;array&gt;
+<span class="lineNum">      16 </span>            : #include &lt;vector&gt;
+<span class="lineNum">      17 </span>            : #include &lt;iostream&gt;
+<span class="lineNum">      18 </span>            : #include &quot;Data.hpp&quot;
+<span class="lineNum">      19 </span>            : #include &quot;Initialize.hpp&quot;
+<span class="lineNum">      20 </span>            : #include &quot;Quadrature.hpp&quot;
+<span class="lineNum">      21 </span>            : #include &quot;Inciter/InputDeck/InputDeck.hpp&quot;
+<span class="lineNum">      22 </span>            : 
+<span class="lineNum">      23 </span>            : namespace inciter {
+<span class="lineNum">      24 </span>            : 
+<span class="lineNum">      25 </span>            : extern ctr::InputDeck g_inputdeck;
+<span class="lineNum">      26 </span>            : 
+<span class="lineNum">      27 </span>            : } // inciter::
+<span class="lineNum">      28 </span>            : 
+<span class="lineNum">      29 </span>            : void
+<span class="lineNum">      30 </span><span class="lineCov">       1418 : tk::initialize( ncomp_t system,</span>
+<span class="lineNum">      31 </span>            :                 ncomp_t ncomp,
+<span class="lineNum">      32 </span>            :                 ncomp_t offset,
+<span class="lineNum">      33 </span>            :                 const Fields&amp; L,
+<span class="lineNum">      34 </span><span class="lineCov">    1738115 :                 const std::vector&lt; std::size_t &gt;&amp; inpoel,</span>
+<span class="lineNum">      35 </span>            :                 const UnsMesh::Coords&amp; coord,
+<span class="lineNum">      36 </span>            :                 const SolutionFn&amp; solution,
+<span class="lineNum">      37 </span><span class="lineCov">    1738115 :                 Fields&amp; unk,</span>
+<span class="lineNum">      38 </span>            :                 real t,
+<span class="lineNum">      39 </span>            :                 const std::size_t nielem )
+<span class="lineNum">      40 </span>            : // *****************************************************************************
+<span class="lineNum">      41 </span>            : //! Initalize a system of DGPDEs by projecting the exact solution in the DG
+<span class="lineNum">      42 </span>            : //! solution space
+<span class="lineNum">      43 </span>            : //! \details This is the public interface exposed to client code.
+<span class="lineNum">      44 </span>            : //! \param[in] system Equation system index
+<span class="lineNum">      45 </span>            : //! \param[in] ncomp Number of scalar components in this PDE system
+<span class="lineNum">      46 </span>            : //! \param[in] offset Offset this PDE system operates from
+<span class="lineNum">      47 </span>            : //! \param[in] L Block diagonal mass matrix
+<span class="lineNum">      48 </span>            : //! \param[in] inpoel Element-node connectivity
+<span class="lineNum">      49 </span>            : //! \param[in] coord Array of node coordinates
+<span class="lineNum">      50 </span>            : //! \param[in] solution Function to call to evaluate known solution or initial
+<span class="lineNum">      51 </span>            : //!   conditions at x,y,z,t
+<span class="lineNum">      52 </span>            : //! \param[in,out] unk Array of unknowns
+<span class="lineNum">      53 </span>            : //! \param[in] t Physical time
+<span class="lineNum">      54 </span>            : //! \param[in] nielem Number of internal elements
+<span class="lineNum">      55 </span>            : // *****************************************************************************
+<span class="lineNum">      56 </span>            : {
+<span class="lineNum">      57 </span><span class="lineCov">       1418 :   const auto ndof = inciter::g_inputdeck.get&lt; tag::discr, tag::ndof &gt;();</span>
+<span class="lineNum">      58 </span>            : 
+<span class="lineNum">      59 </span>            :   // Number of quadrature points for volume integration
+<span class="lineNum">      60 </span><span class="lineCov">       1418 :   auto ng = tk::NGinit(ndof);</span>
+<span class="lineNum">      61 </span>            : 
+<span class="lineNum">      62 </span>            :   // arrays for quadrature points
+<span class="lineNum">      63 </span>            :   std::array&lt; std::vector&lt; real &gt;, 3 &gt; coordgp;
+<span class="lineNum">      64 </span>            :   std::vector&lt; real &gt; wgp;
+<span class="lineNum">      65 </span>            : 
+<span class="lineNum">      66 </span><span class="lineCov">       1418 :   coordgp[0].resize( ng );</span>
+<span class="lineNum">      67 </span><span class="lineCov">       1418 :   coordgp[1].resize( ng );</span>
+<span class="lineNum">      68 </span><span class="lineCov">       1418 :   coordgp[2].resize( ng );</span>
+<span class="lineNum">      69 </span><span class="lineCov">       1418 :   wgp.resize( ng );</span>
+<span class="lineNum">      70 </span>            : 
+<span class="lineNum">      71 </span>            :   // get quadrature point weights and coordinates for triangle
+<span class="lineNum">      72 </span><span class="lineCov">       1418 :   GaussQuadratureTet( ng, coordgp, wgp );</span>
+<span class="lineNum">      73 </span>            : 
+<span class="lineNum">      74 </span><span class="lineCov">    1738115 :   const auto&amp; cx = coord[0];</span>
+<span class="lineNum">      75 </span><span class="lineCov">    1738115 :   const auto&amp; cy = coord[1];</span>
+<span class="lineNum">      76 </span><span class="lineCov">    1738115 :   const auto&amp; cz = coord[2];</span>
+<span class="lineNum">      77 </span>            : 
+<span class="lineNum">      78 </span><span class="lineCov">    1738115 :   for (std::size_t e=0; e&lt;nielem; ++e) {    // for all tets</span>
+<span class="lineNum">      79 </span>            :     // The volume of tetrahedron
+<span class="lineNum">      80 </span><span class="lineCov">    1738115 :     auto vole = L(e, 0, offset);</span>
+<span class="lineNum">      81 </span>            : 
+<span class="lineNum">      82 </span>            :     // Extract the element coordinates
+<span class="lineNum">      83 </span>            :     std::array&lt; std::array&lt; real, 3&gt;, 4 &gt; coordel {{
+<span class="lineNum">      84 </span><span class="lineCov">    3476230 :       {{ cx[ inpoel[4*e  ] ], cy[ inpoel[4*e  ] ], cz[ inpoel[4*e  ] ] }},</span>
+<span class="lineNum">      85 </span><span class="lineCov">    3476230 :       {{ cx[ inpoel[4*e+1] ], cy[ inpoel[4*e+1] ], cz[ inpoel[4*e+1] ] }},</span>
+<span class="lineNum">      86 </span><span class="lineCov">    3476230 :       {{ cx[ inpoel[4*e+2] ], cy[ inpoel[4*e+2] ], cz[ inpoel[4*e+2] ] }},</span>
+<span class="lineNum">      87 </span><span class="lineCov">   22595495 :       {{ cx[ inpoel[4*e+3] ], cy[ inpoel[4*e+3] ], cz[ inpoel[4*e+3] ] }} }};</span>
+<span class="lineNum">      88 </span>            : 
+<span class="lineNum">      89 </span>            :     // right hand side vector
+<span class="lineNum">      90 </span><span class="lineCov">    3476230 :     std::vector&lt; real &gt; R( unk.nprop(), 0.0 );</span>
+<span class="lineNum">      91 </span>            : 
+<span class="lineNum">      92 </span>            :     // Gaussian quadrature
+<span class="lineNum">      93 </span><span class="lineCov">    4442481 :     for (std::size_t igp=0; igp&lt;ng; ++igp)</span>
+<span class="lineNum">      94 </span>            :     {
+<span class="lineNum">      95 </span>            :       // Compute the coordinates of quadrature point at physical domain
+<span class="lineNum">      96 </span><span class="lineCov">    2704366 :       auto gp = eval_gp( igp, coordel, coordgp );</span>
+<span class="lineNum">      97 </span>            : 
+<span class="lineNum">      98 </span>            :       // Compute the basis function
+<span class="lineNum">      99 </span>            :       auto B =
+<span class="lineNum">     100 </span><span class="lineCov">   10817464 :         eval_basis( ndof, coordgp[0][igp], coordgp[1][igp], coordgp[2][igp] );</span>
+<span class="lineNum">     101 </span>            : 
+<span class="lineNum">     102 </span><span class="lineCov">    2704366 :       const auto s = solution( system, ncomp, gp[0], gp[1], gp[2], t );</span>
+<span class="lineNum">     103 </span>            : 
+<span class="lineNum">     104 </span><span class="lineCov">    5408732 :       auto wt = wgp[igp] * vole;</span>
+<span class="lineNum">     105 </span>            : 
+<span class="lineNum">     106 </span><span class="lineCov">    2704366 :       update_rhs( ncomp, ndof, wt, B, s, R );</span>
+<span class="lineNum">     107 </span>            :     }
+<span class="lineNum">     108 </span>            : 
+<span class="lineNum">     109 </span>            :     // Compute the initial conditions
+<span class="lineNum">     110 </span><span class="lineCov">    1738115 :     eval_init(ncomp, offset, ndof, e, R, L, unk);</span>
+<span class="lineNum">     111 </span><span class="lineCov">       1418 :   }</span>
+<span class="lineNum">     112 </span><span class="lineCov">       1418 : }</span>
+<span class="lineNum">     113 </span>            : 
+<span class="lineNum">     114 </span>            : void
+<span class="lineNum">     115 </span><span class="lineCov">    2704366 : tk::update_rhs( ncomp_t ncomp,</span>
+<span class="lineNum">     116 </span>            :                 const std::size_t ndof,
+<span class="lineNum">     117 </span>            :                 const tk::real wt,
+<span class="lineNum">     118 </span><span class="lineCov">    2346778 :                 const std::vector&lt; tk::real &gt;&amp; B,</span>
+<span class="lineNum">     119 </span><span class="lineCov">    4130734 :                 const std::vector&lt; tk::real &gt;&amp; s,</span>
+<span class="lineNum">     120 </span><span class="lineCov">    4130734 :                 std::vector&lt; tk::real &gt;&amp; R )</span>
+<span class="lineNum">     121 </span>            : // *****************************************************************************
+<span class="lineNum">     122 </span>            : //  Update the rhs by adding the initial analytical solution term
+<span class="lineNum">     123 </span>            : //! \param[in] ncomp Number of scalar components in this PDE system
+<span class="lineNum">     124 </span>            : //! \param[in] ndof Number of degrees of freedom
+<span class="lineNum">     125 </span>            : //! \param[in] wt Weight of gauss quadrature point
+<span class="lineNum">     126 </span>            : //! \param[in] B Vector of basis functions
+<span class="lineNum">     127 </span>            : //! \param[in] s Vector of analytical solution at quadrature point
+<span class="lineNum">     128 </span>            : //! \param[in,out] R Right-hand side vector
+<span class="lineNum">     129 </span>            : // *****************************************************************************
+<span class="lineNum">     130 </span>            : {
+<span class="lineNum">     131 </span>            :   Assert( B.size() == ndof, &quot;Size mismatch for basis function&quot; );
+<span class="lineNum">     132 </span>            :   Assert( s.size() == ncomp, &quot;Size mismatch for source term&quot; );
+<span class="lineNum">     133 </span>            : 
+<span class="lineNum">     134 </span><span class="lineCov">    6835100 :   for (ncomp_t c=0; c&lt;ncomp; ++c)</span>
+<span class="lineNum">     135 </span>            :   {
+<span class="lineNum">     136 </span>            :     // DG(P0)
+<span class="lineNum">     137 </span><span class="lineCov">    4130734 :     auto mark = c*ndof;</span>
+<span class="lineNum">     138 </span><span class="lineCov">    8261468 :     R[mark] += wt * s[c];</span>
+<span class="lineNum">     139 </span>            : 
+<span class="lineNum">     140 </span><span class="lineCov">    4130734 :     if(ndof &gt; 1)         //DG(P1)</span>
+<span class="lineNum">     141 </span>            :     {
+<span class="lineNum">     142 </span><span class="lineCov">    7040334 :       R[mark+1] += wt * s[c] * B[1];</span>
+<span class="lineNum">     143 </span><span class="lineCov">    4693556 :       R[mark+2] += wt * s[c] * B[2];</span>
+<span class="lineNum">     144 </span><span class="lineCov">    4693556 :       R[mark+3] += wt * s[c] * B[3];</span>
+<span class="lineNum">     145 </span>            : 
+<span class="lineNum">     146 </span><span class="lineCov">    2346778 :       if(ndof &gt; 4)      //DG(P2)</span>
+<span class="lineNum">     147 </span>            :       {
+<span class="lineNum">     148 </span><span class="lineCov">     612808 :         R[mark+4] += wt * s[c] * B[4];</span>
+<span class="lineNum">     149 </span><span class="lineCov">     612808 :         R[mark+5] += wt * s[c] * B[5];</span>
+<span class="lineNum">     150 </span><span class="lineCov">     612808 :         R[mark+6] += wt * s[c] * B[6];</span>
+<span class="lineNum">     151 </span><span class="lineCov">     612808 :         R[mark+7] += wt * s[c] * B[7];</span>
+<span class="lineNum">     152 </span><span class="lineCov">     612808 :         R[mark+8] += wt * s[c] * B[8];</span>
+<span class="lineNum">     153 </span><span class="lineCov">     612808 :         R[mark+9] += wt * s[c] * B[9];</span>
+<span class="lineNum">     154 </span>            :       }
+<span class="lineNum">     155 </span>            :     }
+<span class="lineNum">     156 </span>            :   }
+<span class="lineNum">     157 </span><span class="lineCov">    2704366 : }</span>
+<span class="lineNum">     158 </span>            : 
+<span class="lineNum">     159 </span>            : void
+<span class="lineNum">     160 </span><span class="lineCov">    1738115 : tk::eval_init( ncomp_t ncomp,</span>
+<span class="lineNum">     161 </span>            :                ncomp_t offset,
+<span class="lineNum">     162 </span>            :                const std::size_t ndof,
+<span class="lineNum">     163 </span>            :                const std::size_t e,
+<span class="lineNum">     164 </span><span class="lineCov">    1951583 :                const std::vector&lt; tk::real &gt;&amp; R,</span>
+<span class="lineNum">     165 </span>            :                const Fields&amp; L,
+<span class="lineNum">     166 </span>            :                Fields&amp; unk )
+<span class="lineNum">     167 </span>            : // *****************************************************************************
+<span class="lineNum">     168 </span>            : //  Compute the initial conditions
+<span class="lineNum">     169 </span>            : //! \param[in] ncomp Number of scalar components in this PDE system
+<span class="lineNum">     170 </span>            : //! \param[in] offset Offset this PDE system operates from
+<span class="lineNum">     171 </span>            : //! \param[in] ndof Number of degrees of freedom
+<span class="lineNum">     172 </span>            : //! \param[in] e Element index
+<span class="lineNum">     173 </span>            : //! \param[in] R Right-hand side vector
+<span class="lineNum">     174 </span>            : //! \param[in] L Block diagonal mass matrix
+<span class="lineNum">     175 </span>            : //! \param[in,out] unk Array of unknowns
+<span class="lineNum">     176 </span>            : // *****************************************************************************
+<span class="lineNum">     177 </span>            : {
+<span class="lineNum">     178 </span><span class="lineCov">    3689698 :   for (ncomp_t c=0; c&lt;ncomp; ++c)</span>
+<span class="lineNum">     179 </span>            :   {
+<span class="lineNum">     180 </span>            :     // DG(P0)
+<span class="lineNum">     181 </span><span class="lineCov">    1951583 :     auto mark = c*ndof;</span>
+<span class="lineNum">     182 </span><span class="lineCov">    3903166 :     unk(e, mark, offset) = R[mark] / L(e, mark,   offset);</span>
+<span class="lineNum">     183 </span>            : 
+<span class="lineNum">     184 </span><span class="lineCov">    1951583 :     if(ndof &gt; 1)          // DG(P1)</span>
+<span class="lineNum">     185 </span>            :     {
+<span class="lineNum">     186 </span><span class="lineCov">     502881 :       unk(e, mark+1, offset) = R[mark+1] / L(e, mark+1, offset);</span>
+<span class="lineNum">     187 </span><span class="lineCov">     502881 :       unk(e, mark+2, offset) = R[mark+2] / L(e, mark+2, offset);</span>
+<span class="lineNum">     188 </span><span class="lineCov">     502881 :       unk(e, mark+3, offset) = R[mark+3] / L(e, mark+3, offset);</span>
+<span class="lineNum">     189 </span>            :  
+<span class="lineNum">     190 </span><span class="lineCov">     167627 :       if(ndof &gt; 4)        // DG(P2)</span>
+<span class="lineNum">     191 </span>            :       {
+<span class="lineNum">     192 </span><span class="lineCov">      65658 :         unk(e, mark+4, offset) = R[mark+4] / L(e, mark+4, offset);</span>
+<span class="lineNum">     193 </span><span class="lineCov">      65658 :         unk(e, mark+5, offset) = R[mark+5] / L(e, mark+5, offset);</span>
+<span class="lineNum">     194 </span><span class="lineCov">      65658 :         unk(e, mark+6, offset) = R[mark+6] / L(e, mark+6, offset);</span>
+<span class="lineNum">     195 </span><span class="lineCov">      65658 :         unk(e, mark+7, offset) = R[mark+7] / L(e, mark+7, offset);</span>
+<span class="lineNum">     196 </span><span class="lineCov">      65658 :         unk(e, mark+8, offset) = R[mark+8] / L(e, mark+8, offset);</span>
+<span class="lineNum">     197 </span><span class="lineCov">      65658 :         unk(e, mark+9, offset) = R[mark+9] / L(e, mark+9, offset);</span>
+<span class="lineNum">     198 </span>            :       }
+<a name="199"><span class="lineNum">     199 </span>            :     }</a>
+<span class="lineNum">     200 </span>            :   }
+<span class="lineNum">     201 </span><span class="lineCov">    1740854 : }</span>
 </pre>
       </td>
     </tr>

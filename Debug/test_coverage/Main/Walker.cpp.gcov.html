@@ -24,7 +24,7 @@
           </tr>
           <tr>
             <td class="headerItem">Commit:</td>
-            <td class="headerValue"><a href="https://github.com/quinoacomputing/quinoa/commit/de39577">Quinoa_v0.2-2841-gde39577</a></td>
+            <td class="headerValue"><a href="https://github.com/quinoacomputing/quinoa/commit/5a428c4">Quinoa_v0.2-2844-g5a428c4</a></td>
             <td></td>
             <td class="headerItem">Lines:</td>
             <td class="headerCovTableEntry">28</td>
@@ -33,7 +33,7 @@
           </tr>
           <tr>
             <td class="headerItem">Date:</td>
-            <td class="headerValue">2019-05-25 23:51:52</td>
+            <td class="headerValue">2019-05-27 02:34:01</td>
             <td></td>
             <td class="headerItem">Functions:</td>
             <td class="headerCovTableEntry">6</td>
@@ -45,16 +45,8 @@
             <td class="headerValueLeg">            Lines:
             <span class="coverLegendCov">hit</span>
             <span class="coverLegendNoCov">not hit</span>
-            | Branches:
-            <span class="coverLegendCov">+</span> taken
-            <span class="coverLegendNoCov">-</span> not taken
-            <span class="coverLegendNoCov">#</span> not executed
 </td>
             <td></td>
-            <td class="headerItem">Branches:</td>
-            <td class="headerCovTableEntry">29</td>
-            <td class="headerCovTableEntry">82</td>
-            <td class="headerCovTableEntryLo">35.4 %</td>
           </tr>
           <tr><td><img src="../glass.png" width=3 height=3 alt=""></td></tr>
         </table>
@@ -70,281 +62,273 @@
     </tr>
     <tr>
       <td>
-<pre class="sourceHeading">           Branch data     Line data    Source code</pre>
+<pre class="sourceHeading">          Line data    Source code</pre>
 <pre class="source">
-<a name="1"><span class="lineNum">       1 </span>                :            : // *****************************************************************************</a>
-<span class="lineNum">       2 </span>                :            : /*!
-<span class="lineNum">       3 </span>                :            :   \file      src/Main/Walker.cpp
-<span class="lineNum">       4 </span>                :            :   \copyright 2012-2015 J. Bakosi,
-<span class="lineNum">       5 </span>                :            :              2016-2018 Los Alamos National Security, LLC.,
-<span class="lineNum">       6 </span>                :            :              2019 Triad National Security, LLC.
-<span class="lineNum">       7 </span>                :            :              All rights reserved. See the LICENSE file for details.
-<span class="lineNum">       8 </span>                :            :   \brief     Random walker Charm++ main chare
-<span class="lineNum">       9 </span>                :            :   \details   Random walker Charm++ main chare. This file contains the definition
-<span class="lineNum">      10 </span>                :            :     of the Charm++ main chare, equivalent to main() in Charm++-land.
-<span class="lineNum">      11 </span>                :            : */
-<span class="lineNum">      12 </span>                :            : // *****************************************************************************
-<span class="lineNum">      13 </span>                :            : 
-<span class="lineNum">      14 </span>                :            : #include &lt;map&gt;
-<span class="lineNum">      15 </span>                :            : #include &lt;iostream&gt;
-<span class="lineNum">      16 </span>                :            : #include &lt;utility&gt;
-<span class="lineNum">      17 </span>                :            : #include &lt;vector&gt;
-<span class="lineNum">      18 </span>                :            : 
-<span class="lineNum">      19 </span>                :            : #include &quot;NoWarning/format.hpp&quot;
-<span class="lineNum">      20 </span>                :            : 
-<span class="lineNum">      21 </span>                :            : #include &quot;NoWarning/charm.hpp&quot;
-<span class="lineNum">      22 </span>                :            : #include &quot;NoWarning/pup.hpp&quot;
-<span class="lineNum">      23 </span>                :            : 
-<span class="lineNum">      24 </span>                :            : #include &quot;Print.hpp&quot;
-<span class="lineNum">      25 </span>                :            : #include &quot;Timer.hpp&quot;
-<span class="lineNum">      26 </span>                :            : #include &quot;Types.hpp&quot;
-<span class="lineNum">      27 </span>                :            : #include &quot;Init.hpp&quot;
-<span class="lineNum">      28 </span>                :            : #include &quot;QuinoaConfig.hpp&quot;
-<span class="lineNum">      29 </span>                :            : #include &quot;Tags.hpp&quot;
-<span class="lineNum">      30 </span>                :            : #include &quot;ProcessException.hpp&quot;
-<span class="lineNum">      31 </span>                :            : #include &quot;RNG.hpp&quot;
-<span class="lineNum">      32 </span>                :            : #include &quot;RNGStack.hpp&quot;
-<span class="lineNum">      33 </span>                :            : #include &quot;DiffEq.hpp&quot;
-<span class="lineNum">      34 </span>                :            : #include &quot;DiffEqStack.hpp&quot;
-<span class="lineNum">      35 </span>                :            : #include &quot;Options/RNG.hpp&quot;
-<span class="lineNum">      36 </span>                :            : #include &quot;WalkerPrint.hpp&quot;
-<span class="lineNum">      37 </span>                :            : #include &quot;WalkerDriver.hpp&quot;
-<span class="lineNum">      38 </span>                :            : #include &quot;Walker/CmdLine/Parser.hpp&quot;
-<span class="lineNum">      39 </span>                :            : #include &quot;Walker/CmdLine/CmdLine.hpp&quot;
-<span class="lineNum">      40 </span>                :            : #include &quot;Walker/InputDeck/InputDeck.hpp&quot;
-<span class="lineNum">      41 </span>                :            : #include &quot;ChareStateCollector.hpp&quot;
-<span class="lineNum">      42 </span>                :            : 
-<span class="lineNum">      43 </span>                :            : #include &quot;NoWarning/walker.decl.h&quot;
-<span class="lineNum">      44 </span>                :            : 
-<span class="lineNum">      45 </span>                :            : #if defined(__clang__)
-<span class="lineNum">      46 </span>                :            :   #pragma clang diagnostic push
-<span class="lineNum">      47 </span>                :            :   #pragma clang diagnostic ignored &quot;-Wmissing-variable-declarations&quot;
-<span class="lineNum">      48 </span>                :            : #endif
-<span class="lineNum">      49 </span>                :            : 
-<span class="lineNum">      50 </span>                :            : //! \brief Charm handle to the main proxy, facilitates call-back to finalize,
-<span class="lineNum">      51 </span>                :            : //!    etc., must be in global scope, unique per executable
-<span class="lineNum">      52 </span>                :            : CProxy_Main mainProxy;
-<span class="lineNum">      53 </span>                :            : 
-<span class="lineNum">      54 </span>                :            : //! Chare state collector Charm++ chare group proxy
-<span class="lineNum">      55 </span>                :            : tk::CProxy_ChareStateCollector stateProxy;
-<span class="lineNum">      56 </span>                :            : 
-<span class="lineNum">      57 </span>                :            : //! If true, call and stack traces are to be output with exceptions
-<span class="lineNum">      58 </span>                :            : bool g_trace;
-<span class="lineNum">      59 </span>                :            : 
-<span class="lineNum">      60 </span>                :            : #if defined(__clang__)
-<span class="lineNum">      61 </span>                :            :   #pragma clang diagnostic pop
-<span class="lineNum">      62 </span>                :            : #endif
-<span class="lineNum">      63 </span>                :            : 
-<span class="lineNum">      64 </span>                :            : //! Walker declarations and definitions
-<span class="lineNum">      65 </span>                :            : namespace walker {
-<span class="lineNum">      66 </span>                :            : 
-<span class="lineNum">      67 </span>                :            : //! Global-scope data. Initialized by the main chare and distibuted to all PEs
-<span class="lineNum">      68 </span>                :            : //! by the Charm++ runtime system. Though semantically not const, all these
-<span class="lineNum">      69 </span>                :            : //! global data should be considered read-only. See also
-<span class="lineNum">      70 </span>                :            : //! http://charm.cs.illinois.edu/manuals/html/charm++/manual.html. The data
-<span class="lineNum">      71 </span>                :            : //! below is global-scope because they must be available to all PEs which could
-<span class="lineNum">      72 </span>                :            : //! be on different machines.
-<span class="lineNum">      73 </span>                :            : 
-<span class="lineNum">      74 </span>                :            : #if defined(__clang__)
-<span class="lineNum">      75 </span>                :            :   #pragma clang diagnostic push
-<span class="lineNum">      76 </span>                :            :   #pragma clang diagnostic ignored &quot;-Wmissing-variable-declarations&quot;
-<span class="lineNum">      77 </span>                :            : #endif
-<span class="lineNum">      78 </span>                :            : 
-<span class="lineNum">      79 </span>                :            : //! Defaults of input deck, facilitates detection what is set by user
-<span class="lineNum">      80 </span>                :            : //! \details This object is in global scope, it contains the default of all
-<span class="lineNum">      81 </span>                :            : //!   possible user input, and thus it is made available to all PEs for
-<span class="lineNum">      82 </span>                :            : //!   convenience reasons. The runtime system distributes it to all PEs during
-<span class="lineNum">      83 </span>                :            : //!   initialization. Once distributed, the object does not change.
-<span class="lineNum">      84 </span>        [<span class="branchCov" title="Branch 2 was taken 259 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineCov">        518 : ctr::InputDeck g_inputdeck_defaults;</span>
-<span class="lineNum">      85 </span>                :            : //! Input deck filled by parser, containing all input data
-<span class="lineNum">      86 </span>                :            : //! \details This object is in global scope, it contains all of user input, and
-<span class="lineNum">      87 </span>                :            : //!   thus it is made available to all PEs for convenience reasons. The runtime
-<span class="lineNum">      88 </span>                :            : //!   system distributes it to all PEs during initialization. Once distributed,
-<span class="lineNum">      89 </span>                :            : //!   the object does not change.
-<span class="lineNum">      90 </span>        [<span class="branchCov" title="Branch 2 was taken 259 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineCov">        518 : ctr::InputDeck g_inputdeck;</span>
-<span class="lineNum">      91 </span>                :            : //! Random number generators selected by user
-<span class="lineNum">      92 </span>                :            : //! \details This map is in global scope, because it holds polymorphic
-<span class="lineNum">      93 </span>                :            : //!   objects, and thus must be distributed to all PEs during initialization.
-<span class="lineNum">      94 </span>                :            : //!   Once distributed by the runtime system, the objects do not change.
-<span class="lineNum">      95 </span>                :            : std::map&lt; tk::ctr::RawRNGType, tk::RNG &gt; g_rng;
-<span class="lineNum">      96 </span>                :            : //! Differential equations selected by user
-<span class="lineNum">      97 </span>                :            : //! \details This vector is in global scope, because it holds polymorphic
-<span class="lineNum">      98 </span>                :            : //!   objects, and thus must be distributed to all PEs during initialization.
-<span class="lineNum">      99 </span>                :            : //!   Once distributed by the runtime system, the objects do not change.
-<span class="lineNum">     100 </span>                :            : std::vector&lt; DiffEq &gt; g_diffeqs;
-<span class="lineNum">     101 </span>                :            : 
-<span class="lineNum">     102 </span>                :            : //! Distributor Charm++ proxy facilitating call-back to Distributor by the
-<span class="lineNum">     103 </span>                :            : //! individual integrators
-<span class="lineNum">     104 </span>                :<span class="lineCov">        259 : CProxy_Distributor g_DistributorProxy;</span>
-<span class="lineNum">     105 </span>                :            : 
-<span class="lineNum">     106 </span>                :            : #if defined(__clang__)
-<span class="lineNum">     107 </span>                :            :   #pragma clang diagnostic pop
-<span class="lineNum">     108 </span>                :            : #endif
-<span class="lineNum">     109 </span>                :            : 
-<span class="lineNum">     110 </span>                :            : //! Pack/Unpack selected RNGs. This Pack/Unpack method (re-)creates the full RNG
-<span class="lineNum">     111 </span>                :            : //! stack since it needs to (re-)bind function pointers on different processing
-<span class="lineNum">     112 </span>                :            : //! elements. Therefore we circumvent Charm's usual pack/unpack for this type,
-<span class="lineNum">     113 </span>                :            : //! and thus sizing does not make sense: sizing is a no-op. We could initialize
-<span class="lineNum">     114 </span>                :            : //! the stack in RNGTestDriver's constructor and let this function re-create the
-<span class="lineNum">     115 </span>                :            : //! stack only when unpacking, but that leads to repeating the same code twice:
-<span class="lineNum">     116 </span>                :            : //! once in RNGTestDriver's constructor, once here. Another option is to use
-<span class="lineNum">     117 </span>                :            : //! this pack/unpack routine to both initially create (when packing) and to
-<span class="lineNum">     118 </span>                :            : //! re-create (when unpacking) the stack, which eliminates the need for
-<span class="lineNum">     119 </span>                :            : //! pre-creating the object in RNGTestDriver's constructor and therefore
-<span class="lineNum">     120 </span>                :            : //! eliminates the repeated code. This explains the guard for sizing: the code
-<span class="lineNum">     121 </span>                :            : //! below is called for packing only (in serial) and packing and unpacking (in
-<a name="122"><span class="lineNum">     122 </span>                :            : //! parallel).</a>
-<span class="lineNum">     123 </span>                :            : inline
-<span class="lineNum">     124 </span>                :<span class="lineCov">        336 : void operator|( PUP::er&amp; p, std::map&lt; tk::ctr::RawRNGType, tk::RNG &gt;&amp; rng ) {</span>
-<span class="lineNum">     125 </span>                :            :   try {
-<span class="lineNum">     126 </span>        [<span class="branchCov" title="Branch 1 was taken 259 times"> + </span><span class="branchCov" title="Branch 2 was taken 77 times"> + </span>]:<span class="lineCov">        336 :     if (!p.isSizing()) {</span>
-<span class="lineNum">     127 </span>                :            :       tk::RNGStack stack(
-<span class="lineNum">     128 </span>                :            :         #ifdef HAS_MKL
-<span class="lineNum">     129 </span>                :<span class="lineCov">        259 :         g_inputdeck.get&lt; tag::param, tag::rngmkl &gt;(),</span>
-<span class="lineNum">     130 </span>                :            :         #endif
-<span class="lineNum">     131 </span>                :            :         #ifdef HAS_RNGSSE2
-<span class="lineNum">     132 </span>                :<span class="lineCov">        259 :         g_inputdeck.get&lt; tag::param, tag::rngsse &gt;(),</span>
-<span class="lineNum">     133 </span>                :            :         #endif
-<span class="lineNum">     134 </span>        [<span class="branchCov" title="Branch 2 was taken 259 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineCov">        518 :         g_inputdeck.get&lt; tag::param, tag::rng123 &gt;() );</span>
-<span class="lineNum">     135 </span>[<span class="branchCov" title="Branch 2 was taken 259 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>][<span class="branchCov" title="Branch 5 was taken 259 times"> + </span><span class="branchNoCov" title="Branch 6 was not taken"> - </span>]:<span class="lineCov">        259 :       rng = stack.selected( g_inputdeck.get&lt; tag::selected, tag::rng &gt;() );</span>
-<span class="lineNum">     136 </span>                :            :     }
-<span class="lineNum">     137 </span>        [<span class="branchNoExec" title="Branch 2 was not executed"> # </span><span class="branchNoExec" title="Branch 3 was not executed"> # </span>]:<span class="lineNoCov">          0 :   } catch (...) { tk::processExceptionCharm(); }</span>
-<span class="lineNum">     138 </span>                :<span class="lineCov">        336 : }</span>
-<span class="lineNum">     139 </span>                :            : 
-<span class="lineNum">     140 </span>                :            : //! Pack/Unpack selected differential equations. This Pack/Unpack method
-<span class="lineNum">     141 </span>                :            : //! (re-)creates the DiffEq factory since it needs to (re-)bind function
-<span class="lineNum">     142 </span>                :            : //! pointers on different processing elements. Therefore we circumvent Charm's
-<span class="lineNum">     143 </span>                :            : //! usual pack/unpack for this type, and thus sizing does not make sense: sizing
-<span class="lineNum">     144 </span>                :            : //! is a no-op. We could initialize the factory in WalkerDriver's constructor
-<span class="lineNum">     145 </span>                :            : //! and let this function re-create the stack only when unpacking, but that
-<span class="lineNum">     146 </span>                :            : //! leads to repeating the same code twice: once in WalkerDriver's constructor,
-<span class="lineNum">     147 </span>                :            : //! once here. Another option is to use this pack/unpack routine to both
-<span class="lineNum">     148 </span>                :            : //! initially create (when packing) and to re-create (when unpacking) the
-<span class="lineNum">     149 </span>                :            : //! factory, which eliminates the need for pre-creating the object in
-<span class="lineNum">     150 </span>                :            : //! WalkerDriver's constructor and therefore eliminates the repeated code. This
-<span class="lineNum">     151 </span>                :            : //! explains the guard for sizing: the code below is called for packing only (in
-<a name="152"><span class="lineNum">     152 </span>                :            : //! serial) and packing and unpacking (in parallel).</a>
-<span class="lineNum">     153 </span>                :            : inline
-<span class="lineNum">     154 </span>                :<span class="lineCov">        336 : void operator|( PUP::er&amp; p, std::vector&lt; DiffEq &gt;&amp; eqs ) {</span>
-<span class="lineNum">     155 </span>                :            :   try {
-<span class="lineNum">     156 </span>[<span class="branchCov" title="Branch 1 was taken 259 times"> + </span><span class="branchCov" title="Branch 2 was taken 77 times"> + </span>][<span class="branchCov" title="Branch 4 was taken 259 times"> + </span><span class="branchNoCov" title="Branch 5 was not taken"> - </span>]:<span class="lineCov">        336 :     if (!p.isSizing()) eqs = DiffEqStack().selected();</span>
-<span class="lineNum">         </span>        [<span class="branchCov" title="Branch 7 was taken 259 times"> + </span><span class="branchNoCov" title="Branch 8 was not taken"> - </span>]
-<span class="lineNum">     157 </span>        [<span class="branchNoExec" title="Branch 2 was not executed"> # </span><span class="branchNoExec" title="Branch 3 was not executed"> # </span>]:<span class="lineNoCov">          0 :   } catch (...) { tk::processExceptionCharm(); }</span>
-<span class="lineNum">     158 </span>                :<span class="lineCov">        336 : }</span>
-<span class="lineNum">     159 </span>                :            : 
-<span class="lineNum">     160 </span>                :            : } // walker::
-<span class="lineNum">     161 </span>                :            : 
-<span class="lineNum">     162 </span>                :            : //! \brief Charm++ main chare for the random walker executable, walker.
-<a name="163"><span class="lineNum">     163 </span>                :            : //! \details Note that this object should not be in a namespace.</a>
-<span class="lineNum">     164 </span>                :            : // cppcheck-suppress noConstructor
-<span class="lineNum">     165 </span>        [<span class="branchNoExec" title="Branch 8 was not executed"> # </span><span class="branchNoExec" title="Branch 9 was not executed"> # </span>]:<span class="lineNoCov">          0 : class Main : public CBase_Main {</span>
-<span class="lineNum">     166 </span>                :            : 
-<span class="lineNum">     167 </span>                :            :   public:
-<span class="lineNum">     168 </span>                :            :     //! \brief Constructor
-<span class="lineNum">     169 </span>                :            :     //! \details Walker's main chare constructor is the entry point of the
-<span class="lineNum">     170 </span>                :            :     //!   program, called by the Charm++ runtime system. The constructor does
-<span class="lineNum">     171 </span>                :            :     //!   basic initialization steps, e.g., parser the command-line, prints out
-<span class="lineNum">     172 </span>                :            :     //!   some useful information to screen (in verbose mode), and instantiates
-<span class="lineNum">     173 </span>                :            :     //!   a driver. Since Charm++ is fully asynchronous, the constructor
-<span class="lineNum">     174 </span>                :            :     //!   usually spawns asynchronous objects and immediately exits. Thus in the
-<span class="lineNum">     175 </span>                :            :     //!   body of the main chare constructor we fire up an 'execute' chare,
-<span class="lineNum">     176 </span>                :            :     //!   which then calls back to Main::execute(). Finishing the main chare
-<span class="lineNum">     177 </span>                :            :     //!   constructor the Charm++ runtime system then starts the
-<span class="lineNum">     178 </span>                :            :     //!   network-migration of all global-scope data (if any). The execute chare
-<span class="lineNum">     179 </span>                :            :     //!   calling back to Main::execute() signals the end of the migration of
-<span class="lineNum">     180 </span>                :            :     //!   the global-scope data. Then we are ready to execute the driver. Since
-<span class="lineNum">     181 </span>                :            :     //!   the random walker is parallel and asynchronous, its driver fires up
-<span class="lineNum">     182 </span>                :            :     //!   additional Charm++ chare objects which then call back to
-<span class="lineNum">     183 </span>                :            :     //!   Main::finalize() at some point in the future when all work has been
-<span class="lineNum">     184 </span>                :            :     //!   finished. finalize() then exits by calling Charm++'s CkExit(),
-<a name="185"><span class="lineNum">     185 </span>                :            :     //!   shutting down the runtime system.</a>
-<span class="lineNum">     186 </span>                :            :     //! \see http://charm.cs.illinois.edu/manuals/html/charm++/manual.html
-<span class="lineNum">     187 </span>                :<span class="lineCov">        154 :     Main( CkArgMsg* msg )</span>
-<span class="lineNum">     188 </span>                :            :     try :
-<span class="lineNum">     189 </span>        [<span class="branchCov" title="Branch 1 was taken 77 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">         77 :       m_signal( tk::setSignalHandlers() ),</span>
-<span class="lineNum">     190 </span>                :            :       m_cmdline(),
-<span class="lineNum">     191 </span>                :            :       // Parse command line into m_cmdline using default simple pretty printer
-<span class="lineNum">     192 </span>                :            :       m_cmdParser( msg-&gt;argc, msg-&gt;argv, tk::Print(), m_cmdline ),
-<span class="lineNum">     193 </span>                :            :       // Create pretty printer initializing output streams based on command line
-<span class="lineNum">     194 </span>                :<span class="lineCov">         77 :       m_print( m_cmdline.get&lt; tag::verbose &gt;() ? std::cout : std::clog ),</span>
-<span class="lineNum">     195 </span>                :            :       // Create Walker driver
-<span class="lineNum">     196 </span>                :            :       m_driver( tk::Main&lt; walker::WalkerDriver &gt;
-<span class="lineNum">     197 </span>                :            :                         ( msg-&gt;argc, msg-&gt;argv,
-<span class="lineNum">     198 </span>                :            :                           m_cmdline,
-<span class="lineNum">     199 </span>                :            :                           tk::HeaderType::WALKER,
-<span class="lineNum">     200 </span>                :            :                           tk::walker_executable(),
-<span class="lineNum">     201 </span>        [<span class="branchCov" title="Branch 1 was taken 77 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">        154 :                           m_print ) ),</span>
-<span class="lineNum">     202 </span>                :            :       m_timer(1),       // start new timer measuring the total runtime
-<span class="lineNum">     203 </span>[<span class="branchCov" title="Branch 2 was taken 77 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>][<span class="branchCov" title="Branch 5 was taken 77 times"> + </span><span class="branchNoCov" title="Branch 6 was not taken"> - </span>]:<span class="lineCov">        385 :       m_timestamp()</span>
-<span class="lineNum">         </span>[<span class="branchCov" title="Branch 8 was taken 77 times"> + </span><span class="branchNoCov" title="Branch 9 was not taken"> - </span>][<span class="branchCov" title="Branch 12 was taken 77 times"> + </span><span class="branchNoCov" title="Branch 13 was not taken"> - </span>]
-<span class="lineNum">         </span>[<span class="branchCov" title="Branch 15 was taken 77 times"> + </span><span class="branchNoCov" title="Branch 16 was not taken"> - </span>][<span class="branchCov" title="Branch 18 was taken 77 times"> + </span><span class="branchNoCov" title="Branch 19 was not taken"> - </span>]
-<span class="lineNum">         </span>        [<span class="branchCov" title="Branch 21 was taken 77 times"> + </span><span class="branchNoCov" title="Branch 22 was not taken"> - </span>]
-<span class="lineNum">         </span>  [<span class="branchCov" title="Branch 24 was taken 77 times"> + </span><span class="branchNoCov" title="Branch 25 was not taken"> - </span><span class="branchCov" title="Branch 28 was taken 77 times"> + </span><span class="branchNoCov" title="Branch 29 was not taken"> - </span>]
-<span class="lineNum">         </span>        [<span class="branchCov" title="Branch 32 was taken 77 times"> + </span><span class="branchNoCov" title="Branch 33 was not taken"> - </span>]
-<span class="lineNum">     204 </span>                :            :     {
-<span class="lineNum">     205 </span>                :<span class="lineCov">         77 :       g_trace = m_cmdline.get&lt; tag::trace &gt;();</span>
-<span class="lineNum">     206 </span>                :            :       tk::MainCtor&lt; CProxy_execute &gt;
-<span class="lineNum">     207 </span>                :            :         ( msg, mainProxy, thisProxy, stateProxy, m_timer, m_cmdline,
-<span class="lineNum">     208 </span>[<span class="branchCov" title="Branch 2 was taken 77 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>][<span class="branchCov" title="Branch 5 was taken 77 times"> + </span><span class="branchNoCov" title="Branch 6 was not taken"> - </span>]:<span class="lineCov">         77 :           CkCallback( CkIndex_Main::quiescence(), thisProxy ) );</span>
-<span class="lineNum">         </span>        [<span class="branchCov" title="Branch 8 was taken 77 times"> + </span><span class="branchNoCov" title="Branch 9 was not taken"> - </span>]
-<span class="lineNum">     209 </span>        [<span class="branchNoExec" title="Branch 2 was not executed"> # </span><span class="branchNoExec" title="Branch 3 was not executed"> # </span>]:<span class="lineCov">         77 :     } catch (...) { tk::processExceptionCharm(); }</span>
-<a name="210"><span class="lineNum">     210 </span>                :            : </a>
-<span class="lineNum">     211 </span>                :            :     //! Execute driver created and initialized by constructor
-<span class="lineNum">     212 </span>                :<span class="lineCov">         77 :     void execute() {</span>
-<span class="lineNum">     213 </span>                :            :       try {
-<span class="lineNum">     214 </span>[<span class="branchCov" title="Branch 2 was taken 77 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>][<span class="branchCov" title="Branch 5 was taken 77 times"> + </span><span class="branchNoCov" title="Branch 6 was not taken"> - </span>]:<span class="lineCov">         77 :         m_timestamp.emplace_back(&quot;Migrate global-scope data&quot;, m_timer[1].hms());</span>
-<span class="lineNum">     215 </span>                :<span class="lineCov">         77 :         m_driver.execute();       // fires up async chares</span>
-<span class="lineNum">     216 </span>        [<span class="branchNoExec" title="Branch 2 was not executed"> # </span><span class="branchNoExec" title="Branch 3 was not executed"> # </span>]:<span class="lineNoCov">          0 :       } catch (...) { tk::processExceptionCharm(); }</span>
-<span class="lineNum">     217 </span>                :<span class="lineCov">         77 :     }</span>
-<a name="218"><span class="lineNum">     218 </span>                :            : </a>
-<span class="lineNum">     219 </span>                :            :     //! Towards normal exit but collect chare state first (if any)
-<span class="lineNum">     220 </span>                :<span class="lineCov">         77 :     void finalize() {</span>
-<span class="lineNum">     221 </span>                :            :       tk::finalize( m_cmdline, m_timer, m_print, stateProxy, m_timestamp,
-<span class="lineNum">     222 </span>        [<span class="branchNoCov" title="Branch 4 was not taken"> - </span><span class="branchNoCov" title="Branch 5 was not taken"> - </span>]:<span class="lineCov">         77 :                     CkCallback( CkIndex_Main::dumpstate(nullptr), thisProxy ) );</span>
-<span class="lineNum">     223 </span>                :<span class="lineNoCov">          0 :     }</span>
-<a name="224"><span class="lineNum">     224 </span>                :            : </a>
-<span class="lineNum">     225 </span>                :            :     //! Entry method triggered when quiescence is detected
-<span class="lineNum">     226 </span>                :<span class="lineNoCov">          0 :     void quiescence() {</span>
-<span class="lineNum">     227 </span>                :            :       try {
-<span class="lineNum">     228 </span>                :            :         stateProxy.collect( /* error= */ true,
-<span class="lineNum">     229 </span>[<span class="branchNoExec" title="Branch 2 was not executed"> # </span><span class="branchNoExec" title="Branch 3 was not executed"> # </span>][<span class="branchNoExec" title="Branch 5 was not executed"> # </span><span class="branchNoExec" title="Branch 6 was not executed"> # </span>]:<span class="lineNoCov">          0 :           CkCallback( CkIndex_Main::dumpstate(nullptr), thisProxy ) );</span>
-<span class="lineNum">         </span>        [<span class="branchNoExec" title="Branch 8 was not executed"> # </span><span class="branchNoExec" title="Branch 9 was not executed"> # </span>]
-<span class="lineNum">     230 </span>        [<span class="branchNoExec" title="Branch 2 was not executed"> # </span><span class="branchNoExec" title="Branch 3 was not executed"> # </span>]:<span class="lineNoCov">          0 :       } catch (...) { tk::processExceptionCharm(); }</span>
-<span class="lineNum">     231 </span>                :<span class="lineNoCov">          0 :     }</span>
-<a name="232"><span class="lineNum">     232 </span>                :            : </a>
-<span class="lineNum">     233 </span>                :            :     //! Dump chare state
-<span class="lineNum">     234 </span>                :<span class="lineNoCov">          0 :     void dumpstate( CkReductionMsg* msg ) {</span>
-<span class="lineNum">     235 </span>                :<span class="lineNoCov">          0 :       tk::dumpstate( m_cmdline, m_print, msg );</span>
-<span class="lineNum">     236 </span>                :<span class="lineNoCov">          0 :     }</span>
-<a name="237"><span class="lineNum">     237 </span>                :            : </a>
-<span class="lineNum">     238 </span>                :            :     //! Add time stamp contributing to final timers output
-<span class="lineNum">     239 </span>                :<span class="lineNoCov">          0 :     void timestamp( std::string label, tk::real stamp ) {</span>
-<span class="lineNum">     240 </span>                :            :       try{
-<span class="lineNum">     241 </span>[<span class="branchNoExec" title="Branch 1 was not executed"> # </span><span class="branchNoExec" title="Branch 2 was not executed"> # </span>][<span class="branchNoExec" title="Branch 4 was not executed"> # </span><span class="branchNoExec" title="Branch 5 was not executed"> # </span>]:<span class="lineNoCov">          0 :         m_timestamp.emplace_back( label, tk::hms( stamp ) );</span>
-<span class="lineNum">     242 </span>        [<span class="branchNoExec" title="Branch 2 was not executed"> # </span><span class="branchNoExec" title="Branch 3 was not executed"> # </span>]:<span class="lineNoCov">          0 :       } catch (...) { tk::processExceptionCharm(); }</span>
-<span class="lineNum">     243 </span>                :<span class="lineNoCov">          0 :     }</span>
-<span class="lineNum">     244 </span>                :            : 
-<span class="lineNum">     245 </span>                :            :   private:
-<span class="lineNum">     246 </span>                :            :     int m_signal;                               //!&lt; Used to set signal handlers
-<span class="lineNum">     247 </span>                :            :     walker::ctr::CmdLine m_cmdline;             //!&lt; Command line
-<span class="lineNum">     248 </span>                :            :     walker::CmdLineParser m_cmdParser;          //!&lt; Command line parser
-<span class="lineNum">     249 </span>                :            :     walker::WalkerPrint m_print;                //!&lt; Pretty printer
-<span class="lineNum">     250 </span>                :            :     walker::WalkerDriver m_driver;              //!&lt; Driver
-<span class="lineNum">     251 </span>                :            :     std::vector&lt; tk::Timer &gt; m_timer;           //!&lt; Timers
-<span class="lineNum">     252 </span>                :            : 
-<span class="lineNum">     253 </span>                :            :     //! Time stamps in h:m:s with labels
-<span class="lineNum">     254 </span>                :            :     std::vector&lt; std::pair&lt; std::string, tk::Timer::Watch &gt; &gt; m_timestamp;
-<span class="lineNum">     255 </span>                :            : };
-<span class="lineNum">     256 </span>                :            : 
-<span class="lineNum">     257 </span>                :            : //! \brief Charm++ chare execute
-<span class="lineNum">     258 </span>                :            : //! \details By the time this object is constructed, the Charm++ runtime system
-<a name="259"><span class="lineNum">     259 </span>                :            : //!    has finished migrating all global-scoped read-only objects which happens</a>
-<a name="260"><span class="lineNum">     260 </span>                :            : //!    after the main chare constructor has finished.</a>
-<span class="lineNum">     261 </span>        [<span class="branchNoExec" title="Branch 3 was not executed"> # </span><span class="branchNoExec" title="Branch 4 was not executed"> # </span>]:<span class="lineNoCov">          0 : class execute : public CBase_execute {</span>
-<span class="lineNum">     262 </span>        [<span class="branchCov" title="Branch 3 was taken 77 times"> + </span><span class="branchNoCov" title="Branch 4 was not taken"> - </span>]:<span class="lineCov">         77 :  public: execute() { mainProxy.execute(); }</span>
-<span class="lineNum">     263 </span>                :            : };
-<span class="lineNum">     264 </span>                :            : 
-<span class="lineNum">     265 </span>                :            : #include &quot;NoWarning/walker.def.h&quot;
+<a name="1"><span class="lineNum">       1 </span>            : // *****************************************************************************</a>
+<span class="lineNum">       2 </span>            : /*!
+<span class="lineNum">       3 </span>            :   \file      src/Main/Walker.cpp
+<span class="lineNum">       4 </span>            :   \copyright 2012-2015 J. Bakosi,
+<span class="lineNum">       5 </span>            :              2016-2018 Los Alamos National Security, LLC.,
+<span class="lineNum">       6 </span>            :              2019 Triad National Security, LLC.
+<span class="lineNum">       7 </span>            :              All rights reserved. See the LICENSE file for details.
+<span class="lineNum">       8 </span>            :   \brief     Random walker Charm++ main chare
+<span class="lineNum">       9 </span>            :   \details   Random walker Charm++ main chare. This file contains the definition
+<span class="lineNum">      10 </span>            :     of the Charm++ main chare, equivalent to main() in Charm++-land.
+<span class="lineNum">      11 </span>            : */
+<span class="lineNum">      12 </span>            : // *****************************************************************************
+<span class="lineNum">      13 </span>            : 
+<span class="lineNum">      14 </span>            : #include &lt;map&gt;
+<span class="lineNum">      15 </span>            : #include &lt;iostream&gt;
+<span class="lineNum">      16 </span>            : #include &lt;utility&gt;
+<span class="lineNum">      17 </span>            : #include &lt;vector&gt;
+<span class="lineNum">      18 </span>            : 
+<span class="lineNum">      19 </span>            : #include &quot;NoWarning/format.hpp&quot;
+<span class="lineNum">      20 </span>            : 
+<span class="lineNum">      21 </span>            : #include &quot;NoWarning/charm.hpp&quot;
+<span class="lineNum">      22 </span>            : #include &quot;NoWarning/pup.hpp&quot;
+<span class="lineNum">      23 </span>            : 
+<span class="lineNum">      24 </span>            : #include &quot;Print.hpp&quot;
+<span class="lineNum">      25 </span>            : #include &quot;Timer.hpp&quot;
+<span class="lineNum">      26 </span>            : #include &quot;Types.hpp&quot;
+<span class="lineNum">      27 </span>            : #include &quot;Init.hpp&quot;
+<span class="lineNum">      28 </span>            : #include &quot;QuinoaConfig.hpp&quot;
+<span class="lineNum">      29 </span>            : #include &quot;Tags.hpp&quot;
+<span class="lineNum">      30 </span>            : #include &quot;ProcessException.hpp&quot;
+<span class="lineNum">      31 </span>            : #include &quot;RNG.hpp&quot;
+<span class="lineNum">      32 </span>            : #include &quot;RNGStack.hpp&quot;
+<span class="lineNum">      33 </span>            : #include &quot;DiffEq.hpp&quot;
+<span class="lineNum">      34 </span>            : #include &quot;DiffEqStack.hpp&quot;
+<span class="lineNum">      35 </span>            : #include &quot;Options/RNG.hpp&quot;
+<span class="lineNum">      36 </span>            : #include &quot;WalkerPrint.hpp&quot;
+<span class="lineNum">      37 </span>            : #include &quot;WalkerDriver.hpp&quot;
+<span class="lineNum">      38 </span>            : #include &quot;Walker/CmdLine/Parser.hpp&quot;
+<span class="lineNum">      39 </span>            : #include &quot;Walker/CmdLine/CmdLine.hpp&quot;
+<span class="lineNum">      40 </span>            : #include &quot;Walker/InputDeck/InputDeck.hpp&quot;
+<span class="lineNum">      41 </span>            : #include &quot;ChareStateCollector.hpp&quot;
+<span class="lineNum">      42 </span>            : 
+<span class="lineNum">      43 </span>            : #include &quot;NoWarning/walker.decl.h&quot;
+<span class="lineNum">      44 </span>            : 
+<span class="lineNum">      45 </span>            : #if defined(__clang__)
+<span class="lineNum">      46 </span>            :   #pragma clang diagnostic push
+<span class="lineNum">      47 </span>            :   #pragma clang diagnostic ignored &quot;-Wmissing-variable-declarations&quot;
+<span class="lineNum">      48 </span>            : #endif
+<span class="lineNum">      49 </span>            : 
+<span class="lineNum">      50 </span>            : //! \brief Charm handle to the main proxy, facilitates call-back to finalize,
+<span class="lineNum">      51 </span>            : //!    etc., must be in global scope, unique per executable
+<span class="lineNum">      52 </span>            : CProxy_Main mainProxy;
+<span class="lineNum">      53 </span>            : 
+<span class="lineNum">      54 </span>            : //! Chare state collector Charm++ chare group proxy
+<span class="lineNum">      55 </span>            : tk::CProxy_ChareStateCollector stateProxy;
+<span class="lineNum">      56 </span>            : 
+<span class="lineNum">      57 </span>            : //! If true, call and stack traces are to be output with exceptions
+<span class="lineNum">      58 </span>            : bool g_trace;
+<span class="lineNum">      59 </span>            : 
+<span class="lineNum">      60 </span>            : #if defined(__clang__)
+<span class="lineNum">      61 </span>            :   #pragma clang diagnostic pop
+<span class="lineNum">      62 </span>            : #endif
+<span class="lineNum">      63 </span>            : 
+<span class="lineNum">      64 </span>            : //! Walker declarations and definitions
+<span class="lineNum">      65 </span>            : namespace walker {
+<span class="lineNum">      66 </span>            : 
+<span class="lineNum">      67 </span>            : //! Global-scope data. Initialized by the main chare and distibuted to all PEs
+<span class="lineNum">      68 </span>            : //! by the Charm++ runtime system. Though semantically not const, all these
+<span class="lineNum">      69 </span>            : //! global data should be considered read-only. See also
+<span class="lineNum">      70 </span>            : //! http://charm.cs.illinois.edu/manuals/html/charm++/manual.html. The data
+<span class="lineNum">      71 </span>            : //! below is global-scope because they must be available to all PEs which could
+<span class="lineNum">      72 </span>            : //! be on different machines.
+<span class="lineNum">      73 </span>            : 
+<span class="lineNum">      74 </span>            : #if defined(__clang__)
+<span class="lineNum">      75 </span>            :   #pragma clang diagnostic push
+<span class="lineNum">      76 </span>            :   #pragma clang diagnostic ignored &quot;-Wmissing-variable-declarations&quot;
+<span class="lineNum">      77 </span>            : #endif
+<span class="lineNum">      78 </span>            : 
+<span class="lineNum">      79 </span>            : //! Defaults of input deck, facilitates detection what is set by user
+<span class="lineNum">      80 </span>            : //! \details This object is in global scope, it contains the default of all
+<span class="lineNum">      81 </span>            : //!   possible user input, and thus it is made available to all PEs for
+<span class="lineNum">      82 </span>            : //!   convenience reasons. The runtime system distributes it to all PEs during
+<span class="lineNum">      83 </span>            : //!   initialization. Once distributed, the object does not change.
+<span class="lineNum">      84 </span><span class="lineCov">        518 : ctr::InputDeck g_inputdeck_defaults;</span>
+<span class="lineNum">      85 </span>            : //! Input deck filled by parser, containing all input data
+<span class="lineNum">      86 </span>            : //! \details This object is in global scope, it contains all of user input, and
+<span class="lineNum">      87 </span>            : //!   thus it is made available to all PEs for convenience reasons. The runtime
+<span class="lineNum">      88 </span>            : //!   system distributes it to all PEs during initialization. Once distributed,
+<span class="lineNum">      89 </span>            : //!   the object does not change.
+<span class="lineNum">      90 </span><span class="lineCov">        518 : ctr::InputDeck g_inputdeck;</span>
+<span class="lineNum">      91 </span>            : //! Random number generators selected by user
+<span class="lineNum">      92 </span>            : //! \details This map is in global scope, because it holds polymorphic
+<span class="lineNum">      93 </span>            : //!   objects, and thus must be distributed to all PEs during initialization.
+<span class="lineNum">      94 </span>            : //!   Once distributed by the runtime system, the objects do not change.
+<span class="lineNum">      95 </span>            : std::map&lt; tk::ctr::RawRNGType, tk::RNG &gt; g_rng;
+<span class="lineNum">      96 </span>            : //! Differential equations selected by user
+<span class="lineNum">      97 </span>            : //! \details This vector is in global scope, because it holds polymorphic
+<span class="lineNum">      98 </span>            : //!   objects, and thus must be distributed to all PEs during initialization.
+<span class="lineNum">      99 </span>            : //!   Once distributed by the runtime system, the objects do not change.
+<span class="lineNum">     100 </span>            : std::vector&lt; DiffEq &gt; g_diffeqs;
+<span class="lineNum">     101 </span>            : 
+<span class="lineNum">     102 </span>            : //! Distributor Charm++ proxy facilitating call-back to Distributor by the
+<span class="lineNum">     103 </span>            : //! individual integrators
+<span class="lineNum">     104 </span><span class="lineCov">        259 : CProxy_Distributor g_DistributorProxy;</span>
+<span class="lineNum">     105 </span>            : 
+<span class="lineNum">     106 </span>            : #if defined(__clang__)
+<span class="lineNum">     107 </span>            :   #pragma clang diagnostic pop
+<span class="lineNum">     108 </span>            : #endif
+<span class="lineNum">     109 </span>            : 
+<span class="lineNum">     110 </span>            : //! Pack/Unpack selected RNGs. This Pack/Unpack method (re-)creates the full RNG
+<span class="lineNum">     111 </span>            : //! stack since it needs to (re-)bind function pointers on different processing
+<span class="lineNum">     112 </span>            : //! elements. Therefore we circumvent Charm's usual pack/unpack for this type,
+<span class="lineNum">     113 </span>            : //! and thus sizing does not make sense: sizing is a no-op. We could initialize
+<span class="lineNum">     114 </span>            : //! the stack in RNGTestDriver's constructor and let this function re-create the
+<span class="lineNum">     115 </span>            : //! stack only when unpacking, but that leads to repeating the same code twice:
+<span class="lineNum">     116 </span>            : //! once in RNGTestDriver's constructor, once here. Another option is to use
+<span class="lineNum">     117 </span>            : //! this pack/unpack routine to both initially create (when packing) and to
+<span class="lineNum">     118 </span>            : //! re-create (when unpacking) the stack, which eliminates the need for
+<span class="lineNum">     119 </span>            : //! pre-creating the object in RNGTestDriver's constructor and therefore
+<span class="lineNum">     120 </span>            : //! eliminates the repeated code. This explains the guard for sizing: the code
+<span class="lineNum">     121 </span>            : //! below is called for packing only (in serial) and packing and unpacking (in
+<a name="122"><span class="lineNum">     122 </span>            : //! parallel).</a>
+<span class="lineNum">     123 </span>            : inline
+<span class="lineNum">     124 </span><span class="lineCov">        336 : void operator|( PUP::er&amp; p, std::map&lt; tk::ctr::RawRNGType, tk::RNG &gt;&amp; rng ) {</span>
+<span class="lineNum">     125 </span>            :   try {
+<span class="lineNum">     126 </span><span class="lineCov">        336 :     if (!p.isSizing()) {</span>
+<span class="lineNum">     127 </span>            :       tk::RNGStack stack(
+<span class="lineNum">     128 </span>            :         #ifdef HAS_MKL
+<span class="lineNum">     129 </span><span class="lineCov">        259 :         g_inputdeck.get&lt; tag::param, tag::rngmkl &gt;(),</span>
+<span class="lineNum">     130 </span>            :         #endif
+<span class="lineNum">     131 </span>            :         #ifdef HAS_RNGSSE2
+<span class="lineNum">     132 </span><span class="lineCov">        259 :         g_inputdeck.get&lt; tag::param, tag::rngsse &gt;(),</span>
+<span class="lineNum">     133 </span>            :         #endif
+<span class="lineNum">     134 </span><span class="lineCov">        518 :         g_inputdeck.get&lt; tag::param, tag::rng123 &gt;() );</span>
+<span class="lineNum">     135 </span><span class="lineCov">        259 :       rng = stack.selected( g_inputdeck.get&lt; tag::selected, tag::rng &gt;() );</span>
+<span class="lineNum">     136 </span>            :     }
+<span class="lineNum">     137 </span><span class="lineNoCov">          0 :   } catch (...) { tk::processExceptionCharm(); }</span>
+<span class="lineNum">     138 </span><span class="lineCov">        336 : }</span>
+<span class="lineNum">     139 </span>            : 
+<span class="lineNum">     140 </span>            : //! Pack/Unpack selected differential equations. This Pack/Unpack method
+<span class="lineNum">     141 </span>            : //! (re-)creates the DiffEq factory since it needs to (re-)bind function
+<span class="lineNum">     142 </span>            : //! pointers on different processing elements. Therefore we circumvent Charm's
+<span class="lineNum">     143 </span>            : //! usual pack/unpack for this type, and thus sizing does not make sense: sizing
+<span class="lineNum">     144 </span>            : //! is a no-op. We could initialize the factory in WalkerDriver's constructor
+<span class="lineNum">     145 </span>            : //! and let this function re-create the stack only when unpacking, but that
+<span class="lineNum">     146 </span>            : //! leads to repeating the same code twice: once in WalkerDriver's constructor,
+<span class="lineNum">     147 </span>            : //! once here. Another option is to use this pack/unpack routine to both
+<span class="lineNum">     148 </span>            : //! initially create (when packing) and to re-create (when unpacking) the
+<span class="lineNum">     149 </span>            : //! factory, which eliminates the need for pre-creating the object in
+<span class="lineNum">     150 </span>            : //! WalkerDriver's constructor and therefore eliminates the repeated code. This
+<span class="lineNum">     151 </span>            : //! explains the guard for sizing: the code below is called for packing only (in
+<a name="152"><span class="lineNum">     152 </span>            : //! serial) and packing and unpacking (in parallel).</a>
+<span class="lineNum">     153 </span>            : inline
+<span class="lineNum">     154 </span><span class="lineCov">        336 : void operator|( PUP::er&amp; p, std::vector&lt; DiffEq &gt;&amp; eqs ) {</span>
+<span class="lineNum">     155 </span>            :   try {
+<span class="lineNum">     156 </span><span class="lineCov">        336 :     if (!p.isSizing()) eqs = DiffEqStack().selected();</span>
+<span class="lineNum">     157 </span><span class="lineNoCov">          0 :   } catch (...) { tk::processExceptionCharm(); }</span>
+<span class="lineNum">     158 </span><span class="lineCov">        336 : }</span>
+<span class="lineNum">     159 </span>            : 
+<span class="lineNum">     160 </span>            : } // walker::
+<span class="lineNum">     161 </span>            : 
+<span class="lineNum">     162 </span>            : //! \brief Charm++ main chare for the random walker executable, walker.
+<a name="163"><span class="lineNum">     163 </span>            : //! \details Note that this object should not be in a namespace.</a>
+<span class="lineNum">     164 </span>            : // cppcheck-suppress noConstructor
+<span class="lineNum">     165 </span><span class="lineNoCov">          0 : class Main : public CBase_Main {</span>
+<span class="lineNum">     166 </span>            : 
+<span class="lineNum">     167 </span>            :   public:
+<span class="lineNum">     168 </span>            :     //! \brief Constructor
+<span class="lineNum">     169 </span>            :     //! \details Walker's main chare constructor is the entry point of the
+<span class="lineNum">     170 </span>            :     //!   program, called by the Charm++ runtime system. The constructor does
+<span class="lineNum">     171 </span>            :     //!   basic initialization steps, e.g., parser the command-line, prints out
+<span class="lineNum">     172 </span>            :     //!   some useful information to screen (in verbose mode), and instantiates
+<span class="lineNum">     173 </span>            :     //!   a driver. Since Charm++ is fully asynchronous, the constructor
+<span class="lineNum">     174 </span>            :     //!   usually spawns asynchronous objects and immediately exits. Thus in the
+<span class="lineNum">     175 </span>            :     //!   body of the main chare constructor we fire up an 'execute' chare,
+<span class="lineNum">     176 </span>            :     //!   which then calls back to Main::execute(). Finishing the main chare
+<span class="lineNum">     177 </span>            :     //!   constructor the Charm++ runtime system then starts the
+<span class="lineNum">     178 </span>            :     //!   network-migration of all global-scope data (if any). The execute chare
+<span class="lineNum">     179 </span>            :     //!   calling back to Main::execute() signals the end of the migration of
+<span class="lineNum">     180 </span>            :     //!   the global-scope data. Then we are ready to execute the driver. Since
+<span class="lineNum">     181 </span>            :     //!   the random walker is parallel and asynchronous, its driver fires up
+<span class="lineNum">     182 </span>            :     //!   additional Charm++ chare objects which then call back to
+<span class="lineNum">     183 </span>            :     //!   Main::finalize() at some point in the future when all work has been
+<span class="lineNum">     184 </span>            :     //!   finished. finalize() then exits by calling Charm++'s CkExit(),
+<a name="185"><span class="lineNum">     185 </span>            :     //!   shutting down the runtime system.</a>
+<span class="lineNum">     186 </span>            :     //! \see http://charm.cs.illinois.edu/manuals/html/charm++/manual.html
+<span class="lineNum">     187 </span><span class="lineCov">         77 :     Main( CkArgMsg* msg )</span>
+<span class="lineNum">     188 </span>            :     try :
+<span class="lineNum">     189 </span><span class="lineCov">         77 :       m_signal( tk::setSignalHandlers() ),</span>
+<span class="lineNum">     190 </span>            :       m_cmdline(),
+<span class="lineNum">     191 </span>            :       // Parse command line into m_cmdline using default simple pretty printer
+<span class="lineNum">     192 </span>            :       m_cmdParser( msg-&gt;argc, msg-&gt;argv, tk::Print(), m_cmdline ),
+<span class="lineNum">     193 </span>            :       // Create pretty printer initializing output streams based on command line
+<span class="lineNum">     194 </span><span class="lineCov">         77 :       m_print( m_cmdline.get&lt; tag::verbose &gt;() ? std::cout : std::clog ),</span>
+<span class="lineNum">     195 </span>            :       // Create Walker driver
+<span class="lineNum">     196 </span>            :       m_driver( tk::Main&lt; walker::WalkerDriver &gt;
+<span class="lineNum">     197 </span>            :                         ( msg-&gt;argc, msg-&gt;argv,
+<span class="lineNum">     198 </span>            :                           m_cmdline,
+<span class="lineNum">     199 </span>            :                           tk::HeaderType::WALKER,
+<span class="lineNum">     200 </span>            :                           tk::walker_executable(),
+<span class="lineNum">     201 </span><span class="lineCov">        154 :                           m_print ) ),</span>
+<span class="lineNum">     202 </span>            :       m_timer(1),       // start new timer measuring the total runtime
+<span class="lineNum">     203 </span><span class="lineCov">        385 :       m_timestamp()</span>
+<span class="lineNum">     204 </span>            :     {
+<span class="lineNum">     205 </span><span class="lineCov">         77 :       g_trace = m_cmdline.get&lt; tag::trace &gt;();</span>
+<span class="lineNum">     206 </span>            :       tk::MainCtor&lt; CProxy_execute &gt;
+<span class="lineNum">     207 </span>            :         ( msg, mainProxy, thisProxy, stateProxy, m_timer, m_cmdline,
+<span class="lineNum">     208 </span><span class="lineCov">         77 :           CkCallback( CkIndex_Main::quiescence(), thisProxy ) );</span>
+<span class="lineNum">     209 </span><span class="lineCov">         77 :     } catch (...) { tk::processExceptionCharm(); }</span>
+<a name="210"><span class="lineNum">     210 </span>            : </a>
+<span class="lineNum">     211 </span>            :     //! Execute driver created and initialized by constructor
+<span class="lineNum">     212 </span><span class="lineCov">         77 :     void execute() {</span>
+<span class="lineNum">     213 </span>            :       try {
+<span class="lineNum">     214 </span><span class="lineCov">         77 :         m_timestamp.emplace_back(&quot;Migrate global-scope data&quot;, m_timer[1].hms());</span>
+<span class="lineNum">     215 </span><span class="lineCov">         77 :         m_driver.execute();       // fires up async chares</span>
+<span class="lineNum">     216 </span><span class="lineNoCov">          0 :       } catch (...) { tk::processExceptionCharm(); }</span>
+<span class="lineNum">     217 </span><span class="lineCov">         77 :     }</span>
+<a name="218"><span class="lineNum">     218 </span>            : </a>
+<span class="lineNum">     219 </span>            :     //! Towards normal exit but collect chare state first (if any)
+<span class="lineNum">     220 </span><span class="lineCov">         77 :     void finalize() {</span>
+<span class="lineNum">     221 </span>            :       tk::finalize( m_cmdline, m_timer, m_print, stateProxy, m_timestamp,
+<span class="lineNum">     222 </span><span class="lineCov">         77 :                     CkCallback( CkIndex_Main::dumpstate(nullptr), thisProxy ) );</span>
+<span class="lineNum">     223 </span><span class="lineNoCov">          0 :     }</span>
+<a name="224"><span class="lineNum">     224 </span>            : </a>
+<span class="lineNum">     225 </span>            :     //! Entry method triggered when quiescence is detected
+<span class="lineNum">     226 </span><span class="lineNoCov">          0 :     void quiescence() {</span>
+<span class="lineNum">     227 </span>            :       try {
+<span class="lineNum">     228 </span>            :         stateProxy.collect( /* error= */ true,
+<span class="lineNum">     229 </span><span class="lineNoCov">          0 :           CkCallback( CkIndex_Main::dumpstate(nullptr), thisProxy ) );</span>
+<span class="lineNum">     230 </span><span class="lineNoCov">          0 :       } catch (...) { tk::processExceptionCharm(); }</span>
+<span class="lineNum">     231 </span><span class="lineNoCov">          0 :     }</span>
+<a name="232"><span class="lineNum">     232 </span>            : </a>
+<span class="lineNum">     233 </span>            :     //! Dump chare state
+<span class="lineNum">     234 </span><span class="lineNoCov">          0 :     void dumpstate( CkReductionMsg* msg ) {</span>
+<span class="lineNum">     235 </span><span class="lineNoCov">          0 :       tk::dumpstate( m_cmdline, m_print, msg );</span>
+<span class="lineNum">     236 </span><span class="lineNoCov">          0 :     }</span>
+<a name="237"><span class="lineNum">     237 </span>            : </a>
+<span class="lineNum">     238 </span>            :     //! Add time stamp contributing to final timers output
+<span class="lineNum">     239 </span><span class="lineNoCov">          0 :     void timestamp( std::string label, tk::real stamp ) {</span>
+<span class="lineNum">     240 </span>            :       try{
+<span class="lineNum">     241 </span><span class="lineNoCov">          0 :         m_timestamp.emplace_back( label, tk::hms( stamp ) );</span>
+<span class="lineNum">     242 </span><span class="lineNoCov">          0 :       } catch (...) { tk::processExceptionCharm(); }</span>
+<span class="lineNum">     243 </span><span class="lineNoCov">          0 :     }</span>
+<span class="lineNum">     244 </span>            : 
+<span class="lineNum">     245 </span>            :   private:
+<span class="lineNum">     246 </span>            :     int m_signal;                               //!&lt; Used to set signal handlers
+<span class="lineNum">     247 </span>            :     walker::ctr::CmdLine m_cmdline;             //!&lt; Command line
+<span class="lineNum">     248 </span>            :     walker::CmdLineParser m_cmdParser;          //!&lt; Command line parser
+<span class="lineNum">     249 </span>            :     walker::WalkerPrint m_print;                //!&lt; Pretty printer
+<span class="lineNum">     250 </span>            :     walker::WalkerDriver m_driver;              //!&lt; Driver
+<span class="lineNum">     251 </span>            :     std::vector&lt; tk::Timer &gt; m_timer;           //!&lt; Timers
+<span class="lineNum">     252 </span>            : 
+<span class="lineNum">     253 </span>            :     //! Time stamps in h:m:s with labels
+<span class="lineNum">     254 </span>            :     std::vector&lt; std::pair&lt; std::string, tk::Timer::Watch &gt; &gt; m_timestamp;
+<span class="lineNum">     255 </span>            : };
+<span class="lineNum">     256 </span>            : 
+<span class="lineNum">     257 </span>            : //! \brief Charm++ chare execute
+<span class="lineNum">     258 </span>            : //! \details By the time this object is constructed, the Charm++ runtime system
+<a name="259"><span class="lineNum">     259 </span>            : //!    has finished migrating all global-scoped read-only objects which happens</a>
+<a name="260"><span class="lineNum">     260 </span>            : //!    after the main chare constructor has finished.</a>
+<span class="lineNum">     261 </span><span class="lineNoCov">          0 : class execute : public CBase_execute {</span>
+<span class="lineNum">     262 </span><span class="lineCov">         77 :  public: execute() { mainProxy.execute(); }</span>
+<span class="lineNum">     263 </span>            : };
+<span class="lineNum">     264 </span>            : 
+<span class="lineNum">     265 </span>            : #include &quot;NoWarning/walker.def.h&quot;
 </pre>
       </td>
     </tr>

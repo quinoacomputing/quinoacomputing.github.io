@@ -24,7 +24,7 @@
           </tr>
           <tr>
             <td class="headerItem">Commit:</td>
-            <td class="headerValue"><a href="https://github.com/quinoacomputing/quinoa/commit/de39577">Quinoa_v0.2-2841-gde39577</a></td>
+            <td class="headerValue"><a href="https://github.com/quinoacomputing/quinoa/commit/5a428c4">Quinoa_v0.2-2844-g5a428c4</a></td>
             <td></td>
             <td class="headerItem">Lines:</td>
             <td class="headerCovTableEntry">51</td>
@@ -33,7 +33,7 @@
           </tr>
           <tr>
             <td class="headerItem">Date:</td>
-            <td class="headerValue">2019-05-25 13:54:18</td>
+            <td class="headerValue">2019-05-26 20:24:37</td>
             <td></td>
             <td class="headerItem">Functions:</td>
             <td class="headerCovTableEntry">10</td>
@@ -45,16 +45,8 @@
             <td class="headerValueLeg">            Lines:
             <span class="coverLegendCov">hit</span>
             <span class="coverLegendNoCov">not hit</span>
-            | Branches:
-            <span class="coverLegendCov">+</span> taken
-            <span class="coverLegendNoCov">-</span> not taken
-            <span class="coverLegendNoCov">#</span> not executed
 </td>
             <td></td>
-            <td class="headerItem">Branches:</td>
-            <td class="headerCovTableEntry">18</td>
-            <td class="headerCovTableEntry">22</td>
-            <td class="headerCovTableEntryMed">81.8 %</td>
           </tr>
           <tr><td><img src="../glass.png" width=3 height=3 alt=""></td></tr>
         </table>
@@ -70,420 +62,419 @@
     </tr>
     <tr>
       <td>
-<pre class="sourceHeading">           Branch data     Line data    Source code</pre>
+<pre class="sourceHeading">          Line data    Source code</pre>
 <pre class="source">
-<a name="1"><span class="lineNum">       1 </span>                :            : // *****************************************************************************</a>
-<span class="lineNum">       2 </span>                :            : /*!
-<span class="lineNum">       3 </span>                :            :   \file      src/Inciter/Refiner.hpp
-<span class="lineNum">       4 </span>                :            :   \copyright 2012-2015 J. Bakosi,
-<span class="lineNum">       5 </span>                :            :              2016-2018 Los Alamos National Security, LLC.,
-<span class="lineNum">       6 </span>                :            :              2019 Triad National Security, LLC.
-<span class="lineNum">       7 </span>                :            :              All rights reserved. See the LICENSE file for details.
-<span class="lineNum">       8 </span>                :            :   \brief     Mesh refiner for interfacing the mesh refinement library
-<span class="lineNum">       9 </span>                :            :   \details   Mesh refiner is a Charm++ chare array and is used to interface the
-<span class="lineNum">      10 </span>                :            :    mesh refinement object which does not know about parallelization and thus the
-<span class="lineNum">      11 </span>                :            :    distributed nature of the mesh it operates on, i.e., it operates on mesh
-<span class="lineNum">      12 </span>                :            :    chunks. Thus it does not do parallel communication and also does not know
-<span class="lineNum">      13 </span>                :            :    about global vs local IDs. Instead this Charm++ chare array is the one that
-<span class="lineNum">      14 </span>                :            :    does all parallel computing aspects, i.e., communcation, and using the mesh
-<span class="lineNum">      15 </span>                :            :    refiner object as a library.
-<span class="lineNum">      16 </span>                :            : */
-<span class="lineNum">      17 </span>                :            : // *****************************************************************************
-<span class="lineNum">      18 </span>                :            : #ifndef Refiner_h
-<span class="lineNum">      19 </span>                :            : #define Refiner_h
-<span class="lineNum">      20 </span>                :            : 
-<span class="lineNum">      21 </span>                :            : #include &lt;vector&gt;
-<span class="lineNum">      22 </span>                :            : #include &lt;unordered_map&gt;
-<span class="lineNum">      23 </span>                :            : 
-<span class="lineNum">      24 </span>                :            : #include &quot;PUPAMR.hpp&quot;
-<span class="lineNum">      25 </span>                :            : #include &quot;AMR/mesh_adapter.hpp&quot;
-<span class="lineNum">      26 </span>                :            : #include &quot;Inciter/Options/AMRInitial.hpp&quot;
-<span class="lineNum">      27 </span>                :            : #include &quot;TaggedTuple.hpp&quot;
-<span class="lineNum">      28 </span>                :            : #include &quot;Tags.hpp&quot;
-<span class="lineNum">      29 </span>                :            : #include &quot;Callback.hpp&quot;
-<span class="lineNum">      30 </span>                :            : #include &quot;UnsMesh.hpp&quot;
-<span class="lineNum">      31 </span>                :            : #include &quot;Base/Fields.hpp&quot;
-<span class="lineNum">      32 </span>                :            : #include &quot;SchemeBase.hpp&quot;
-<span class="lineNum">      33 </span>                :            : #include &quot;DiagCG.hpp&quot;
-<span class="lineNum">      34 </span>                :            : #include &quot;ALECG.hpp&quot;
-<span class="lineNum">      35 </span>                :            : #include &quot;DG.hpp&quot;
-<span class="lineNum">      36 </span>                :            : 
-<span class="lineNum">      37 </span>                :            : #include &quot;NoWarning/transporter.decl.h&quot;
-<span class="lineNum">      38 </span>                :            : #include &quot;NoWarning/refiner.decl.h&quot;
-<span class="lineNum">      39 </span>                :            : 
-<span class="lineNum">      40 </span>                :            : namespace inciter {
-<a name="41"><span class="lineNum">      41 </span>                :            : </a>
-<span class="lineNum">      42 </span>                :            : //! Mesh refiner for interfacing the mesh refinement library
-<span class="lineNum">      43 </span>                :<span class="lineCov">      79792 : class Refiner : public CBase_Refiner {</span>
-<span class="lineNum">      44 </span>                :            : 
-<span class="lineNum">      45 </span>                :            :   public:
-<span class="lineNum">      46 </span>                :            :     //! Constructor
-<span class="lineNum">      47 </span>                :            :     explicit Refiner( const CProxy_Transporter&amp; transporter,
-<span class="lineNum">      48 </span>                :            :                       const CProxy_Sorter&amp; sorter,
-<span class="lineNum">      49 </span>                :            :                       const tk::CProxy_MeshWriter&amp; meshwriter,
-<span class="lineNum">      50 </span>                :            :                       const Scheme&amp; scheme,
-<span class="lineNum">      51 </span>                :            :                       const tk::RefinerCallback&amp; cbr,
-<span class="lineNum">      52 </span>                :            :                       const tk::SorterCallback&amp; cbs,
-<span class="lineNum">      53 </span>                :            :                       const std::vector&lt; std::size_t &gt;&amp; ginpoel,
-<span class="lineNum">      54 </span>                :            :                       const tk::UnsMesh::CoordMap&amp; coordmap,
-<span class="lineNum">      55 </span>                :            :                       const std::map&lt; int, std::vector&lt; std::size_t &gt; &gt;&amp; bface,
-<span class="lineNum">      56 </span>                :            :                       const std::vector&lt; std::size_t &gt;&amp; triinpoel,
-<span class="lineNum">      57 </span>                :            :                       const std::map&lt; int, std::vector&lt; std::size_t &gt; &gt;&amp; bnode,
-<span class="lineNum">      58 </span>                :            :                       int nchare );
-<span class="lineNum">      59 </span>                :            : 
-<span class="lineNum">      60 </span>                :            :     #if defined(__clang__)
-<span class="lineNum">      61 </span>                :            :       #pragma clang diagnostic push
-<span class="lineNum">      62 </span>                :            :       #pragma clang diagnostic ignored &quot;-Wundefined-func-template&quot;
-<span class="lineNum">      63 </span>                :            :     #endif
-<span class="lineNum">      64 </span>                :            :     //! Migrate constructor
-<span class="lineNum">      65 </span>                :            :     // cppcheck-suppress uninitMemberVar
-<span class="lineNum">      66 </span>        [<span class="branchCov" title="Branch 2 was taken 19948 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineCov">      59844 :     explicit Refiner( CkMigrateMessage* ) {}</span>
-<span class="lineNum">      67 </span>                :            :     #if defined(__clang__)
-<span class="lineNum">      68 </span>                :            :       #pragma clang diagnostic pop
-<span class="lineNum">      69 </span>                :            :     #endif
-<span class="lineNum">      70 </span>                :            : 
-<span class="lineNum">      71 </span>                :            :     //! Configure Charm++ reduction types
-<span class="lineNum">      72 </span>                :            :     static void registerReducers();
-<span class="lineNum">      73 </span>                :            : 
-<span class="lineNum">      74 </span>                :            :     //! Query Sorter and update local mesh with the reordered one
-<span class="lineNum">      75 </span>                :            :     void reorder();
-<span class="lineNum">      76 </span>                :            : 
-<span class="lineNum">      77 </span>                :            :     //! Start new step of initial mesh refinement
-<span class="lineNum">      78 </span>                :            :     void start();
-<span class="lineNum">      79 </span>                :            : 
-<span class="lineNum">      80 </span>                :            :     //! Continue after finishing a refinement step
-<span class="lineNum">      81 </span>                :            :     void next();
-<span class="lineNum">      82 </span>                :            : 
-<span class="lineNum">      83 </span>                :            :     //! Start mesh refinement (during time stepping, t&gt;0)
-<span class="lineNum">      84 </span>                :            :     void dtref( const std::map&lt; int, std::vector&lt; std::size_t &gt; &gt;&amp; bface,
-<span class="lineNum">      85 </span>                :            :                 const std::map&lt; int, std::vector&lt; std::size_t &gt; &gt;&amp; bnode,
-<span class="lineNum">      86 </span>                :            :                 const std::vector&lt; std::size_t &gt;&amp; triinpoel );
-<span class="lineNum">      87 </span>                :            : 
-<span class="lineNum">      88 </span>                :            :     //! Receive boundary edges from all PEs (including this one)
-<span class="lineNum">      89 </span>                :            :     void addBndEdges( CkReductionMsg* msg );
-<span class="lineNum">      90 </span>                :            : 
-<span class="lineNum">      91 </span>                :            :     //! Refine mesh
-<span class="lineNum">      92 </span>                :            :     void refine();
-<span class="lineNum">      93 </span>                :            : 
-<span class="lineNum">      94 </span>                :            :     //! Receive newly added mesh edges and locks on our chare boundary
-<span class="lineNum">      95 </span>                :            :     void addRefBndEdges( int fromch,
-<span class="lineNum">      96 </span>                :            :                          const AMR::EdgeData&amp; ed,
-<span class="lineNum">      97 </span>                :            :                          const std::unordered_set&lt;size_t&gt;&amp; intermediates );
-<span class="lineNum">      98 </span>                :            : 
-<span class="lineNum">      99 </span>                :            :     //! Correct refinement to arrive at conforming mesh across chare boundaries
-<span class="lineNum">     100 </span>                :            :     void correctref();
-<span class="lineNum">     101 </span>                :            : 
-<span class="lineNum">     102 </span>                :            :     //! Communicate refined edges after a refinement step
-<span class="lineNum">     103 </span>                :            :     void comExtra();
-<span class="lineNum">     104 </span>                :            : 
-<span class="lineNum">     105 </span>                :            :     //! Decide what to do after a mesh refinement step
-<span class="lineNum">     106 </span>                :            :     void eval();
-<span class="lineNum">     107 </span>                :            : 
-<span class="lineNum">     108 </span>                :            :     //! Send Refiner proxy to Discretization objects
-<span class="lineNum">     109 </span>                :            :     void sendProxy();
-<span class="lineNum">     110 </span>                :            : 
-<span class="lineNum">     111 </span>                :            :     //! Get refinement field data in mesh cells
-<span class="lineNum">     112 </span>                :            :     std::tuple&lt; std::vector&lt; std::string &gt;,
-<span class="lineNum">     113 </span>                :            :                 std::vector&lt; std::vector&lt; tk::real &gt; &gt; &gt;
-<span class="lineNum">     114 </span>                :            :     refinementFields() const;
-<span class="lineNum">     115 </span>                :            : 
-<span class="lineNum">     116 </span>                :            :     /** @name Charm++ pack/unpack serializer member functions */
-<span class="lineNum">     117 </span>                :            :     ///@{
-<a name="118"><span class="lineNum">     118 </span>                :            :     //! \brief Pack/Unpack serialize member function</a>
-<span class="lineNum">     119 </span>                :            :     //! \param[in,out] p Charm++'s PUP::er serializer object reference
-<span class="lineNum">     120 </span>                :<span class="lineCov">      59844 :     void pup( PUP::er &amp;p ) override {</span>
-<span class="lineNum">     121 </span>                :<span class="lineCov">      59844 :       p | m_host;</span>
-<span class="lineNum">     122 </span>                :<span class="lineCov">      59844 :       p | m_sorter;</span>
-<span class="lineNum">     123 </span>                :<span class="lineCov">      59844 :       p | m_meshwriter;</span>
-<span class="lineNum">     124 </span>                :            :       p | m_scheme;
-<span class="lineNum">     125 </span>                :            :       p | m_cbr;
-<span class="lineNum">     126 </span>                :            :       p | m_cbs;
-<span class="lineNum">     127 </span>                :<span class="lineCov">      59844 :       p | m_ginpoel;</span>
-<span class="lineNum">     128 </span>                :<span class="lineCov">      59844 :       p | m_el;</span>
-<span class="lineNum">     129 </span>        [<span class="branchCov" title="Branch 0 was taken 19948 times"> + </span><span class="branchCov" title="Branch 1 was taken 39896 times"> + </span>]:<span class="lineCov">      59844 :       if (p.isUnpacking()) {</span>
-<span class="lineNum">     130 </span>                :<span class="lineCov">      19948 :         m_inpoel = std::get&lt; 0 &gt;( m_el );</span>
-<span class="lineNum">     131 </span>                :<span class="lineCov">      19948 :         m_gid = std::get&lt; 1 &gt;( m_el );</span>
-<span class="lineNum">     132 </span>                :<span class="lineCov">      19948 :         m_lid = std::get&lt; 2 &gt;( m_el );</span>
-<span class="lineNum">     133 </span>                :            :       }
-<span class="lineNum">     134 </span>                :<span class="lineCov">      59844 :       p | m_coordmap;</span>
-<span class="lineNum">     135 </span>                :            :       p | m_coord;
-<span class="lineNum">     136 </span>                :            :       p | m_bface;
-<span class="lineNum">     137 </span>                :<span class="lineCov">      59844 :       p | m_bnode;</span>
-<span class="lineNum">     138 </span>                :<span class="lineCov">      59844 :       p | m_triinpoel;</span>
-<span class="lineNum">     139 </span>                :<span class="lineCov">      59844 :       p | m_nchare;</span>
-<span class="lineNum">     140 </span>                :<span class="lineCov">      59844 :       p | m_initial;</span>
-<span class="lineNum">     141 </span>                :<span class="lineCov">      59844 :       p | m_initref;</span>
-<span class="lineNum">     142 </span>                :<span class="lineCov">      59844 :       p | m_refiner;</span>
-<span class="lineNum">     143 </span>                :<span class="lineCov">      59844 :       p | m_nref;</span>
-<span class="lineNum">     144 </span>                :<span class="lineCov">      59844 :       p | m_extra;</span>
-<span class="lineNum">     145 </span>                :<span class="lineCov">      59844 :       p | m_ch;</span>
-<span class="lineNum">     146 </span>                :<span class="lineCov">      59844 :       p | m_localEdgeData;</span>
-<span class="lineNum">     147 </span>                :<span class="lineCov">      59844 :       p | m_remoteEdgeData;</span>
-<span class="lineNum">     148 </span>                :<span class="lineCov">      59844 :       p | m_remoteEdges;</span>
-<span class="lineNum">     149 </span>                :<span class="lineCov">      59844 :       p | m_intermediates;</span>
-<span class="lineNum">     150 </span>                :<span class="lineCov">      59844 :       p | m_bndEdges;</span>
-<span class="lineNum">     151 </span>                :<span class="lineCov">      59844 :       p | m_oldTets;</span>
-<span class="lineNum">     152 </span>                :<span class="lineCov">      59844 :       p | m_addedNodes;</span>
-<span class="lineNum">     153 </span>                :<span class="lineCov">      59844 :       p | m_addedTets;</span>
-<span class="lineNum">     154 </span>                :<span class="lineCov">      59844 :       p | m_prevnTets;</span>
-<span class="lineNum">     155 </span>                :<span class="lineCov">      59844 :       p | m_coarseBndFaces;</span>
-<span class="lineNum">     156 </span>                :<span class="lineCov">      59844 :       p | m_coarseBndNodes;</span>
-<span class="lineNum">     157 </span>                :<span class="lineCov">      59844 :       p | m_msumset;</span>
-<span class="lineNum">     158 </span>                :<span class="lineCov">      59844 :     }</span>
-<span class="lineNum">     159 </span>                :            :     //! \brief Pack/Unpack serialize operator|
-<span class="lineNum">     160 </span>                :            :     //! \param[in,out] p Charm++'s PUP::er serializer object reference
-<span class="lineNum">     161 </span>                :            :     //! \param[in,out] r Refiner object reference
-<span class="lineNum">     162 </span>                :            :     friend void operator|( PUP::er&amp; p, Refiner&amp; r ) { r.pup(p); }
-<span class="lineNum">     163 </span>                :            :     //@}
-<span class="lineNum">     164 </span>                :            : 
-<span class="lineNum">     165 </span>                :            :   private:
-<span class="lineNum">     166 </span>                :            :     //! Boundary face data bundle
-<span class="lineNum">     167 </span>                :            :     using BndFaceData = std::tuple&lt;
-<span class="lineNum">     168 </span>                :            :       std::unordered_map&lt; tk::UnsMesh::Face, std::size_t,
-<span class="lineNum">     169 </span>                :            :                           tk::UnsMesh::Hash&lt;3&gt;, tk::UnsMesh::Eq&lt;3&gt; &gt;,
-<span class="lineNum">     170 </span>                :            :       std::unordered_map&lt; int, tk::UnsMesh::FaceSet &gt;,
-<span class="lineNum">     171 </span>                :            :       std::unordered_map&lt; tk::UnsMesh::Face, std::size_t,
-<span class="lineNum">     172 </span>                :            :                           tk::UnsMesh::Hash&lt;3&gt;, tk::UnsMesh::Eq&lt;3&gt; &gt; &gt;;
-<span class="lineNum">     173 </span>                :            : 
-<span class="lineNum">     174 </span>                :            :     //! Host proxy
-<span class="lineNum">     175 </span>                :            :     CProxy_Transporter m_host;
-<span class="lineNum">     176 </span>                :            :     //! Mesh sorter proxy
-<span class="lineNum">     177 </span>                :            :     CProxy_Sorter m_sorter;
-<span class="lineNum">     178 </span>                :            :     //! Mesh writer proxy
-<span class="lineNum">     179 </span>                :            :     tk::CProxy_MeshWriter m_meshwriter;
-<span class="lineNum">     180 </span>                :            :     //! Discretization scheme
-<span class="lineNum">     181 </span>                :            :     Scheme m_scheme;
-<span class="lineNum">     182 </span>                :            :     //! Charm++ callbacks associated to compile-time tags for refiner
-<span class="lineNum">     183 </span>                :            :     tk::RefinerCallback m_cbr;
-<span class="lineNum">     184 </span>                :            :     //! Charm++ callbacks associated to compile-time tags for sorter
-<span class="lineNum">     185 </span>                :            :     tk::SorterCallback m_cbs;
-<span class="lineNum">     186 </span>                :            :     //! Tetrtahedron element connectivity of our chunk of the mesh (global ids)
-<span class="lineNum">     187 </span>                :            :     std::vector&lt; std::size_t &gt; m_ginpoel;
-<span class="lineNum">     188 </span>                :            :     //! Elements of the mesh chunk we operate on
-<span class="lineNum">     189 </span>                :            :     //! \details The first vector is the element connectivity (local IDs), the
-<span class="lineNum">     190 </span>                :            :     //!   second vector is the global node IDs of owned elements, while the
-<span class="lineNum">     191 </span>                :            :     //!   third one is a map of global-&gt;local node IDs.
-<span class="lineNum">     192 </span>                :            :     tk::UnsMesh::Chunk m_el;
-<span class="lineNum">     193 </span>                :            :     //! Alias to element connectivity with local node IDs in m_el
-<span class="lineNum">     194 </span>                :<span class="lineCov">      23454 :     std::vector&lt; std::size_t &gt;&amp; m_inpoel = std::get&lt;0&gt;( m_el );</span>
-<span class="lineNum">     195 </span>                :            :     //! Alias to global node IDs of owned elements in m_el
-<span class="lineNum">     196 </span>                :<span class="lineCov">      23454 :     std::vector&lt; std::size_t &gt;&amp; m_gid = std::get&lt;1&gt;( m_el );</span>
-<span class="lineNum">     197 </span>                :            :     //! \brief Alias to local node IDs associated to the global ones of owned
-<span class="lineNum">     198 </span>                :            :     //!    elements in m_el
-<span class="lineNum">     199 </span>                :<span class="lineCov">      23454 :     std::unordered_map&lt; std::size_t, std::size_t &gt;&amp; m_lid = std::get&lt;2&gt;( m_el );</span>
-<span class="lineNum">     200 </span>                :            :     //! Coordinates associated to global node IDs of our mesh chunk
-<span class="lineNum">     201 </span>                :            :     tk::UnsMesh::CoordMap m_coordmap;
-<span class="lineNum">     202 </span>                :            :     //! Coordinates of mesh nodes of our chunk of the mesh
-<span class="lineNum">     203 </span>                :            :     tk::UnsMesh::Coords m_coord;
-<span class="lineNum">     204 </span>                :            :     //! List of boundary faces associated to side-set IDs
-<span class="lineNum">     205 </span>                :            :     std::map&lt; int, std::vector&lt; std::size_t &gt; &gt; m_bface;
-<span class="lineNum">     206 </span>                :            :     //! List of boundary nodes associated to side-set IDs
-<span class="lineNum">     207 </span>                :            :     std::map&lt; int, std::vector&lt; std::size_t &gt; &gt; m_bnode;
-<span class="lineNum">     208 </span>                :            :     //! Boundary face-node connectivity
-<span class="lineNum">     209 </span>                :            :     std::vector&lt; std::size_t &gt; m_triinpoel;
-<span class="lineNum">     210 </span>                :            :     //! Total number of refiner chares
-<span class="lineNum">     211 </span>                :            :     int m_nchare;
-<span class="lineNum">     212 </span>                :            :     //! True if initial AMR, false if during time stepping
-<span class="lineNum">     213 </span>                :            :     bool m_initial;
-<span class="lineNum">     214 </span>                :            :     //! Initial mesh refinement type list (in reverse order)
-<span class="lineNum">     215 </span>                :            :     std::vector&lt; ctr::AMRInitialType &gt; m_initref;
-<span class="lineNum">     216 </span>                :            :     //! Number of initial mesh refinement steps
-<span class="lineNum">     217 </span>                :            :     std::size_t m_ninitref;
-<span class="lineNum">     218 </span>                :            :     //! Mesh refiner (library) object
-<span class="lineNum">     219 </span>                :            :     AMR::mesh_adapter_t m_refiner;
-<span class="lineNum">     220 </span>                :            :     //! Counter during distribution of newly added nodes to chare-boundary edges
-<span class="lineNum">     221 </span>                :            :     std::size_t m_nref;
-<span class="lineNum">     222 </span>                :            :     //! Number of chare-boundary newly added nodes that need correction
-<span class="lineNum">     223 </span>                :            :     std::size_t m_extra;
-<span class="lineNum">     224 </span>                :            :     //! Chares we share at least a single edge with
-<span class="lineNum">     225 </span>                :            :     std::unordered_set&lt; int &gt; m_ch;
-<span class="lineNum">     226 </span>                :            :     //! Refinement data associated to edges
-<span class="lineNum">     227 </span>                :            :     AMR::EdgeData m_localEdgeData;
-<span class="lineNum">     228 </span>                :            :     //! Refinement data associated to edges shared with other chares
-<span class="lineNum">     229 </span>                :            :     std::unordered_map&lt; int, std::vector&lt; std::tuple&lt;
-<span class="lineNum">     230 </span>                :            :       tk::UnsMesh::Edge, int, AMR::Edge_Lock_Case &gt; &gt; &gt; m_remoteEdgeData;
-<span class="lineNum">     231 </span>                :            :     //! Edges received from other chares
-<span class="lineNum">     232 </span>                :            :     std::unordered_map&lt; int, std::vector&lt; tk::UnsMesh::Edge &gt; &gt; m_remoteEdges;
-<span class="lineNum">     233 </span>                :            :     //! Intermediate nodes
-<span class="lineNum">     234 </span>                :            :     std::unordered_set&lt; size_t&gt; m_intermediates;
-<span class="lineNum">     235 </span>                :            :     //! Boundary edges associated to chares we share these edges with
-<span class="lineNum">     236 </span>                :            :     std::unordered_map&lt; int, tk::UnsMesh::EdgeSet &gt; m_bndEdges;
-<span class="lineNum">     237 </span>                :            :     //! \brief Global mesh node IDs bordering the mesh chunk held by fellow
-<span class="lineNum">     238 </span>                :            :     //!    worker chares associated to their chare IDs for the coarse mesh
-<span class="lineNum">     239 </span>                :            :     //! \details msum: mesh chunks surrounding mesh chunks and their neighbor
-<span class="lineNum">     240 </span>                :            :     //!   points. This is the same data as in Discretization::m_msum, but the
-<span class="lineNum">     241 </span>                :            :     //!   nodelist is stored as a hash-set for faster searches.
-<span class="lineNum">     242 </span>                :            :     std::unordered_map&lt; int, std::unordered_set&lt; std::size_t &gt; &gt; m_msumset;
-<span class="lineNum">     243 </span>                :            :     //! Local tetrahedron IDs before refinement step
-<span class="lineNum">     244 </span>                :            :     std::unordered_set&lt; std::size_t &gt; m_oldTets;
-<span class="lineNum">     245 </span>                :            :     //! Newly added mesh nodes (local id) and their parents (local ids)
-<span class="lineNum">     246 </span>                :            :     std::unordered_map&lt; std::size_t, tk::UnsMesh::Edge &gt; m_addedNodes;
-<span class="lineNum">     247 </span>                :            :     //! Newly added mesh cells (local id) and their parent (local ids)
-<span class="lineNum">     248 </span>                :            :     std::unordered_map&lt; std::size_t, std::size_t &gt; m_addedTets;
-<span class="lineNum">     249 </span>                :            :     //! Number of tetrahedra in the mesh before refinement
-<span class="lineNum">     250 </span>                :            :     std::size_t m_prevnTets;
-<span class="lineNum">     251 </span>                :            :     //! A unique set of faces associated to side sets of the coarsest mesh
-<span class="lineNum">     252 </span>                :            :     std::unordered_map&lt; int, tk::UnsMesh::FaceSet &gt; m_coarseBndFaces;
-<span class="lineNum">     253 </span>                :            :     //! A unique set of nodes associated to side sets of the coarsest mesh
-<span class="lineNum">     254 </span>                :            :     std::unordered_map&lt; int, std::unordered_set&lt; std::size_t &gt; &gt;
-<span class="lineNum">     255 </span>                :            :       m_coarseBndNodes;
-<span class="lineNum">     256 </span>                :            : 
-<span class="lineNum">     257 </span>                :            :     //! (Re-)generate boundary data structures for coarse mesh
-<span class="lineNum">     258 </span>                :            :     void coarseBnd();
-<span class="lineNum">     259 </span>                :            : 
-<span class="lineNum">     260 </span>                :            :     //! Generate flat coordinate data from coordinate map
-<span class="lineNum">     261 </span>                :            :     tk::UnsMesh::Coords flatcoord( const tk::UnsMesh::CoordMap&amp; coordmap );
-<span class="lineNum">     262 </span>                :            : 
-<span class="lineNum">     263 </span>                :            :     //! Output mesh to file before a new step of mesh refinement
-<span class="lineNum">     264 </span>                :            :     void t0ref();
-<span class="lineNum">     265 </span>                :            : 
-<span class="lineNum">     266 </span>                :            :     //! Generate boundary edges and send them to all chares
-<span class="lineNum">     267 </span>                :            :     void bndEdges();
-<span class="lineNum">     268 </span>                :            : 
-<span class="lineNum">     269 </span>                :            :     //! Finish initiel mesh refinement
-<span class="lineNum">     270 </span>                :            :     void endt0ref();
-<span class="lineNum">     271 </span>                :            : 
-<span class="lineNum">     272 </span>                :            :     //! Do uniform mesh refinement
-<span class="lineNum">     273 </span>                :            :     void uniformRefine();
-<span class="lineNum">     274 </span>                :            : 
-<span class="lineNum">     275 </span>                :            :     //! Do error-based mesh refinement
-<span class="lineNum">     276 </span>                :            :     void errorRefine();
-<span class="lineNum">     277 </span>                :            : 
-<span class="lineNum">     278 </span>                :            :     //! Do mesh refinement based on user explicitly tagging edges
-<span class="lineNum">     279 </span>                :            :     void edgelistRefine();
-<span class="lineNum">     280 </span>                :            : 
-<span class="lineNum">     281 </span>                :            :     //! Do mesh refinement based on tagging edges based on end-point coordinates
-<span class="lineNum">     282 </span>                :            :     void coordRefine();
-<span class="lineNum">     283 </span>                :            : 
-<span class="lineNum">     284 </span>                :            :     //! Query AMR lib and update our local store of edge data
-<span class="lineNum">     285 </span>                :            :     void updateEdgeData();
-<span class="lineNum">     286 </span>                :            : 
-<span class="lineNum">     287 </span>                :            :     //! Aggregate number of extra edges across all chares
-<span class="lineNum">     288 </span>                :            :     void matched();
-<span class="lineNum">     289 </span>                :            : 
-<span class="lineNum">     290 </span>                :            :     //! Update old mesh after refinement
-<span class="lineNum">     291 </span>                :            :     void updateMesh();
-<span class="lineNum">     292 </span>                :            : 
-<span class="lineNum">     293 </span>                :            :     //! Update volume mesh after mesh refinement
-<span class="lineNum">     294 </span>                :            :     void newVolMesh( const std::unordered_set&lt; std::size_t &gt;&amp; old,
-<span class="lineNum">     295 </span>                :            :                      const std::unordered_set&lt; std::size_t &gt;&amp; ref );
-<span class="lineNum">     296 </span>                :            : 
-<span class="lineNum">     297 </span>                :            :     //! Update boundary data structures after mesh refinement
-<span class="lineNum">     298 </span>                :            :     void newBndMesh( const std::unordered_set&lt; std::size_t &gt;&amp; ref );
-<span class="lineNum">     299 </span>                :            : 
-<span class="lineNum">     300 </span>                :            :     //! \brief Generate boundary data structures used to update refined
-<span class="lineNum">     301 </span>                :            :     //!   boundary faces and nodes of side sets
-<span class="lineNum">     302 </span>                :            :     BndFaceData boundary();
-<span class="lineNum">     303 </span>                :            : 
-<span class="lineNum">     304 </span>                :            :     //! Regenerate boundary faces after mesh refinement step
-<span class="lineNum">     305 </span>                :            :     void updateBndFaces(
-<span class="lineNum">     306 </span>                :            :       const std::unordered_set&lt; std::size_t &gt;&amp; ref,
-<span class="lineNum">     307 </span>                :            :       const std::unordered_map&lt; tk::UnsMesh::Face, std::size_t,
-<span class="lineNum">     308 </span>                :            :                         tk::UnsMesh::Hash&lt;3&gt;, tk::UnsMesh::Eq&lt;3&gt; &gt;&amp; bndFaceTets,
-<span class="lineNum">     309 </span>                :            :       const std::unordered_map&lt; int, tk::UnsMesh::FaceSet &gt;&amp; bndFaces );
-<span class="lineNum">     310 </span>                :            : 
-<span class="lineNum">     311 </span>                :            :     //! Regenerate boundary nodes after mesh refinement step
-<span class="lineNum">     312 </span>                :            :     void updateBndNodes(
-<span class="lineNum">     313 </span>                :            :       const std::unordered_set&lt; std::size_t &gt;&amp; ref,
-<span class="lineNum">     314 </span>                :            :       const std::unordered_map&lt; tk::UnsMesh::Face, std::size_t,
-<span class="lineNum">     315 </span>                :            :                       tk::UnsMesh::Hash&lt;3&gt;, tk::UnsMesh::Eq&lt;3&gt; &gt;&amp; pcFaceTets );
-<span class="lineNum">     316 </span>                :            : 
-<span class="lineNum">     317 </span>                :            :     //! Evaluate initial conditions (IC) at mesh nodes
-<span class="lineNum">     318 </span>                :            :     tk::Fields nodeinit( std::size_t npoin,
-<span class="lineNum">     319 </span>                :            :                          const std::pair&lt; std::vector&lt; std::size_t &gt;,
-<span class="lineNum">     320 </span>                :            :                                           std::vector&lt; std::size_t &gt; &gt;&amp; esup );
-<span class="lineNum">     321 </span>                :            : 
-<span class="lineNum">     322 </span>                :            :     //! Output mesh to file(s)
-<span class="lineNum">     323 </span>                :            :     void writeMesh( const std::string&amp; basefilename,
-<span class="lineNum">     324 </span>                :            :                     uint64_t it,
-<span class="lineNum">     325 </span>                :            :                     tk::real t,
-<span class="lineNum">     326 </span>                :            :                     CkCallback c ) const;
-<span class="lineNum">     327 </span>                :            : 
-<span class="lineNum">     328 </span>                :            :     //! Compute partial boundary surface integral and sum across all chares
-<span class="lineNum">     329 </span>                :            :     bool bndIntegral();
-<span class="lineNum">     330 </span>                :            : 
-<span class="lineNum">     331 </span>                :            :     //! Find the oldest parents of a mesh node in the AMR hierarchy
-<span class="lineNum">     332 </span>                :            :     std::unordered_set&lt; std::size_t &gt;
-<span class="lineNum">     333 </span>                :            :     ancestors( std::size_t n );
-<span class="lineNum">     334 </span>                :            : 
-<span class="lineNum">     335 </span>                :            :     //! Return a set of keys among whose values a primitive is found
-<span class="lineNum">     336 </span>                :            :     //! \tparam Sets Type of map of sets we search for the primitive
-<span class="lineNum">     337 </span>                :            :     //! \tparam Primitive The primitive we search for in the sets
-<span class="lineNum">     338 </span>                :            :     //! \note Sets::mapped_type == Primitive
-<span class="lineNum">     339 </span>                :            :     //! \param[in] sets Map of sets we search in
-<span class="lineNum">     340 </span>                :            :     //! \param[in] p Primitive we search for
-<span class="lineNum">     341 </span>                :            :     //! \return A unique set of set ids in which the primitive is found or
-<span class="lineNum">     342 </span>                :            :     //!   an empty set if the primitive was not found.
-<span class="lineNum">     343 </span>                :            :     //! \details This function searches a map of sets for an item (a primitive,
-<span class="lineNum">     344 </span>                :            :     //!   e.g., a single id or a face given by 3 node ids) and returns a
-<span class="lineNum">     345 </span>                :            :     //!   unique set of keys behind whose associated sets the item was found.
-<span class="lineNum">     346 </span>                :            :     template&lt; class Sets, class Primitive &gt;
-<span class="lineNum">     347 </span>                :            :     std::unordered_set&lt; int &gt;
-<span class="lineNum">     348 </span>                :<span class="lineCov">    2249757 :     keys( const Sets&amp; sets, const Primitive&amp; p ) {</span>
-<span class="lineNum">     349 </span>                :            :       static_assert( std::is_same&lt; typename Sets::mapped_type::value_type,
-<span class="lineNum">     350 </span>                :            :         Primitive &gt;::value, &quot;Type of primitive (face/node) in map of sets must &quot;
-<span class="lineNum">     351 </span>                :            :         &quot;be the same as the type of primitive (face/node) that is searched&quot; );
-<span class="lineNum">     352 </span>                :<span class="lineCov">    2249757 :       std::unordered_set&lt; int &gt; ss;</span>
-<span class="lineNum">     353 </span>[<span class="branchCov" title="Branch 0 was taken 3597216 times"> + </span><span class="branchCov" title="Branch 1 was taken 2211187 times"> + </span>][<span class="branchCov" title="Branch 2 was taken 42827 times"> + </span><span class="branchCov" title="Branch 3 was taken 38570 times"> + </span>]:<span class="lineCov">    5889800 :       for (const auto&amp; s : sets)</span>
-<span class="lineNum">     354 </span>  [<span class="branchCov" title="Branch 0 was taken 843336 times"> + </span><span class="branchCov" title="Branch 1 was taken 2753880 times"> + </span><span class="branchCov" title="Branch 2 was taken 11180 times"> + </span><span class="branchCov" title="Branch 3 was taken 31647 times"> + </span>]:<span class="lineCov">    3640043 :         if (s.second.find(p) != end(s.second))</span>
-<span class="lineNum">     355 </span>                :<span class="lineCov">     854516 :           ss.insert( s.first );</span>
-<span class="lineNum">     356 </span>                :<span class="lineCov">    2249757 :       return ss;</span>
-<span class="lineNum">     357 </span>                :            :     }
-<span class="lineNum">     358 </span>                :            : 
-<span class="lineNum">     359 </span>                :            :     //! Call a function on each item of an array
-<span class="lineNum">     360 </span>                :            :     //! \tparam N Number of nodes in array
-<span class="lineNum">     361 </span>                :            :     //! \tparam F Function to pass each item to
-<span class="lineNum">     362 </span>                :            :     //! \param[in] array Array whose items to pass to function
-<a name="363"><span class="lineNum">     363 </span>                :            :     //! \param[in] f Function to pass each item of array to</a>
-<span class="lineNum">     364 </span>                :            :     template&lt; std::size_t N, class F &gt;
-<span class="lineNum">     365 </span>                :<span class="lineNoCov">          0 :     void addBndNodes( const std::array&lt; std::size_t, N &gt;&amp; array, F f ) {</span>
-<span class="lineNum">     366 </span>[<span class="branchCov" title="Branch 1 was taken 1326 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 3 was taken 1326 times"> + </span><span class="branchCov" title="Branch 4 was taken 442 times"> + </span>]:<span class="lineCov">    1294208 :       for (auto n : array) f( n );</span>
-<span class="lineNum">         </span>[<span class="branchCov" title="Branch 6 was taken 1033952 times"> + </span><span class="branchNoCov" title="Branch 7 was not taken"> - </span>][<span class="branchCov" title="Branch 8 was taken 1033952 times"> + </span><span class="branchCov" title="Branch 9 was taken 258488 times"> + </span>]
-<span class="lineNum">     367 </span>                :<span class="lineNoCov">          0 :     }</span>
-<span class="lineNum">     368 </span>                :            : 
-<span class="lineNum">     369 </span>                :            :     //! \brief Function class to call the resizePostAMR() member function
-<span class="lineNum">     370 </span>                :            :     //!   behind SchemeBase::Proxy
-<span class="lineNum">     371 </span>                :<span class="lineCov">        184 :     struct ResizePostAMR: boost::static_visitor&lt;&gt; {</span>
-<span class="lineNum">     372 </span>                :            :       const std::vector&lt; std::size_t &gt;&amp; Ginpoel;
-<span class="lineNum">     373 </span>                :            :       const tk::UnsMesh::Chunk&amp; Chunk;
-<span class="lineNum">     374 </span>                :            :       const tk::UnsMesh::Coords&amp; Coord;
-<span class="lineNum">     375 </span>                :            :       const std::unordered_map&lt; std::size_t, tk::UnsMesh::Edge &gt;&amp; AddedNodes;
-<span class="lineNum">     376 </span>                :            :       const std::unordered_map&lt; std::size_t, std::size_t &gt;&amp; AddedTets;
-<span class="lineNum">     377 </span>                :            :       const std::unordered_map&lt; int, std::vector&lt; std::size_t &gt; &gt;&amp; Msum;
-<span class="lineNum">     378 </span>                :            :       const std::map&lt; int, std::vector&lt; std::size_t &gt; &gt; Bface;
-<a name="379"><span class="lineNum">     379 </span>                :            :       const std::map&lt; int, std::vector&lt; std::size_t &gt; &gt; Bnode;</a>
-<span class="lineNum">     380 </span>                :            :       const std::vector&lt; std::size_t &gt; Triinpoel;
-<span class="lineNum">     381 </span>                :<span class="lineCov">        184 :       ResizePostAMR(</span>
-<span class="lineNum">     382 </span>                :            :         const std::vector&lt; std::size_t &gt;&amp; ginpoel,
-<span class="lineNum">     383 </span>                :            :         const tk::UnsMesh::Chunk&amp; chunk,
-<span class="lineNum">     384 </span>                :            :         const tk::UnsMesh::Coords&amp; coord,
-<span class="lineNum">     385 </span>                :            :         const std::unordered_map&lt; std::size_t, tk::UnsMesh::Edge &gt;&amp; addednodes,
-<span class="lineNum">     386 </span>                :            :         const std::unordered_map&lt; std::size_t, std::size_t &gt;&amp; addedtets,
-<span class="lineNum">     387 </span>                :            :         const std::unordered_map&lt; int, std::vector&lt; std::size_t &gt; &gt;&amp; msum,
-<span class="lineNum">     388 </span>                :            :         const std::map&lt; int, std::vector&lt; std::size_t &gt; &gt;&amp; bface,
-<span class="lineNum">     389 </span>                :            :         const std::map&lt; int, std::vector&lt; std::size_t &gt; &gt;&amp; bnode,
-<span class="lineNum">     390 </span>                :            :         const std::vector&lt; std::size_t &gt;&amp; triinpoel )
-<span class="lineNum">     391 </span>                :            :         : Ginpoel(ginpoel), Chunk(chunk), Coord(coord), AddedNodes(addednodes),
-<a name="392"><span class="lineNum">     392 </span>                :            :           AddedTets(addedtets), Msum(msum), Bface(bface), Bnode(bnode),</a>
-<span class="lineNum">     393 </span>        [<span class="branchCov" title="Branch 1 was taken 184 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">        184 :           Triinpoel(triinpoel) {}</span>
-<span class="lineNum">     394 </span>                :<span class="lineCov">        184 :       template&lt; typename P &gt; void operator()( const P&amp; p ) const {</span>
-<span class="lineNum">     395 </span>                :<span class="lineCov">        184 :         p.ckLocal()-&gt;resizePostAMR( Ginpoel, Chunk, Coord, AddedNodes,</span>
-<span class="lineNum">     396 </span>                :            :           AddedTets, Msum, Bface, Bnode, Triinpoel );
-<span class="lineNum">     397 </span>                :<span class="lineCov">        184 :       }</span>
-<span class="lineNum">     398 </span>                :            :     };
-<span class="lineNum">     399 </span>                :            : 
-<span class="lineNum">     400 </span>                :            :     //! \brief Function class to call the solution() member function
-<a name="401"><span class="lineNum">     401 </span>                :            :     //!   behind SchemeBase::Proxy</a>
-<span class="lineNum">     402 </span>                :            :     struct solution : boost::static_visitor&lt; tk::Fields &gt; {
-<span class="lineNum">     403 </span>                :<span class="lineNoCov">          0 :       template&lt; typename P &gt; const tk::Fields&amp; operator()( const P&amp; p ) const {</span>
-<span class="lineNum">     404 </span>                :<span class="lineNoCov">          0 :         return p.ckLocal()-&gt;solution();</span>
-<span class="lineNum">     405 </span>                :            :       }
-<span class="lineNum">     406 </span>                :            :     };
-<span class="lineNum">     407 </span>                :            : };
-<span class="lineNum">     408 </span>                :            : 
-<span class="lineNum">     409 </span>                :            : } // inciter::
-<span class="lineNum">     410 </span>                :            : 
-<span class="lineNum">     411 </span>                :            : #endif // Refiner_h
+<a name="1"><span class="lineNum">       1 </span>            : // *****************************************************************************</a>
+<span class="lineNum">       2 </span>            : /*!
+<span class="lineNum">       3 </span>            :   \file      src/Inciter/Refiner.hpp
+<span class="lineNum">       4 </span>            :   \copyright 2012-2015 J. Bakosi,
+<span class="lineNum">       5 </span>            :              2016-2018 Los Alamos National Security, LLC.,
+<span class="lineNum">       6 </span>            :              2019 Triad National Security, LLC.
+<span class="lineNum">       7 </span>            :              All rights reserved. See the LICENSE file for details.
+<span class="lineNum">       8 </span>            :   \brief     Mesh refiner for interfacing the mesh refinement library
+<span class="lineNum">       9 </span>            :   \details   Mesh refiner is a Charm++ chare array and is used to interface the
+<span class="lineNum">      10 </span>            :    mesh refinement object which does not know about parallelization and thus the
+<span class="lineNum">      11 </span>            :    distributed nature of the mesh it operates on, i.e., it operates on mesh
+<span class="lineNum">      12 </span>            :    chunks. Thus it does not do parallel communication and also does not know
+<span class="lineNum">      13 </span>            :    about global vs local IDs. Instead this Charm++ chare array is the one that
+<span class="lineNum">      14 </span>            :    does all parallel computing aspects, i.e., communcation, and using the mesh
+<span class="lineNum">      15 </span>            :    refiner object as a library.
+<span class="lineNum">      16 </span>            : */
+<span class="lineNum">      17 </span>            : // *****************************************************************************
+<span class="lineNum">      18 </span>            : #ifndef Refiner_h
+<span class="lineNum">      19 </span>            : #define Refiner_h
+<span class="lineNum">      20 </span>            : 
+<span class="lineNum">      21 </span>            : #include &lt;vector&gt;
+<span class="lineNum">      22 </span>            : #include &lt;unordered_map&gt;
+<span class="lineNum">      23 </span>            : 
+<span class="lineNum">      24 </span>            : #include &quot;PUPAMR.hpp&quot;
+<span class="lineNum">      25 </span>            : #include &quot;AMR/mesh_adapter.hpp&quot;
+<span class="lineNum">      26 </span>            : #include &quot;Inciter/Options/AMRInitial.hpp&quot;
+<span class="lineNum">      27 </span>            : #include &quot;TaggedTuple.hpp&quot;
+<span class="lineNum">      28 </span>            : #include &quot;Tags.hpp&quot;
+<span class="lineNum">      29 </span>            : #include &quot;Callback.hpp&quot;
+<span class="lineNum">      30 </span>            : #include &quot;UnsMesh.hpp&quot;
+<span class="lineNum">      31 </span>            : #include &quot;Base/Fields.hpp&quot;
+<span class="lineNum">      32 </span>            : #include &quot;SchemeBase.hpp&quot;
+<span class="lineNum">      33 </span>            : #include &quot;DiagCG.hpp&quot;
+<span class="lineNum">      34 </span>            : #include &quot;ALECG.hpp&quot;
+<span class="lineNum">      35 </span>            : #include &quot;DG.hpp&quot;
+<span class="lineNum">      36 </span>            : 
+<span class="lineNum">      37 </span>            : #include &quot;NoWarning/transporter.decl.h&quot;
+<span class="lineNum">      38 </span>            : #include &quot;NoWarning/refiner.decl.h&quot;
+<span class="lineNum">      39 </span>            : 
+<span class="lineNum">      40 </span>            : namespace inciter {
+<a name="41"><span class="lineNum">      41 </span>            : </a>
+<span class="lineNum">      42 </span>            : //! Mesh refiner for interfacing the mesh refinement library
+<span class="lineNum">      43 </span><span class="lineCov">      98515 : class Refiner : public CBase_Refiner {</span>
+<span class="lineNum">      44 </span>            : 
+<span class="lineNum">      45 </span>            :   public:
+<span class="lineNum">      46 </span>            :     //! Constructor
+<span class="lineNum">      47 </span>            :     explicit Refiner( const CProxy_Transporter&amp; transporter,
+<span class="lineNum">      48 </span>            :                       const CProxy_Sorter&amp; sorter,
+<span class="lineNum">      49 </span>            :                       const tk::CProxy_MeshWriter&amp; meshwriter,
+<span class="lineNum">      50 </span>            :                       const Scheme&amp; scheme,
+<span class="lineNum">      51 </span>            :                       const tk::RefinerCallback&amp; cbr,
+<span class="lineNum">      52 </span>            :                       const tk::SorterCallback&amp; cbs,
+<span class="lineNum">      53 </span>            :                       const std::vector&lt; std::size_t &gt;&amp; ginpoel,
+<span class="lineNum">      54 </span>            :                       const tk::UnsMesh::CoordMap&amp; coordmap,
+<span class="lineNum">      55 </span>            :                       const std::map&lt; int, std::vector&lt; std::size_t &gt; &gt;&amp; bface,
+<span class="lineNum">      56 </span>            :                       const std::vector&lt; std::size_t &gt;&amp; triinpoel,
+<span class="lineNum">      57 </span>            :                       const std::map&lt; int, std::vector&lt; std::size_t &gt; &gt;&amp; bnode,
+<span class="lineNum">      58 </span>            :                       int nchare );
+<span class="lineNum">      59 </span>            : 
+<span class="lineNum">      60 </span>            :     #if defined(__clang__)
+<span class="lineNum">      61 </span>            :       #pragma clang diagnostic push
+<span class="lineNum">      62 </span>            :       #pragma clang diagnostic ignored &quot;-Wundefined-func-template&quot;
+<span class="lineNum">      63 </span>            :     #endif
+<span class="lineNum">      64 </span>            :     //! Migrate constructor
+<span class="lineNum">      65 </span>            :     // cppcheck-suppress uninitMemberVar
+<span class="lineNum">      66 </span><span class="lineCov">     354654 :     explicit Refiner( CkMigrateMessage* ) {}</span>
+<span class="lineNum">      67 </span>            :     #if defined(__clang__)
+<span class="lineNum">      68 </span>            :       #pragma clang diagnostic pop
+<span class="lineNum">      69 </span>            :     #endif
+<span class="lineNum">      70 </span>            : 
+<span class="lineNum">      71 </span>            :     //! Configure Charm++ reduction types
+<span class="lineNum">      72 </span>            :     static void registerReducers();
+<span class="lineNum">      73 </span>            : 
+<span class="lineNum">      74 </span>            :     //! Query Sorter and update local mesh with the reordered one
+<span class="lineNum">      75 </span>            :     void reorder();
+<span class="lineNum">      76 </span>            : 
+<span class="lineNum">      77 </span>            :     //! Start new step of initial mesh refinement
+<span class="lineNum">      78 </span>            :     void start();
+<span class="lineNum">      79 </span>            : 
+<span class="lineNum">      80 </span>            :     //! Continue after finishing a refinement step
+<span class="lineNum">      81 </span>            :     void next();
+<span class="lineNum">      82 </span>            : 
+<span class="lineNum">      83 </span>            :     //! Start mesh refinement (during time stepping, t&gt;0)
+<span class="lineNum">      84 </span>            :     void dtref( const std::map&lt; int, std::vector&lt; std::size_t &gt; &gt;&amp; bface,
+<span class="lineNum">      85 </span>            :                 const std::map&lt; int, std::vector&lt; std::size_t &gt; &gt;&amp; bnode,
+<span class="lineNum">      86 </span>            :                 const std::vector&lt; std::size_t &gt;&amp; triinpoel );
+<span class="lineNum">      87 </span>            : 
+<span class="lineNum">      88 </span>            :     //! Receive boundary edges from all PEs (including this one)
+<span class="lineNum">      89 </span>            :     void addBndEdges( CkReductionMsg* msg );
+<span class="lineNum">      90 </span>            : 
+<span class="lineNum">      91 </span>            :     //! Refine mesh
+<span class="lineNum">      92 </span>            :     void refine();
+<span class="lineNum">      93 </span>            : 
+<span class="lineNum">      94 </span>            :     //! Receive newly added mesh edges and locks on our chare boundary
+<span class="lineNum">      95 </span>            :     void addRefBndEdges( int fromch,
+<span class="lineNum">      96 </span>            :                          const AMR::EdgeData&amp; ed,
+<span class="lineNum">      97 </span>            :                          const std::unordered_set&lt;size_t&gt;&amp; intermediates );
+<span class="lineNum">      98 </span>            : 
+<span class="lineNum">      99 </span>            :     //! Correct refinement to arrive at conforming mesh across chare boundaries
+<span class="lineNum">     100 </span>            :     void correctref();
+<span class="lineNum">     101 </span>            : 
+<span class="lineNum">     102 </span>            :     //! Communicate refined edges after a refinement step
+<span class="lineNum">     103 </span>            :     void comExtra();
+<span class="lineNum">     104 </span>            : 
+<span class="lineNum">     105 </span>            :     //! Decide what to do after a mesh refinement step
+<span class="lineNum">     106 </span>            :     void eval();
+<span class="lineNum">     107 </span>            : 
+<span class="lineNum">     108 </span>            :     //! Send Refiner proxy to Discretization objects
+<span class="lineNum">     109 </span>            :     void sendProxy();
+<span class="lineNum">     110 </span>            : 
+<span class="lineNum">     111 </span>            :     //! Get refinement field data in mesh cells
+<span class="lineNum">     112 </span>            :     std::tuple&lt; std::vector&lt; std::string &gt;,
+<span class="lineNum">     113 </span>            :                 std::vector&lt; std::vector&lt; tk::real &gt; &gt; &gt;
+<span class="lineNum">     114 </span>            :     refinementFields() const;
+<span class="lineNum">     115 </span>            : 
+<span class="lineNum">     116 </span>            :     /** @name Charm++ pack/unpack serializer member functions */
+<span class="lineNum">     117 </span>            :     ///@{
+<a name="118"><span class="lineNum">     118 </span>            :     //! \brief Pack/Unpack serialize member function</a>
+<span class="lineNum">     119 </span>            :     //! \param[in,out] p Charm++'s PUP::er serializer object reference
+<span class="lineNum">     120 </span><span class="lineCov">     118218 :     void pup( PUP::er &amp;p ) override {</span>
+<span class="lineNum">     121 </span><span class="lineCov">      59109 :       p | m_host;</span>
+<span class="lineNum">     122 </span><span class="lineCov">      59109 :       p | m_sorter;</span>
+<span class="lineNum">     123 </span><span class="lineCov">      59109 :       p | m_meshwriter;</span>
+<span class="lineNum">     124 </span>            :       p | m_scheme;
+<span class="lineNum">     125 </span>            :       p | m_cbr;
+<span class="lineNum">     126 </span>            :       p | m_cbs;
+<span class="lineNum">     127 </span><span class="lineCov">      59109 :       p | m_ginpoel;</span>
+<span class="lineNum">     128 </span><span class="lineCov">      59109 :       p | m_el;</span>
+<span class="lineNum">     129 </span><span class="lineCov">      59109 :       if (p.isUnpacking()) {</span>
+<span class="lineNum">     130 </span><span class="lineCov">      19703 :         m_inpoel = std::get&lt; 0 &gt;( m_el );</span>
+<span class="lineNum">     131 </span><span class="lineCov">      19703 :         m_gid = std::get&lt; 1 &gt;( m_el );</span>
+<span class="lineNum">     132 </span><span class="lineCov">      19703 :         m_lid = std::get&lt; 2 &gt;( m_el );</span>
+<span class="lineNum">     133 </span>            :       }
+<span class="lineNum">     134 </span><span class="lineCov">      59109 :       p | m_coordmap;</span>
+<span class="lineNum">     135 </span>            :       p | m_coord;
+<span class="lineNum">     136 </span>            :       p | m_bface;
+<span class="lineNum">     137 </span><span class="lineCov">      59109 :       p | m_bnode;</span>
+<span class="lineNum">     138 </span><span class="lineCov">      59109 :       p | m_triinpoel;</span>
+<span class="lineNum">     139 </span><span class="lineCov">      59109 :       p | m_nchare;</span>
+<span class="lineNum">     140 </span><span class="lineCov">      59109 :       p | m_initial;</span>
+<span class="lineNum">     141 </span><span class="lineCov">      59109 :       p | m_initref;</span>
+<span class="lineNum">     142 </span><span class="lineCov">      59109 :       p | m_refiner;</span>
+<span class="lineNum">     143 </span><span class="lineCov">      59109 :       p | m_nref;</span>
+<span class="lineNum">     144 </span><span class="lineCov">      59109 :       p | m_extra;</span>
+<span class="lineNum">     145 </span><span class="lineCov">      59109 :       p | m_ch;</span>
+<span class="lineNum">     146 </span><span class="lineCov">      59109 :       p | m_localEdgeData;</span>
+<span class="lineNum">     147 </span><span class="lineCov">      59109 :       p | m_remoteEdgeData;</span>
+<span class="lineNum">     148 </span><span class="lineCov">      59109 :       p | m_remoteEdges;</span>
+<span class="lineNum">     149 </span><span class="lineCov">      59109 :       p | m_intermediates;</span>
+<span class="lineNum">     150 </span><span class="lineCov">      59109 :       p | m_bndEdges;</span>
+<span class="lineNum">     151 </span><span class="lineCov">      59109 :       p | m_oldTets;</span>
+<span class="lineNum">     152 </span><span class="lineCov">      59109 :       p | m_addedNodes;</span>
+<span class="lineNum">     153 </span><span class="lineCov">      59109 :       p | m_addedTets;</span>
+<span class="lineNum">     154 </span><span class="lineCov">      59109 :       p | m_prevnTets;</span>
+<span class="lineNum">     155 </span><span class="lineCov">      59109 :       p | m_coarseBndFaces;</span>
+<span class="lineNum">     156 </span><span class="lineCov">      59109 :       p | m_coarseBndNodes;</span>
+<span class="lineNum">     157 </span><span class="lineCov">      59109 :       p | m_msumset;</span>
+<span class="lineNum">     158 </span><span class="lineCov">      59109 :     }</span>
+<span class="lineNum">     159 </span>            :     //! \brief Pack/Unpack serialize operator|
+<span class="lineNum">     160 </span>            :     //! \param[in,out] p Charm++'s PUP::er serializer object reference
+<span class="lineNum">     161 </span>            :     //! \param[in,out] r Refiner object reference
+<span class="lineNum">     162 </span>            :     friend void operator|( PUP::er&amp; p, Refiner&amp; r ) { r.pup(p); }
+<span class="lineNum">     163 </span>            :     //@}
+<span class="lineNum">     164 </span>            : 
+<span class="lineNum">     165 </span>            :   private:
+<span class="lineNum">     166 </span>            :     //! Boundary face data bundle
+<span class="lineNum">     167 </span>            :     using BndFaceData = std::tuple&lt;
+<span class="lineNum">     168 </span>            :       std::unordered_map&lt; tk::UnsMesh::Face, std::size_t,
+<span class="lineNum">     169 </span>            :                           tk::UnsMesh::Hash&lt;3&gt;, tk::UnsMesh::Eq&lt;3&gt; &gt;,
+<span class="lineNum">     170 </span>            :       std::unordered_map&lt; int, tk::UnsMesh::FaceSet &gt;,
+<span class="lineNum">     171 </span>            :       std::unordered_map&lt; tk::UnsMesh::Face, std::size_t,
+<span class="lineNum">     172 </span>            :                           tk::UnsMesh::Hash&lt;3&gt;, tk::UnsMesh::Eq&lt;3&gt; &gt; &gt;;
+<span class="lineNum">     173 </span>            : 
+<span class="lineNum">     174 </span>            :     //! Host proxy
+<span class="lineNum">     175 </span>            :     CProxy_Transporter m_host;
+<span class="lineNum">     176 </span>            :     //! Mesh sorter proxy
+<span class="lineNum">     177 </span>            :     CProxy_Sorter m_sorter;
+<span class="lineNum">     178 </span>            :     //! Mesh writer proxy
+<span class="lineNum">     179 </span>            :     tk::CProxy_MeshWriter m_meshwriter;
+<span class="lineNum">     180 </span>            :     //! Discretization scheme
+<span class="lineNum">     181 </span>            :     Scheme m_scheme;
+<span class="lineNum">     182 </span>            :     //! Charm++ callbacks associated to compile-time tags for refiner
+<span class="lineNum">     183 </span>            :     tk::RefinerCallback m_cbr;
+<span class="lineNum">     184 </span>            :     //! Charm++ callbacks associated to compile-time tags for sorter
+<span class="lineNum">     185 </span>            :     tk::SorterCallback m_cbs;
+<span class="lineNum">     186 </span>            :     //! Tetrtahedron element connectivity of our chunk of the mesh (global ids)
+<span class="lineNum">     187 </span>            :     std::vector&lt; std::size_t &gt; m_ginpoel;
+<span class="lineNum">     188 </span>            :     //! Elements of the mesh chunk we operate on
+<span class="lineNum">     189 </span>            :     //! \details The first vector is the element connectivity (local IDs), the
+<span class="lineNum">     190 </span>            :     //!   second vector is the global node IDs of owned elements, while the
+<span class="lineNum">     191 </span>            :     //!   third one is a map of global-&gt;local node IDs.
+<span class="lineNum">     192 </span>            :     tk::UnsMesh::Chunk m_el;
+<span class="lineNum">     193 </span>            :     //! Alias to element connectivity with local node IDs in m_el
+<span class="lineNum">     194 </span><span class="lineCov">      23209 :     std::vector&lt; std::size_t &gt;&amp; m_inpoel = std::get&lt;0&gt;( m_el );</span>
+<span class="lineNum">     195 </span>            :     //! Alias to global node IDs of owned elements in m_el
+<span class="lineNum">     196 </span><span class="lineCov">      23209 :     std::vector&lt; std::size_t &gt;&amp; m_gid = std::get&lt;1&gt;( m_el );</span>
+<span class="lineNum">     197 </span>            :     //! \brief Alias to local node IDs associated to the global ones of owned
+<span class="lineNum">     198 </span>            :     //!    elements in m_el
+<span class="lineNum">     199 </span><span class="lineCov">      23209 :     std::unordered_map&lt; std::size_t, std::size_t &gt;&amp; m_lid = std::get&lt;2&gt;( m_el );</span>
+<span class="lineNum">     200 </span>            :     //! Coordinates associated to global node IDs of our mesh chunk
+<span class="lineNum">     201 </span>            :     tk::UnsMesh::CoordMap m_coordmap;
+<span class="lineNum">     202 </span>            :     //! Coordinates of mesh nodes of our chunk of the mesh
+<span class="lineNum">     203 </span>            :     tk::UnsMesh::Coords m_coord;
+<span class="lineNum">     204 </span>            :     //! List of boundary faces associated to side-set IDs
+<span class="lineNum">     205 </span>            :     std::map&lt; int, std::vector&lt; std::size_t &gt; &gt; m_bface;
+<span class="lineNum">     206 </span>            :     //! List of boundary nodes associated to side-set IDs
+<span class="lineNum">     207 </span>            :     std::map&lt; int, std::vector&lt; std::size_t &gt; &gt; m_bnode;
+<span class="lineNum">     208 </span>            :     //! Boundary face-node connectivity
+<span class="lineNum">     209 </span>            :     std::vector&lt; std::size_t &gt; m_triinpoel;
+<span class="lineNum">     210 </span>            :     //! Total number of refiner chares
+<span class="lineNum">     211 </span>            :     int m_nchare;
+<span class="lineNum">     212 </span>            :     //! True if initial AMR, false if during time stepping
+<span class="lineNum">     213 </span>            :     bool m_initial;
+<span class="lineNum">     214 </span>            :     //! Initial mesh refinement type list (in reverse order)
+<span class="lineNum">     215 </span>            :     std::vector&lt; ctr::AMRInitialType &gt; m_initref;
+<span class="lineNum">     216 </span>            :     //! Number of initial mesh refinement steps
+<span class="lineNum">     217 </span>            :     std::size_t m_ninitref;
+<span class="lineNum">     218 </span>            :     //! Mesh refiner (library) object
+<span class="lineNum">     219 </span>            :     AMR::mesh_adapter_t m_refiner;
+<span class="lineNum">     220 </span>            :     //! Counter during distribution of newly added nodes to chare-boundary edges
+<span class="lineNum">     221 </span>            :     std::size_t m_nref;
+<span class="lineNum">     222 </span>            :     //! Number of chare-boundary newly added nodes that need correction
+<span class="lineNum">     223 </span>            :     std::size_t m_extra;
+<span class="lineNum">     224 </span>            :     //! Chares we share at least a single edge with
+<span class="lineNum">     225 </span>            :     std::unordered_set&lt; int &gt; m_ch;
+<span class="lineNum">     226 </span>            :     //! Refinement data associated to edges
+<span class="lineNum">     227 </span>            :     AMR::EdgeData m_localEdgeData;
+<span class="lineNum">     228 </span>            :     //! Refinement data associated to edges shared with other chares
+<span class="lineNum">     229 </span>            :     std::unordered_map&lt; int, std::vector&lt; std::tuple&lt;
+<span class="lineNum">     230 </span>            :       tk::UnsMesh::Edge, int, AMR::Edge_Lock_Case &gt; &gt; &gt; m_remoteEdgeData;
+<span class="lineNum">     231 </span>            :     //! Edges received from other chares
+<span class="lineNum">     232 </span>            :     std::unordered_map&lt; int, std::vector&lt; tk::UnsMesh::Edge &gt; &gt; m_remoteEdges;
+<span class="lineNum">     233 </span>            :     //! Intermediate nodes
+<span class="lineNum">     234 </span>            :     std::unordered_set&lt; size_t&gt; m_intermediates;
+<span class="lineNum">     235 </span>            :     //! Boundary edges associated to chares we share these edges with
+<span class="lineNum">     236 </span>            :     std::unordered_map&lt; int, tk::UnsMesh::EdgeSet &gt; m_bndEdges;
+<span class="lineNum">     237 </span>            :     //! \brief Global mesh node IDs bordering the mesh chunk held by fellow
+<span class="lineNum">     238 </span>            :     //!    worker chares associated to their chare IDs for the coarse mesh
+<span class="lineNum">     239 </span>            :     //! \details msum: mesh chunks surrounding mesh chunks and their neighbor
+<span class="lineNum">     240 </span>            :     //!   points. This is the same data as in Discretization::m_msum, but the
+<span class="lineNum">     241 </span>            :     //!   nodelist is stored as a hash-set for faster searches.
+<span class="lineNum">     242 </span>            :     std::unordered_map&lt; int, std::unordered_set&lt; std::size_t &gt; &gt; m_msumset;
+<span class="lineNum">     243 </span>            :     //! Local tetrahedron IDs before refinement step
+<span class="lineNum">     244 </span>            :     std::unordered_set&lt; std::size_t &gt; m_oldTets;
+<span class="lineNum">     245 </span>            :     //! Newly added mesh nodes (local id) and their parents (local ids)
+<span class="lineNum">     246 </span>            :     std::unordered_map&lt; std::size_t, tk::UnsMesh::Edge &gt; m_addedNodes;
+<span class="lineNum">     247 </span>            :     //! Newly added mesh cells (local id) and their parent (local ids)
+<span class="lineNum">     248 </span>            :     std::unordered_map&lt; std::size_t, std::size_t &gt; m_addedTets;
+<span class="lineNum">     249 </span>            :     //! Number of tetrahedra in the mesh before refinement
+<span class="lineNum">     250 </span>            :     std::size_t m_prevnTets;
+<span class="lineNum">     251 </span>            :     //! A unique set of faces associated to side sets of the coarsest mesh
+<span class="lineNum">     252 </span>            :     std::unordered_map&lt; int, tk::UnsMesh::FaceSet &gt; m_coarseBndFaces;
+<span class="lineNum">     253 </span>            :     //! A unique set of nodes associated to side sets of the coarsest mesh
+<span class="lineNum">     254 </span>            :     std::unordered_map&lt; int, std::unordered_set&lt; std::size_t &gt; &gt;
+<span class="lineNum">     255 </span>            :       m_coarseBndNodes;
+<span class="lineNum">     256 </span>            : 
+<span class="lineNum">     257 </span>            :     //! (Re-)generate boundary data structures for coarse mesh
+<span class="lineNum">     258 </span>            :     void coarseBnd();
+<span class="lineNum">     259 </span>            : 
+<span class="lineNum">     260 </span>            :     //! Generate flat coordinate data from coordinate map
+<span class="lineNum">     261 </span>            :     tk::UnsMesh::Coords flatcoord( const tk::UnsMesh::CoordMap&amp; coordmap );
+<span class="lineNum">     262 </span>            : 
+<span class="lineNum">     263 </span>            :     //! Output mesh to file before a new step of mesh refinement
+<span class="lineNum">     264 </span>            :     void t0ref();
+<span class="lineNum">     265 </span>            : 
+<span class="lineNum">     266 </span>            :     //! Generate boundary edges and send them to all chares
+<span class="lineNum">     267 </span>            :     void bndEdges();
+<span class="lineNum">     268 </span>            : 
+<span class="lineNum">     269 </span>            :     //! Finish initiel mesh refinement
+<span class="lineNum">     270 </span>            :     void endt0ref();
+<span class="lineNum">     271 </span>            : 
+<span class="lineNum">     272 </span>            :     //! Do uniform mesh refinement
+<span class="lineNum">     273 </span>            :     void uniformRefine();
+<span class="lineNum">     274 </span>            : 
+<span class="lineNum">     275 </span>            :     //! Do error-based mesh refinement
+<span class="lineNum">     276 </span>            :     void errorRefine();
+<span class="lineNum">     277 </span>            : 
+<span class="lineNum">     278 </span>            :     //! Do mesh refinement based on user explicitly tagging edges
+<span class="lineNum">     279 </span>            :     void edgelistRefine();
+<span class="lineNum">     280 </span>            : 
+<span class="lineNum">     281 </span>            :     //! Do mesh refinement based on tagging edges based on end-point coordinates
+<span class="lineNum">     282 </span>            :     void coordRefine();
+<span class="lineNum">     283 </span>            : 
+<span class="lineNum">     284 </span>            :     //! Query AMR lib and update our local store of edge data
+<span class="lineNum">     285 </span>            :     void updateEdgeData();
+<span class="lineNum">     286 </span>            : 
+<span class="lineNum">     287 </span>            :     //! Aggregate number of extra edges across all chares
+<span class="lineNum">     288 </span>            :     void matched();
+<span class="lineNum">     289 </span>            : 
+<span class="lineNum">     290 </span>            :     //! Update old mesh after refinement
+<span class="lineNum">     291 </span>            :     void updateMesh();
+<span class="lineNum">     292 </span>            : 
+<span class="lineNum">     293 </span>            :     //! Update volume mesh after mesh refinement
+<span class="lineNum">     294 </span>            :     void newVolMesh( const std::unordered_set&lt; std::size_t &gt;&amp; old,
+<span class="lineNum">     295 </span>            :                      const std::unordered_set&lt; std::size_t &gt;&amp; ref );
+<span class="lineNum">     296 </span>            : 
+<span class="lineNum">     297 </span>            :     //! Update boundary data structures after mesh refinement
+<span class="lineNum">     298 </span>            :     void newBndMesh( const std::unordered_set&lt; std::size_t &gt;&amp; ref );
+<span class="lineNum">     299 </span>            : 
+<span class="lineNum">     300 </span>            :     //! \brief Generate boundary data structures used to update refined
+<span class="lineNum">     301 </span>            :     //!   boundary faces and nodes of side sets
+<span class="lineNum">     302 </span>            :     BndFaceData boundary();
+<span class="lineNum">     303 </span>            : 
+<span class="lineNum">     304 </span>            :     //! Regenerate boundary faces after mesh refinement step
+<span class="lineNum">     305 </span>            :     void updateBndFaces(
+<span class="lineNum">     306 </span>            :       const std::unordered_set&lt; std::size_t &gt;&amp; ref,
+<span class="lineNum">     307 </span>            :       const std::unordered_map&lt; tk::UnsMesh::Face, std::size_t,
+<span class="lineNum">     308 </span>            :                         tk::UnsMesh::Hash&lt;3&gt;, tk::UnsMesh::Eq&lt;3&gt; &gt;&amp; bndFaceTets,
+<span class="lineNum">     309 </span>            :       const std::unordered_map&lt; int, tk::UnsMesh::FaceSet &gt;&amp; bndFaces );
+<span class="lineNum">     310 </span>            : 
+<span class="lineNum">     311 </span>            :     //! Regenerate boundary nodes after mesh refinement step
+<span class="lineNum">     312 </span>            :     void updateBndNodes(
+<span class="lineNum">     313 </span>            :       const std::unordered_set&lt; std::size_t &gt;&amp; ref,
+<span class="lineNum">     314 </span>            :       const std::unordered_map&lt; tk::UnsMesh::Face, std::size_t,
+<span class="lineNum">     315 </span>            :                       tk::UnsMesh::Hash&lt;3&gt;, tk::UnsMesh::Eq&lt;3&gt; &gt;&amp; pcFaceTets );
+<span class="lineNum">     316 </span>            : 
+<span class="lineNum">     317 </span>            :     //! Evaluate initial conditions (IC) at mesh nodes
+<span class="lineNum">     318 </span>            :     tk::Fields nodeinit( std::size_t npoin,
+<span class="lineNum">     319 </span>            :                          const std::pair&lt; std::vector&lt; std::size_t &gt;,
+<span class="lineNum">     320 </span>            :                                           std::vector&lt; std::size_t &gt; &gt;&amp; esup );
+<span class="lineNum">     321 </span>            : 
+<span class="lineNum">     322 </span>            :     //! Output mesh to file(s)
+<span class="lineNum">     323 </span>            :     void writeMesh( const std::string&amp; basefilename,
+<span class="lineNum">     324 </span>            :                     uint64_t it,
+<span class="lineNum">     325 </span>            :                     tk::real t,
+<span class="lineNum">     326 </span>            :                     CkCallback c ) const;
+<span class="lineNum">     327 </span>            : 
+<span class="lineNum">     328 </span>            :     //! Compute partial boundary surface integral and sum across all chares
+<span class="lineNum">     329 </span>            :     bool bndIntegral();
+<span class="lineNum">     330 </span>            : 
+<span class="lineNum">     331 </span>            :     //! Find the oldest parents of a mesh node in the AMR hierarchy
+<span class="lineNum">     332 </span>            :     std::unordered_set&lt; std::size_t &gt;
+<span class="lineNum">     333 </span>            :     ancestors( std::size_t n );
+<span class="lineNum">     334 </span>            : 
+<span class="lineNum">     335 </span>            :     //! Return a set of keys among whose values a primitive is found
+<span class="lineNum">     336 </span>            :     //! \tparam Sets Type of map of sets we search for the primitive
+<span class="lineNum">     337 </span>            :     //! \tparam Primitive The primitive we search for in the sets
+<span class="lineNum">     338 </span>            :     //! \note Sets::mapped_type == Primitive
+<span class="lineNum">     339 </span>            :     //! \param[in] sets Map of sets we search in
+<span class="lineNum">     340 </span>            :     //! \param[in] p Primitive we search for
+<span class="lineNum">     341 </span>            :     //! \return A unique set of set ids in which the primitive is found or
+<span class="lineNum">     342 </span>            :     //!   an empty set if the primitive was not found.
+<span class="lineNum">     343 </span>            :     //! \details This function searches a map of sets for an item (a primitive,
+<span class="lineNum">     344 </span>            :     //!   e.g., a single id or a face given by 3 node ids) and returns a
+<span class="lineNum">     345 </span>            :     //!   unique set of keys behind whose associated sets the item was found.
+<span class="lineNum">     346 </span>            :     template&lt; class Sets, class Primitive &gt;
+<span class="lineNum">     347 </span>            :     std::unordered_set&lt; int &gt;
+<span class="lineNum">     348 </span><span class="lineCov">    2249757 :     keys( const Sets&amp; sets, const Primitive&amp; p ) {</span>
+<span class="lineNum">     349 </span>            :       static_assert( std::is_same&lt; typename Sets::mapped_type::value_type,
+<span class="lineNum">     350 </span>            :         Primitive &gt;::value, &quot;Type of primitive (face/node) in map of sets must &quot;
+<span class="lineNum">     351 </span>            :         &quot;be the same as the type of primitive (face/node) that is searched&quot; );
+<span class="lineNum">     352 </span><span class="lineCov">    2249757 :       std::unordered_set&lt; int &gt; ss;</span>
+<span class="lineNum">     353 </span><span class="lineCov">    8139557 :       for (const auto&amp; s : sets)</span>
+<span class="lineNum">     354 </span><span class="lineCov">    3640043 :         if (s.second.find(p) != end(s.second))</span>
+<span class="lineNum">     355 </span><span class="lineCov">     854516 :           ss.insert( s.first );</span>
+<span class="lineNum">     356 </span><span class="lineCov">    2249757 :       return ss;</span>
+<span class="lineNum">     357 </span>            :     }
+<span class="lineNum">     358 </span>            : 
+<span class="lineNum">     359 </span>            :     //! Call a function on each item of an array
+<span class="lineNum">     360 </span>            :     //! \tparam N Number of nodes in array
+<span class="lineNum">     361 </span>            :     //! \tparam F Function to pass each item to
+<span class="lineNum">     362 </span>            :     //! \param[in] array Array whose items to pass to function
+<a name="363"><span class="lineNum">     363 </span>            :     //! \param[in] f Function to pass each item of array to</a>
+<span class="lineNum">     364 </span>            :     template&lt; std::size_t N, class F &gt;
+<span class="lineNum">     365 </span><span class="lineNoCov">          0 :     void addBndNodes( const std::array&lt; std::size_t, N &gt;&amp; array, F f ) {</span>
+<span class="lineNum">     366 </span><span class="lineCov">     259814 :       for (auto n : array) f( n );</span>
+<span class="lineNum">     367 </span><span class="lineNoCov">          0 :     }</span>
+<span class="lineNum">     368 </span>            : 
+<span class="lineNum">     369 </span>            :     //! \brief Function class to call the resizePostAMR() member function
+<span class="lineNum">     370 </span>            :     //!   behind SchemeBase::Proxy
+<span class="lineNum">     371 </span><span class="lineCov">        368 :     struct ResizePostAMR: boost::static_visitor&lt;&gt; {</span>
+<span class="lineNum">     372 </span>            :       const std::vector&lt; std::size_t &gt;&amp; Ginpoel;
+<span class="lineNum">     373 </span>            :       const tk::UnsMesh::Chunk&amp; Chunk;
+<span class="lineNum">     374 </span>            :       const tk::UnsMesh::Coords&amp; Coord;
+<span class="lineNum">     375 </span>            :       const std::unordered_map&lt; std::size_t, tk::UnsMesh::Edge &gt;&amp; AddedNodes;
+<span class="lineNum">     376 </span>            :       const std::unordered_map&lt; std::size_t, std::size_t &gt;&amp; AddedTets;
+<span class="lineNum">     377 </span>            :       const std::unordered_map&lt; int, std::vector&lt; std::size_t &gt; &gt;&amp; Msum;
+<span class="lineNum">     378 </span>            :       const std::map&lt; int, std::vector&lt; std::size_t &gt; &gt; Bface;
+<a name="379"><span class="lineNum">     379 </span>            :       const std::map&lt; int, std::vector&lt; std::size_t &gt; &gt; Bnode;</a>
+<span class="lineNum">     380 </span>            :       const std::vector&lt; std::size_t &gt; Triinpoel;
+<span class="lineNum">     381 </span><span class="lineCov">        184 :       ResizePostAMR(</span>
+<span class="lineNum">     382 </span>            :         const std::vector&lt; std::size_t &gt;&amp; ginpoel,
+<span class="lineNum">     383 </span>            :         const tk::UnsMesh::Chunk&amp; chunk,
+<span class="lineNum">     384 </span>            :         const tk::UnsMesh::Coords&amp; coord,
+<span class="lineNum">     385 </span>            :         const std::unordered_map&lt; std::size_t, tk::UnsMesh::Edge &gt;&amp; addednodes,
+<span class="lineNum">     386 </span>            :         const std::unordered_map&lt; std::size_t, std::size_t &gt;&amp; addedtets,
+<span class="lineNum">     387 </span>            :         const std::unordered_map&lt; int, std::vector&lt; std::size_t &gt; &gt;&amp; msum,
+<span class="lineNum">     388 </span>            :         const std::map&lt; int, std::vector&lt; std::size_t &gt; &gt;&amp; bface,
+<span class="lineNum">     389 </span>            :         const std::map&lt; int, std::vector&lt; std::size_t &gt; &gt;&amp; bnode,
+<span class="lineNum">     390 </span>            :         const std::vector&lt; std::size_t &gt;&amp; triinpoel )
+<span class="lineNum">     391 </span>            :         : Ginpoel(ginpoel), Chunk(chunk), Coord(coord), AddedNodes(addednodes),
+<a name="392"><span class="lineNum">     392 </span>            :           AddedTets(addedtets), Msum(msum), Bface(bface), Bnode(bnode),</a>
+<span class="lineNum">     393 </span><span class="lineCov">        368 :           Triinpoel(triinpoel) {}</span>
+<span class="lineNum">     394 </span><span class="lineCov">        184 :       template&lt; typename P &gt; void operator()( const P&amp; p ) const {</span>
+<span class="lineNum">     395 </span><span class="lineCov">        368 :         p.ckLocal()-&gt;resizePostAMR( Ginpoel, Chunk, Coord, AddedNodes,</span>
+<span class="lineNum">     396 </span>            :           AddedTets, Msum, Bface, Bnode, Triinpoel );
+<span class="lineNum">     397 </span><span class="lineCov">        184 :       }</span>
+<span class="lineNum">     398 </span>            :     };
+<span class="lineNum">     399 </span>            : 
+<span class="lineNum">     400 </span>            :     //! \brief Function class to call the solution() member function
+<a name="401"><span class="lineNum">     401 </span>            :     //!   behind SchemeBase::Proxy</a>
+<span class="lineNum">     402 </span>            :     struct solution : boost::static_visitor&lt; tk::Fields &gt; {
+<span class="lineNum">     403 </span><span class="lineNoCov">          0 :       template&lt; typename P &gt; const tk::Fields&amp; operator()( const P&amp; p ) const {</span>
+<span class="lineNum">     404 </span><span class="lineNoCov">          0 :         return p.ckLocal()-&gt;solution();</span>
+<span class="lineNum">     405 </span>            :       }
+<span class="lineNum">     406 </span>            :     };
+<span class="lineNum">     407 </span>            : };
+<span class="lineNum">     408 </span>            : 
+<span class="lineNum">     409 </span>            : } // inciter::
+<span class="lineNum">     410 </span>            : 
+<span class="lineNum">     411 </span>            : #endif // Refiner_h
 </pre>
       </td>
     </tr>
