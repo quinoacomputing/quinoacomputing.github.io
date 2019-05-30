@@ -24,16 +24,16 @@
           </tr>
           <tr>
             <td class="headerItem">Commit:</td>
-            <td class="headerValue"><a href="https://github.com/quinoacomputing/quinoa/commit/5a428c4">Quinoa_v0.2-2844-g5a428c4</a></td>
+            <td class="headerValue"><a href="https://github.com/quinoacomputing/quinoa/commit/985bab0">Quinoa_v0.2-2870-g985bab0</a></td>
             <td></td>
             <td class="headerItem">Lines:</td>
-            <td class="headerCovTableEntry">218</td>
-            <td class="headerCovTableEntry">219</td>
+            <td class="headerCovTableEntry">220</td>
+            <td class="headerCovTableEntry">221</td>
             <td class="headerCovTableEntryHi">99.5 %</td>
           </tr>
           <tr>
             <td class="headerItem">Date:</td>
-            <td class="headerValue">2019-05-26 23:09:38</td>
+            <td class="headerValue">2019-05-29 22:41:19</td>
             <td></td>
             <td class="headerItem">Functions:</td>
             <td class="headerCovTableEntry">12</td>
@@ -45,8 +45,16 @@
             <td class="headerValueLeg">            Lines:
             <span class="coverLegendCov">hit</span>
             <span class="coverLegendNoCov">not hit</span>
+            | Branches:
+            <span class="coverLegendCov">+</span> taken
+            <span class="coverLegendNoCov">-</span> not taken
+            <span class="coverLegendNoCov">#</span> not executed
 </td>
             <td></td>
+            <td class="headerItem">Branches:</td>
+            <td class="headerCovTableEntry">184</td>
+            <td class="headerCovTableEntry">382</td>
+            <td class="headerCovTableEntryLo">48.2 %</td>
           </tr>
           <tr><td><img src="../glass.png" width=3 height=3 alt=""></td></tr>
         </table>
@@ -62,572 +70,594 @@
     </tr>
     <tr>
       <td>
-<pre class="sourceHeading">          Line data    Source code</pre>
+<pre class="sourceHeading">           Branch data     Line data    Source code</pre>
 <pre class="source">
-<a name="1"><span class="lineNum">       1 </span>            : // *****************************************************************************</a>
-<span class="lineNum">       2 </span>            : /*!
-<span class="lineNum">       3 </span>            :   \file      src/Inciter/Partitioner.cpp
-<span class="lineNum">       4 </span>            :   \copyright 2012-2015 J. Bakosi,
-<span class="lineNum">       5 </span>            :              2016-2018 Los Alamos National Security, LLC.,
-<span class="lineNum">       6 </span>            :              2019 Triad National Security, LLC.
-<span class="lineNum">       7 </span>            :              All rights reserved. See the LICENSE file for details.
-<span class="lineNum">       8 </span>            :   \brief     Charm++ chare partitioner nodegroup used to perform mesh
-<span class="lineNum">       9 </span>            :              partitioning
-<span class="lineNum">      10 </span>            :   \details   Charm++ chare partitioner nodegroup used to perform mesh read and
-<span class="lineNum">      11 </span>            :              partitioning, one worker per compute node.
-<span class="lineNum">      12 </span>            : */
-<span class="lineNum">      13 </span>            : // *****************************************************************************
-<span class="lineNum">      14 </span>            : 
-<span class="lineNum">      15 </span>            : #include &lt;numeric&gt;
-<span class="lineNum">      16 </span>            : 
-<span class="lineNum">      17 </span>            : #include &quot;Partitioner.hpp&quot;
-<span class="lineNum">      18 </span>            : #include &quot;DerivedData.hpp&quot;
-<span class="lineNum">      19 </span>            : #include &quot;Reorder.hpp&quot;
-<span class="lineNum">      20 </span>            : #include &quot;MeshReader.hpp&quot;
-<span class="lineNum">      21 </span>            : #include &quot;CGPDE.hpp&quot;
-<span class="lineNum">      22 </span>            : #include &quot;DGPDE.hpp&quot;
-<span class="lineNum">      23 </span>            : #include &quot;Inciter/Options/Scheme.hpp&quot;
-<span class="lineNum">      24 </span>            : #include &quot;UnsMesh.hpp&quot;
-<span class="lineNum">      25 </span>            : #include &quot;ContainerUtil.hpp&quot;
-<span class="lineNum">      26 </span>            : #include &quot;Callback.hpp&quot;
-<span class="lineNum">      27 </span>            : 
-<span class="lineNum">      28 </span>            : namespace inciter {
-<span class="lineNum">      29 </span>            : 
-<span class="lineNum">      30 </span>            : extern ctr::InputDeck g_inputdeck;
-<span class="lineNum">      31 </span>            : extern std::vector&lt; CGPDE &gt; g_cgpde;
-<span class="lineNum">      32 </span>            : extern std::vector&lt; DGPDE &gt; g_dgpde;
-<span class="lineNum">      33 </span>            : 
-<span class="lineNum">      34 </span>            : } // inciter::
-<span class="lineNum">      35 </span>            : 
-<a name="36"><span class="lineNum">      36 </span>            : using inciter::Partitioner;</a>
-<span class="lineNum">      37 </span>            : 
-<span class="lineNum">      38 </span><span class="lineCov">        913 : Partitioner::Partitioner(</span>
-<span class="lineNum">      39 </span>            :   const tk::PartitionerCallback&amp; cbp,
-<span class="lineNum">      40 </span>            :   const tk::RefinerCallback&amp; cbr,
-<span class="lineNum">      41 </span>            :   const tk::SorterCallback&amp; cbs,
-<span class="lineNum">      42 </span>            :   const CProxy_Transporter&amp; host,
-<span class="lineNum">      43 </span>            :   const CProxy_Refiner&amp; refiner,
-<span class="lineNum">      44 </span>            :   const CProxy_Sorter&amp; sorter,
-<span class="lineNum">      45 </span>            :   const tk::CProxy_MeshWriter&amp; meshwriter,
-<span class="lineNum">      46 </span>            :   const Scheme&amp; scheme,
-<span class="lineNum">      47 </span>            :   const std::map&lt; int, std::vector&lt; std::size_t &gt; &gt;&amp; bface,
-<span class="lineNum">      48 </span>            :   const std::map&lt; int, std::vector&lt; std::size_t &gt; &gt;&amp; faces,
-<span class="lineNum">      49 </span>            :   const std::map&lt; int, std::vector&lt; std::size_t &gt; &gt;&amp; bnode ) :
-<span class="lineNum">      50 </span>            :   m_cbp( cbp ),
-<span class="lineNum">      51 </span>            :   m_cbr( cbr ),
-<span class="lineNum">      52 </span>            :   m_cbs( cbs ),
-<span class="lineNum">      53 </span>            :   m_host( host ),
-<span class="lineNum">      54 </span>            :   m_refiner( refiner ),
-<span class="lineNum">      55 </span>            :   m_sorter( sorter ),
-<span class="lineNum">      56 </span>            :   m_meshwriter( meshwriter ),
-<span class="lineNum">      57 </span>            :   m_scheme( scheme ),
-<span class="lineNum">      58 </span>            :   m_ginpoel(),
-<span class="lineNum">      59 </span>            :   m_coord(),
-<span class="lineNum">      60 </span>            :   m_inpoel(),
-<span class="lineNum">      61 </span>            :   m_lid(),
-<span class="lineNum">      62 </span>            :   m_ndist( 0 ),
-<span class="lineNum">      63 </span>            :   m_nchare( 0 ),
-<span class="lineNum">      64 </span>            :   m_nface(),
-<span class="lineNum">      65 </span>            :   m_chinpoel(),
-<span class="lineNum">      66 </span>            :   m_chcoordmap(),
-<span class="lineNum">      67 </span>            :   m_chbface(),
-<span class="lineNum">      68 </span>            :   m_chtriinpoel(),
-<span class="lineNum">      69 </span>            :   m_chbnode(),
-<span class="lineNum">      70 </span>            :   m_bface( bface ),
-<span class="lineNum">      71 </span><span class="lineCov">        913 :   m_bnode( bnode )</span>
-<span class="lineNum">      72 </span>            : // *****************************************************************************
-<span class="lineNum">      73 </span>            : //  Constructor
-<span class="lineNum">      74 </span>            : //! \param[in] cbp Charm++ callbacks for Partitioner
-<span class="lineNum">      75 </span>            : //! \param[in] cbr Charm++ callbacks for Refiner
-<span class="lineNum">      76 </span>            : //! \param[in] cbs Charm++ callbacks for Sorter
-<span class="lineNum">      77 </span>            : //! \param[in] host Host Charm++ proxy we are being called from
-<span class="lineNum">      78 </span>            : //! \param[in] refiner Mesh refiner proxy
-<span class="lineNum">      79 </span>            : //! \param[in] sorter Mesh reordering (sorter) proxy
-<span class="lineNum">      80 </span>            : //! \param[in] meshwriter Mesh writer proxy
-<span class="lineNum">      81 </span>            : //! \param[in] scheme Discretization scheme
-<span class="lineNum">      82 </span>            : //! \param[in] bface File-internal elem ids of side sets (whole mesh)
-<span class="lineNum">      83 </span>            : //! \param[in] faces Elem-relative face ids of side sets (whole mesh)
-<span class="lineNum">      84 </span>            : //! \param[in] bnode Node lists of side sets (whole mesh)
-<span class="lineNum">      85 </span>            : // *****************************************************************************
-<span class="lineNum">      86 </span>            : {
-<span class="lineNum">      87 </span>            :   // Create mesh reader
-<span class="lineNum">      88 </span><span class="lineCov">        913 :   tk::MeshReader mr( g_inputdeck.get&lt; tag::cmd, tag::io, tag::input &gt;() );</span>
-<span class="lineNum">      89 </span>            : 
-<span class="lineNum">      90 </span>            :   // Read this compute node's chunk of the mesh (graph and coords) from file
-<span class="lineNum">      91 </span><span class="lineCov">       1826 :   std::vector&lt; std::size_t &gt; triinpoel;</span>
-<span class="lineNum">      92 </span>            :   mr.readMeshPart( m_ginpoel, m_inpoel, triinpoel, m_lid, m_coord,
-<span class="lineNum">      93 </span><span class="lineCov">        913 :                    CkNumNodes(), CkMyNode() );</span>
-<span class="lineNum">      94 </span>            : 
-<span class="lineNum">      95 </span>            :   // Compute triangle connectivity for side sets, reduce boundary face for side
-<span class="lineNum">      96 </span>            :   // sets to this compute node only and to compute-node-local face ids
-<span class="lineNum">      97 </span><span class="lineCov">        913 :   m_triinpoel = mr.triinpoel( m_bface, faces, m_ginpoel, triinpoel );</span>
-<span class="lineNum">      98 </span>            : 
-<span class="lineNum">      99 </span>            :   // Reduce boundary node lists (global ids) for side sets to this compute node
-<span class="lineNum">     100 </span>            :   // only
-<span class="lineNum">     101 </span><span class="lineCov">        913 :   ownBndNodes( m_lid, m_bnode );</span>
-<span class="lineNum">     102 </span>            : 
-<span class="lineNum">     103 </span>            :   // Compute number of cells across whole problem
-<span class="lineNum">     104 </span><span class="lineCov">        913 :   std::vector&lt; std::size_t &gt; meshsize{{ m_ginpoel.size()/4,</span>
-<span class="lineNum">     105 </span><span class="lineCov">       2739 :                                         m_coord[0].size() }};</span>
-<span class="lineNum">     106 </span><span class="lineCov">       1826 :   contribute( meshsize, CkReduction::sum_ulong, m_cbp.get&lt; tag::load &gt;() );</span>
-<span class="lineNum">     107 </span><span class="lineCov">        913 : }</span>
-<a name="108"><span class="lineNum">     108 </span>            : </a>
-<span class="lineNum">     109 </span>            : void
-<span class="lineNum">     110 </span><span class="lineCov">        913 : Partitioner::ownBndNodes(</span>
-<span class="lineNum">     111 </span>            :   const std::unordered_map&lt; std::size_t, std::size_t &gt;&amp; lid,
-<span class="lineNum">     112 </span>            :   std::map&lt; int, std::vector&lt; std::size_t &gt; &gt;&amp; bnode )
-<span class="lineNum">     113 </span>            : // *****************************************************************************
-<span class="lineNum">     114 </span>            : // Keep only those nodes for side sets that reside on this compute node
-<span class="lineNum">     115 </span>            : //! \param[in] lid Global-&gt;local node IDs of elements of this compute node's
-<span class="lineNum">     116 </span>            : //!   mesh chunk
-<span class="lineNum">     117 </span>            : //! \param[in,out] bnode Global ids of nodes for side sets for whole mesh
-<span class="lineNum">     118 </span>            : //! \details This function overwrites the input boundary node lists map with the
-<span class="lineNum">     119 </span>            : //!    nodes that reside on the caller compute node.
-<span class="lineNum">     120 </span>            : // *****************************************************************************
-<span class="lineNum">     121 </span>            : {
-<span class="lineNum">     122 </span><span class="lineCov">        913 :   std::map&lt; int, std::vector&lt; std::size_t &gt; &gt; bnode_own;</span>
-<span class="lineNum">     123 </span>            : 
-<span class="lineNum">     124 </span><span class="lineCov">       1363 :   for (const auto&amp; s : bnode) {</span>
-<span class="lineNum">     125 </span><span class="lineCov">        450 :     auto&amp; b = bnode_own[ s.first ];</span>
-<span class="lineNum">     126 </span><span class="lineCov">      43060 :     for (auto n : s.second) {</span>
-<span class="lineNum">     127 </span><span class="lineCov">      42610 :       auto i = lid.find( n );</span>
-<span class="lineNum">     128 </span><span class="lineCov">      42610 :       if (i != end(lid)) b.push_back( n );</span>
-<span class="lineNum">     129 </span>            :     }
-<span class="lineNum">     130 </span><span class="lineCov">        450 :     if (b.empty()) bnode_own.erase( s.first );</span>
-<span class="lineNum">     131 </span>            :   }
-<span class="lineNum">     132 </span>            : 
-<span class="lineNum">     133 </span><span class="lineCov">        913 :   bnode = std::move(bnode_own);</span>
-<span class="lineNum">     134 </span><span class="lineCov">        913 : }</span>
-<a name="135"><span class="lineNum">     135 </span>            : </a>
-<span class="lineNum">     136 </span>            : void
-<span class="lineNum">     137 </span><span class="lineCov">        913 : Partitioner::partition( int nchare )</span>
-<span class="lineNum">     138 </span>            : // *****************************************************************************
-<span class="lineNum">     139 </span>            : //  Partition the computational mesh into a number of chares
-<span class="lineNum">     140 </span>            : //! \param[in] nchare Number of parts the mesh will be partitioned into
-<span class="lineNum">     141 </span>            : //! \details This function calls the mesh partitioner to partition the mesh. The
-<span class="lineNum">     142 </span>            : //!   number of partitions equals the number nchare argument which must be no
-<span class="lineNum">     143 </span>            : //!   lower than the number of compute nodes.
-<span class="lineNum">     144 </span>            : // *****************************************************************************
-<span class="lineNum">     145 </span>            : {
-<span class="lineNum">     146 </span><span class="lineCov">        913 :   Assert( nchare &gt;= CkNumNodes(), &quot;Number of chares must not be lower than the &quot;</span>
-<span class="lineNum">     147 </span><span class="lineCov">        913 :                                   &quot;number of compute nodes&quot; );</span>
-<span class="lineNum">     148 </span>            : 
-<span class="lineNum">     149 </span>            :   // Generate element IDs for Zoltan
-<span class="lineNum">     150 </span><span class="lineCov">        913 :   std::vector&lt; long &gt; gelemid( m_ginpoel.size()/4 );</span>
-<span class="lineNum">     151 </span><span class="lineCov">        913 :   std::iota( begin(gelemid), end(gelemid), 0 );</span>
-<span class="lineNum">     152 </span>            : 
-<span class="lineNum">     153 </span><span class="lineCov">        913 :   m_nchare = nchare;</span>
-<span class="lineNum">     154 </span><span class="lineCov">        913 :   const auto alg = g_inputdeck.get&lt; tag::selected, tag::partitioner &gt;();</span>
-<span class="lineNum">     155 </span>            :   const auto che = tk::zoltan::geomPartMesh( alg,
-<span class="lineNum">     156 </span>            :                                              centroids( m_inpoel, m_coord ),
-<span class="lineNum">     157 </span>            :                                              gelemid,
-<span class="lineNum">     158 </span><span class="lineCov">       1826 :                                              nchare );</span>
-<span class="lineNum">     159 </span>            : 
-<span class="lineNum">     160 </span><span class="lineCov">        913 :   if ( g_inputdeck.get&lt; tag::cmd, tag::feedback &gt;() ) m_host.pepartitioned();</span>
-<span class="lineNum">     161 </span>            : 
-<span class="lineNum">     162 </span><span class="lineCov">        913 :   Assert( che.size() == gelemid.size(), &quot;Size of ownership array (chare ID &quot;</span>
-<span class="lineNum">     163 </span>            :           &quot;of elements) after mesh partitioning does not equal the number of &quot;
-<span class="lineNum">     164 </span><span class="lineCov">        913 :           &quot;mesh graph elements&quot; );</span>
-<span class="lineNum">     165 </span>            : 
-<span class="lineNum">     166 </span>            :   // Categorize mesh elements (given by their gobal node IDs) by target chare
-<span class="lineNum">     167 </span>            :   // and distribute to their compute nodes based on mesh partitioning.
-<span class="lineNum">     168 </span><span class="lineCov">       1826 :   distribute( categorize( che ) );</span>
-<span class="lineNum">     169 </span><span class="lineCov">        913 : }</span>
-<a name="170"><span class="lineNum">     170 </span>            : </a>
-<span class="lineNum">     171 </span>            : void
-<span class="lineNum">     172 </span><span class="lineCov">       3666 : Partitioner::addMesh(</span>
-<span class="lineNum">     173 </span>            :   int fromnode,
-<span class="lineNum">     174 </span>            :   const std::unordered_map&lt; int,        // chare id
-<span class="lineNum">     175 </span>            :           std::tuple&lt;
-<span class="lineNum">     176 </span>            :             std::vector&lt; std::size_t &gt;, // tet connectivity
-<span class="lineNum">     177 </span>            :             tk::UnsMesh::CoordMap,      // node coords
-<span class="lineNum">     178 </span>            :             std::unordered_map&lt; int, std::vector&lt; std::size_t &gt; &gt;, // bface conn
-<span class="lineNum">     179 </span>            :             std::unordered_map&lt; int, std::vector&lt; std::size_t &gt; &gt;  // bnodes
-<span class="lineNum">     180 </span>            :           &gt; &gt;&amp; chmesh )
-<span class="lineNum">     181 </span>            : // *****************************************************************************
-<span class="lineNum">     182 </span>            : //  Receive mesh associated to chares we own after refinement
-<span class="lineNum">     183 </span>            : //! \param[in] fromnode Compute node call coming from
-<span class="lineNum">     184 </span>            : //! \param[in] chmesh Map associating mesh connectivities to global node ids
-<span class="lineNum">     185 </span>            : //!   and node coordinates for mesh chunks we are assigned by the partitioner
-<span class="lineNum">     186 </span>            : // *****************************************************************************
-<span class="lineNum">     187 </span>            : {
-<span class="lineNum">     188 </span>            :   // Store mesh connectivity and global node coordinates categorized by chares.
-<span class="lineNum">     189 </span>            :   // The send side also writes to the data written here, so concat.
-<span class="lineNum">     190 </span><span class="lineCov">      18552 :   for (const auto&amp; c : chmesh) {</span>
-<span class="lineNum">     191 </span><span class="lineCov">      14886 :     Assert( node(c.first) == CkMyNode(), &quot;Compute node &quot;</span>
-<span class="lineNum">     192 </span>            :             + std::to_string(CkMyNode()) +
-<span class="lineNum">     193 </span><span class="lineCov">      14886 :             &quot; received a mesh whose chare it does not own&quot; );</span>
-<span class="lineNum">     194 </span>            :     // Store domain element (tetrahedron) connectivity
-<span class="lineNum">     195 </span><span class="lineCov">      14886 :     const auto&amp; inpoel = std::get&lt; 0 &gt;( c.second );</span>
-<span class="lineNum">     196 </span><span class="lineCov">      14886 :     auto&amp; inp = m_chinpoel[ c.first ];  // will store tetrahedron connectivity</span>
-<span class="lineNum">     197 </span><span class="lineCov">      14886 :     inp.insert( end(inp), begin(inpoel), end(inpoel) );</span>
-<span class="lineNum">     198 </span>            :     // Store mesh node coordinates associated to global node IDs
-<span class="lineNum">     199 </span><span class="lineCov">      14886 :     const auto&amp; coord = std::get&lt; 1 &gt;( c.second );</span>
-<span class="lineNum">     200 </span><span class="lineCov">      14886 :     Assert( tk::uniquecopy(inpoel).size() == coord.size(), &quot;Size mismatch&quot; );</span>
-<span class="lineNum">     201 </span><span class="lineCov">      14886 :     auto&amp; chcm = m_chcoordmap[ c.first ];     // will store node coordinates</span>
-<span class="lineNum">     202 </span><span class="lineCov">      14886 :     chcm.insert( begin(coord), end(coord) );  // concatenate node coords</span>
-<span class="lineNum">     203 </span>            :     // Store boundary side set id + face ids + face connectivities
-<span class="lineNum">     204 </span><span class="lineCov">      14886 :     const auto&amp; bconn = std::get&lt; 2 &gt;( c.second );</span>
-<span class="lineNum">     205 </span><span class="lineCov">      14886 :     auto&amp; bface = m_chbface[ c.first ];  // for side set id + boundary face ids</span>
-<span class="lineNum">     206 </span><span class="lineCov">      14886 :     auto&amp; t = m_chtriinpoel[ c.first ];  // for boundary face connectivity</span>
-<span class="lineNum">     207 </span><span class="lineCov">      14886 :     auto&amp; f = m_nface[ c.first ];        // use counter for chare</span>
-<span class="lineNum">     208 </span><span class="lineCov">      20774 :     for (const auto&amp; s : bconn) {</span>
-<span class="lineNum">     209 </span><span class="lineCov">       5888 :       auto&amp; b = bface[ s.first ];</span>
-<span class="lineNum">     210 </span><span class="lineCov">     231381 :       for (std::size_t i=0; i&lt;s.second.size()/3; ++i) {</span>
-<span class="lineNum">     211 </span><span class="lineCov">     225493 :         b.push_back( f++ );</span>
-<span class="lineNum">     212 </span><span class="lineCov">     225493 :         t.push_back( s.second[i*3+0] );</span>
-<span class="lineNum">     213 </span><span class="lineCov">     225493 :         t.push_back( s.second[i*3+1] );</span>
-<span class="lineNum">     214 </span><span class="lineCov">     225493 :         t.push_back( s.second[i*3+2] );</span>
-<span class="lineNum">     215 </span>            :       }
-<span class="lineNum">     216 </span>            :     }
-<span class="lineNum">     217 </span>            :     // Store boundary side set id + node lists
-<span class="lineNum">     218 </span><span class="lineCov">      14886 :     const auto&amp; bnode = std::get&lt; 3 &gt;( c.second );</span>
-<span class="lineNum">     219 </span><span class="lineCov">      14886 :     auto&amp; nodes = m_chbnode[ c.first ];  // for side set id + boundary nodes</span>
-<span class="lineNum">     220 </span><span class="lineCov">      15916 :     for (const auto&amp; s : bnode) {</span>
-<span class="lineNum">     221 </span><span class="lineCov">       1030 :       auto&amp; b = nodes[ s.first ];</span>
-<span class="lineNum">     222 </span><span class="lineCov">       1030 :       b.insert( end(b), begin(s.second), end(s.second) );</span>
-<span class="lineNum">     223 </span>            :     }
-<span class="lineNum">     224 </span>            :   }
-<span class="lineNum">     225 </span>            : 
-<span class="lineNum">     226 </span><span class="lineCov">       3666 :   thisProxy[ fromnode ].recvMesh();</span>
-<span class="lineNum">     227 </span><span class="lineCov">       3666 : }</span>
-<a name="228"><span class="lineNum">     228 </span>            : </a>
-<span class="lineNum">     229 </span>            : int
-<span class="lineNum">     230 </span><span class="lineCov">      29772 : Partitioner::node( int id ) const</span>
-<span class="lineNum">     231 </span>            : // *****************************************************************************
-<span class="lineNum">     232 </span>            : //  Return nodegroup id for chare id
-<span class="lineNum">     233 </span>            : //! \param[in] id Chare id
-<span class="lineNum">     234 </span>            : //! \return Nodegroup that creates the chare
-<span class="lineNum">     235 </span>            : //! \details This is computed based on a simple contiguous linear
-<span class="lineNum">     236 </span>            : //!   distribution of chare ids to compute nodes.
-<span class="lineNum">     237 </span>            : // *****************************************************************************
-<span class="lineNum">     238 </span>            : {
-<span class="lineNum">     239 </span><span class="lineCov">      29772 :   Assert( m_nchare &gt; 0, &quot;Number of chares must be a positive number&quot; );</span>
-<span class="lineNum">     240 </span><span class="lineCov">      29772 :   auto p = id / (m_nchare / CkNumNodes());</span>
-<span class="lineNum">     241 </span><span class="lineCov">      29772 :   if (p &gt;= CkNumNodes()) p = CkNumNodes()-1;</span>
-<span class="lineNum">     242 </span><span class="lineCov">      29772 :   Assert( p &lt; CkNumNodes(), &quot;Assigning to nonexistent node&quot; );</span>
-<span class="lineNum">     243 </span><span class="lineCov">      29772 :   return p;</span>
-<span class="lineNum">     244 </span>            : }
-<a name="245"><span class="lineNum">     245 </span>            : </a>
-<span class="lineNum">     246 </span>            : void
-<span class="lineNum">     247 </span><span class="lineCov">       3666 : Partitioner::recvMesh()</span>
-<span class="lineNum">     248 </span>            : // *****************************************************************************
-<span class="lineNum">     249 </span>            : //  Acknowledge received mesh chunk and its nodes after mesh refinement
-<span class="lineNum">     250 </span>            : // *****************************************************************************
-<span class="lineNum">     251 </span>            : {
-<span class="lineNum">     252 </span><span class="lineCov">       3666 :   if (--m_ndist == 0) {</span>
-<span class="lineNum">     253 </span><span class="lineCov">        848 :     if (g_inputdeck.get&lt; tag::cmd, tag::feedback &gt;()) m_host.pedistributed();</span>
-<span class="lineNum">     254 </span><span class="lineCov">        848 :     contribute( m_cbp.get&lt; tag::distributed &gt;() );</span>
-<span class="lineNum">     255 </span>            :   }
-<span class="lineNum">     256 </span><span class="lineCov">       3666 : }</span>
-<a name="257"><span class="lineNum">     257 </span>            : </a>
-<span class="lineNum">     258 </span>            : void
-<span class="lineNum">     259 </span><span class="lineCov">        913 : Partitioner::refine()</span>
-<span class="lineNum">     260 </span>            : // *****************************************************************************
-<span class="lineNum">     261 </span>            : // Optionally start refining the mesh
-<span class="lineNum">     262 </span>            : // *****************************************************************************
-<span class="lineNum">     263 </span>            : {
-<span class="lineNum">     264 </span><span class="lineCov">        913 :   auto dist = distribution( m_nchare );</span>
-<span class="lineNum">     265 </span>            : 
-<span class="lineNum">     266 </span><span class="lineCov">        913 :   int error = 0;</span>
-<span class="lineNum">     267 </span><span class="lineCov">        913 :   if (m_chinpoel.size() &lt; static_cast&lt;std::size_t&gt;(dist[1])) {</span>
-<span class="lineNum">     268 </span>            : 
-<span class="lineNum">     269 </span><span class="lineNoCov">          0 :     error = 1;</span>
-<span class="lineNum">     270 </span>            : 
-<span class="lineNum">     271 </span>            :   } else {
-<span class="lineNum">     272 </span>            : 
-<span class="lineNum">     273 </span><span class="lineCov">       4419 :     for (int c=0; c&lt;dist[1]; ++c) {</span>
-<span class="lineNum">     274 </span>            :       // compute chare ID
-<span class="lineNum">     275 </span><span class="lineCov">       3506 :       auto cid = CkMyNode() * dist[0] + c;</span>
-<span class="lineNum">     276 </span>            :       // create refiner Charm++ chare array element using dynamic insertion
-<span class="lineNum">     277 </span>            :       m_refiner[ cid ].insert( m_host,
-<span class="lineNum">     278 </span>            :                                m_sorter,
-<span class="lineNum">     279 </span>            :                                m_meshwriter,
-<span class="lineNum">     280 </span>            :                                m_scheme,
-<span class="lineNum">     281 </span>            :                                m_cbr,
-<span class="lineNum">     282 </span>            :                                m_cbs,
-<span class="lineNum">     283 </span><span class="lineCov">       3506 :                                tk::cref_find(m_chinpoel,cid),</span>
-<span class="lineNum">     284 </span><span class="lineCov">       3506 :                                tk::cref_find(m_chcoordmap,cid),</span>
-<span class="lineNum">     285 </span><span class="lineCov">       3506 :                                tk::cref_find(m_chbface,cid),</span>
-<span class="lineNum">     286 </span><span class="lineCov">       3506 :                                tk::cref_find(m_chtriinpoel,cid),</span>
-<span class="lineNum">     287 </span><span class="lineCov">       3506 :                                tk::cref_find(m_chbnode,cid),</span>
-<span class="lineNum">     288 </span><span class="lineCov">       7012 :                                m_nchare );</span>
-<span class="lineNum">     289 </span>            :     }
-<span class="lineNum">     290 </span>            : 
-<span class="lineNum">     291 </span>            :   }
-<span class="lineNum">     292 </span>            : 
-<span class="lineNum">     293 </span><span class="lineCov">        913 :   tk::destroy( m_chinpoel );</span>
-<span class="lineNum">     294 </span><span class="lineCov">        913 :   tk::destroy( m_chcoordmap );</span>
-<span class="lineNum">     295 </span><span class="lineCov">        913 :   tk::destroy( m_chbface );</span>
-<span class="lineNum">     296 </span><span class="lineCov">        913 :   tk::destroy( m_chtriinpoel );</span>
-<span class="lineNum">     297 </span><span class="lineCov">        913 :   tk::destroy( m_chbnode );</span>
-<span class="lineNum">     298 </span>            : 
-<span class="lineNum">     299 </span>            :   contribute( sizeof(int), &amp;error, CkReduction::max_int,
-<span class="lineNum">     300 </span><span class="lineCov">        913 :               m_cbp.get&lt; tag::refinserted &gt;() );</span>
-<span class="lineNum">     301 </span><span class="lineCov">        913 : }</span>
-<a name="302"><span class="lineNum">     302 </span>            : </a>
-<span class="lineNum">     303 </span>            : std::array&lt; std::vector&lt; tk::real &gt;, 3 &gt;
-<span class="lineNum">     304 </span><span class="lineCov">        913 : Partitioner::centroids( const std::vector&lt; std::size_t &gt;&amp; inpoel,</span>
-<span class="lineNum">     305 </span>            :                         const tk::UnsMesh::Coords&amp; coord )
-<span class="lineNum">     306 </span>            : // *****************************************************************************
-<span class="lineNum">     307 </span>            : //  Compute element centroid coordinates
-<span class="lineNum">     308 </span>            : //! \param[in] inpoel Mesh connectivity with local ids
-<span class="lineNum">     309 </span>            : //! \param[in] coord Node coordinates
-<span class="lineNum">     310 </span>            : //! \return Centroids for all cells on this compute node
-<span class="lineNum">     311 </span>            : // *****************************************************************************
-<span class="lineNum">     312 </span>            : {
-<span class="lineNum">     313 </span><span class="lineCov">        913 :   Assert( tk::uniquecopy(inpoel).size() == coord[0].size(), &quot;Size mismatch&quot; );</span>
-<span class="lineNum">     314 </span>            : 
-<span class="lineNum">     315 </span><span class="lineCov">        913 :   const auto&amp; x = coord[0];</span>
-<span class="lineNum">     316 </span><span class="lineCov">        913 :   const auto&amp; y = coord[1];</span>
-<span class="lineNum">     317 </span><span class="lineCov">        913 :   const auto&amp; z = coord[2];</span>
-<span class="lineNum">     318 </span>            : 
-<span class="lineNum">     319 </span>            :   // Make room for element centroid coordinates
-<span class="lineNum">     320 </span><span class="lineCov">        913 :   std::array&lt; std::vector&lt; tk::real &gt;, 3 &gt; cent;</span>
-<span class="lineNum">     321 </span><span class="lineCov">        913 :   auto&amp; cx = cent[0];</span>
-<span class="lineNum">     322 </span><span class="lineCov">        913 :   auto&amp; cy = cent[1];</span>
-<span class="lineNum">     323 </span><span class="lineCov">        913 :   auto&amp; cz = cent[2];</span>
-<span class="lineNum">     324 </span><span class="lineCov">        913 :   auto num = inpoel.size()/4;</span>
-<span class="lineNum">     325 </span><span class="lineCov">        913 :   cx.resize( num );</span>
-<span class="lineNum">     326 </span><span class="lineCov">        913 :   cy.resize( num );</span>
-<span class="lineNum">     327 </span><span class="lineCov">        913 :   cz.resize( num );</span>
-<span class="lineNum">     328 </span>            : 
-<span class="lineNum">     329 </span>            :   // Compute element centroids for mesh passed in
-<span class="lineNum">     330 </span><span class="lineCov">    4973130 :   for (std::size_t e=0; e&lt;num; ++e) {</span>
-<span class="lineNum">     331 </span><span class="lineCov">    4972217 :     auto A = inpoel[e*4+0];</span>
-<span class="lineNum">     332 </span><span class="lineCov">    4972217 :     auto B = inpoel[e*4+1];</span>
-<span class="lineNum">     333 </span><span class="lineCov">    4972217 :     auto C = inpoel[e*4+2];</span>
-<span class="lineNum">     334 </span><span class="lineCov">    4972217 :     auto D = inpoel[e*4+3];</span>
-<span class="lineNum">     335 </span><span class="lineCov">    4972217 :     cx[e] = (x[A] + x[B] + x[C] + x[D]) / 4.0;</span>
-<span class="lineNum">     336 </span><span class="lineCov">    4972217 :     cy[e] = (y[A] + y[B] + y[C] + y[D]) / 4.0;</span>
-<span class="lineNum">     337 </span><span class="lineCov">    4972217 :     cz[e] = (z[A] + z[B] + z[C] + z[D]) / 4.0;</span>
-<span class="lineNum">     338 </span>            :   }
-<span class="lineNum">     339 </span>            : 
-<span class="lineNum">     340 </span><span class="lineCov">        913 :   return cent;</span>
-<span class="lineNum">     341 </span>            : }
-<a name="342"><span class="lineNum">     342 </span>            : </a>
-<span class="lineNum">     343 </span>            : std::unordered_map&lt; int, Partitioner::MeshData &gt;
-<span class="lineNum">     344 </span><span class="lineCov">        913 : Partitioner::categorize( const std::vector&lt; std::size_t &gt;&amp; target ) const</span>
-<span class="lineNum">     345 </span>            : // *****************************************************************************
-<span class="lineNum">     346 </span>            : // Categorize mesh data by target
-<span class="lineNum">     347 </span>            : //! \param[in] target Target chares of mesh elements, size: number of
-<span class="lineNum">     348 </span>            : //!   elements in the chunk of the mesh graph on this compute node.
-<span class="lineNum">     349 </span>            : //! \return Vector of global mesh node ids connecting elements owned by each
-<span class="lineNum">     350 </span>            : //!   target chare.
-<span class="lineNum">     351 </span>            : // *****************************************************************************
-<span class="lineNum">     352 </span>            : {
-<span class="lineNum">     353 </span><span class="lineCov">        913 :   Assert( target.size() == m_ginpoel.size()/4, &quot;Size mismatch&quot;);</span>
-<span class="lineNum">     354 </span>            : 
-<span class="lineNum">     355 </span>            :   using Face = tk::UnsMesh::Face;
-<span class="lineNum">     356 </span>            : 
-<span class="lineNum">     357 </span>            :   // Build hash map associating side set id to boundary faces
-<span class="lineNum">     358 </span>            :   std::unordered_map&lt; Face, int,
-<span class="lineNum">     359 </span><span class="lineCov">        913 :                       tk::UnsMesh::Hash&lt;3&gt;, tk::UnsMesh::Eq&lt;3&gt; &gt; faceside;</span>
-<span class="lineNum">     360 </span><span class="lineCov">       1604 :   for (const auto&amp; s : m_bface)</span>
-<span class="lineNum">     361 </span><span class="lineCov">     380973 :     for (auto f : s.second)</span>
-<span class="lineNum">     362 </span><span class="lineCov">     380282 :       faceside[ {{ m_triinpoel[f*3+0],</span>
-<span class="lineNum">     363 </span><span class="lineCov">     380282 :                    m_triinpoel[f*3+1],</span>
-<span class="lineNum">     364 </span><span class="lineCov">     760564 :                    m_triinpoel[f*3+2] }} ] = s.first;</span>
-<span class="lineNum">     365 </span>            : 
-<span class="lineNum">     366 </span>            :   // Build hash map associating side set ids to boundary nodes
-<span class="lineNum">     367 </span><span class="lineCov">       1826 :   std::unordered_map&lt; std::size_t, std::unordered_set&lt; int &gt; &gt; nodeside;</span>
-<span class="lineNum">     368 </span><span class="lineCov">       1363 :   for (const auto&amp; s : m_bnode)</span>
-<span class="lineNum">     369 </span><span class="lineCov">      31764 :     for (auto n : s.second)</span>
-<span class="lineNum">     370 </span><span class="lineCov">      31314 :       nodeside[ n ].insert( s.first );</span>
-<span class="lineNum">     371 </span>            : 
-<span class="lineNum">     372 </span>            :   // Categorize mesh data (tets, node coordinates, and boundary data) by target
-<span class="lineNum">     373 </span>            :   // chare based on which chare the partitioner assigned elements (tets) to
-<span class="lineNum">     374 </span><span class="lineCov">        913 :   std::unordered_map&lt; int, MeshData &gt; chmesh;</span>
-<span class="lineNum">     375 </span><span class="lineCov">    4973130 :   for (std::size_t e=0; e&lt;target.size(); ++e) {</span>
-<span class="lineNum">     376 </span>            :     // Construct a tetrahedron with global node ids
-<span class="lineNum">     377 </span><span class="lineCov">    9944434 :     tk::UnsMesh::Tet t{{ m_ginpoel[e*4+0], m_ginpoel[e*4+1],</span>
-<span class="lineNum">     378 </span><span class="lineCov">    9944434 :                          m_ginpoel[e*4+2], m_ginpoel[e*4+3] }};</span>
-<span class="lineNum">     379 </span>            :     // Categorize tetrahedron (domain element) connectivity
-<span class="lineNum">     380 </span><span class="lineCov">    4972217 :     auto&amp; mesh = chmesh[ static_cast&lt;int&gt;(target[e]) ];</span>
-<span class="lineNum">     381 </span><span class="lineCov">    4972217 :     auto&amp; inpoel = std::get&lt; 0 &gt;( mesh );</span>
-<span class="lineNum">     382 </span><span class="lineCov">    4972217 :     inpoel.insert( end(inpoel), begin(t), end(t) );</span>
-<span class="lineNum">     383 </span>            :     // Categorize boundary face connectivity
-<span class="lineNum">     384 </span><span class="lineCov">    4972217 :     auto&amp; bconn = std::get&lt; 1 &gt;( mesh );</span>
-<span class="lineNum">     385 </span><span class="lineCov">   29833302 :     std::array&lt;Face,4&gt; face{{ {{t[0],t[2],t[1]}}, {{t[0],t[1],t[3]}},</span>
-<span class="lineNum">     386 </span><span class="lineCov">   29833302 :                               {{t[0],t[3],t[2]}}, {{t[1],t[2],t[3]}} }};</span>
-<span class="lineNum">     387 </span><span class="lineCov">   24861085 :     for (const auto&amp; f : face) {</span>
-<span class="lineNum">     388 </span><span class="lineCov">   19888868 :       auto it = faceside.find( f );</span>
-<span class="lineNum">     389 </span><span class="lineCov">   19888868 :       if (it != end(faceside)) {</span>
-<span class="lineNum">     390 </span><span class="lineCov">     380282 :         auto&amp; s = bconn[ it-&gt;second ];</span>
-<span class="lineNum">     391 </span><span class="lineCov">     380282 :         s.insert( end(s), begin(f), end(f) );</span>
-<span class="lineNum">     392 </span>            :       }
-<span class="lineNum">     393 </span>            :     }
-<span class="lineNum">     394 </span>            :     // Categorize boundary node lists
-<span class="lineNum">     395 </span><span class="lineCov">    4972217 :     auto&amp; bnode = std::get&lt; 2 &gt;( mesh );</span>
-<span class="lineNum">     396 </span><span class="lineCov">   24861085 :     for (const auto&amp; n : t) {</span>
-<span class="lineNum">     397 </span><span class="lineCov">   19888868 :       auto it = nodeside.find( n );</span>
-<span class="lineNum">     398 </span><span class="lineCov">   19888868 :       if (it != end(nodeside))</span>
-<span class="lineNum">     399 </span><span class="lineCov">     336080 :         for (auto s : it-&gt;second)</span>
-<span class="lineNum">     400 </span><span class="lineCov">     173820 :           bnode[ s ].push_back( n );</span>
-<span class="lineNum">     401 </span>            :     }
-<span class="lineNum">     402 </span>            :   }
-<span class="lineNum">     403 </span>            : 
-<span class="lineNum">     404 </span>            :   // Make boundary node lists unique per side set
-<span class="lineNum">     405 </span><span class="lineCov">      19292 :   for (auto&amp; c : chmesh)</span>
-<span class="lineNum">     406 </span><span class="lineCov">      19825 :     for (auto&amp; n : std::get&lt;2&gt;(c.second))</span>
-<span class="lineNum">     407 </span><span class="lineCov">       1446 :        tk::unique( n.second );</span>
-<span class="lineNum">     408 </span>            : 
-<span class="lineNum">     409 </span>            :   // Make sure all compute nodes have target chares assigned
-<span class="lineNum">     410 </span><span class="lineCov">        913 :   Assert( !chmesh.empty(), &quot;No elements have been assigned to a chare&quot; );</span>
-<span class="lineNum">     411 </span>            : 
-<span class="lineNum">     412 </span>            :   // This check should always be done, hence ErrChk and not Assert, as it
-<span class="lineNum">     413 </span>            :   // can result from particular pathological combinations of (1) too large
-<span class="lineNum">     414 </span>            :   // degree of virtualization, (2) too many compute nodes, and/or (3) too small
-<span class="lineNum">     415 </span>            :   // of a mesh and not due to programmer error.
-<span class="lineNum">     416 </span><span class="lineCov">      19292 :   for(const auto&amp; c : chmesh)</span>
-<span class="lineNum">     417 </span><span class="lineCov">      18379 :     ErrChk( !std::get&lt;0&gt;(c.second).empty(),</span>
-<span class="lineNum">     418 </span>            :             &quot;Overdecomposition of the mesh is too large compared to the &quot;
-<span class="lineNum">     419 </span>            :             &quot;number of work units computed based on the degree of &quot;
-<span class="lineNum">     420 </span>            :             &quot;virtualization desired. As a result, there would be at least &quot;
-<span class="lineNum">     421 </span>            :             &quot;one work unit with no mesh elements to work on, i.e., nothing &quot;
-<span class="lineNum">     422 </span>            :             &quot;to do. Solution 1: decrease the virtualization to a lower &quot;
-<span class="lineNum">     423 </span>            :             &quot;value using the command-line argument '-u'. Solution 2: &quot;
-<span class="lineNum">     424 </span>            :             &quot;decrease the number processing elements (PEs and/or compute &quot;
-<span class="lineNum">     425 </span>            :             &quot;nodes) using the charmrun command-line argument '+pN' where N is &quot;
-<span class="lineNum">     426 </span>            :             &quot;the number of PEs (or in SMP-mode in combination with +ppn to &quot;
-<span class="lineNum">     427 </span>            :             &quot;reduce the number of compute nodes), which implicitly increases &quot;
-<span class="lineNum">     428 </span><span class="lineCov">      18379 :             &quot;the size (and thus decreases the number) of work units.)&quot; );</span>
-<span class="lineNum">     429 </span>            : 
-<span class="lineNum">     430 </span><span class="lineCov">       1826 :   return chmesh;</span>
-<span class="lineNum">     431 </span>            : }
-<a name="432"><span class="lineNum">     432 </span>            : </a>
-<span class="lineNum">     433 </span>            : tk::UnsMesh::CoordMap
-<span class="lineNum">     434 </span><span class="lineCov">      18379 : Partitioner::coordmap( const std::vector&lt; std::size_t &gt;&amp; inpoel )</span>
-<span class="lineNum">     435 </span>            : // *****************************************************************************
-<span class="lineNum">     436 </span>            : // Extract coordinates associated to global nodes of a mesh chunk
-<span class="lineNum">     437 </span>            : //! \param[in] inpoel Mesh connectivity
-<span class="lineNum">     438 </span>            : //! \return Map storing the coordinates of unique nodes associated to global
-<span class="lineNum">     439 </span>            : //!    node IDs in mesh given by inpoel
-<span class="lineNum">     440 </span>            : // *****************************************************************************
-<span class="lineNum">     441 </span>            : {
-<span class="lineNum">     442 </span><span class="lineCov">      18379 :   Assert( inpoel.size() % 4 == 0, &quot;Incomplete mesh connectivity&quot; );</span>
-<span class="lineNum">     443 </span>            : 
-<span class="lineNum">     444 </span><span class="lineCov">      18379 :   tk::UnsMesh::CoordMap map;</span>
-<span class="lineNum">     445 </span>            : 
-<span class="lineNum">     446 </span><span class="lineCov">    4249203 :   for (auto g : tk::uniquecopy(inpoel)) {</span>
-<span class="lineNum">     447 </span><span class="lineCov">    4230824 :      auto i = tk::cref_find( m_lid, g );</span>
-<span class="lineNum">     448 </span><span class="lineCov">    4230824 :      auto&amp; c = map[g];</span>
-<span class="lineNum">     449 </span><span class="lineCov">    4230824 :      c[0] = m_coord[0][i];</span>
-<span class="lineNum">     450 </span><span class="lineCov">    4230824 :      c[1] = m_coord[1][i];</span>
-<span class="lineNum">     451 </span><span class="lineCov">    4230824 :      c[2] = m_coord[2][i];</span>
-<span class="lineNum">     452 </span><span class="lineCov">      18379 :   }</span>
-<span class="lineNum">     453 </span>            : 
-<span class="lineNum">     454 </span><span class="lineCov">      18379 :   Assert( tk::uniquecopy(inpoel).size() == map.size(), &quot;Size mismatch&quot; );</span>
-<span class="lineNum">     455 </span>            : 
-<span class="lineNum">     456 </span><span class="lineCov">      18379 :   return map;</span>
-<span class="lineNum">     457 </span>            : }
-<a name="458"><span class="lineNum">     458 </span>            : </a>
-<span class="lineNum">     459 </span>            : void
-<span class="lineNum">     460 </span><span class="lineCov">        913 : Partitioner::distribute( std::unordered_map&lt; int, MeshData &gt;&amp;&amp; mesh )</span>
-<span class="lineNum">     461 </span>            : // *****************************************************************************
-<span class="lineNum">     462 </span>            : // Distribute mesh to target compute nodes after mesh partitioning
-<span class="lineNum">     463 </span>            : //! \param[in] mesh Mesh data categorized by target by target chares
-<span class="lineNum">     464 </span>            : // *****************************************************************************
-<span class="lineNum">     465 </span>            : {
-<span class="lineNum">     466 </span><span class="lineCov">        913 :   auto dist = distribution( m_nchare );</span>
-<span class="lineNum">     467 </span>            : 
-<span class="lineNum">     468 </span>            :   // Extract mesh data whose chares are on (&quot;owned by&quot;) this compute node
-<span class="lineNum">     469 </span><span class="lineCov">       4419 :   for (int c=0; c&lt;dist[1]; ++c) {</span>
-<span class="lineNum">     470 </span><span class="lineCov">       3506 :     auto chid = CkMyNode() * dist[0] + c; // compute owned chare ID</span>
-<span class="lineNum">     471 </span><span class="lineCov">       3506 :     const auto it = mesh.find( chid );    // attempt to find its mesh data</span>
-<span class="lineNum">     472 </span><span class="lineCov">       3506 :     if (it != end(mesh)) {                // if found</span>
-<span class="lineNum">     473 </span>            :       // Store own tetrahedron connectivity
-<span class="lineNum">     474 </span><span class="lineCov">       3493 :       const auto&amp; inpoel = std::get&lt;0&gt;( it-&gt;second );</span>
-<span class="lineNum">     475 </span><span class="lineCov">       3493 :       auto&amp; inp = m_chinpoel[ chid ];     // will store own mesh connectivity</span>
-<span class="lineNum">     476 </span><span class="lineCov">       3493 :       inp.insert( end(inp), begin(inpoel), end(inpoel) );</span>
-<span class="lineNum">     477 </span>            :       // Store own node coordinates
-<span class="lineNum">     478 </span><span class="lineCov">       3493 :       auto&amp; chcm = m_chcoordmap[ chid ];  // will store own node coordinates</span>
-<span class="lineNum">     479 </span><span class="lineCov">       3493 :       auto cm = coordmap( inpoel );       // extract node coordinates </span>
-<span class="lineNum">     480 </span><span class="lineCov">       3493 :       chcm.insert( begin(cm), end(cm) );  // concatenate node coords</span>
-<span class="lineNum">     481 </span>            :       // Store own boundary face connectivity
-<span class="lineNum">     482 </span><span class="lineCov">       3493 :       const auto&amp; bconn = std::get&lt;1&gt;( it-&gt;second );</span>
-<span class="lineNum">     483 </span><span class="lineCov">       3493 :       auto&amp; bface = m_chbface[ chid ];    // will store own boundary faces</span>
-<span class="lineNum">     484 </span><span class="lineCov">       3493 :       auto&amp; t = m_chtriinpoel[ chid ];    // wil store own boundary face conn</span>
-<span class="lineNum">     485 </span><span class="lineCov">       3493 :       auto&amp; f = m_nface[ chid ];          // use counter for chare</span>
-<span class="lineNum">     486 </span><span class="lineCov">       5150 :       for (const auto&amp; s : bconn) {</span>
-<span class="lineNum">     487 </span><span class="lineCov">       1657 :         auto&amp; b = bface[ s.first ];</span>
-<span class="lineNum">     488 </span><span class="lineCov">     156446 :         for (std::size_t i=0; i&lt;s.second.size()/3; ++i) {</span>
-<span class="lineNum">     489 </span><span class="lineCov">     154789 :           b.push_back( f++ );</span>
-<span class="lineNum">     490 </span><span class="lineCov">     154789 :           t.push_back( s.second[i*3+0] );</span>
-<span class="lineNum">     491 </span><span class="lineCov">     154789 :           t.push_back( s.second[i*3+1] );</span>
-<span class="lineNum">     492 </span><span class="lineCov">     154789 :           t.push_back( s.second[i*3+2] );</span>
-<span class="lineNum">     493 </span>            :         }
-<span class="lineNum">     494 </span>            :       }
-<span class="lineNum">     495 </span>            :       // Store own boundary node lists
-<span class="lineNum">     496 </span><span class="lineCov">       3493 :       const auto&amp; bnode = std::get&lt;2&gt;( it-&gt;second );</span>
-<span class="lineNum">     497 </span><span class="lineCov">       3493 :       auto&amp; nodes = m_chbnode[ chid ];    // will store own boundary nodes</span>
-<span class="lineNum">     498 </span><span class="lineCov">       3909 :       for (const auto&amp; s : bnode) {</span>
-<span class="lineNum">     499 </span><span class="lineCov">        416 :         auto&amp; b = nodes[ s.first ];</span>
-<span class="lineNum">     500 </span><span class="lineCov">        416 :         b.insert( end(b), begin(s.second), end(s.second) );</span>
-<span class="lineNum">     501 </span>            :       }
-<span class="lineNum">     502 </span>            :       // Remove chare ID and mesh data
-<span class="lineNum">     503 </span><span class="lineCov">       3493 :       mesh.erase( it );</span>
-<span class="lineNum">     504 </span>            :     }
-<span class="lineNum">     505 </span><span class="lineCov">       3506 :     Assert( mesh.find(chid) == end(mesh), &quot;Not all owned mesh data stored&quot; );</span>
-<span class="lineNum">     506 </span>            :   }
-<span class="lineNum">     507 </span>            : 
-<span class="lineNum">     508 </span>            :   // Construct export map associating mesh connectivities with global node
-<span class="lineNum">     509 </span>            :   // indices and node coordinates for mesh chunks associated to chare IDs
-<span class="lineNum">     510 </span>            :   // owned by chares we do not own.
-<span class="lineNum">     511 </span>            :   std::unordered_map&lt; int,                     // target compute node
-<span class="lineNum">     512 </span>            :     std::unordered_map&lt; int,                   // chare ID
-<span class="lineNum">     513 </span>            :       std::tuple&lt;
-<span class="lineNum">     514 </span>            :         // (domain-element) tetrahedron connectivity
-<span class="lineNum">     515 </span>            :         std::vector&lt; std::size_t &gt;,
-<span class="lineNum">     516 </span>            :         // (domain) node IDs &amp; coordinates
-<span class="lineNum">     517 </span>            :         tk::UnsMesh::CoordMap,
-<span class="lineNum">     518 </span>            :         // boundary side set + face connectivity
-<span class="lineNum">     519 </span>            :         std::unordered_map&lt; int, std::vector&lt; std::size_t &gt; &gt;,
-<span class="lineNum">     520 </span>            :         // boundary side set + node list
-<span class="lineNum">     521 </span>            :         std::unordered_map&lt; int, std::vector&lt; std::size_t &gt; &gt;
-<span class="lineNum">     522 </span><span class="lineCov">        913 :       &gt; &gt; &gt; exp;</span>
-<span class="lineNum">     523 </span>            : 
-<span class="lineNum">     524 </span><span class="lineCov">      15799 :   for (const auto&amp; c : mesh)</span>
-<span class="lineNum">     525 </span><span class="lineCov">      44658 :     exp[ node(c.first) ][ c.first ] =</span>
-<span class="lineNum">     526 </span><span class="lineCov">      14886 :       std::make_tuple( std::get&lt;0&gt;(c.second),</span>
-<span class="lineNum">     527 </span><span class="lineCov">      14886 :                        coordmap(std::get&lt;0&gt;(c.second)),</span>
-<span class="lineNum">     528 </span><span class="lineCov">      14886 :                        std::get&lt;1&gt;(c.second),</span>
-<span class="lineNum">     529 </span><span class="lineCov">      29772 :                        std::get&lt;2&gt;(c.second) );</span>
-<span class="lineNum">     530 </span>            : 
-<span class="lineNum">     531 </span>            :   // Export chare IDs and mesh we do not own to fellow compute nodes
-<span class="lineNum">     532 </span><span class="lineCov">        913 :   if (exp.empty()) {</span>
-<span class="lineNum">     533 </span><span class="lineCov">         65 :     if ( g_inputdeck.get&lt; tag::cmd, tag::feedback &gt;() ) m_host.pedistributed();</span>
-<span class="lineNum">     534 </span><span class="lineCov">         65 :     contribute( m_cbp.get&lt; tag::distributed &gt;() );</span>
-<span class="lineNum">     535 </span>            :   } else {
-<span class="lineNum">     536 </span><span class="lineCov">        848 :      m_ndist += exp.size();</span>
-<span class="lineNum">     537 </span><span class="lineCov">       4514 :      for (const auto&amp; p : exp)</span>
-<span class="lineNum">     538 </span><span class="lineCov">       3666 :        thisProxy[ p.first ].addMesh( CkMyNode(), p.second );</span>
-<span class="lineNum">     539 </span><span class="lineCov">        913 :   }</span>
-<span class="lineNum">     540 </span><span class="lineCov">        913 : }</span>
-<a name="541"><span class="lineNum">     541 </span>            : </a>
-<span class="lineNum">     542 </span>            : std::array&lt; int, 2 &gt;
-<span class="lineNum">     543 </span><span class="lineCov">       1826 : Partitioner::distribution( int npart ) const</span>
-<span class="lineNum">     544 </span>            : // *****************************************************************************
-<span class="lineNum">     545 </span>            : //  Compute chare (partition) distribution
-<span class="lineNum">     546 </span>            : //! \param[in] npart Total number of chares (partitions) to distribute
-<span class="lineNum">     547 </span>            : //! \return Chunksize, i.e., number of chares per all compute nodes except the
-<span class="lineNum">     548 </span>            : //!   last one, and the number of chares for this compute node.
-<span class="lineNum">     549 </span>            : //! \details Chare ids are distributed to compute nodes in a linear continguous
-<span class="lineNum">     550 </span>            : //!   order with the last compute node taking the remainder if the number of
-<span class="lineNum">     551 </span>            : //!   compute nodes is not divisible by the number chares. For example, if
-<span class="lineNum">     552 </span>            : //!   nchare=7 and nnode=3, the chare distribution is node0: 0 1, node1: 2 3,
-<span class="lineNum">     553 </span>            : //!   and node2: 4 5 6. As a result of this distribution, all compute nodes will
-<span class="lineNum">     554 </span>            : //!   have their chare-categorized element connectivity filled with the global
-<span class="lineNum">     555 </span>            : //!   mesh node IDs associated to the Charm++ chare IDs each compute node owns.
-<span class="lineNum">     556 </span>            : // *****************************************************************************
-<span class="lineNum">     557 </span>            : {
-<span class="lineNum">     558 </span><span class="lineCov">       1826 :   auto chunksize = npart / CkNumNodes();</span>
-<span class="lineNum">     559 </span><span class="lineCov">       1826 :   auto mynchare = chunksize;</span>
-<span class="lineNum">     560 </span><span class="lineCov">       1826 :   if (CkMyNode() == CkNumNodes()-1) mynchare += npart % CkNumNodes();</span>
-<span class="lineNum">     561 </span><span class="lineCov">       1826 :   return {{ chunksize, mynchare }};</span>
-<span class="lineNum">     562 </span>            : }
-<span class="lineNum">     563 </span>            : 
-<span class="lineNum">     564 </span>            : #include &quot;NoWarning/partitioner.def.h&quot;
+<a name="1"><span class="lineNum">       1 </span>                :            : // *****************************************************************************</a>
+<span class="lineNum">       2 </span>                :            : /*!
+<span class="lineNum">       3 </span>                :            :   \file      src/Inciter/Partitioner.cpp
+<span class="lineNum">       4 </span>                :            :   \copyright 2012-2015 J. Bakosi,
+<span class="lineNum">       5 </span>                :            :              2016-2018 Los Alamos National Security, LLC.,
+<span class="lineNum">       6 </span>                :            :              2019 Triad National Security, LLC.
+<span class="lineNum">       7 </span>                :            :              All rights reserved. See the LICENSE file for details.
+<span class="lineNum">       8 </span>                :            :   \brief     Charm++ chare partitioner nodegroup used to perform mesh
+<span class="lineNum">       9 </span>                :            :              partitioning
+<span class="lineNum">      10 </span>                :            :   \details   Charm++ chare partitioner nodegroup used to perform mesh read and
+<span class="lineNum">      11 </span>                :            :              partitioning, one worker per compute node.
+<span class="lineNum">      12 </span>                :            : */
+<span class="lineNum">      13 </span>                :            : // *****************************************************************************
+<span class="lineNum">      14 </span>                :            : 
+<span class="lineNum">      15 </span>                :            : #include &lt;numeric&gt;
+<span class="lineNum">      16 </span>                :            : 
+<span class="lineNum">      17 </span>                :            : #include &quot;Partitioner.hpp&quot;
+<span class="lineNum">      18 </span>                :            : #include &quot;DerivedData.hpp&quot;
+<span class="lineNum">      19 </span>                :            : #include &quot;Reorder.hpp&quot;
+<span class="lineNum">      20 </span>                :            : #include &quot;MeshReader.hpp&quot;
+<span class="lineNum">      21 </span>                :            : #include &quot;CGPDE.hpp&quot;
+<span class="lineNum">      22 </span>                :            : #include &quot;DGPDE.hpp&quot;
+<span class="lineNum">      23 </span>                :            : #include &quot;Inciter/Options/Scheme.hpp&quot;
+<span class="lineNum">      24 </span>                :            : #include &quot;UnsMesh.hpp&quot;
+<span class="lineNum">      25 </span>                :            : #include &quot;ContainerUtil.hpp&quot;
+<span class="lineNum">      26 </span>                :            : #include &quot;Callback.hpp&quot;
+<span class="lineNum">      27 </span>                :            : 
+<span class="lineNum">      28 </span>                :            : namespace inciter {
+<span class="lineNum">      29 </span>                :            : 
+<span class="lineNum">      30 </span>                :            : extern ctr::InputDeck g_inputdeck;
+<span class="lineNum">      31 </span>                :            : extern std::vector&lt; CGPDE &gt; g_cgpde;
+<span class="lineNum">      32 </span>                :            : extern std::vector&lt; DGPDE &gt; g_dgpde;
+<span class="lineNum">      33 </span>                :            : 
+<span class="lineNum">      34 </span>                :            : } // inciter::
+<span class="lineNum">      35 </span>                :            : 
+<a name="36"><span class="lineNum">      36 </span>                :            : using inciter::Partitioner;</a>
+<span class="lineNum">      37 </span>                :            : 
+<span class="lineNum">      38 </span>                :<span class="lineCov">        913 : Partitioner::Partitioner(</span>
+<span class="lineNum">      39 </span>                :            :   const tk::PartitionerCallback&amp; cbp,
+<span class="lineNum">      40 </span>                :            :   const tk::RefinerCallback&amp; cbr,
+<span class="lineNum">      41 </span>                :            :   const tk::SorterCallback&amp; cbs,
+<span class="lineNum">      42 </span>                :            :   const CProxy_Transporter&amp; host,
+<span class="lineNum">      43 </span>                :            :   const CProxy_Refiner&amp; refiner,
+<span class="lineNum">      44 </span>                :            :   const CProxy_Sorter&amp; sorter,
+<span class="lineNum">      45 </span>                :            :   const tk::CProxy_MeshWriter&amp; meshwriter,
+<span class="lineNum">      46 </span>                :            :   const Scheme&amp; scheme,
+<span class="lineNum">      47 </span>                :            :   const std::map&lt; int, std::vector&lt; std::size_t &gt; &gt;&amp; bface,
+<span class="lineNum">      48 </span>                :            :   const std::map&lt; int, std::vector&lt; std::size_t &gt; &gt;&amp; faces,
+<span class="lineNum">      49 </span>                :<span class="lineCov">        913 :   const std::map&lt; int, std::vector&lt; std::size_t &gt; &gt;&amp; bnode ) :</span>
+<span class="lineNum">      50 </span>                :            :   m_cbp( cbp ),
+<span class="lineNum">      51 </span>                :            :   m_cbr( cbr ),
+<span class="lineNum">      52 </span>                :            :   m_cbs( cbs ),
+<span class="lineNum">      53 </span>                :            :   m_host( host ),
+<span class="lineNum">      54 </span>                :            :   m_refiner( refiner ),
+<span class="lineNum">      55 </span>                :            :   m_sorter( sorter ),
+<span class="lineNum">      56 </span>                :            :   m_meshwriter( meshwriter ),
+<span class="lineNum">      57 </span>                :            :   m_scheme( scheme ),
+<span class="lineNum">      58 </span>                :            :   m_ginpoel(),
+<span class="lineNum">      59 </span>                :            :   m_coord(),
+<span class="lineNum">      60 </span>                :            :   m_inpoel(),
+<span class="lineNum">      61 </span>                :            :   m_lid(),
+<span class="lineNum">      62 </span>                :            :   m_ndist( 0 ),
+<span class="lineNum">      63 </span>                :            :   m_nchare( 0 ),
+<span class="lineNum">      64 </span>                :            :   m_nface(),
+<span class="lineNum">      65 </span>                :            :   m_chinpoel(),
+<span class="lineNum">      66 </span>                :            :   m_chcoordmap(),
+<span class="lineNum">      67 </span>                :            :   m_chbface(),
+<span class="lineNum">      68 </span>                :            :   m_chtriinpoel(),
+<span class="lineNum">      69 </span>                :            :   m_chbnode(),
+<span class="lineNum">      70 </span>                :            :   m_bface( bface ),
+<span class="lineNum">      71 </span>[<span class="branchCov" title="Branch 0 was taken 913 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>][<span class="branchCov" title="Branch 2 was taken 913 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineCov">        913 :   m_bnode( bnode )</span>
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 4 was taken 913 times"> + </span><span class="branchNoCov" title="Branch 5 was not taken"> - </span>][<span class="branchCov" title="Branch 6 was taken 913 times"> + </span><span class="branchNoCov" title="Branch 7 was not taken"> - </span>]
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 8 was taken 913 times"> + </span><span class="branchNoCov" title="Branch 9 was not taken"> - </span>][<span class="branchCov" title="Branch 10 was taken 913 times"> + </span><span class="branchNoCov" title="Branch 11 was not taken"> - </span>]
+<span class="lineNum">         </span>        [<span class="branchCov" title="Branch 12 was taken 913 times"> + </span><span class="branchNoCov" title="Branch 13 was not taken"> - </span>]
+<span class="lineNum">      72 </span>                :            : // *****************************************************************************
+<span class="lineNum">      73 </span>                :            : //  Constructor
+<span class="lineNum">      74 </span>                :            : //! \param[in] cbp Charm++ callbacks for Partitioner
+<span class="lineNum">      75 </span>                :            : //! \param[in] cbr Charm++ callbacks for Refiner
+<span class="lineNum">      76 </span>                :            : //! \param[in] cbs Charm++ callbacks for Sorter
+<span class="lineNum">      77 </span>                :            : //! \param[in] host Host Charm++ proxy we are being called from
+<span class="lineNum">      78 </span>                :            : //! \param[in] refiner Mesh refiner proxy
+<span class="lineNum">      79 </span>                :            : //! \param[in] sorter Mesh reordering (sorter) proxy
+<span class="lineNum">      80 </span>                :            : //! \param[in] meshwriter Mesh writer proxy
+<span class="lineNum">      81 </span>                :            : //! \param[in] scheme Discretization scheme
+<span class="lineNum">      82 </span>                :            : //! \param[in] bface File-internal elem ids of side sets (whole mesh)
+<span class="lineNum">      83 </span>                :            : //! \param[in] faces Elem-relative face ids of side sets (whole mesh)
+<span class="lineNum">      84 </span>                :            : //! \param[in] bnode Node lists of side sets (whole mesh)
+<span class="lineNum">      85 </span>                :            : // *****************************************************************************
+<span class="lineNum">      86 </span>                :            : {
+<span class="lineNum">      87 </span>                :            :   // Create mesh reader
+<span class="lineNum">      88 </span>        [<span class="branchCov" title="Branch 0 was taken 913 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">       1826 :   tk::MeshReader mr( g_inputdeck.get&lt; tag::cmd, tag::io, tag::input &gt;() );</span>
+<span class="lineNum">      89 </span>                :            : 
+<span class="lineNum">      90 </span>                :            :   // Read this compute node's chunk of the mesh (graph and coords) from file
+<span class="lineNum">      91 </span>                :<span class="lineCov">       1826 :   std::vector&lt; std::size_t &gt; triinpoel;</span>
+<span class="lineNum">      92 </span>        [<span class="branchCov" title="Branch 0 was taken 913 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">        913 :   mr.readMeshPart( m_ginpoel, m_inpoel, triinpoel, m_lid, m_coord,</span>
+<span class="lineNum">      93 </span>                :            :                    CkNumNodes(), CkMyNode() );
+<span class="lineNum">      94 </span>                :            : 
+<span class="lineNum">      95 </span>                :            :   // Compute triangle connectivity for side sets, reduce boundary face for side
+<span class="lineNum">      96 </span>                :            :   // sets to this compute node only and to compute-node-local face ids
+<span class="lineNum">      97 </span>        [<span class="branchCov" title="Branch 0 was taken 913 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">        913 :   m_triinpoel = mr.triinpoel( m_bface, faces, m_ginpoel, triinpoel );</span>
+<span class="lineNum">      98 </span>                :            : 
+<span class="lineNum">      99 </span>                :            :   // Reduce boundary node lists (global ids) for side sets to this compute node
+<span class="lineNum">     100 </span>                :            :   // only
+<span class="lineNum">     101 </span>        [<span class="branchCov" title="Branch 0 was taken 913 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">        913 :   ownBndNodes( m_lid, m_bnode );</span>
+<span class="lineNum">     102 </span>                :            : 
+<span class="lineNum">     103 </span>                :            :   // Compute number of cells across whole problem
+<span class="lineNum">     104 </span>                :<span class="lineCov">        913 :   std::vector&lt; std::size_t &gt; meshsize{{ m_ginpoel.size()/4,</span>
+<span class="lineNum">     105 </span>        [<span class="branchCov" title="Branch 0 was taken 913 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">       1826 :                                         m_coord[0].size() }};</span>
+<span class="lineNum">     106 </span>        [<span class="branchCov" title="Branch 0 was taken 913 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">        913 :   contribute( meshsize, CkReduction::sum_ulong, m_cbp.get&lt; tag::load &gt;() );</span>
+<span class="lineNum">     107 </span>                :<span class="lineCov">        913 : }</span>
+<a name="108"><span class="lineNum">     108 </span>                :            : </a>
+<span class="lineNum">     109 </span>                :            : void
+<span class="lineNum">     110 </span>                :<span class="lineCov">        913 : Partitioner::ownBndNodes(</span>
+<span class="lineNum">     111 </span>                :            :   const std::unordered_map&lt; std::size_t, std::size_t &gt;&amp; lid,
+<span class="lineNum">     112 </span>                :            :   std::map&lt; int, std::vector&lt; std::size_t &gt; &gt;&amp; bnode )
+<span class="lineNum">     113 </span>                :            : // *****************************************************************************
+<span class="lineNum">     114 </span>                :            : // Keep only those nodes for side sets that reside on this compute node
+<span class="lineNum">     115 </span>                :            : //! \param[in] lid Global-&gt;local node IDs of elements of this compute node's
+<span class="lineNum">     116 </span>                :            : //!   mesh chunk
+<span class="lineNum">     117 </span>                :            : //! \param[in,out] bnode Global ids of nodes for side sets for whole mesh
+<span class="lineNum">     118 </span>                :            : //! \details This function overwrites the input boundary node lists map with the
+<span class="lineNum">     119 </span>                :            : //!    nodes that reside on the caller compute node.
+<span class="lineNum">     120 </span>                :            : // *****************************************************************************
+<span class="lineNum">     121 </span>                :            : {
+<span class="lineNum">     122 </span>                :<span class="lineCov">       1826 :   std::map&lt; int, std::vector&lt; std::size_t &gt; &gt; bnode_own;</span>
+<span class="lineNum">     123 </span>                :            : 
+<span class="lineNum">     124 </span>        [<span class="branchCov" title="Branch 0 was taken 450 times"> + </span><span class="branchCov" title="Branch 1 was taken 913 times"> + </span>]:<span class="lineCov">       1363 :   for (const auto&amp; s : bnode) {</span>
+<span class="lineNum">     125 </span>        [<span class="branchCov" title="Branch 0 was taken 450 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">        450 :     auto&amp; b = bnode_own[ s.first ];</span>
+<span class="lineNum">     126 </span>        [<span class="branchCov" title="Branch 0 was taken 42610 times"> + </span><span class="branchCov" title="Branch 1 was taken 450 times"> + </span>]:<span class="lineCov">      43060 :     for (auto n : s.second) {</span>
+<span class="lineNum">     127 </span>        [<span class="branchCov" title="Branch 0 was taken 42610 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">      42610 :       auto i = lid.find( n );</span>
+<span class="lineNum">     128 </span>[<span class="branchCov" title="Branch 0 was taken 31314 times"> + </span><span class="branchCov" title="Branch 1 was taken 11296 times"> + </span>][<span class="branchCov" title="Branch 2 was taken 31314 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineCov">      42610 :       if (i != end(lid)) b.push_back( n );</span>
+<span class="lineNum">     129 </span>                :            :     }
+<span class="lineNum">     130 </span>[<span class="branchNoCov" title="Branch 0 was not taken"> - </span><span class="branchCov" title="Branch 1 was taken 450 times"> + </span>][<span class="branchNoCov" title="Branch 2 was not taken"> - </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineCov">        450 :     if (b.empty()) bnode_own.erase( s.first );</span>
+<span class="lineNum">     131 </span>                :            :   }
+<span class="lineNum">     132 </span>                :            : 
+<span class="lineNum">     133 </span>                :<span class="lineCov">        913 :   bnode = std::move(bnode_own);</span>
+<span class="lineNum">     134 </span>                :<span class="lineCov">        913 : }</span>
+<a name="135"><span class="lineNum">     135 </span>                :            : </a>
+<span class="lineNum">     136 </span>                :            : void
+<span class="lineNum">     137 </span>                :<span class="lineCov">        913 : Partitioner::partition( int nchare )</span>
+<span class="lineNum">     138 </span>                :            : // *****************************************************************************
+<span class="lineNum">     139 </span>                :            : //  Partition the computational mesh into a number of chares
+<span class="lineNum">     140 </span>                :            : //! \param[in] nchare Number of parts the mesh will be partitioned into
+<span class="lineNum">     141 </span>                :            : //! \details This function calls the mesh partitioner to partition the mesh. The
+<span class="lineNum">     142 </span>                :            : //!   number of partitions equals the number nchare argument which must be no
+<span class="lineNum">     143 </span>                :            : //!   lower than the number of compute nodes.
+<span class="lineNum">     144 </span>                :            : // *****************************************************************************
+<span class="lineNum">     145 </span>                :            : {
+<span class="lineNum">     146 </span>[<span class="branchNoCov" title="Branch 0 was not taken"> - </span><span class="branchCov" title="Branch 1 was taken 913 times"> + </span>][<span class="branchNoCov" title="Branch 2 was not taken"> - </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineCov">        913 :   Assert( nchare &gt;= CkNumNodes(), &quot;Number of chares must not be lower than the &quot;</span>
+<span class="lineNum">         </span>[<span class="branchNoCov" title="Branch 4 was not taken"> - </span><span class="branchNoCov" title="Branch 5 was not taken"> - </span>][<span class="branchNoCov" title="Branch 6 was not taken"> - </span><span class="branchNoCov" title="Branch 7 was not taken"> - </span>]
+<span class="lineNum">     147 </span>                :            :                                   &quot;number of compute nodes&quot; );
+<span class="lineNum">     148 </span>                :            : 
+<span class="lineNum">     149 </span>                :            :   // Generate element IDs for Zoltan
+<span class="lineNum">     150 </span>        [<span class="branchCov" title="Branch 0 was taken 913 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">       1826 :   std::vector&lt; long &gt; gelemid( m_ginpoel.size()/4 );</span>
+<span class="lineNum">     151 </span>                :<span class="lineCov">        913 :   std::iota( begin(gelemid), end(gelemid), 0 );</span>
+<span class="lineNum">     152 </span>                :            : 
+<span class="lineNum">     153 </span>                :<span class="lineCov">        913 :   m_nchare = nchare;</span>
+<span class="lineNum">     154 </span>                :<span class="lineCov">        913 :   const auto alg = g_inputdeck.get&lt; tag::selected, tag::partitioner &gt;();</span>
+<span class="lineNum">     155 </span>                :            :   const auto che = tk::zoltan::geomPartMesh( alg,
+<span class="lineNum">     156 </span>        [<span class="branchCov" title="Branch 0 was taken 913 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">        913 :                                              centroids( m_inpoel, m_coord ),</span>
+<span class="lineNum">     157 </span>                :            :                                              gelemid,
+<span class="lineNum">     158 </span>        [<span class="branchCov" title="Branch 0 was taken 913 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">        913 :                                              nchare );</span>
+<span class="lineNum">     159 </span>                :            : 
+<span class="lineNum">     160 </span>[<span class="branchCov" title="Branch 0 was taken 4 times"> + </span><span class="branchCov" title="Branch 1 was taken 909 times"> + </span>][<span class="branchCov" title="Branch 2 was taken 4 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineCov">        913 :   if ( g_inputdeck.get&lt; tag::cmd, tag::feedback &gt;() ) m_host.pepartitioned();</span>
+<span class="lineNum">     161 </span>                :            : 
+<span class="lineNum">     162 </span>[<span class="branchNoCov" title="Branch 0 was not taken"> - </span><span class="branchCov" title="Branch 1 was taken 913 times"> + </span>][<span class="branchNoCov" title="Branch 2 was not taken"> - </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineCov">        913 :   Assert( che.size() == gelemid.size(), &quot;Size of ownership array (chare ID &quot;</span>
+<span class="lineNum">         </span>[<span class="branchNoCov" title="Branch 4 was not taken"> - </span><span class="branchNoCov" title="Branch 5 was not taken"> - </span>][<span class="branchNoCov" title="Branch 6 was not taken"> - </span><span class="branchNoCov" title="Branch 7 was not taken"> - </span>]
+<span class="lineNum">     163 </span>                :            :           &quot;of elements) after mesh partitioning does not equal the number of &quot;
+<span class="lineNum">     164 </span>                :            :           &quot;mesh graph elements&quot; );
+<span class="lineNum">     165 </span>                :            : 
+<span class="lineNum">     166 </span>                :            :   // Categorize mesh elements (given by their gobal node IDs) by target chare
+<span class="lineNum">     167 </span>                :            :   // and distribute to their compute nodes based on mesh partitioning.
+<span class="lineNum">     168 </span>[<span class="branchCov" title="Branch 0 was taken 913 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>][<span class="branchCov" title="Branch 2 was taken 913 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineCov">        913 :   distribute( categorize( che ) );</span>
+<span class="lineNum">     169 </span>                :<span class="lineCov">        913 : }</span>
+<a name="170"><span class="lineNum">     170 </span>                :            : </a>
+<span class="lineNum">     171 </span>                :            : void
+<span class="lineNum">     172 </span>                :<span class="lineCov">       3666 : Partitioner::addMesh(</span>
+<span class="lineNum">     173 </span>                :            :   int fromnode,
+<span class="lineNum">     174 </span>                :            :   const std::unordered_map&lt; int,        // chare id
+<span class="lineNum">     175 </span>                :            :           std::tuple&lt;
+<span class="lineNum">     176 </span>                :            :             std::vector&lt; std::size_t &gt;, // tet connectivity
+<span class="lineNum">     177 </span>                :            :             tk::UnsMesh::CoordMap,      // node coords
+<span class="lineNum">     178 </span>                :            :             std::unordered_map&lt; int, std::vector&lt; std::size_t &gt; &gt;, // bface conn
+<span class="lineNum">     179 </span>                :            :             std::unordered_map&lt; int, std::vector&lt; std::size_t &gt; &gt;  // bnodes
+<span class="lineNum">     180 </span>                :            :           &gt; &gt;&amp; chmesh )
+<span class="lineNum">     181 </span>                :            : // *****************************************************************************
+<span class="lineNum">     182 </span>                :            : //  Receive mesh associated to chares we own after refinement
+<span class="lineNum">     183 </span>                :            : //! \param[in] fromnode Compute node call coming from
+<span class="lineNum">     184 </span>                :            : //! \param[in] chmesh Map associating mesh connectivities to global node ids
+<span class="lineNum">     185 </span>                :            : //!   and node coordinates for mesh chunks we are assigned by the partitioner
+<span class="lineNum">     186 </span>                :            : // *****************************************************************************
+<span class="lineNum">     187 </span>                :            : {
+<span class="lineNum">     188 </span>                :            :   // Store mesh connectivity and global node coordinates categorized by chares.
+<span class="lineNum">     189 </span>                :            :   // The send side also writes to the data written here, so concat.
+<span class="lineNum">     190 </span>        [<span class="branchCov" title="Branch 0 was taken 14886 times"> + </span><span class="branchCov" title="Branch 1 was taken 3666 times"> + </span>]:<span class="lineCov">      18552 :   for (const auto&amp; c : chmesh) {</span>
+<span class="lineNum">     191 </span>[<span class="branchCov" title="Branch 0 was taken 14886 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>][<span class="branchNoCov" title="Branch 2 was not taken"> - </span><span class="branchCov" title="Branch 3 was taken 14886 times"> + </span>]:<span class="lineCov">      14886 :     Assert( node(c.first) == CkMyNode(), &quot;Compute node &quot;</span>
+<span class="lineNum">         </span>[<span class="branchNoCov" title="Branch 4 was not taken"> - </span><span class="branchNoCov" title="Branch 5 was not taken"> - </span>][<span class="branchNoCov" title="Branch 6 was not taken"> - </span><span class="branchNoCov" title="Branch 7 was not taken"> - </span>]
+<span class="lineNum">         </span>[<span class="branchNoCov" title="Branch 8 was not taken"> - </span><span class="branchNoCov" title="Branch 9 was not taken"> - </span>][<span class="branchNoCov" title="Branch 10 was not taken"> - </span><span class="branchNoCov" title="Branch 11 was not taken"> - </span>]
+<span class="lineNum">         </span>        [<span class="branchNoCov" title="Branch 12 was not taken"> - </span><span class="branchNoCov" title="Branch 13 was not taken"> - </span>]
+<span class="lineNum">     192 </span>                :            :             + std::to_string(CkMyNode()) +
+<span class="lineNum">     193 </span>                :            :             &quot; received a mesh whose chare it does not own&quot; );
+<span class="lineNum">     194 </span>                :            :     // Store domain element (tetrahedron) connectivity
+<span class="lineNum">     195 </span>                :<span class="lineCov">      14886 :     const auto&amp; inpoel = std::get&lt; 0 &gt;( c.second );</span>
+<span class="lineNum">     196 </span>        [<span class="branchCov" title="Branch 0 was taken 14886 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">      14886 :     auto&amp; inp = m_chinpoel[ c.first ];  // will store tetrahedron connectivity</span>
+<span class="lineNum">     197 </span>        [<span class="branchCov" title="Branch 0 was taken 14886 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">      14886 :     inp.insert( end(inp), begin(inpoel), end(inpoel) );</span>
+<span class="lineNum">     198 </span>                :            :     // Store mesh node coordinates associated to global node IDs
+<span class="lineNum">     199 </span>                :<span class="lineCov">      14886 :     const auto&amp; coord = std::get&lt; 1 &gt;( c.second );</span>
+<span class="lineNum">     200 </span>[<span class="branchCov" title="Branch 0 was taken 14886 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>][<span class="branchNoCov" title="Branch 2 was not taken"> - </span><span class="branchCov" title="Branch 3 was taken 14886 times"> + </span>]:<span class="lineCov">      14886 :     Assert( tk::uniquecopy(inpoel).size() == coord.size(), &quot;Size mismatch&quot; );</span>
+<span class="lineNum">         </span>[<span class="branchNoCov" title="Branch 4 was not taken"> - </span><span class="branchNoCov" title="Branch 5 was not taken"> - </span>][<span class="branchNoCov" title="Branch 6 was not taken"> - </span><span class="branchNoCov" title="Branch 7 was not taken"> - </span>]
+<span class="lineNum">         </span>        [<span class="branchNoCov" title="Branch 8 was not taken"> - </span><span class="branchNoCov" title="Branch 9 was not taken"> - </span>]
+<span class="lineNum">     201 </span>        [<span class="branchCov" title="Branch 0 was taken 14886 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">      14886 :     auto&amp; chcm = m_chcoordmap[ c.first ];     // will store node coordinates</span>
+<span class="lineNum">     202 </span>        [<span class="branchCov" title="Branch 0 was taken 14886 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">      14886 :     chcm.insert( begin(coord), end(coord) );  // concatenate node coords</span>
+<span class="lineNum">     203 </span>                :            :     // Store boundary side set id + face ids + face connectivities
+<span class="lineNum">     204 </span>                :<span class="lineCov">      14886 :     const auto&amp; bconn = std::get&lt; 2 &gt;( c.second );</span>
+<span class="lineNum">     205 </span>        [<span class="branchCov" title="Branch 0 was taken 14886 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">      14886 :     auto&amp; bface = m_chbface[ c.first ];  // for side set id + boundary face ids</span>
+<span class="lineNum">     206 </span>        [<span class="branchCov" title="Branch 0 was taken 14886 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">      14886 :     auto&amp; t = m_chtriinpoel[ c.first ];  // for boundary face connectivity</span>
+<span class="lineNum">     207 </span>        [<span class="branchCov" title="Branch 0 was taken 14886 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">      14886 :     auto&amp; f = m_nface[ c.first ];        // use counter for chare</span>
+<span class="lineNum">     208 </span>        [<span class="branchCov" title="Branch 0 was taken 5888 times"> + </span><span class="branchCov" title="Branch 1 was taken 14886 times"> + </span>]:<span class="lineCov">      20774 :     for (const auto&amp; s : bconn) {</span>
+<span class="lineNum">     209 </span>        [<span class="branchCov" title="Branch 0 was taken 5888 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">       5888 :       auto&amp; b = bface[ s.first ];</span>
+<span class="lineNum">     210 </span>        [<span class="branchCov" title="Branch 0 was taken 225493 times"> + </span><span class="branchCov" title="Branch 1 was taken 5888 times"> + </span>]:<span class="lineCov">     231381 :       for (std::size_t i=0; i&lt;s.second.size()/3; ++i) {</span>
+<span class="lineNum">     211 </span>        [<span class="branchCov" title="Branch 0 was taken 225493 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">     225493 :         b.push_back( f++ );</span>
+<span class="lineNum">     212 </span>        [<span class="branchCov" title="Branch 0 was taken 225493 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">     225493 :         t.push_back( s.second[i*3+0] );</span>
+<span class="lineNum">     213 </span>        [<span class="branchCov" title="Branch 0 was taken 225493 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">     225493 :         t.push_back( s.second[i*3+1] );</span>
+<span class="lineNum">     214 </span>        [<span class="branchCov" title="Branch 0 was taken 225493 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">     225493 :         t.push_back( s.second[i*3+2] );</span>
+<span class="lineNum">     215 </span>                :            :       }
+<span class="lineNum">     216 </span>                :            :     }
+<span class="lineNum">     217 </span>                :            :     // Store boundary side set id + node lists
+<span class="lineNum">     218 </span>                :<span class="lineCov">      14886 :     const auto&amp; bnode = std::get&lt; 3 &gt;( c.second );</span>
+<span class="lineNum">     219 </span>        [<span class="branchCov" title="Branch 0 was taken 14886 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">      14886 :     auto&amp; nodes = m_chbnode[ c.first ];  // for side set id + boundary nodes</span>
+<span class="lineNum">     220 </span>        [<span class="branchCov" title="Branch 0 was taken 1030 times"> + </span><span class="branchCov" title="Branch 1 was taken 14886 times"> + </span>]:<span class="lineCov">      15916 :     for (const auto&amp; s : bnode) {</span>
+<span class="lineNum">     221 </span>        [<span class="branchCov" title="Branch 0 was taken 1030 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">       1030 :       auto&amp; b = nodes[ s.first ];</span>
+<span class="lineNum">     222 </span>        [<span class="branchCov" title="Branch 0 was taken 1030 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">       1030 :       b.insert( end(b), begin(s.second), end(s.second) );</span>
+<span class="lineNum">     223 </span>                :            :     }
+<span class="lineNum">     224 </span>                :            :   }
+<span class="lineNum">     225 </span>                :            : 
+<span class="lineNum">     226 </span>        [<span class="branchCov" title="Branch 0 was taken 3666 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">       3666 :   thisProxy[ fromnode ].recvMesh();</span>
+<span class="lineNum">     227 </span>                :<span class="lineCov">       3666 : }</span>
+<a name="228"><span class="lineNum">     228 </span>                :            : </a>
+<span class="lineNum">     229 </span>                :            : int
+<span class="lineNum">     230 </span>                :<span class="lineCov">      29772 : Partitioner::node( int id ) const</span>
+<span class="lineNum">     231 </span>                :            : // *****************************************************************************
+<span class="lineNum">     232 </span>                :            : //  Return nodegroup id for chare id
+<span class="lineNum">     233 </span>                :            : //! \param[in] id Chare id
+<span class="lineNum">     234 </span>                :            : //! \return Nodegroup that creates the chare
+<span class="lineNum">     235 </span>                :            : //! \details This is computed based on a simple contiguous linear
+<span class="lineNum">     236 </span>                :            : //!   distribution of chare ids to compute nodes.
+<span class="lineNum">     237 </span>                :            : // *****************************************************************************
+<span class="lineNum">     238 </span>                :            : {
+<span class="lineNum">     239 </span>[<span class="branchNoCov" title="Branch 0 was not taken"> - </span><span class="branchCov" title="Branch 1 was taken 29772 times"> + </span>][<span class="branchNoCov" title="Branch 2 was not taken"> - </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineCov">      29772 :   Assert( m_nchare &gt; 0, &quot;Number of chares must be a positive number&quot; );</span>
+<span class="lineNum">         </span>[<span class="branchNoCov" title="Branch 4 was not taken"> - </span><span class="branchNoCov" title="Branch 5 was not taken"> - </span>][<span class="branchNoCov" title="Branch 6 was not taken"> - </span><span class="branchNoCov" title="Branch 7 was not taken"> - </span>]
+<span class="lineNum">     240 </span>                :<span class="lineCov">      29772 :   auto p = id / (m_nchare / CkNumNodes());</span>
+<span class="lineNum">     241 </span>        [<span class="branchCov" title="Branch 0 was taken 2462 times"> + </span><span class="branchCov" title="Branch 1 was taken 27310 times"> + </span>]:<span class="lineCov">      29772 :   if (p &gt;= CkNumNodes()) p = CkNumNodes()-1;</span>
+<span class="lineNum">     242 </span>[<span class="branchNoCov" title="Branch 0 was not taken"> - </span><span class="branchCov" title="Branch 1 was taken 29772 times"> + </span>][<span class="branchNoCov" title="Branch 2 was not taken"> - </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineCov">      29772 :   Assert( p &lt; CkNumNodes(), &quot;Assigning to nonexistent node&quot; );</span>
+<span class="lineNum">         </span>[<span class="branchNoCov" title="Branch 4 was not taken"> - </span><span class="branchNoCov" title="Branch 5 was not taken"> - </span>][<span class="branchNoCov" title="Branch 6 was not taken"> - </span><span class="branchNoCov" title="Branch 7 was not taken"> - </span>]
+<span class="lineNum">     243 </span>                :<span class="lineCov">      29772 :   return p;</span>
+<span class="lineNum">     244 </span>                :            : }
+<a name="245"><span class="lineNum">     245 </span>                :            : </a>
+<span class="lineNum">     246 </span>                :            : void
+<span class="lineNum">     247 </span>                :<span class="lineCov">       3666 : Partitioner::recvMesh()</span>
+<span class="lineNum">     248 </span>                :            : // *****************************************************************************
+<span class="lineNum">     249 </span>                :            : //  Acknowledge received mesh chunk and its nodes after mesh refinement
+<span class="lineNum">     250 </span>                :            : // *****************************************************************************
+<span class="lineNum">     251 </span>                :            : {
+<span class="lineNum">     252 </span>        [<span class="branchCov" title="Branch 0 was taken 848 times"> + </span><span class="branchCov" title="Branch 1 was taken 2818 times"> + </span>]:<span class="lineCov">       3666 :   if (--m_ndist == 0) {</span>
+<span class="lineNum">     253 </span>        [<span class="branchCov" title="Branch 0 was taken 4 times"> + </span><span class="branchCov" title="Branch 1 was taken 844 times"> + </span>]:<span class="lineCov">        848 :     if (g_inputdeck.get&lt; tag::cmd, tag::feedback &gt;()) m_host.pedistributed();</span>
+<span class="lineNum">     254 </span>                :<span class="lineCov">        848 :     contribute( m_cbp.get&lt; tag::distributed &gt;() );</span>
+<span class="lineNum">     255 </span>                :            :   }
+<span class="lineNum">     256 </span>                :<span class="lineCov">       3666 : }</span>
+<a name="257"><span class="lineNum">     257 </span>                :            : </a>
+<span class="lineNum">     258 </span>                :            : void
+<span class="lineNum">     259 </span>                :<span class="lineCov">        913 : Partitioner::refine()</span>
+<span class="lineNum">     260 </span>                :            : // *****************************************************************************
+<span class="lineNum">     261 </span>                :            : // Optionally start refining the mesh
+<span class="lineNum">     262 </span>                :            : // *****************************************************************************
+<span class="lineNum">     263 </span>                :            : {
+<span class="lineNum">     264 </span>        [<span class="branchCov" title="Branch 0 was taken 913 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">        913 :   auto dist = distribution( m_nchare );</span>
+<span class="lineNum">     265 </span>                :            : 
+<span class="lineNum">     266 </span>                :<span class="lineCov">        913 :   int error = 0;</span>
+<span class="lineNum">     267 </span>        [<span class="branchNoCov" title="Branch 0 was not taken"> - </span><span class="branchCov" title="Branch 1 was taken 913 times"> + </span>]:<span class="lineCov">        913 :   if (m_chinpoel.size() &lt; static_cast&lt;std::size_t&gt;(dist[1])) {</span>
+<span class="lineNum">     268 </span>                :            : 
+<span class="lineNum">     269 </span>                :<span class="lineNoCov">          0 :     error = 1;</span>
+<span class="lineNum">     270 </span>                :            : 
+<span class="lineNum">     271 </span>                :            :   } else {
+<span class="lineNum">     272 </span>                :            : 
+<span class="lineNum">     273 </span>        [<span class="branchCov" title="Branch 0 was taken 3506 times"> + </span><span class="branchCov" title="Branch 1 was taken 913 times"> + </span>]:<span class="lineCov">       4419 :     for (int c=0; c&lt;dist[1]; ++c) {</span>
+<span class="lineNum">     274 </span>                :            :       // compute chare ID
+<span class="lineNum">     275 </span>                :<span class="lineCov">       3506 :       auto cid = CkMyNode() * dist[0] + c;</span>
+<span class="lineNum">     276 </span>                :            :       // create refiner Charm++ chare array element using dynamic insertion
+<span class="lineNum">     277 </span>        [<span class="branchCov" title="Branch 0 was taken 3506 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">       7012 :       m_refiner[ cid ].insert( m_host,</span>
+<span class="lineNum">     278 </span>                :<span class="lineCov">       3506 :                                m_sorter,</span>
+<span class="lineNum">     279 </span>                :<span class="lineCov">       3506 :                                m_meshwriter,</span>
+<span class="lineNum">     280 </span>                :<span class="lineCov">       3506 :                                m_scheme,</span>
+<span class="lineNum">     281 </span>                :<span class="lineCov">       3506 :                                m_cbr,</span>
+<span class="lineNum">     282 </span>                :<span class="lineCov">       3506 :                                m_cbs,</span>
+<span class="lineNum">     283 </span>        [<span class="branchCov" title="Branch 0 was taken 3506 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">       3506 :                                tk::cref_find(m_chinpoel,cid),</span>
+<span class="lineNum">     284 </span>        [<span class="branchCov" title="Branch 0 was taken 3506 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">       3506 :                                tk::cref_find(m_chcoordmap,cid),</span>
+<span class="lineNum">     285 </span>        [<span class="branchCov" title="Branch 0 was taken 3506 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">       3506 :                                tk::cref_find(m_chbface,cid),</span>
+<span class="lineNum">     286 </span>        [<span class="branchCov" title="Branch 0 was taken 3506 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">       3506 :                                tk::cref_find(m_chtriinpoel,cid),</span>
+<span class="lineNum">     287 </span>[<span class="branchCov" title="Branch 0 was taken 3506 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>][<span class="branchCov" title="Branch 2 was taken 3506 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineCov">       3506 :                                tk::cref_find(m_chbnode,cid),</span>
+<span class="lineNum">     288 </span>                :            :                                m_nchare );
+<span class="lineNum">     289 </span>                :            :     }
+<span class="lineNum">     290 </span>                :            : 
+<span class="lineNum">     291 </span>                :            :   }
+<span class="lineNum">     292 </span>                :            : 
+<span class="lineNum">     293 </span>                :<span class="lineCov">        913 :   tk::destroy( m_chinpoel );</span>
+<span class="lineNum">     294 </span>                :<span class="lineCov">        913 :   tk::destroy( m_chcoordmap );</span>
+<span class="lineNum">     295 </span>                :<span class="lineCov">        913 :   tk::destroy( m_chbface );</span>
+<span class="lineNum">     296 </span>                :<span class="lineCov">        913 :   tk::destroy( m_chtriinpoel );</span>
+<span class="lineNum">     297 </span>                :<span class="lineCov">        913 :   tk::destroy( m_chbnode );</span>
+<span class="lineNum">     298 </span>                :            : 
+<span class="lineNum">     299 </span>        [<span class="branchCov" title="Branch 0 was taken 913 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">        913 :   contribute( sizeof(int), &amp;error, CkReduction::max_int,</span>
+<span class="lineNum">     300 </span>                :<span class="lineCov">        913 :               m_cbp.get&lt; tag::refinserted &gt;() );</span>
+<span class="lineNum">     301 </span>                :<span class="lineCov">        913 : }</span>
+<a name="302"><span class="lineNum">     302 </span>                :            : </a>
+<span class="lineNum">     303 </span>                :            : std::array&lt; std::vector&lt; tk::real &gt;, 3 &gt;
+<span class="lineNum">     304 </span>                :<span class="lineCov">        913 : Partitioner::centroids( const std::vector&lt; std::size_t &gt;&amp; inpoel,</span>
+<span class="lineNum">     305 </span>                :            :                         const tk::UnsMesh::Coords&amp; coord )
+<span class="lineNum">     306 </span>                :            : // *****************************************************************************
+<span class="lineNum">     307 </span>                :            : //  Compute element centroid coordinates
+<span class="lineNum">     308 </span>                :            : //! \param[in] inpoel Mesh connectivity with local ids
+<span class="lineNum">     309 </span>                :            : //! \param[in] coord Node coordinates
+<span class="lineNum">     310 </span>                :            : //! \return Centroids for all cells on this compute node
+<span class="lineNum">     311 </span>                :            : // *****************************************************************************
+<span class="lineNum">     312 </span>                :            : {
+<span class="lineNum">     313 </span>[<span class="branchNoCov" title="Branch 0 was not taken"> - </span><span class="branchCov" title="Branch 1 was taken 913 times"> + </span>][<span class="branchNoCov" title="Branch 2 was not taken"> - </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineCov">        913 :   Assert( tk::uniquecopy(inpoel).size() == coord[0].size(), &quot;Size mismatch&quot; );</span>
+<span class="lineNum">         </span>[<span class="branchNoCov" title="Branch 4 was not taken"> - </span><span class="branchNoCov" title="Branch 5 was not taken"> - </span>][<span class="branchNoCov" title="Branch 6 was not taken"> - </span><span class="branchNoCov" title="Branch 7 was not taken"> - </span>]
+<span class="lineNum">     314 </span>                :            : 
+<span class="lineNum">     315 </span>                :<span class="lineCov">        913 :   const auto&amp; x = coord[0];</span>
+<span class="lineNum">     316 </span>                :<span class="lineCov">        913 :   const auto&amp; y = coord[1];</span>
+<span class="lineNum">     317 </span>                :<span class="lineCov">        913 :   const auto&amp; z = coord[2];</span>
+<span class="lineNum">     318 </span>                :            : 
+<span class="lineNum">     319 </span>                :            :   // Make room for element centroid coordinates
+<span class="lineNum">     320 </span>                :<span class="lineCov">        913 :   std::array&lt; std::vector&lt; tk::real &gt;, 3 &gt; cent;</span>
+<span class="lineNum">     321 </span>                :<span class="lineCov">        913 :   auto&amp; cx = cent[0];</span>
+<span class="lineNum">     322 </span>                :<span class="lineCov">        913 :   auto&amp; cy = cent[1];</span>
+<span class="lineNum">     323 </span>                :<span class="lineCov">        913 :   auto&amp; cz = cent[2];</span>
+<span class="lineNum">     324 </span>                :<span class="lineCov">        913 :   auto num = inpoel.size()/4;</span>
+<span class="lineNum">     325 </span>        [<span class="branchCov" title="Branch 0 was taken 913 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">        913 :   cx.resize( num );</span>
+<span class="lineNum">     326 </span>        [<span class="branchCov" title="Branch 0 was taken 913 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">        913 :   cy.resize( num );</span>
+<span class="lineNum">     327 </span>        [<span class="branchCov" title="Branch 0 was taken 913 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">        913 :   cz.resize( num );</span>
+<span class="lineNum">     328 </span>                :            : 
+<span class="lineNum">     329 </span>                :            :   // Compute element centroids for mesh passed in
+<span class="lineNum">     330 </span>        [<span class="branchCov" title="Branch 0 was taken 4972220 times"> + </span><span class="branchCov" title="Branch 1 was taken 913 times"> + </span>]:<span class="lineCov">    4973130 :   for (std::size_t e=0; e&lt;num; ++e) {</span>
+<span class="lineNum">     331 </span>                :<span class="lineCov">    4972220 :     auto A = inpoel[e*4+0];</span>
+<span class="lineNum">     332 </span>                :<span class="lineCov">    4972220 :     auto B = inpoel[e*4+1];</span>
+<span class="lineNum">     333 </span>                :<span class="lineCov">    4972220 :     auto C = inpoel[e*4+2];</span>
+<span class="lineNum">     334 </span>                :<span class="lineCov">    4972220 :     auto D = inpoel[e*4+3];</span>
+<span class="lineNum">     335 </span>                :<span class="lineCov">    4972220 :     cx[e] = (x[A] + x[B] + x[C] + x[D]) / 4.0;</span>
+<span class="lineNum">     336 </span>                :<span class="lineCov">    4972220 :     cy[e] = (y[A] + y[B] + y[C] + y[D]) / 4.0;</span>
+<span class="lineNum">     337 </span>                :<span class="lineCov">    4972220 :     cz[e] = (z[A] + z[B] + z[C] + z[D]) / 4.0;</span>
+<span class="lineNum">     338 </span>                :            :   }
+<span class="lineNum">     339 </span>                :            : 
+<span class="lineNum">     340 </span>                :<span class="lineCov">        913 :   return cent;</span>
+<span class="lineNum">     341 </span>                :            : }
+<a name="342"><span class="lineNum">     342 </span>                :            : </a>
+<span class="lineNum">     343 </span>                :            : std::unordered_map&lt; int, Partitioner::MeshData &gt;
+<span class="lineNum">     344 </span>                :<span class="lineCov">        913 : Partitioner::categorize( const std::vector&lt; std::size_t &gt;&amp; target ) const</span>
+<span class="lineNum">     345 </span>                :            : // *****************************************************************************
+<span class="lineNum">     346 </span>                :            : // Categorize mesh data by target
+<span class="lineNum">     347 </span>                :            : //! \param[in] target Target chares of mesh elements, size: number of
+<span class="lineNum">     348 </span>                :            : //!   elements in the chunk of the mesh graph on this compute node.
+<span class="lineNum">     349 </span>                :            : //! \return Vector of global mesh node ids connecting elements owned by each
+<span class="lineNum">     350 </span>                :            : //!   target chare.
+<span class="lineNum">     351 </span>                :            : // *****************************************************************************
+<span class="lineNum">     352 </span>                :            : {
+<span class="lineNum">     353 </span>[<span class="branchNoCov" title="Branch 0 was not taken"> - </span><span class="branchCov" title="Branch 1 was taken 913 times"> + </span>][<span class="branchNoCov" title="Branch 2 was not taken"> - </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineCov">        913 :   Assert( target.size() == m_ginpoel.size()/4, &quot;Size mismatch&quot;);</span>
+<span class="lineNum">         </span>[<span class="branchNoCov" title="Branch 4 was not taken"> - </span><span class="branchNoCov" title="Branch 5 was not taken"> - </span>][<span class="branchNoCov" title="Branch 6 was not taken"> - </span><span class="branchNoCov" title="Branch 7 was not taken"> - </span>]
+<span class="lineNum">     354 </span>                :            : 
+<span class="lineNum">     355 </span>                :            :   using Face = tk::UnsMesh::Face;
+<span class="lineNum">     356 </span>                :            : 
+<span class="lineNum">     357 </span>                :            :   // Build hash map associating side set id to boundary faces
+<span class="lineNum">     358 </span>                :            :   std::unordered_map&lt; Face, int,
+<span class="lineNum">     359 </span>                :<span class="lineCov">       1826 :                       tk::UnsMesh::Hash&lt;3&gt;, tk::UnsMesh::Eq&lt;3&gt; &gt; faceside;</span>
+<span class="lineNum">     360 </span>        [<span class="branchCov" title="Branch 0 was taken 691 times"> + </span><span class="branchCov" title="Branch 1 was taken 913 times"> + </span>]:<span class="lineCov">       1604 :   for (const auto&amp; s : m_bface)</span>
+<span class="lineNum">     361 </span>        [<span class="branchCov" title="Branch 0 was taken 380282 times"> + </span><span class="branchCov" title="Branch 1 was taken 691 times"> + </span>]:<span class="lineCov">     380973 :     for (auto f : s.second)</span>
+<span class="lineNum">     362 </span>                :<span class="lineCov">     380282 :       faceside[ {{ m_triinpoel[f*3+0],</span>
+<span class="lineNum">     363 </span>                :<span class="lineCov">     380282 :                    m_triinpoel[f*3+1],</span>
+<span class="lineNum">     364 </span>        [<span class="branchCov" title="Branch 0 was taken 380282 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">     380282 :                    m_triinpoel[f*3+2] }} ] = s.first;</span>
+<span class="lineNum">     365 </span>                :            : 
+<span class="lineNum">     366 </span>                :            :   // Build hash map associating side set ids to boundary nodes
+<span class="lineNum">     367 </span>                :<span class="lineCov">       1826 :   std::unordered_map&lt; std::size_t, std::unordered_set&lt; int &gt; &gt; nodeside;</span>
+<span class="lineNum">     368 </span>        [<span class="branchCov" title="Branch 0 was taken 450 times"> + </span><span class="branchCov" title="Branch 1 was taken 913 times"> + </span>]:<span class="lineCov">       1363 :   for (const auto&amp; s : m_bnode)</span>
+<span class="lineNum">     369 </span>        [<span class="branchCov" title="Branch 0 was taken 31314 times"> + </span><span class="branchCov" title="Branch 1 was taken 450 times"> + </span>]:<span class="lineCov">      31764 :     for (auto n : s.second)</span>
+<span class="lineNum">     370 </span>[<span class="branchCov" title="Branch 0 was taken 31314 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>][<span class="branchCov" title="Branch 2 was taken 31314 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineCov">      31314 :       nodeside[ n ].insert( s.first );</span>
+<span class="lineNum">     371 </span>                :            : 
+<span class="lineNum">     372 </span>                :            :   // Categorize mesh data (tets, node coordinates, and boundary data) by target
+<span class="lineNum">     373 </span>                :            :   // chare based on which chare the partitioner assigned elements (tets) to
+<span class="lineNum">     374 </span>                :<span class="lineCov">        913 :   std::unordered_map&lt; int, MeshData &gt; chmesh;</span>
+<span class="lineNum">     375 </span>        [<span class="branchCov" title="Branch 0 was taken 4972220 times"> + </span><span class="branchCov" title="Branch 1 was taken 913 times"> + </span>]:<span class="lineCov">    4973130 :   for (std::size_t e=0; e&lt;target.size(); ++e) {</span>
+<span class="lineNum">     376 </span>                :            :     // Construct a tetrahedron with global node ids
+<span class="lineNum">     377 </span>                :<span class="lineCov">    4972220 :     tk::UnsMesh::Tet t{{ m_ginpoel[e*4+0], m_ginpoel[e*4+1],</span>
+<span class="lineNum">     378 </span>                :<span class="lineCov">    4972220 :                          m_ginpoel[e*4+2], m_ginpoel[e*4+3] }};</span>
+<span class="lineNum">     379 </span>                :            :     // Categorize tetrahedron (domain element) connectivity
+<span class="lineNum">     380 </span>        [<span class="branchCov" title="Branch 0 was taken 4972220 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">    4972220 :     auto&amp; mesh = chmesh[ static_cast&lt;int&gt;(target[e]) ];</span>
+<span class="lineNum">     381 </span>                :<span class="lineCov">    4972220 :     auto&amp; inpoel = std::get&lt; 0 &gt;( mesh );</span>
+<span class="lineNum">     382 </span>        [<span class="branchCov" title="Branch 0 was taken 4972220 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">    4972220 :     inpoel.insert( end(inpoel), begin(t), end(t) );</span>
+<span class="lineNum">     383 </span>                :            :     // Categorize boundary face connectivity
+<span class="lineNum">     384 </span>                :<span class="lineCov">    4972220 :     auto&amp; bconn = std::get&lt; 1 &gt;( mesh );</span>
+<span class="lineNum">     385 </span>                :<span class="lineCov">    4972220 :     std::array&lt;Face,4&gt; face{{ {{t[0],t[2],t[1]}}, {{t[0],t[1],t[3]}},</span>
+<span class="lineNum">     386 </span>                :<span class="lineCov">    4972220 :                               {{t[0],t[3],t[2]}}, {{t[1],t[2],t[3]}} }};</span>
+<span class="lineNum">     387 </span>        [<span class="branchCov" title="Branch 0 was taken 19888900 times"> + </span><span class="branchCov" title="Branch 1 was taken 4972220 times"> + </span>]:<span class="lineCov">   24861100 :     for (const auto&amp; f : face) {</span>
+<span class="lineNum">     388 </span>        [<span class="branchCov" title="Branch 0 was taken 19888900 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">   19888900 :       auto it = faceside.find( f );</span>
+<span class="lineNum">     389 </span>        [<span class="branchCov" title="Branch 0 was taken 380282 times"> + </span><span class="branchCov" title="Branch 1 was taken 19508600 times"> + </span>]:<span class="lineCov">   19888900 :       if (it != end(faceside)) {</span>
+<span class="lineNum">     390 </span>        [<span class="branchCov" title="Branch 0 was taken 380282 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">     380282 :         auto&amp; s = bconn[ it-&gt;second ];</span>
+<span class="lineNum">     391 </span>        [<span class="branchCov" title="Branch 0 was taken 380282 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">     380282 :         s.insert( end(s), begin(f), end(f) );</span>
+<span class="lineNum">     392 </span>                :            :       }
+<span class="lineNum">     393 </span>                :            :     }
+<span class="lineNum">     394 </span>                :            :     // Categorize boundary node lists
+<span class="lineNum">     395 </span>                :<span class="lineCov">    4972220 :     auto&amp; bnode = std::get&lt; 2 &gt;( mesh );</span>
+<span class="lineNum">     396 </span>        [<span class="branchCov" title="Branch 0 was taken 19888900 times"> + </span><span class="branchCov" title="Branch 1 was taken 4972220 times"> + </span>]:<span class="lineCov">   24861100 :     for (const auto&amp; n : t) {</span>
+<span class="lineNum">     397 </span>        [<span class="branchCov" title="Branch 0 was taken 19888900 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">   19888900 :       auto it = nodeside.find( n );</span>
+<span class="lineNum">     398 </span>        [<span class="branchCov" title="Branch 0 was taken 162260 times"> + </span><span class="branchCov" title="Branch 1 was taken 19726600 times"> + </span>]:<span class="lineCov">   19888900 :       if (it != end(nodeside))</span>
+<span class="lineNum">     399 </span>        [<span class="branchCov" title="Branch 0 was taken 173820 times"> + </span><span class="branchCov" title="Branch 1 was taken 162260 times"> + </span>]:<span class="lineCov">     336080 :         for (auto s : it-&gt;second)</span>
+<span class="lineNum">     400 </span>[<span class="branchCov" title="Branch 0 was taken 173820 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>][<span class="branchCov" title="Branch 2 was taken 173820 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineCov">     173820 :           bnode[ s ].push_back( n );</span>
+<span class="lineNum">     401 </span>                :            :     }
+<span class="lineNum">     402 </span>                :            :   }
+<span class="lineNum">     403 </span>                :            : 
+<span class="lineNum">     404 </span>                :            :   // Make boundary node lists unique per side set
+<span class="lineNum">     405 </span>        [<span class="branchCov" title="Branch 0 was taken 18379 times"> + </span><span class="branchCov" title="Branch 1 was taken 913 times"> + </span>]:<span class="lineCov">      19292 :   for (auto&amp; c : chmesh)</span>
+<span class="lineNum">     406 </span>        [<span class="branchCov" title="Branch 0 was taken 1446 times"> + </span><span class="branchCov" title="Branch 1 was taken 18379 times"> + </span>]:<span class="lineCov">      19825 :     for (auto&amp; n : std::get&lt;2&gt;(c.second))</span>
+<span class="lineNum">     407 </span>        [<span class="branchCov" title="Branch 0 was taken 1446 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">       1446 :        tk::unique( n.second );</span>
+<span class="lineNum">     408 </span>                :            : 
+<span class="lineNum">     409 </span>                :            :   // Make sure all compute nodes have target chares assigned
+<span class="lineNum">     410 </span>[<span class="branchNoCov" title="Branch 0 was not taken"> - </span><span class="branchCov" title="Branch 1 was taken 913 times"> + </span>][<span class="branchNoCov" title="Branch 2 was not taken"> - </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineCov">        913 :   Assert( !chmesh.empty(), &quot;No elements have been assigned to a chare&quot; );</span>
+<span class="lineNum">         </span>[<span class="branchNoCov" title="Branch 4 was not taken"> - </span><span class="branchNoCov" title="Branch 5 was not taken"> - </span>][<span class="branchNoCov" title="Branch 6 was not taken"> - </span><span class="branchNoCov" title="Branch 7 was not taken"> - </span>]
+<span class="lineNum">     411 </span>                :            : 
+<span class="lineNum">     412 </span>                :            :   // This check should always be done, hence ErrChk and not Assert, as it
+<span class="lineNum">     413 </span>                :            :   // can result from particular pathological combinations of (1) too large
+<span class="lineNum">     414 </span>                :            :   // degree of virtualization, (2) too many compute nodes, and/or (3) too small
+<span class="lineNum">     415 </span>                :            :   // of a mesh and not due to programmer error.
+<span class="lineNum">     416 </span>        [<span class="branchCov" title="Branch 0 was taken 18379 times"> + </span><span class="branchCov" title="Branch 1 was taken 913 times"> + </span>]:<span class="lineCov">      19292 :   for(const auto&amp; c : chmesh)</span>
+<span class="lineNum">     417 </span>[<span class="branchNoCov" title="Branch 0 was not taken"> - </span><span class="branchCov" title="Branch 1 was taken 18379 times"> + </span>][<span class="branchNoCov" title="Branch 2 was not taken"> - </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineCov">      18379 :     ErrChk( !std::get&lt;0&gt;(c.second).empty(),</span>
+<span class="lineNum">         </span>[<span class="branchNoCov" title="Branch 4 was not taken"> - </span><span class="branchNoCov" title="Branch 5 was not taken"> - </span>][<span class="branchNoCov" title="Branch 6 was not taken"> - </span><span class="branchNoCov" title="Branch 7 was not taken"> - </span>]
+<span class="lineNum">     418 </span>                :            :             &quot;Overdecomposition of the mesh is too large compared to the &quot;
+<span class="lineNum">     419 </span>                :            :             &quot;number of work units computed based on the degree of &quot;
+<span class="lineNum">     420 </span>                :            :             &quot;virtualization desired. As a result, there would be at least &quot;
+<span class="lineNum">     421 </span>                :            :             &quot;one work unit with no mesh elements to work on, i.e., nothing &quot;
+<span class="lineNum">     422 </span>                :            :             &quot;to do. Solution 1: decrease the virtualization to a lower &quot;
+<span class="lineNum">     423 </span>                :            :             &quot;value using the command-line argument '-u'. Solution 2: &quot;
+<span class="lineNum">     424 </span>                :            :             &quot;decrease the number processing elements (PEs and/or compute &quot;
+<span class="lineNum">     425 </span>                :            :             &quot;nodes) using the charmrun command-line argument '+pN' where N is &quot;
+<span class="lineNum">     426 </span>                :            :             &quot;the number of PEs (or in SMP-mode in combination with +ppn to &quot;
+<span class="lineNum">     427 </span>                :            :             &quot;reduce the number of compute nodes), which implicitly increases &quot;
+<span class="lineNum">     428 </span>                :            :             &quot;the size (and thus decreases the number) of work units.)&quot; );
+<span class="lineNum">     429 </span>                :            : 
+<span class="lineNum">     430 </span>                :<span class="lineCov">       1826 :   return chmesh;</span>
+<span class="lineNum">     431 </span>                :            : }
+<a name="432"><span class="lineNum">     432 </span>                :            : </a>
+<span class="lineNum">     433 </span>                :            : tk::UnsMesh::CoordMap
+<span class="lineNum">     434 </span>                :<span class="lineCov">      18379 : Partitioner::coordmap( const std::vector&lt; std::size_t &gt;&amp; inpoel )</span>
+<span class="lineNum">     435 </span>                :            : // *****************************************************************************
+<span class="lineNum">     436 </span>                :            : // Extract coordinates associated to global nodes of a mesh chunk
+<span class="lineNum">     437 </span>                :            : //! \param[in] inpoel Mesh connectivity
+<span class="lineNum">     438 </span>                :            : //! \return Map storing the coordinates of unique nodes associated to global
+<span class="lineNum">     439 </span>                :            : //!    node IDs in mesh given by inpoel
+<span class="lineNum">     440 </span>                :            : // *****************************************************************************
+<span class="lineNum">     441 </span>                :            : {
+<span class="lineNum">     442 </span>[<span class="branchNoCov" title="Branch 0 was not taken"> - </span><span class="branchCov" title="Branch 1 was taken 18379 times"> + </span>][<span class="branchNoCov" title="Branch 2 was not taken"> - </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineCov">      18379 :   Assert( inpoel.size() % 4 == 0, &quot;Incomplete mesh connectivity&quot; );</span>
+<span class="lineNum">         </span>[<span class="branchNoCov" title="Branch 4 was not taken"> - </span><span class="branchNoCov" title="Branch 5 was not taken"> - </span>][<span class="branchNoCov" title="Branch 6 was not taken"> - </span><span class="branchNoCov" title="Branch 7 was not taken"> - </span>]
+<span class="lineNum">     443 </span>                :            : 
+<span class="lineNum">     444 </span>                :<span class="lineCov">      18379 :   tk::UnsMesh::CoordMap map;</span>
+<span class="lineNum">     445 </span>                :            : 
+<span class="lineNum">     446 </span>[<span class="branchCov" title="Branch 0 was taken 18379 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>][<span class="branchCov" title="Branch 2 was taken 4230820 times"> + </span><span class="branchCov" title="Branch 3 was taken 18379 times"> + </span>]:<span class="lineCov">    4249200 :   for (auto g : tk::uniquecopy(inpoel)) {</span>
+<span class="lineNum">     447 </span>        [<span class="branchCov" title="Branch 0 was taken 4230820 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">    4230820 :      auto i = tk::cref_find( m_lid, g );</span>
+<span class="lineNum">     448 </span>        [<span class="branchCov" title="Branch 0 was taken 4230820 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">    4230820 :      auto&amp; c = map[g];</span>
+<span class="lineNum">     449 </span>                :<span class="lineCov">    4230820 :      c[0] = m_coord[0][i];</span>
+<span class="lineNum">     450 </span>                :<span class="lineCov">    4230820 :      c[1] = m_coord[1][i];</span>
+<span class="lineNum">     451 </span>                :<span class="lineCov">    4230820 :      c[2] = m_coord[2][i];</span>
+<span class="lineNum">     452 </span>                :            :   }
+<span class="lineNum">     453 </span>                :            : 
+<span class="lineNum">     454 </span>[<span class="branchCov" title="Branch 0 was taken 18379 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>][<span class="branchNoCov" title="Branch 2 was not taken"> - </span><span class="branchCov" title="Branch 3 was taken 18379 times"> + </span>]:<span class="lineCov">      18379 :   Assert( tk::uniquecopy(inpoel).size() == map.size(), &quot;Size mismatch&quot; );</span>
+<span class="lineNum">         </span>[<span class="branchNoCov" title="Branch 4 was not taken"> - </span><span class="branchNoCov" title="Branch 5 was not taken"> - </span>][<span class="branchNoCov" title="Branch 6 was not taken"> - </span><span class="branchNoCov" title="Branch 7 was not taken"> - </span>]
+<span class="lineNum">         </span>        [<span class="branchNoCov" title="Branch 8 was not taken"> - </span><span class="branchNoCov" title="Branch 9 was not taken"> - </span>]
+<span class="lineNum">     455 </span>                :            : 
+<span class="lineNum">     456 </span>                :<span class="lineCov">      18379 :   return map;</span>
+<span class="lineNum">     457 </span>                :            : }
+<a name="458"><span class="lineNum">     458 </span>                :            : </a>
+<span class="lineNum">     459 </span>                :            : void
+<span class="lineNum">     460 </span>                :<span class="lineCov">        913 : Partitioner::distribute( std::unordered_map&lt; int, MeshData &gt;&amp;&amp; mesh )</span>
+<span class="lineNum">     461 </span>                :            : // *****************************************************************************
+<span class="lineNum">     462 </span>                :            : // Distribute mesh to target compute nodes after mesh partitioning
+<span class="lineNum">     463 </span>                :            : //! \param[in] mesh Mesh data categorized by target by target chares
+<span class="lineNum">     464 </span>                :            : // *****************************************************************************
+<span class="lineNum">     465 </span>                :            : {
+<span class="lineNum">     466 </span>        [<span class="branchCov" title="Branch 0 was taken 913 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">        913 :   auto dist = distribution( m_nchare );</span>
+<span class="lineNum">     467 </span>                :            : 
+<span class="lineNum">     468 </span>                :            :   // Extract mesh data whose chares are on (&quot;owned by&quot;) this compute node
+<span class="lineNum">     469 </span>        [<span class="branchCov" title="Branch 0 was taken 3506 times"> + </span><span class="branchCov" title="Branch 1 was taken 913 times"> + </span>]:<span class="lineCov">       4419 :   for (int c=0; c&lt;dist[1]; ++c) {</span>
+<span class="lineNum">     470 </span>                :<span class="lineCov">       3506 :     auto chid = CkMyNode() * dist[0] + c; // compute owned chare ID</span>
+<span class="lineNum">     471 </span>        [<span class="branchCov" title="Branch 0 was taken 3506 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">       3506 :     const auto it = mesh.find( chid );    // attempt to find its mesh data</span>
+<span class="lineNum">     472 </span>        [<span class="branchCov" title="Branch 0 was taken 3493 times"> + </span><span class="branchCov" title="Branch 1 was taken 13 times"> + </span>]:<span class="lineCov">       3506 :     if (it != end(mesh)) {                // if found</span>
+<span class="lineNum">     473 </span>                :            :       // Store own tetrahedron connectivity
+<span class="lineNum">     474 </span>                :<span class="lineCov">       3493 :       const auto&amp; inpoel = std::get&lt;0&gt;( it-&gt;second );</span>
+<span class="lineNum">     475 </span>        [<span class="branchCov" title="Branch 0 was taken 3493 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">       3493 :       auto&amp; inp = m_chinpoel[ chid ];     // will store own mesh connectivity</span>
+<span class="lineNum">     476 </span>        [<span class="branchCov" title="Branch 0 was taken 3493 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">       3493 :       inp.insert( end(inp), begin(inpoel), end(inpoel) );</span>
+<span class="lineNum">     477 </span>                :            :       // Store own node coordinates
+<span class="lineNum">     478 </span>        [<span class="branchCov" title="Branch 0 was taken 3493 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">       3493 :       auto&amp; chcm = m_chcoordmap[ chid ];  // will store own node coordinates</span>
+<span class="lineNum">     479 </span>        [<span class="branchCov" title="Branch 0 was taken 3493 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">       6986 :       auto cm = coordmap( inpoel );       // extract node coordinates </span>
+<span class="lineNum">     480 </span>        [<span class="branchCov" title="Branch 0 was taken 3493 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">       3493 :       chcm.insert( begin(cm), end(cm) );  // concatenate node coords</span>
+<span class="lineNum">     481 </span>                :            :       // Store own boundary face connectivity
+<span class="lineNum">     482 </span>                :<span class="lineCov">       3493 :       const auto&amp; bconn = std::get&lt;1&gt;( it-&gt;second );</span>
+<span class="lineNum">     483 </span>        [<span class="branchCov" title="Branch 0 was taken 3493 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">       3493 :       auto&amp; bface = m_chbface[ chid ];    // will store own boundary faces</span>
+<span class="lineNum">     484 </span>        [<span class="branchCov" title="Branch 0 was taken 3493 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">       3493 :       auto&amp; t = m_chtriinpoel[ chid ];    // wil store own boundary face conn</span>
+<span class="lineNum">     485 </span>        [<span class="branchCov" title="Branch 0 was taken 3493 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">       3493 :       auto&amp; f = m_nface[ chid ];          // use counter for chare</span>
+<span class="lineNum">     486 </span>        [<span class="branchCov" title="Branch 0 was taken 1657 times"> + </span><span class="branchCov" title="Branch 1 was taken 3493 times"> + </span>]:<span class="lineCov">       5150 :       for (const auto&amp; s : bconn) {</span>
+<span class="lineNum">     487 </span>        [<span class="branchCov" title="Branch 0 was taken 1657 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">       1657 :         auto&amp; b = bface[ s.first ];</span>
+<span class="lineNum">     488 </span>        [<span class="branchCov" title="Branch 0 was taken 154789 times"> + </span><span class="branchCov" title="Branch 1 was taken 1657 times"> + </span>]:<span class="lineCov">     156446 :         for (std::size_t i=0; i&lt;s.second.size()/3; ++i) {</span>
+<span class="lineNum">     489 </span>        [<span class="branchCov" title="Branch 0 was taken 154789 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">     154789 :           b.push_back( f++ );</span>
+<span class="lineNum">     490 </span>        [<span class="branchCov" title="Branch 0 was taken 154789 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">     154789 :           t.push_back( s.second[i*3+0] );</span>
+<span class="lineNum">     491 </span>        [<span class="branchCov" title="Branch 0 was taken 154789 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">     154789 :           t.push_back( s.second[i*3+1] );</span>
+<span class="lineNum">     492 </span>        [<span class="branchCov" title="Branch 0 was taken 154789 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">     154789 :           t.push_back( s.second[i*3+2] );</span>
+<span class="lineNum">     493 </span>                :            :         }
+<span class="lineNum">     494 </span>                :            :       }
+<span class="lineNum">     495 </span>                :            :       // Store own boundary node lists
+<span class="lineNum">     496 </span>                :<span class="lineCov">       3493 :       const auto&amp; bnode = std::get&lt;2&gt;( it-&gt;second );</span>
+<span class="lineNum">     497 </span>        [<span class="branchCov" title="Branch 0 was taken 3493 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">       3493 :       auto&amp; nodes = m_chbnode[ chid ];    // will store own boundary nodes</span>
+<span class="lineNum">     498 </span>        [<span class="branchCov" title="Branch 0 was taken 416 times"> + </span><span class="branchCov" title="Branch 1 was taken 3493 times"> + </span>]:<span class="lineCov">       3909 :       for (const auto&amp; s : bnode) {</span>
+<span class="lineNum">     499 </span>        [<span class="branchCov" title="Branch 0 was taken 416 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">        416 :         auto&amp; b = nodes[ s.first ];</span>
+<span class="lineNum">     500 </span>        [<span class="branchCov" title="Branch 0 was taken 416 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">        416 :         b.insert( end(b), begin(s.second), end(s.second) );</span>
+<span class="lineNum">     501 </span>                :            :       }
+<span class="lineNum">     502 </span>                :            :       // Remove chare ID and mesh data
+<span class="lineNum">     503 </span>        [<span class="branchCov" title="Branch 0 was taken 3493 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">       3493 :       mesh.erase( it );</span>
+<span class="lineNum">     504 </span>                :            :     }
+<span class="lineNum">     505 </span>[<span class="branchCov" title="Branch 0 was taken 3506 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>][<span class="branchNoCov" title="Branch 2 was not taken"> - </span><span class="branchCov" title="Branch 3 was taken 3506 times"> + </span>]:<span class="lineCov">       3506 :     Assert( mesh.find(chid) == end(mesh), &quot;Not all owned mesh data stored&quot; );</span>
+<span class="lineNum">         </span>[<span class="branchNoCov" title="Branch 4 was not taken"> - </span><span class="branchNoCov" title="Branch 5 was not taken"> - </span>][<span class="branchNoCov" title="Branch 6 was not taken"> - </span><span class="branchNoCov" title="Branch 7 was not taken"> - </span>]
+<span class="lineNum">         </span>        [<span class="branchNoCov" title="Branch 8 was not taken"> - </span><span class="branchNoCov" title="Branch 9 was not taken"> - </span>]
+<span class="lineNum">     506 </span>                :            :   }
+<span class="lineNum">     507 </span>                :            : 
+<span class="lineNum">     508 </span>                :            :   // Construct export map associating mesh connectivities with global node
+<span class="lineNum">     509 </span>                :            :   // indices and node coordinates for mesh chunks associated to chare IDs
+<span class="lineNum">     510 </span>                :            :   // owned by chares we do not own.
+<span class="lineNum">     511 </span>                :            :   std::unordered_map&lt; int,                     // target compute node
+<span class="lineNum">     512 </span>                :            :     std::unordered_map&lt; int,                   // chare ID
+<span class="lineNum">     513 </span>                :            :       std::tuple&lt;
+<span class="lineNum">     514 </span>                :            :         // (domain-element) tetrahedron connectivity
+<span class="lineNum">     515 </span>                :            :         std::vector&lt; std::size_t &gt;,
+<span class="lineNum">     516 </span>                :            :         // (domain) node IDs &amp; coordinates
+<span class="lineNum">     517 </span>                :            :         tk::UnsMesh::CoordMap,
+<span class="lineNum">     518 </span>                :            :         // boundary side set + face connectivity
+<span class="lineNum">     519 </span>                :            :         std::unordered_map&lt; int, std::vector&lt; std::size_t &gt; &gt;,
+<span class="lineNum">     520 </span>                :            :         // boundary side set + node list
+<span class="lineNum">     521 </span>                :            :         std::unordered_map&lt; int, std::vector&lt; std::size_t &gt; &gt;
+<span class="lineNum">     522 </span>                :<span class="lineCov">       1826 :       &gt; &gt; &gt; exp;</span>
+<span class="lineNum">     523 </span>                :            : 
+<span class="lineNum">     524 </span>        [<span class="branchCov" title="Branch 0 was taken 14886 times"> + </span><span class="branchCov" title="Branch 1 was taken 913 times"> + </span>]:<span class="lineCov">      15799 :   for (const auto&amp; c : mesh)</span>
+<span class="lineNum">     525 </span>[<span class="branchCov" title="Branch 0 was taken 14886 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>][<span class="branchCov" title="Branch 2 was taken 14886 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineCov">      14886 :     exp[ node(c.first) ][ c.first ] =</span>
+<span class="lineNum">         </span>        [<span class="branchCov" title="Branch 4 was taken 14886 times"> + </span><span class="branchNoCov" title="Branch 5 was not taken"> - </span>]
+<span class="lineNum">     526 </span>        [<span class="branchCov" title="Branch 0 was taken 14886 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">      29772 :       std::make_tuple( std::get&lt;0&gt;(c.second),</span>
+<span class="lineNum">     527 </span>        [<span class="branchCov" title="Branch 0 was taken 14886 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">      29772 :                        coordmap(std::get&lt;0&gt;(c.second)),</span>
+<span class="lineNum">     528 </span>                :<span class="lineCov">      14886 :                        std::get&lt;1&gt;(c.second),</span>
+<span class="lineNum">     529 </span>                :<span class="lineCov">      29772 :                        std::get&lt;2&gt;(c.second) );</span>
+<span class="lineNum">     530 </span>                :            : 
+<span class="lineNum">     531 </span>                :            :   // Export chare IDs and mesh we do not own to fellow compute nodes
+<span class="lineNum">     532 </span>        [<span class="branchCov" title="Branch 0 was taken 65 times"> + </span><span class="branchCov" title="Branch 1 was taken 848 times"> + </span>]:<span class="lineCov">        913 :   if (exp.empty()) {</span>
+<span class="lineNum">     533 </span>[<span class="branchNoCov" title="Branch 0 was not taken"> - </span><span class="branchCov" title="Branch 1 was taken 65 times"> + </span>][<span class="branchNoCov" title="Branch 2 was not taken"> - </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineCov">         65 :     if ( g_inputdeck.get&lt; tag::cmd, tag::feedback &gt;() ) m_host.pedistributed();</span>
+<span class="lineNum">     534 </span>        [<span class="branchCov" title="Branch 0 was taken 65 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">         65 :     contribute( m_cbp.get&lt; tag::distributed &gt;() );</span>
+<span class="lineNum">     535 </span>                :            :   } else {
+<span class="lineNum">     536 </span>                :<span class="lineCov">        848 :      m_ndist += exp.size();</span>
+<span class="lineNum">     537 </span>        [<span class="branchCov" title="Branch 0 was taken 3666 times"> + </span><span class="branchCov" title="Branch 1 was taken 848 times"> + </span>]:<span class="lineCov">       4514 :      for (const auto&amp; p : exp)</span>
+<span class="lineNum">     538 </span>[<span class="branchCov" title="Branch 0 was taken 3666 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>][<span class="branchCov" title="Branch 2 was taken 3666 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineCov">       3666 :        thisProxy[ p.first ].addMesh( CkMyNode(), p.second );</span>
+<span class="lineNum">     539 </span>                :            :   }
+<span class="lineNum">     540 </span>                :<span class="lineCov">        913 : }</span>
+<a name="541"><span class="lineNum">     541 </span>                :            : </a>
+<span class="lineNum">     542 </span>                :            : std::array&lt; int, 2 &gt;
+<span class="lineNum">     543 </span>                :<span class="lineCov">       1826 : Partitioner::distribution( int npart ) const</span>
+<span class="lineNum">     544 </span>                :            : // *****************************************************************************
+<span class="lineNum">     545 </span>                :            : //  Compute chare (partition) distribution
+<span class="lineNum">     546 </span>                :            : //! \param[in] npart Total number of chares (partitions) to distribute
+<span class="lineNum">     547 </span>                :            : //! \return Chunksize, i.e., number of chares per all compute nodes except the
+<span class="lineNum">     548 </span>                :            : //!   last one, and the number of chares for this compute node.
+<span class="lineNum">     549 </span>                :            : //! \details Chare ids are distributed to compute nodes in a linear continguous
+<span class="lineNum">     550 </span>                :            : //!   order with the last compute node taking the remainder if the number of
+<span class="lineNum">     551 </span>                :            : //!   compute nodes is not divisible by the number chares. For example, if
+<span class="lineNum">     552 </span>                :            : //!   nchare=7 and nnode=3, the chare distribution is node0: 0 1, node1: 2 3,
+<span class="lineNum">     553 </span>                :            : //!   and node2: 4 5 6. As a result of this distribution, all compute nodes will
+<span class="lineNum">     554 </span>                :            : //!   have their chare-categorized element connectivity filled with the global
+<span class="lineNum">     555 </span>                :            : //!   mesh node IDs associated to the Charm++ chare IDs each compute node owns.
+<span class="lineNum">     556 </span>                :            : // *****************************************************************************
+<span class="lineNum">     557 </span>                :            : {
+<span class="lineNum">     558 </span>                :<span class="lineCov">       1826 :   auto chunksize = npart / CkNumNodes();</span>
+<span class="lineNum">     559 </span>                :<span class="lineCov">       1826 :   auto mynchare = chunksize;</span>
+<span class="lineNum">     560 </span>        [<span class="branchCov" title="Branch 0 was taken 494 times"> + </span><span class="branchCov" title="Branch 1 was taken 1332 times"> + </span>]:<span class="lineCov">       1826 :   if (CkMyNode() == CkNumNodes()-1) mynchare += npart % CkNumNodes();</span>
+<span class="lineNum">     561 </span>                :<span class="lineCov">       1826 :   return {{ chunksize, mynchare }};</span>
+<span class="lineNum">     562 </span>                :            : }
+<span class="lineNum">     563 </span>                :            : 
+<span class="lineNum">     564 </span>                :            : #include &quot;NoWarning/partitioner.def.h&quot;
 </pre>
       </td>
     </tr>
