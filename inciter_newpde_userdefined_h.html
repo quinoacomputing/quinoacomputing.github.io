@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>How to add a new PDE type to Inciter &raquo; PDE/MultiMat/Problem/UserDefined.h | Quinoa docs</title>
+  <title>How to add a new PDE type to Inciter &raquo; PDE/MultiMat/Problem/UserDefined.hpp | Quinoa docs</title>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,400i,600,600i%7CSource+Code+Pro:400,400i,600" />
   <link rel="stylesheet" href="quinoa.m-dark-noindent+doxygen.compiled.css" />
   <link rel="icon" href="quinoa_sum.png" type="image/png" />
@@ -54,9 +54,169 @@
       <div class="m-col-l-10 m-push-l-1">
         <h1>
           <span class="m-breadcrumb"><a href="inciter_newpde.html">How to add a new PDE type to Inciter</a> &raquo;</span>
-          PDE/MultiMat/Problem/UserDefined.h
+          PDE/MultiMat/Problem/UserDefined.hpp
         </h1>
-<pre class="m-code"></pre>
+<pre class="m-code"><span class="c1">// *****************************************************************************</span>
+<span class="cm">/*!</span>
+<span class="cm">  \file      src/PDE/MultiMat/Problem/UserDefined.hpp</span>
+<span class="cm">  \copyright 2012-2015 J. Bakosi,</span>
+<span class="cm">             2016-2018 Los Alamos National Security, LLC.,</span>
+<span class="cm">             2019 Triad National Security, LLC.</span>
+<span class="cm">             All rights reserved. See the LICENSE file for details.</span>
+<span class="cm">  \brief     Problem configuration for the multi-material compressible flow</span>
+<span class="cm">    equations</span>
+<span class="cm">  \details   This file defines a Problem policy class for the multi-material</span>
+<span class="cm">    compressible flow equations, defined under PDE/MultiMat. See</span>
+<span class="cm">    PDE/MultiMat/Problem.h for general requirements on Problem policy</span>
+<span class="cm">    classes for MultiMat.</span>
+<span class="cm">*/</span>
+<span class="c1">// *****************************************************************************</span>
+<span class="cp">#ifndef MultiMatProblemUserDefined_h</span>
+<span class="cp">#define MultiMatProblemUserDefined_h</span>
+
+<span class="cp">#include</span> <span class="cpf">&lt;string&gt;</span><span class="cp"></span>
+<span class="cp">#include</span> <span class="cpf">&lt;unordered_set&gt;</span><span class="cp"></span>
+
+<span class="cp">#include</span> <span class="cpf">&quot;Types.hpp&quot;</span><span class="cp"></span>
+<span class="cp">#include</span> <span class="cpf">&quot;FunctionPrototypes.hpp&quot;</span><span class="cp"></span>
+<span class="cp">#include</span> <span class="cpf">&quot;Inciter/Options/Problem.hpp&quot;</span><span class="cp"></span>
+
+<span class="k">namespace</span> <span class="n">inciter</span> <span class="p">{</span>
+
+<span class="c1">//! MultiMat system of PDEs problem: user defined</span>
+<span class="k">class</span> <span class="nc">MultiMatProblemUserDefined</span> <span class="p">{</span>
+
+  <span class="k">private</span><span class="o">:</span>
+    <span class="k">using</span> <span class="n">ncomp_t</span> <span class="o">=</span> <span class="n">tk</span><span class="o">::</span><span class="n">ctr</span><span class="o">::</span><span class="n">ncomp_type</span><span class="p">;</span>
+    <span class="k">static</span> <span class="k">constexpr</span> <span class="n">ncomp_t</span> <span class="n">m_ncomp</span> <span class="o">=</span> <span class="mi">5</span><span class="p">;</span>    <span class="c1">//!&lt; Number of scalar components</span>
+
+  <span class="k">public</span><span class="o">:</span>
+    <span class="c1">//! Evaluate initial condition solution at (x,y,z,t) for all components</span>
+    <span class="c1">//! \param[in] system Equation system index, i.e., which compressible</span>
+    <span class="c1">//!   flow equation system we operate on among the systems of PDEs</span>
+    <span class="c1">//! \param[in] ncomp Number of scalar components in this PDE system</span>
+    <span class="c1">//! \param[in] x X coordinate where to evaluate the solution</span>
+    <span class="c1">//! \param[in] y Y coordinate where to evaluate the solution</span>
+    <span class="c1">//! \param[in] z Z coordinate where to evaluate the solution</span>
+    <span class="c1">//! \param[in] t Physical time at which to evaluate the solution</span>
+    <span class="c1">//! \return Values of all components evaluated at (x,y,z,t)</span>
+    <span class="c1">//! \note The function signature must follow tk::SolutionFn</span>
+    <span class="k">static</span> <span class="n">tk</span><span class="o">::</span><span class="n">SolutionFn</span><span class="o">::</span><span class="n">result_type</span>
+    <span class="n">solution</span><span class="p">(</span> <span class="n">ncomp_t</span> <span class="n">system</span><span class="p">,</span> <span class="n">ncomp_t</span> <span class="n">ncomp</span><span class="p">,</span> <span class="n">tk</span><span class="o">::</span><span class="n">real</span> <span class="n">x</span><span class="p">,</span> <span class="n">tk</span><span class="o">::</span><span class="n">real</span> <span class="n">y</span><span class="p">,</span> <span class="n">tk</span><span class="o">::</span><span class="n">real</span> <span class="n">z</span><span class="p">,</span>
+              <span class="n">tk</span><span class="o">::</span><span class="n">real</span> <span class="n">t</span> <span class="p">)</span>
+    <span class="p">{</span>
+      <span class="n">Assert</span><span class="p">(</span> <span class="n">ncomp</span> <span class="o">==</span> <span class="n">m_ncomp</span><span class="p">,</span> <span class="s">&quot;Number of scalar components must be &quot;</span> <span class="o">+</span>
+                                <span class="n">std</span><span class="o">::</span><span class="n">to_string</span><span class="p">(</span><span class="n">m_ncomp</span><span class="p">)</span> <span class="p">);</span>
+      <span class="n">IGNORE</span><span class="p">(</span><span class="n">system</span><span class="p">);</span>
+      <span class="n">IGNORE</span><span class="p">(</span><span class="n">ncomp</span><span class="p">);</span>
+      <span class="n">IGNORE</span><span class="p">(</span><span class="n">x</span><span class="p">);</span>
+      <span class="n">IGNORE</span><span class="p">(</span><span class="n">y</span><span class="p">);</span>
+      <span class="n">IGNORE</span><span class="p">(</span><span class="n">z</span><span class="p">);</span>
+      <span class="n">IGNORE</span><span class="p">(</span><span class="n">t</span><span class="p">);</span>
+      <span class="k">return</span> <span class="p">{{</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">293.0</span> <span class="p">}};</span>
+    <span class="p">}</span>
+
+    <span class="c1">//! \brief Evaluate the increment from t to t+dt of the analytical solution</span>
+    <span class="c1">//!   at (x,y,z) for all components</span>
+    <span class="c1">//! \return Increment in values of all components: all zero for now</span>
+    <span class="k">static</span> <span class="n">std</span><span class="o">::</span><span class="n">array</span><span class="o">&lt;</span> <span class="n">tk</span><span class="o">::</span><span class="n">real</span><span class="p">,</span> <span class="mi">5</span> <span class="o">&gt;</span>
+    <span class="n">solinc</span><span class="p">(</span> <span class="n">ncomp_t</span><span class="p">,</span> <span class="n">tk</span><span class="o">::</span><span class="n">real</span><span class="p">,</span> <span class="n">tk</span><span class="o">::</span><span class="n">real</span><span class="p">,</span> <span class="n">tk</span><span class="o">::</span><span class="n">real</span><span class="p">,</span> <span class="n">tk</span><span class="o">::</span><span class="n">real</span><span class="p">,</span> <span class="n">tk</span><span class="o">::</span><span class="n">real</span> <span class="p">)</span> <span class="p">{</span>
+      <span class="k">return</span> <span class="p">{{</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span> <span class="p">}};</span>
+    <span class="p">}</span>
+
+    <span class="c1">//! Compute and return source term for Rayleigh-Taylor manufactured solution</span>
+    <span class="c1">//! \details No-op for user-deefined problems.</span>
+    <span class="c1">//! \return Array of reals containing the source for all components</span>
+    <span class="c1">//! \note The function signature must follow tk::SrcFn</span>
+    <span class="k">static</span> <span class="n">tk</span><span class="o">::</span><span class="n">SrcFn</span><span class="o">::</span><span class="n">result_type</span>
+    <span class="n">src</span><span class="p">(</span> <span class="n">ncomp_t</span><span class="p">,</span> <span class="n">ncomp_t</span><span class="p">,</span> <span class="n">tk</span><span class="o">::</span><span class="n">real</span><span class="p">,</span> <span class="n">tk</span><span class="o">::</span><span class="n">real</span><span class="p">,</span> <span class="n">tk</span><span class="o">::</span><span class="n">real</span><span class="p">,</span> <span class="n">tk</span><span class="o">::</span><span class="n">real</span> <span class="p">)</span>
+    <span class="p">{</span> <span class="k">return</span> <span class="p">{{</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span> <span class="p">}};</span> <span class="p">}</span>
+
+    <span class="c1">//! Return field names to be output to file</span>
+    <span class="c1">//! \return Vector of strings labelling fields output in file</span>
+    <span class="k">static</span> <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="o">&gt;</span> <span class="n">fieldNames</span><span class="p">(</span> <span class="n">ncomp_t</span> <span class="p">)</span> <span class="p">{</span>
+      <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="o">&gt;</span> <span class="n">n</span><span class="p">;</span>
+      <span class="n">n</span><span class="p">.</span><span class="n">push_back</span><span class="p">(</span> <span class="s">&quot;density&quot;</span> <span class="p">);</span>
+      <span class="n">n</span><span class="p">.</span><span class="n">push_back</span><span class="p">(</span> <span class="s">&quot;x-velocity&quot;</span> <span class="p">);</span>
+      <span class="n">n</span><span class="p">.</span><span class="n">push_back</span><span class="p">(</span> <span class="s">&quot;y-velocity&quot;</span> <span class="p">);</span>
+      <span class="n">n</span><span class="p">.</span><span class="n">push_back</span><span class="p">(</span> <span class="s">&quot;z-velocity&quot;</span> <span class="p">);</span>
+      <span class="n">n</span><span class="p">.</span><span class="n">push_back</span><span class="p">(</span> <span class="s">&quot;specific total energy&quot;</span> <span class="p">);</span>
+      <span class="n">n</span><span class="p">.</span><span class="n">push_back</span><span class="p">(</span> <span class="s">&quot;pressure&quot;</span> <span class="p">);</span>
+      <span class="n">n</span><span class="p">.</span><span class="n">push_back</span><span class="p">(</span> <span class="s">&quot;temperature&quot;</span> <span class="p">);</span>
+      <span class="k">return</span> <span class="n">n</span><span class="p">;</span>
+    <span class="p">}</span>
+
+    <span class="c1">//! \brief Query all side set IDs the user has configured for all components</span>
+    <span class="c1">//!   in this PDE system</span>
+    <span class="c1">//! \param[in,out] conf Set of unique side set IDs to add to</span>
+    <span class="k">static</span> <span class="kt">void</span> <span class="n">side</span><span class="p">(</span> <span class="n">std</span><span class="o">::</span><span class="n">unordered_set</span><span class="o">&lt;</span> <span class="kt">int</span> <span class="o">&gt;&amp;</span> <span class="n">conf</span> <span class="p">)</span> <span class="p">{</span>
+      <span class="k">using</span> <span class="n">tag</span><span class="o">::</span><span class="n">param</span><span class="p">;</span> <span class="k">using</span> <span class="n">tag</span><span class="o">::</span><span class="n">compflow</span><span class="p">;</span> <span class="k">using</span> <span class="n">tag</span><span class="o">::</span><span class="n">bcdir</span><span class="p">;</span>
+      <span class="k">for</span> <span class="p">(</span><span class="k">const</span> <span class="k">auto</span><span class="o">&amp;</span> <span class="nl">s</span> <span class="p">:</span> <span class="n">g_inputdeck</span><span class="p">.</span><span class="n">get</span><span class="o">&lt;</span> <span class="n">param</span><span class="p">,</span> <span class="n">compflow</span><span class="p">,</span> <span class="n">bcdir</span> <span class="o">&gt;</span><span class="p">())</span>
+        <span class="n">conf</span><span class="p">.</span><span class="n">insert</span><span class="p">(</span> <span class="n">std</span><span class="o">::</span><span class="n">stoi</span><span class="p">(</span><span class="n">s</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="p">);</span>
+    <span class="p">}</span>
+
+    <span class="c1">//! Return field output going to file</span>
+    <span class="c1">//! \param[in] offset System offset specifying the position of the system of</span>
+    <span class="c1">//!   PDEs among other systems</span>
+    <span class="c1">//! \param[in] U Solution vector at recent time step</span>
+    <span class="c1">//! \return Vector of vectors to be output to file</span>
+    <span class="k">static</span> <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span> <span class="n">tk</span><span class="o">::</span><span class="n">real</span> <span class="o">&gt;</span> <span class="o">&gt;</span>
+    <span class="n">fieldOutput</span><span class="p">(</span> <span class="n">ncomp_t</span><span class="p">,</span>
+                 <span class="n">ncomp_t</span><span class="p">,</span>
+                 <span class="n">ncomp_t</span> <span class="n">offset</span><span class="p">,</span>
+                 <span class="n">tk</span><span class="o">::</span><span class="n">real</span><span class="p">,</span>
+                 <span class="n">tk</span><span class="o">::</span><span class="n">real</span><span class="p">,</span>
+                 <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span> <span class="n">tk</span><span class="o">::</span><span class="n">real</span> <span class="o">&gt;&amp;</span><span class="p">,</span>
+                 <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">array</span><span class="o">&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span> <span class="n">tk</span><span class="o">::</span><span class="n">real</span> <span class="o">&gt;</span><span class="p">,</span> <span class="mi">3</span> <span class="o">&gt;&amp;</span><span class="p">,</span>
+                 <span class="n">tk</span><span class="o">::</span><span class="n">Fields</span><span class="o">&amp;</span> <span class="n">U</span> <span class="p">)</span>
+    <span class="p">{</span>
+      <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span> <span class="n">tk</span><span class="o">::</span><span class="n">real</span> <span class="o">&gt;</span> <span class="o">&gt;</span> <span class="n">out</span><span class="p">;</span>
+      <span class="k">const</span> <span class="k">auto</span> <span class="n">r</span> <span class="o">=</span> <span class="n">U</span><span class="p">.</span><span class="n">extract</span><span class="p">(</span> <span class="mi">0</span><span class="p">,</span> <span class="n">offset</span> <span class="p">);</span>
+      <span class="k">const</span> <span class="k">auto</span> <span class="n">ru</span> <span class="o">=</span> <span class="n">U</span><span class="p">.</span><span class="n">extract</span><span class="p">(</span> <span class="mi">1</span><span class="p">,</span> <span class="n">offset</span> <span class="p">);</span>
+      <span class="k">const</span> <span class="k">auto</span> <span class="n">rv</span> <span class="o">=</span> <span class="n">U</span><span class="p">.</span><span class="n">extract</span><span class="p">(</span> <span class="mi">2</span><span class="p">,</span> <span class="n">offset</span> <span class="p">);</span>
+      <span class="k">const</span> <span class="k">auto</span> <span class="n">rw</span> <span class="o">=</span> <span class="n">U</span><span class="p">.</span><span class="n">extract</span><span class="p">(</span> <span class="mi">3</span><span class="p">,</span> <span class="n">offset</span> <span class="p">);</span>
+      <span class="k">const</span> <span class="k">auto</span> <span class="n">re</span> <span class="o">=</span> <span class="n">U</span><span class="p">.</span><span class="n">extract</span><span class="p">(</span> <span class="mi">4</span><span class="p">,</span> <span class="n">offset</span> <span class="p">);</span>
+      <span class="n">out</span><span class="p">.</span><span class="n">push_back</span><span class="p">(</span> <span class="n">r</span> <span class="p">);</span>
+      <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span> <span class="n">tk</span><span class="o">::</span><span class="n">real</span> <span class="o">&gt;</span> <span class="n">u</span> <span class="o">=</span> <span class="n">ru</span><span class="p">;</span>
+      <span class="n">std</span><span class="o">::</span><span class="n">transform</span><span class="p">(</span> <span class="n">r</span><span class="p">.</span><span class="n">begin</span><span class="p">(),</span> <span class="n">r</span><span class="p">.</span><span class="n">end</span><span class="p">(),</span> <span class="n">u</span><span class="p">.</span><span class="n">begin</span><span class="p">(),</span> <span class="n">u</span><span class="p">.</span><span class="n">begin</span><span class="p">(),</span>
+                      <span class="p">[](</span> <span class="n">tk</span><span class="o">::</span><span class="n">real</span> <span class="n">s</span><span class="p">,</span> <span class="n">tk</span><span class="o">::</span><span class="n">real</span><span class="o">&amp;</span> <span class="n">d</span> <span class="p">){</span> <span class="k">return</span> <span class="n">d</span> <span class="o">/=</span> <span class="n">s</span><span class="p">;</span> <span class="p">}</span> <span class="p">);</span>
+      <span class="n">out</span><span class="p">.</span><span class="n">push_back</span><span class="p">(</span> <span class="n">u</span> <span class="p">);</span>
+      <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span> <span class="n">tk</span><span class="o">::</span><span class="n">real</span> <span class="o">&gt;</span> <span class="n">v</span> <span class="o">=</span> <span class="n">rv</span><span class="p">;</span>
+      <span class="n">std</span><span class="o">::</span><span class="n">transform</span><span class="p">(</span> <span class="n">r</span><span class="p">.</span><span class="n">begin</span><span class="p">(),</span> <span class="n">r</span><span class="p">.</span><span class="n">end</span><span class="p">(),</span> <span class="n">v</span><span class="p">.</span><span class="n">begin</span><span class="p">(),</span> <span class="n">v</span><span class="p">.</span><span class="n">begin</span><span class="p">(),</span>
+                      <span class="p">[](</span> <span class="n">tk</span><span class="o">::</span><span class="n">real</span> <span class="n">s</span><span class="p">,</span> <span class="n">tk</span><span class="o">::</span><span class="n">real</span><span class="o">&amp;</span> <span class="n">d</span> <span class="p">){</span> <span class="k">return</span> <span class="n">d</span> <span class="o">/=</span> <span class="n">s</span><span class="p">;</span> <span class="p">}</span> <span class="p">);</span>
+      <span class="n">out</span><span class="p">.</span><span class="n">push_back</span><span class="p">(</span> <span class="n">v</span> <span class="p">);</span>
+      <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span> <span class="n">tk</span><span class="o">::</span><span class="n">real</span> <span class="o">&gt;</span> <span class="n">w</span> <span class="o">=</span> <span class="n">rw</span><span class="p">;</span>
+      <span class="n">std</span><span class="o">::</span><span class="n">transform</span><span class="p">(</span> <span class="n">r</span><span class="p">.</span><span class="n">begin</span><span class="p">(),</span> <span class="n">r</span><span class="p">.</span><span class="n">end</span><span class="p">(),</span> <span class="n">w</span><span class="p">.</span><span class="n">begin</span><span class="p">(),</span> <span class="n">w</span><span class="p">.</span><span class="n">begin</span><span class="p">(),</span>
+                      <span class="p">[](</span> <span class="n">tk</span><span class="o">::</span><span class="n">real</span> <span class="n">s</span><span class="p">,</span> <span class="n">tk</span><span class="o">::</span><span class="n">real</span><span class="o">&amp;</span> <span class="n">d</span> <span class="p">){</span> <span class="k">return</span> <span class="n">d</span> <span class="o">/=</span> <span class="n">s</span><span class="p">;</span> <span class="p">}</span> <span class="p">);</span>
+      <span class="n">out</span><span class="p">.</span><span class="n">push_back</span><span class="p">(</span> <span class="n">w</span> <span class="p">);</span>
+      <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span> <span class="n">tk</span><span class="o">::</span><span class="n">real</span> <span class="o">&gt;</span> <span class="n">E</span> <span class="o">=</span> <span class="n">re</span><span class="p">;</span>
+      <span class="n">std</span><span class="o">::</span><span class="n">transform</span><span class="p">(</span> <span class="n">r</span><span class="p">.</span><span class="n">begin</span><span class="p">(),</span> <span class="n">r</span><span class="p">.</span><span class="n">end</span><span class="p">(),</span> <span class="n">E</span><span class="p">.</span><span class="n">begin</span><span class="p">(),</span> <span class="n">E</span><span class="p">.</span><span class="n">begin</span><span class="p">(),</span>
+                      <span class="p">[](</span> <span class="n">tk</span><span class="o">::</span><span class="n">real</span> <span class="n">s</span><span class="p">,</span> <span class="n">tk</span><span class="o">::</span><span class="n">real</span><span class="o">&amp;</span> <span class="n">d</span> <span class="p">){</span> <span class="k">return</span> <span class="n">d</span> <span class="o">/=</span> <span class="n">s</span><span class="p">;</span> <span class="p">}</span> <span class="p">);</span>
+      <span class="n">out</span><span class="p">.</span><span class="n">push_back</span><span class="p">(</span> <span class="n">E</span> <span class="p">);</span>
+      <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span> <span class="n">tk</span><span class="o">::</span><span class="n">real</span> <span class="o">&gt;</span> <span class="n">p</span> <span class="o">=</span> <span class="n">r</span><span class="p">;</span>
+      <span class="n">tk</span><span class="o">::</span><span class="n">real</span> <span class="n">g</span> <span class="o">=</span> <span class="n">g_inputdeck</span><span class="p">.</span><span class="n">get</span><span class="o">&lt;</span> <span class="n">tag</span><span class="o">::</span><span class="n">param</span><span class="p">,</span> <span class="n">tag</span><span class="o">::</span><span class="n">compflow</span><span class="p">,</span> <span class="n">tag</span><span class="o">::</span><span class="n">gamma</span> <span class="o">&gt;</span><span class="p">()[</span><span class="mi">0</span><span class="p">];</span>
+      <span class="k">for</span> <span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">i</span><span class="o">&lt;</span><span class="n">p</span><span class="p">.</span><span class="n">size</span><span class="p">();</span> <span class="o">++</span><span class="n">i</span><span class="p">)</span>
+        <span class="n">p</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">g</span><span class="o">-</span><span class="mf">1.0</span><span class="p">)</span><span class="o">*</span><span class="n">r</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">*</span><span class="p">(</span><span class="n">E</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">-</span> <span class="p">(</span><span class="n">u</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">*</span><span class="n">u</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+</span> <span class="n">v</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">*</span><span class="n">v</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+</span> <span class="n">w</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">*</span><span class="n">w</span><span class="p">[</span><span class="n">i</span><span class="p">])</span><span class="o">/</span><span class="mf">2.0</span><span class="p">);</span>
+      <span class="n">out</span><span class="p">.</span><span class="n">push_back</span><span class="p">(</span> <span class="n">p</span> <span class="p">);</span>
+      <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span> <span class="n">tk</span><span class="o">::</span><span class="n">real</span> <span class="o">&gt;</span> <span class="n">T</span> <span class="o">=</span> <span class="n">r</span><span class="p">;</span>
+      <span class="n">tk</span><span class="o">::</span><span class="n">real</span> <span class="n">cv</span> <span class="o">=</span> <span class="n">g_inputdeck</span><span class="p">.</span><span class="n">get</span><span class="o">&lt;</span> <span class="n">tag</span><span class="o">::</span><span class="n">param</span><span class="p">,</span> <span class="n">tag</span><span class="o">::</span><span class="n">compflow</span><span class="p">,</span> <span class="n">tag</span><span class="o">::</span><span class="n">cv</span> <span class="o">&gt;</span><span class="p">()[</span><span class="mi">0</span><span class="p">];</span>
+      <span class="k">for</span> <span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">i</span><span class="o">&lt;</span><span class="n">T</span><span class="p">.</span><span class="n">size</span><span class="p">();</span> <span class="o">++</span><span class="n">i</span><span class="p">)</span>
+        <span class="n">T</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">cv</span><span class="o">*</span><span class="p">(</span><span class="n">E</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">-</span> <span class="p">(</span><span class="n">u</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">*</span><span class="n">u</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+</span> <span class="n">v</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">*</span><span class="n">v</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+</span> <span class="n">w</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">*</span><span class="n">w</span><span class="p">[</span><span class="n">i</span><span class="p">])</span><span class="o">/</span><span class="mf">2.0</span><span class="p">);</span>
+      <span class="n">out</span><span class="p">.</span><span class="n">push_back</span><span class="p">(</span> <span class="n">T</span> <span class="p">);</span>
+      <span class="k">return</span> <span class="n">out</span><span class="p">;</span>
+    <span class="p">}</span>
+
+    <span class="c1">//! Return names of integral variables to be output to diagnostics file</span>
+    <span class="c1">//! \return Vector of strings labelling integral variables output</span>
+    <span class="k">static</span> <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="o">&gt;</span> <span class="n">names</span><span class="p">(</span> <span class="n">ncomp_t</span> <span class="p">)</span>
+    <span class="p">{</span> <span class="k">return</span> <span class="p">{</span> <span class="s">&quot;r&quot;</span><span class="p">,</span> <span class="s">&quot;ru&quot;</span><span class="p">,</span> <span class="s">&quot;rv&quot;</span><span class="p">,</span> <span class="s">&quot;rw&quot;</span><span class="p">,</span> <span class="s">&quot;re&quot;</span> <span class="p">};</span> <span class="p">}</span>
+
+   <span class="k">static</span> <span class="n">ctr</span><span class="o">::</span><span class="n">ProblemType</span> <span class="n">type</span><span class="p">()</span> <span class="k">noexcept</span>
+   <span class="p">{</span> <span class="k">return</span> <span class="n">ctr</span><span class="o">::</span><span class="n">ProblemType</span><span class="o">::</span><span class="n">USER_DEFINED</span><span class="p">;</span> <span class="p">}</span>
+<span class="p">};</span>
+<span class="p">}</span> <span class="c1">// inciter::</span>
+
+<span class="cp">#endif </span><span class="c1">// MultiMatProblemUserDefined_h</span></pre>
       </div>
     </div>
   </div>
@@ -94,7 +254,7 @@
   <div class="m-container">
     <div class="m-row">
       <div class="m-col-l-10 m-push-l-1">
-        <p>Quinoa docs, part of the <a href="http://quinoacomputing.org/">Quinoa project</a>. Copyright © J. Bakosi 2012&ndash;2015, Los Alamos National Security, LLC, 2016&ndash;2018, <a href="https://www.triadns.org/">Triad National Security, LLC,</a> 2019. Generated on Saturday, Jun 01, 2019 based on <a href="https://github.com/quinoacomputing/quinoa/commit/f6aabe7">f6aabe7</a> by <a href="http://doxygen.org/">Doxygen</a> and <a href="http://mcss.mosra.cz/">m.css</a>. Contact us via <a href="https://github.com/quinoacomputing/quinoa/">GitHub</a>, <a href="mailto:quinoa@lanl.gov">Email</a> or <a href="https://gitter.im/quinoacomputing/quinoa">Gitter</a>.</p>
+        <p>Quinoa docs, part of the <a href="http://quinoacomputing.org/">Quinoa project</a>. Copyright © J. Bakosi 2012&ndash;2015, Los Alamos National Security, LLC, 2016&ndash;2018, <a href="https://www.triadns.org/">Triad National Security, LLC,</a> 2019. Generated on Sunday, Jun 02, 2019 based on <a href="https://github.com/quinoacomputing/quinoa/commit/d674c55">d674c55</a> by <a href="http://doxygen.org/">Doxygen</a> and <a href="http://mcss.mosra.cz/">m.css</a>. Contact us via <a href="https://github.com/quinoacomputing/quinoa/">GitHub</a>, <a href="mailto:quinoa@lanl.gov">Email</a> or <a href="https://gitter.im/quinoacomputing/quinoa">Gitter</a>.</p>
       </div>
     </div>
   </div>
