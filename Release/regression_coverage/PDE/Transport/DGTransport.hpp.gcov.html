@@ -24,21 +24,21 @@
           </tr>
           <tr>
             <td class="headerItem">Commit:</td>
-            <td class="headerValue"><a href="https://github.com/quinoacomputing/quinoa/commit/411eb88">Quinoa_v0.2-3219-g411eb88</a></td>
+            <td class="headerValue"><a href="https://github.com/quinoacomputing/quinoa/commit/f5bbdb9">Quinoa_v0.2-3239-gf5bbdb9</a></td>
             <td></td>
             <td class="headerItem">Lines:</td>
-            <td class="headerCovTableEntry">74</td>
-            <td class="headerCovTableEntry">75</td>
-            <td class="headerCovTableEntryHi">98.7 %</td>
+            <td class="headerCovTableEntry">90</td>
+            <td class="headerCovTableEntry">91</td>
+            <td class="headerCovTableEntryHi">98.9 %</td>
           </tr>
           <tr>
             <td class="headerItem">Date:</td>
-            <td class="headerValue">2019-07-09 06:13:16</td>
+            <td class="headerValue">2019-07-29 17:20:47</td>
             <td></td>
             <td class="headerItem">Functions:</td>
-            <td class="headerCovTableEntry">28</td>
-            <td class="headerCovTableEntry">44</td>
-            <td class="headerCovTableEntryLo">63.6 %</td>
+            <td class="headerCovTableEntry">29</td>
+            <td class="headerCovTableEntry">48</td>
+            <td class="headerCovTableEntryLo">60.4 %</td>
           </tr>
           <tr>
             <td class="headerItem">Legend:</td>
@@ -52,9 +52,9 @@
 </td>
             <td></td>
             <td class="headerItem">Branches:</td>
-            <td class="headerCovTableEntry">73</td>
-            <td class="headerCovTableEntry">144</td>
-            <td class="headerCovTableEntryLo">50.7 %</td>
+            <td class="headerCovTableEntry">83</td>
+            <td class="headerCovTableEntry">166</td>
+            <td class="headerCovTableEntryLo">50.0 %</td>
           </tr>
           <tr><td><img src="../../glass.png" width=3 height=3 alt=""></td></tr>
         </table>
@@ -107,397 +107,459 @@
 <span class="lineNum">      33 </span>                :            : #include &quot;Integrate/Boundary.hpp&quot;
 <span class="lineNum">      34 </span>                :            : #include &quot;Integrate/Volume.hpp&quot;
 <span class="lineNum">      35 </span>                :            : #include &quot;Integrate/Riemann/Upwind.hpp&quot;
-<span class="lineNum">      36 </span>                :            : 
-<span class="lineNum">      37 </span>                :            : namespace inciter {
-<span class="lineNum">      38 </span>                :            : 
-<span class="lineNum">      39 </span>                :            : extern ctr::InputDeck g_inputdeck;
-<span class="lineNum">      40 </span>                :            : 
-<span class="lineNum">      41 </span>                :            : namespace dg {
-<span class="lineNum">      42 </span>                :            : 
-<span class="lineNum">      43 </span>                :            : //! \brief Transport equation used polymorphically with tk::DGPDE
-<span class="lineNum">      44 </span>                :            : //! \details The template argument(s) specify policies and are used to configure
-<span class="lineNum">      45 </span>                :            : //!   the behavior of the class. The policies are:
-<span class="lineNum">      46 </span>                :            : //!   - Physics - physics configuration, see PDE/Transport/Physics.h
-<span class="lineNum">      47 </span>                :            : //!   - Problem - problem configuration, see PDE/Transport/Problem.h
-<span class="lineNum">      48 </span>                :            : //! \note The default physics is DGAdvection, set in
-<span class="lineNum">      49 </span>                :            : //!    inciter::deck::check_transport()
-<span class="lineNum">      50 </span>                :            : template&lt; class Physics, class Problem &gt;
-<span class="lineNum">      51 </span>                :            : class Transport {
-<span class="lineNum">      52 </span>                :            : 
-<span class="lineNum">      53 </span>                :            :   private:
-<span class="lineNum">      54 </span>                :            :     using ncomp_t = kw::ncomp::info::expect::type;
-<span class="lineNum">      55 </span>                :            :     using bcconf_t = kw::sideset::info::expect::type;
-<span class="lineNum">      56 </span>                :            :     using eq = tag::transport;
-<span class="lineNum">      57 </span>                :            : 
-<span class="lineNum">      58 </span>                :            :     //! Extract BC configuration ignoring if BC not specified
-<span class="lineNum">      59 </span>                :            :     //! \param[in] c Equation system index (among multiple systems configured)
-<span class="lineNum">      60 </span>                :            :     //! \return Vector of BC config of type bcconf_t used to apply BCs for all
-<span class="lineNum">      61 </span>                :            :     //!   scalar components this Transport eq system is configured for
-<span class="lineNum">      62 </span>                :            :     //! \note A more preferable way of catching errors such as this function
-<span class="lineNum">      63 </span>                :            :     //!   hides is during parsing, so that we don't even get here if BCs are not
-<span class="lineNum">      64 </span>                :            :     //!   correctly specified. For now we simply ignore if BCs are not
-<span class="lineNum">      65 </span>                :            :     //!   specified by allowing empty BC vectors from the user input.
-<span class="lineNum">      66 </span>                :            :     template&lt; typename bctag &gt;
-<span class="lineNum">      67 </span>                :            :     std::vector&lt; bcconf_t &gt;
-<span class="lineNum">      68 </span>                :            :     config( ncomp_t c ) {
-<span class="lineNum">      69 </span>                :            :       std::vector&lt; bcconf_t &gt; bc;
-<span class="lineNum">      70 </span>                :            :       const auto&amp; v = g_inputdeck.get&lt; tag::param, eq, bctag &gt;();
-<span class="lineNum">      71 </span>                :            :       if (v.size() &gt; c) bc = v[c];
-<span class="lineNum">      72 </span>                :            :       return bc;
-<span class="lineNum">      73 </span>                :            :     }
-<span class="lineNum">      74 </span>                :            : 
-<span class="lineNum">      75 </span>                :            :   public:
-<a name="76"><span class="lineNum">      76 </span>                :            :     //! Constructor</a>
-<span class="lineNum">      77 </span>                :            :     //! \param[in] c Equation system index (among multiple systems configured)
-<span class="lineNum">      78 </span>                :<span class="lineCov">        410 :     explicit Transport( ncomp_t c ) :</span>
-<span class="lineNum">      79 </span>                :            :       m_physics( Physics() ),
-<span class="lineNum">      80 </span>                :            :       m_problem( Problem() ),
-<span class="lineNum">      81 </span>                :            :       m_system( c ),
-<span class="lineNum">      82 </span>                :            :       m_ncomp(
-<span class="lineNum">      83 </span>                :            :         g_inputdeck.get&lt; tag::component &gt;().get&lt; eq &gt;().at(c) ),
-<span class="lineNum">      84 </span>                :            :       m_offset(
-<span class="lineNum">      85 </span>                :            :         g_inputdeck.get&lt; tag::component &gt;().offset&lt; eq &gt;(c) ),
-<span class="lineNum">      86 </span>                :            :       m_bcextrapolate( config&lt; tag::bcextrapolate &gt;( c ) ),
-<span class="lineNum">      87 </span>                :            :       m_bcinlet( config&lt; tag::bcinlet &gt;( c ) ),
-<span class="lineNum">      88 </span>                :            :       m_bcoutlet( config&lt; tag::bcoutlet &gt;( c ) ),
-<span class="lineNum">      89 </span>[<span class="branchNoCov" title="Branch 0 was not taken"> - </span><span class="branchCov" title="Branch 1 was taken 410 times"> + </span>][<span class="branchCov" title="Branch 2 was taken 410 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineCov">        820 :       m_bcdir( config&lt; tag::bcdir &gt;( c ) )</span>
-<span class="lineNum">         </span>[<span class="branchCov" title="Branch 4 was taken 410 times"> + </span><span class="branchNoCov" title="Branch 5 was not taken"> - </span>][<span class="branchCov" title="Branch 6 was taken 410 times"> + </span><span class="branchNoCov" title="Branch 7 was not taken"> - </span>]
-<span class="lineNum">      90 </span>                :            :     {
-<span class="lineNum">      91 </span>        [<span class="branchNoCov" title="Branch 0 was not taken"> - </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineNoCov">          0 :       m_problem.errchk( m_system, m_ncomp );</span>
-<span class="lineNum">      92 </span>                :<span class="lineCov">        410 :     }</span>
-<span class="lineNum">      93 </span>                :            : 
-<span class="lineNum">      94 </span>                :            :     //! Initalize the transport equations for DG
-<span class="lineNum">      95 </span>                :            :     //! \param[in] L Element mass matrix
-<span class="lineNum">      96 </span>                :            :     //! \param[in] inpoel Element-node connectivity
-<span class="lineNum">      97 </span>                :            :     //! \param[in] coord Array of nodal coordinates
-<span class="lineNum">      98 </span>                :            :     //! \param[in,out] unk Array of unknowns
-<a name="99"><span class="lineNum">      99 </span>                :            :     //! \param[in] t Physical time</a>
-<span class="lineNum">     100 </span>                :            :     //! \param[in] nielem Number of internal elements
-<span class="lineNum">     101 </span>        [<span class="branchCov" title="Branch 0 was taken 1429 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">       1429 :     void initialize( const tk::Fields&amp; L,</span>
-<span class="lineNum">     102 </span>                :            :                      const std::vector&lt; std::size_t &gt;&amp; inpoel,
-<span class="lineNum">     103 </span>                :            :                      const tk::UnsMesh::Coords&amp; coord,
-<span class="lineNum">     104 </span>                :            :                      tk::Fields&amp; unk,
-<span class="lineNum">     105 </span>                :            :                      tk::real t,
-<span class="lineNum">     106 </span>                :            :                      const std::size_t nielem ) const
-<span class="lineNum">     107 </span>                :            :     {
-<span class="lineNum">     108 </span>        [<span class="branchCov" title="Branch 0 was taken 1429 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">       1429 :       tk::initialize( m_system, m_ncomp, m_offset, L, inpoel, coord,</span>
-<span class="lineNum">     109 </span>                :            :                       Problem::solution, unk, t, nielem );
-<span class="lineNum">     110 </span>                :<span class="lineCov">       1429 :     }</span>
-<span class="lineNum">     111 </span>                :            : 
-<span class="lineNum">     112 </span>                :            :     //! Compute the left hand side mass matrix
-<span class="lineNum">     113 </span>                :            :     //! \param[in] geoElem Element geometry array
-<span class="lineNum">     114 </span>                :            :     //! \param[in,out] l Block diagonal mass matrix
-<span class="lineNum">     115 </span>                :            :     void lhs( const tk::Fields&amp; geoElem, tk::Fields&amp; l ) const {
-<span class="lineNum">     116 </span>                :<span class="lineCov">       1537 :       tk::mass( m_ncomp, m_offset, geoElem, l );</span>
-<span class="lineNum">     117 </span>                :            :     }
-<span class="lineNum">     118 </span>                :            : 
-<span class="lineNum">     119 </span>                :            :     //! Compute right hand side
-<span class="lineNum">     120 </span>                :            :     //! \param[in] t Physical time
-<span class="lineNum">     121 </span>                :            :     //! \param[in] geoFace Face geometry array
-<span class="lineNum">     122 </span>                :            :     //! \param[in] geoElem Element geometry array
-<span class="lineNum">     123 </span>                :            :     //! \param[in] fd Face connectivity and boundary conditions object
-<span class="lineNum">     124 </span>                :            :     //! \param[in] inpoel Element-node connectivity
-<span class="lineNum">     125 </span>                :            :     //! \param[in] coord Array of nodal coordinates
-<span class="lineNum">     126 </span>                :            :     //! \param[in] U Solution vector at recent time step
-<a name="127"><span class="lineNum">     127 </span>                :            :     //! \param[in] ndofel Vector of local number of degrees of freedom</a>
-<span class="lineNum">     128 </span>                :            :     //! \param[in,out] R Right-hand side vector computed
-<span class="lineNum">     129 </span>                :<span class="lineCov">      79680 :     void rhs( tk::real t,</span>
-<span class="lineNum">     130 </span>                :            :               const tk::Fields&amp; geoFace,
-<span class="lineNum">     131 </span>                :            :               const tk::Fields&amp; geoElem,
-<span class="lineNum">     132 </span>                :            :               const inciter::FaceData&amp; fd,
-<span class="lineNum">     133 </span>                :            :               const std::vector&lt; std::size_t &gt;&amp; inpoel,
-<span class="lineNum">     134 </span>                :            :               const tk::UnsMesh::Coords&amp; coord,
-<span class="lineNum">     135 </span>                :            :               const tk::Fields&amp; U,
-<span class="lineNum">     136 </span>                :            :               const std::vector&lt; std::size_t &gt;&amp; ndofel,
-<span class="lineNum">     137 </span>                :            :               tk::Fields&amp; R ) const
-<span class="lineNum">     138 </span>                :            :     {
-<span class="lineNum">     139 </span>                :<span class="lineCov">      79680 :       const auto ndof = g_inputdeck.get&lt; tag::discr, tag::ndof &gt;();</span>
-<span class="lineNum">     140 </span>                :<span class="lineCov">      79680 :       const auto rdof = g_inputdeck.get&lt; tag::discr, tag::rdof &gt;();</span>
-<span class="lineNum">     141 </span>                :            : 
-<span class="lineNum">     142 </span>                :            :       Assert( U.nunk() == R.nunk(), &quot;Number of unknowns in solution &quot;
-<span class="lineNum">     143 </span>                :            :               &quot;vector and right-hand side at recent time step incorrect&quot; );
-<span class="lineNum">     144 </span>                :            :       Assert( U.nprop() == ndof*m_ncomp &amp;&amp; R.nprop() == ndof*m_ncomp,
-<span class="lineNum">     145 </span>                :            :               &quot;Number of components in solution and right-hand side vector &quot; 
-<span class="lineNum">     146 </span>                :            :               &quot;must equal &quot;+ std::to_string(ndof*m_ncomp) );
-<span class="lineNum">     147 </span>                :            :       Assert( inpoel.size()/4 == U.nunk(), &quot;Connectivity inpoel has incorrect &quot;
-<span class="lineNum">     148 </span>                :            :               &quot;size&quot; );
-<span class="lineNum">     149 </span>                :            :       Assert( fd.Inpofa().size()/3 == fd.Esuf().size()/2,
-<span class="lineNum">     150 </span>                :            :               &quot;Mismatch in inpofa size&quot; );
+<span class="lineNum">      36 </span>                :            : #include &quot;Reconstruction.hpp&quot;
+<span class="lineNum">      37 </span>                :            : 
+<span class="lineNum">      38 </span>                :            : namespace inciter {
+<span class="lineNum">      39 </span>                :            : 
+<span class="lineNum">      40 </span>                :            : extern ctr::InputDeck g_inputdeck;
+<span class="lineNum">      41 </span>                :            : 
+<span class="lineNum">      42 </span>                :            : namespace dg {
+<span class="lineNum">      43 </span>                :            : 
+<span class="lineNum">      44 </span>                :            : //! \brief Transport equation used polymorphically with tk::DGPDE
+<span class="lineNum">      45 </span>                :            : //! \details The template argument(s) specify policies and are used to configure
+<span class="lineNum">      46 </span>                :            : //!   the behavior of the class. The policies are:
+<span class="lineNum">      47 </span>                :            : //!   - Physics - physics configuration, see PDE/Transport/Physics.h
+<span class="lineNum">      48 </span>                :            : //!   - Problem - problem configuration, see PDE/Transport/Problem.h
+<span class="lineNum">      49 </span>                :            : //! \note The default physics is DGAdvection, set in
+<span class="lineNum">      50 </span>                :            : //!    inciter::deck::check_transport()
+<span class="lineNum">      51 </span>                :            : template&lt; class Physics, class Problem &gt;
+<span class="lineNum">      52 </span>                :            : class Transport {
+<span class="lineNum">      53 </span>                :            : 
+<span class="lineNum">      54 </span>                :            :   private:
+<span class="lineNum">      55 </span>                :            :     using ncomp_t = kw::ncomp::info::expect::type;
+<span class="lineNum">      56 </span>                :            :     using bcconf_t = kw::sideset::info::expect::type;
+<span class="lineNum">      57 </span>                :            :     using eq = tag::transport;
+<span class="lineNum">      58 </span>                :            : 
+<span class="lineNum">      59 </span>                :            :     //! Extract BC configuration ignoring if BC not specified
+<span class="lineNum">      60 </span>                :            :     //! \param[in] c Equation system index (among multiple systems configured)
+<span class="lineNum">      61 </span>                :            :     //! \return Vector of BC config of type bcconf_t used to apply BCs for all
+<span class="lineNum">      62 </span>                :            :     //!   scalar components this Transport eq system is configured for
+<span class="lineNum">      63 </span>                :            :     //! \note A more preferable way of catching errors such as this function
+<span class="lineNum">      64 </span>                :            :     //!   hides is during parsing, so that we don't even get here if BCs are not
+<span class="lineNum">      65 </span>                :            :     //!   correctly specified. For now we simply ignore if BCs are not
+<span class="lineNum">      66 </span>                :            :     //!   specified by allowing empty BC vectors from the user input.
+<span class="lineNum">      67 </span>                :            :     template&lt; typename bctag &gt;
+<span class="lineNum">      68 </span>                :            :     std::vector&lt; bcconf_t &gt;
+<span class="lineNum">      69 </span>                :            :     config( ncomp_t c ) {
+<span class="lineNum">      70 </span>                :            :       std::vector&lt; bcconf_t &gt; bc;
+<span class="lineNum">      71 </span>                :            :       const auto&amp; v = g_inputdeck.get&lt; tag::param, eq, bctag &gt;();
+<span class="lineNum">      72 </span>                :            :       if (v.size() &gt; c) bc = v[c];
+<span class="lineNum">      73 </span>                :            :       return bc;
+<span class="lineNum">      74 </span>                :            :     }
+<span class="lineNum">      75 </span>                :            : 
+<span class="lineNum">      76 </span>                :            :   public:
+<a name="77"><span class="lineNum">      77 </span>                :            :     //! Constructor</a>
+<span class="lineNum">      78 </span>                :            :     //! \param[in] c Equation system index (among multiple systems configured)
+<span class="lineNum">      79 </span>                :<span class="lineCov">        422 :     explicit Transport( ncomp_t c ) :</span>
+<span class="lineNum">      80 </span>                :            :       m_physics( Physics() ),
+<span class="lineNum">      81 </span>                :            :       m_problem( Problem() ),
+<span class="lineNum">      82 </span>                :            :       m_system( c ),
+<span class="lineNum">      83 </span>                :            :       m_ncomp(
+<span class="lineNum">      84 </span>                :            :         g_inputdeck.get&lt; tag::component &gt;().get&lt; eq &gt;().at(c) ),
+<span class="lineNum">      85 </span>                :            :       m_offset(
+<span class="lineNum">      86 </span>                :            :         g_inputdeck.get&lt; tag::component &gt;().offset&lt; eq &gt;(c) ),
+<span class="lineNum">      87 </span>                :            :       m_bcextrapolate( config&lt; tag::bcextrapolate &gt;( c ) ),
+<span class="lineNum">      88 </span>                :            :       m_bcinlet( config&lt; tag::bcinlet &gt;( c ) ),
+<span class="lineNum">      89 </span>                :            :       m_bcoutlet( config&lt; tag::bcoutlet &gt;( c ) ),
+<span class="lineNum">      90 </span>[<span class="branchNoCov" title="Branch 0 was not taken"> - </span><span class="branchCov" title="Branch 1 was taken 422 times"> + </span>][<span class="branchCov" title="Branch 2 was taken 422 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineCov">        844 :       m_bcdir( config&lt; tag::bcdir &gt;( c ) )</span>
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 4 was taken 422 times"> + </span><span class="branchNoCov" title="Branch 5 was not taken"> - </span>][<span class="branchCov" title="Branch 6 was taken 422 times"> + </span><span class="branchNoCov" title="Branch 7 was not taken"> - </span>]
+<span class="lineNum">      91 </span>                :            :     {
+<span class="lineNum">      92 </span>        [<span class="branchNoCov" title="Branch 0 was not taken"> - </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineNoCov">          0 :       m_problem.errchk( m_system, m_ncomp );</span>
+<span class="lineNum">      93 </span>                :<span class="lineCov">        422 :     }</span>
+<span class="lineNum">      94 </span>                :            : 
+<span class="lineNum">      95 </span>                :            :     //! Initalize the transport equations for DG
+<span class="lineNum">      96 </span>                :            :     //! \param[in] L Element mass matrix
+<span class="lineNum">      97 </span>                :            :     //! \param[in] inpoel Element-node connectivity
+<span class="lineNum">      98 </span>                :            :     //! \param[in] coord Array of nodal coordinates
+<span class="lineNum">      99 </span>                :            :     //! \param[in,out] unk Array of unknowns
+<a name="100"><span class="lineNum">     100 </span>                :            :     //! \param[in] t Physical time</a>
+<span class="lineNum">     101 </span>                :            :     //! \param[in] nielem Number of internal elements
+<span class="lineNum">     102 </span>        [<span class="branchCov" title="Branch 0 was taken 1474 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">       1474 :     void initialize( const tk::Fields&amp; L,</span>
+<span class="lineNum">     103 </span>                :            :                      const std::vector&lt; std::size_t &gt;&amp; inpoel,
+<span class="lineNum">     104 </span>                :            :                      const tk::UnsMesh::Coords&amp; coord,
+<span class="lineNum">     105 </span>                :            :                      tk::Fields&amp; unk,
+<span class="lineNum">     106 </span>                :            :                      tk::real t,
+<span class="lineNum">     107 </span>                :            :                      const std::size_t nielem ) const
+<span class="lineNum">     108 </span>                :            :     {
+<span class="lineNum">     109 </span>        [<span class="branchCov" title="Branch 0 was taken 1474 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">       1474 :       tk::initialize( m_system, m_ncomp, m_offset, L, inpoel, coord,</span>
+<span class="lineNum">     110 </span>                :            :                       Problem::solution, unk, t, nielem );
+<span class="lineNum">     111 </span>                :<span class="lineCov">       1474 :     }</span>
+<span class="lineNum">     112 </span>                :            : 
+<span class="lineNum">     113 </span>                :            :     //! Compute the left hand side mass matrix
+<span class="lineNum">     114 </span>                :            :     //! \param[in] geoElem Element geometry array
+<span class="lineNum">     115 </span>                :            :     //! \param[in,out] l Block diagonal mass matrix
+<span class="lineNum">     116 </span>                :            :     void lhs( const tk::Fields&amp; geoElem, tk::Fields&amp; l ) const {
+<span class="lineNum">     117 </span>                :<span class="lineCov">       1582 :       tk::mass( m_ncomp, m_offset, geoElem, l );</span>
+<span class="lineNum">     118 </span>                :            :     }
+<span class="lineNum">     119 </span>                :            : 
+<span class="lineNum">     120 </span>                :            :     //! Reconstruct second-order solution from first-order
+<span class="lineNum">     121 </span>                :            :     //! \param[in] t Physical time
+<span class="lineNum">     122 </span>                :            :     //! \param[in] geoFace Face geometry array
+<span class="lineNum">     123 </span>                :            :     //! \param[in] geoElem Element geometry array
+<span class="lineNum">     124 </span>                :            :     //! \param[in] fd Face connectivity and boundary conditions object
+<span class="lineNum">     125 </span>                :            :     //! \param[in] inpoel Element-node connectivity
+<a name="126"><span class="lineNum">     126 </span>                :            :     //! \param[in] coord Array of nodal coordinates</a>
+<span class="lineNum">     127 </span>                :            :     //! \param[in,out] U Solution vector at recent time step
+<span class="lineNum">     128 </span>                :<span class="lineCov">       6750 :     void reconstruct( tk::real t,</span>
+<span class="lineNum">     129 </span>                :            :                       const tk::Fields&amp; geoFace,
+<span class="lineNum">     130 </span>                :            :                       const tk::Fields&amp; geoElem,
+<span class="lineNum">     131 </span>                :            :                       const inciter::FaceData&amp; fd,
+<span class="lineNum">     132 </span>                :            :                       const std::vector&lt; std::size_t &gt;&amp; inpoel,
+<span class="lineNum">     133 </span>                :            :                       const tk::UnsMesh::Coords&amp; coord,
+<span class="lineNum">     134 </span>                :            :                       tk::Fields&amp; U ) const
+<span class="lineNum">     135 </span>                :            :     {
+<span class="lineNum">     136 </span>                :<span class="lineCov">       6750 :       const auto rdof = g_inputdeck.get&lt; tag::discr, tag::rdof &gt;();</span>
+<span class="lineNum">     137 </span>                :            : 
+<span class="lineNum">     138 </span>                :            :       Assert( U.nprop() == rdof*m_ncomp, &quot;Number of components in solution &quot;
+<span class="lineNum">     139 </span>                :            :               &quot;vector must equal &quot;+ std::to_string(rdof*m_ncomp) );
+<span class="lineNum">     140 </span>                :            :       Assert( inpoel.size()/4 == U.nunk(), &quot;Connectivity inpoel has incorrect &quot;
+<span class="lineNum">     141 </span>                :            :               &quot;size&quot; );
+<span class="lineNum">     142 </span>                :            :       Assert( fd.Inpofa().size()/3 == fd.Esuf().size()/2,
+<span class="lineNum">     143 </span>                :            :               &quot;Mismatch in inpofa size&quot; );
+<span class="lineNum">     144 </span>                :            : 
+<span class="lineNum">     145 </span>                :            :       // supported boundary condition types and associated state functions
+<span class="lineNum">     146 </span>[<span class="branchNoCov" title="Branch 0 was not taken"> - </span><span class="branchCov" title="Branch 1 was taken 6750 times"> + </span>][<span class="branchNoCov" title="Branch 2 was not taken"> - </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineCov">      40500 :       std::vector&lt; std::pair&lt; std::vector&lt; bcconf_t &gt;, tk::StateFn &gt; &gt; bctypes{{</span>
+<span class="lineNum">     147 </span>                :<span class="lineCov">       6750 :         { m_bcextrapolate, Extrapolate },</span>
+<span class="lineNum">     148 </span>                :<span class="lineCov">       6750 :         { m_bcinlet, Inlet },</span>
+<span class="lineNum">     149 </span>                :<span class="lineCov">       6750 :         { m_bcoutlet, Outlet },</span>
+<span class="lineNum">     150 </span>                :<span class="lineCov">       6750 :         { m_bcdir, Dirichlet } }};</span>
 <span class="lineNum">     151 </span>                :            : 
-<span class="lineNum">     152 </span>                :            :       // set rhs to zero
-<span class="lineNum">     153 </span>                :            :       R.fill(0.0);
-<span class="lineNum">     154 </span>                :            : 
-<span class="lineNum">     155 </span>                :            :       // empty vector for non-conservative terms. This vector is unused for
-<span class="lineNum">     156 </span>                :            :       // linear transport since, there are no non-conservative terms in the
-<span class="lineNum">     157 </span>                :            :       // system of PDEs.
-<span class="lineNum">     158 </span>                :<span class="lineCov">      79680 :       std::vector&lt; std::vector &lt; tk::real &gt; &gt; riemannDeriv;</span>
-<span class="lineNum">     159 </span>                :            : 
-<span class="lineNum">     160 </span>                :            :       // supported boundary condition types and associated state functions
-<span class="lineNum">     161 </span>[<span class="branchNoCov" title="Branch 0 was not taken"> - </span><span class="branchCov" title="Branch 1 was taken 79680 times"> + </span>][<span class="branchCov" title="Branch 2 was taken 79680 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineCov">     557760 :       std::vector&lt; std::pair&lt; std::vector&lt; bcconf_t &gt;, tk::StateFn &gt; &gt; bctypes{{</span>
-<span class="lineNum">         </span>        [<span class="branchNoCov" title="Branch 4 was not taken"> - </span><span class="branchNoCov" title="Branch 5 was not taken"> - </span>]
-<span class="lineNum">     162 </span>        [<span class="branchCov" title="Branch 0 was taken 79680 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">      79680 :         { m_bcextrapolate, Extrapolate },</span>
-<span class="lineNum">     163 </span>        [<span class="branchCov" title="Branch 0 was taken 79680 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">      79680 :         { m_bcinlet, Inlet },</span>
-<span class="lineNum">     164 </span>        [<span class="branchCov" title="Branch 0 was taken 79680 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">      79680 :         { m_bcoutlet, Outlet },</span>
-<span class="lineNum">     165 </span>        [<span class="branchCov" title="Branch 0 was taken 79680 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">      79680 :         { m_bcdir, Dirichlet } }};</span>
-<span class="lineNum">     166 </span>                :            : 
-<span class="lineNum">     167 </span>                :            :       // compute internal surface flux integrals
-<span class="lineNum">     168 </span>[<span class="branchCov" title="Branch 0 was taken 79680 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>][<span class="branchCov" title="Branch 2 was taken 79680 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineCov">     159360 :       tk::surfInt( m_system, m_ncomp, 1, m_offset, ndof, rdof, inpoel, coord,</span>
-<span class="lineNum">         </span>        [<span class="branchNoCov" title="Branch 4 was not taken"> - </span><span class="branchNoCov" title="Branch 5 was not taken"> - </span>]
-<span class="lineNum">     169 </span>                :            :                    fd, geoFace, Upwind::flux, Problem::prescribedVelocity, U,
-<span class="lineNum">     170 </span>                :            :                    ndofel, R, riemannDeriv );
+<span class="lineNum">     152 </span>                :            :       // allocate and initialize matrix and vector for reconstruction
+<span class="lineNum">     153 </span>                :            :       std::vector&lt; std::array&lt; std::array&lt; tk::real, 3 &gt;, 3 &gt; &gt;
+<span class="lineNum">     154 </span>        [<span class="branchCov" title="Branch 0 was taken 6750 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">       6750 :         lhs_ls( U.nunk(), {{ {{0.0, 0.0, 0.0}},</span>
+<span class="lineNum">     155 </span>                :            :                              {{0.0, 0.0, 0.0}},
+<span class="lineNum">     156 </span>                :            :                              {{0.0, 0.0, 0.0}} }} );
+<span class="lineNum">     157 </span>                :            :       std::vector&lt; std::vector&lt; std::array&lt; tk::real, 3 &gt; &gt; &gt;
+<span class="lineNum">     158 </span>[<span class="branchCov" title="Branch 0 was taken 6750 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>][<span class="branchNoCov" title="Branch 2 was not taken"> - </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineCov">      13500 :         rhs_ls( U.nunk(), std::vector&lt; std::array&lt; tk::real, 3 &gt; &gt;</span>
+<span class="lineNum">     159 </span>        [<span class="branchCov" title="Branch 0 was taken 6750 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">       6750 :           ( m_ncomp,</span>
+<span class="lineNum">     160 </span>                :            :             {{ 0.0, 0.0, 0.0 }} ) );
+<span class="lineNum">     161 </span>                :            : 
+<span class="lineNum">     162 </span>                :            :       // reconstruct x,y,z-derivatives of unknowns
+<span class="lineNum">     163 </span>        [<span class="branchCov" title="Branch 0 was taken 6750 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">       6750 :       tk::intLeastSq_P0P1( m_ncomp, m_offset, rdof, fd, geoElem, U,</span>
+<span class="lineNum">     164 </span>                :            :                            lhs_ls, rhs_ls );
+<span class="lineNum">     165 </span>                :            : 
+<span class="lineNum">     166 </span>                :            :       // compute boundary surface flux integrals
+<span class="lineNum">     167 </span>        [<span class="branchCov" title="Branch 0 was taken 27000 times"> + </span><span class="branchCov" title="Branch 1 was taken 6750 times"> + </span>]:<span class="lineCov">      33750 :       for (const auto&amp; b : bctypes)</span>
+<span class="lineNum">     168 </span>                :<span class="lineCov">      27000 :         tk::bndLeastSq_P0P1( m_system, m_ncomp, m_offset, rdof, b.first,</span>
+<span class="lineNum">     169 </span>        [<span class="branchCov" title="Branch 0 was taken 27000 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">      27000 :                              fd, geoFace, geoElem, t, b.second, U, lhs_ls,</span>
+<span class="lineNum">     170 </span>                :            :                              rhs_ls );
 <span class="lineNum">     171 </span>                :            : 
-<span class="lineNum">     172 </span>        [<span class="branchCov" title="Branch 0 was taken 32625 times"> + </span><span class="branchCov" title="Branch 1 was taken 47055 times"> + </span>]:<span class="lineCov">      79680 :       if(ndof &gt; 1)</span>
-<span class="lineNum">     173 </span>                :            :         // compute volume integrals
-<span class="lineNum">     174 </span>[<span class="branchCov" title="Branch 0 was taken 32625 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>][<span class="branchCov" title="Branch 2 was taken 32625 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineCov">      97875 :         tk::volInt( m_system, m_ncomp, m_offset, ndof, inpoel, coord, geoElem,</span>
+<span class="lineNum">     172 </span>                :            :       // solve 3x3 least-squares system
+<span class="lineNum">     173 </span>        [<span class="branchCov" title="Branch 0 was taken 6750 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">       6750 :       tk::solveLeastSq_P0P1( m_ncomp, m_offset, rdof, lhs_ls, rhs_ls, U );</span>
+<span class="lineNum">     174 </span>                :            : 
+<span class="lineNum">     175 </span>                :            :       // transform reconstructed derivatives to Dubiner dofs
+<span class="lineNum">     176 </span>        [<span class="branchCov" title="Branch 0 was taken 6750 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">       6750 :       tk::transform_P0P1( m_ncomp, m_offset, rdof, fd.Esuel().size()/4, inpoel,</span>
+<span class="lineNum">     177 </span>                :            :                           coord, U );
+<span class="lineNum">     178 </span>                :<span class="lineCov">       6750 :     }</span>
+<span class="lineNum">     179 </span>                :            : 
+<span class="lineNum">     180 </span>                :            :     //! Compute right hand side
+<span class="lineNum">     181 </span>                :            :     //! \param[in] t Physical time
+<span class="lineNum">     182 </span>                :            :     //! \param[in] geoFace Face geometry array
+<span class="lineNum">     183 </span>                :            :     //! \param[in] geoElem Element geometry array
+<span class="lineNum">     184 </span>                :            :     //! \param[in] fd Face connectivity and boundary conditions object
+<span class="lineNum">     185 </span>                :            :     //! \param[in] inpoel Element-node connectivity
+<span class="lineNum">     186 </span>                :            :     //! \param[in] coord Array of nodal coordinates
+<span class="lineNum">     187 </span>                :            :     //! \param[in] U Solution vector at recent time step
+<a name="188"><span class="lineNum">     188 </span>                :            :     //! \param[in] ndofel Vector of local number of degrees of freedom</a>
+<span class="lineNum">     189 </span>                :            :     //! \param[in,out] R Right-hand side vector computed
+<span class="lineNum">     190 </span>                :<span class="lineCov">      86430 :     void rhs( tk::real t,</span>
+<span class="lineNum">     191 </span>                :            :               const tk::Fields&amp; geoFace,
+<span class="lineNum">     192 </span>                :            :               const tk::Fields&amp; geoElem,
+<span class="lineNum">     193 </span>                :            :               const inciter::FaceData&amp; fd,
+<span class="lineNum">     194 </span>                :            :               const std::vector&lt; std::size_t &gt;&amp; inpoel,
+<span class="lineNum">     195 </span>                :            :               const tk::UnsMesh::Coords&amp; coord,
+<span class="lineNum">     196 </span>                :            :               const tk::Fields&amp; U,
+<span class="lineNum">     197 </span>                :            :               const std::vector&lt; std::size_t &gt;&amp; ndofel,
+<span class="lineNum">     198 </span>                :            :               tk::Fields&amp; R ) const
+<span class="lineNum">     199 </span>                :            :     {
+<span class="lineNum">     200 </span>                :<span class="lineCov">      86430 :       const auto ndof = g_inputdeck.get&lt; tag::discr, tag::ndof &gt;();</span>
+<span class="lineNum">     201 </span>                :<span class="lineCov">      86430 :       const auto rdof = g_inputdeck.get&lt; tag::discr, tag::rdof &gt;();</span>
+<span class="lineNum">     202 </span>                :            : 
+<span class="lineNum">     203 </span>                :            :       Assert( U.nunk() == R.nunk(), &quot;Number of unknowns in solution &quot;
+<span class="lineNum">     204 </span>                :            :               &quot;vector and right-hand side at recent time step incorrect&quot; );
+<span class="lineNum">     205 </span>                :            :       Assert( U.nprop() == rdof*m_ncomp, &quot;Number of components in solution &quot;
+<span class="lineNum">     206 </span>                :            :               &quot;vector must equal &quot;+ std::to_string(rdof*m_ncomp) );
+<span class="lineNum">     207 </span>                :            :       Assert( R.nprop() == ndof*m_ncomp, &quot;Number of components in right-hand &quot;
+<span class="lineNum">     208 </span>                :            :               &quot;side vector must equal &quot;+ std::to_string(ndof*m_ncomp) );
+<span class="lineNum">     209 </span>                :            :       Assert( inpoel.size()/4 == U.nunk(), &quot;Connectivity inpoel has incorrect &quot;
+<span class="lineNum">     210 </span>                :            :               &quot;size&quot; );
+<span class="lineNum">     211 </span>                :            :       Assert( fd.Inpofa().size()/3 == fd.Esuf().size()/2,
+<span class="lineNum">     212 </span>                :            :               &quot;Mismatch in inpofa size&quot; );
+<span class="lineNum">     213 </span>                :            : 
+<span class="lineNum">     214 </span>                :            :       // set rhs to zero
+<span class="lineNum">     215 </span>                :            :       R.fill(0.0);
+<span class="lineNum">     216 </span>                :            : 
+<span class="lineNum">     217 </span>                :            :       // empty vector for non-conservative terms. This vector is unused for
+<span class="lineNum">     218 </span>                :            :       // linear transport since, there are no non-conservative terms in the
+<span class="lineNum">     219 </span>                :            :       // system of PDEs.
+<span class="lineNum">     220 </span>                :<span class="lineCov">      86430 :       std::vector&lt; std::vector &lt; tk::real &gt; &gt; riemannDeriv;</span>
+<span class="lineNum">     221 </span>                :            : 
+<span class="lineNum">     222 </span>                :            :       // supported boundary condition types and associated state functions
+<span class="lineNum">     223 </span>[<span class="branchNoCov" title="Branch 0 was not taken"> - </span><span class="branchCov" title="Branch 1 was taken 86430 times"> + </span>][<span class="branchCov" title="Branch 2 was taken 86430 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineCov">     605010 :       std::vector&lt; std::pair&lt; std::vector&lt; bcconf_t &gt;, tk::StateFn &gt; &gt; bctypes{{</span>
 <span class="lineNum">         </span>        [<span class="branchNoCov" title="Branch 4 was not taken"> - </span><span class="branchNoCov" title="Branch 5 was not taken"> - </span>]
-<span class="lineNum">     175 </span>                :            :                     flux, Problem::prescribedVelocity, U, ndofel, R );
-<span class="lineNum">     176 </span>                :            : 
-<span class="lineNum">     177 </span>                :            :       // compute boundary surface flux integrals
-<span class="lineNum">     178 </span>        [<span class="branchCov" title="Branch 0 was taken 318720 times"> + </span><span class="branchCov" title="Branch 1 was taken 79680 times"> + </span>]:<span class="lineCov">     398400 :       for (const auto&amp; b : bctypes)</span>
-<span class="lineNum">     179 </span>[<span class="branchCov" title="Branch 0 was taken 318720 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>][<span class="branchCov" title="Branch 2 was taken 318720 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineCov">     956160 :         tk::bndSurfInt( m_system, m_ncomp, 1, m_offset, ndof, rdof, b.first, fd,</span>
+<span class="lineNum">     224 </span>        [<span class="branchCov" title="Branch 0 was taken 86430 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">      86430 :         { m_bcextrapolate, Extrapolate },</span>
+<span class="lineNum">     225 </span>        [<span class="branchCov" title="Branch 0 was taken 86430 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">      86430 :         { m_bcinlet, Inlet },</span>
+<span class="lineNum">     226 </span>        [<span class="branchCov" title="Branch 0 was taken 86430 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">      86430 :         { m_bcoutlet, Outlet },</span>
+<span class="lineNum">     227 </span>        [<span class="branchCov" title="Branch 0 was taken 86430 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">      86430 :         { m_bcdir, Dirichlet } }};</span>
+<span class="lineNum">     228 </span>                :            : 
+<span class="lineNum">     229 </span>                :            :       // compute internal surface flux integrals
+<span class="lineNum">     230 </span>[<span class="branchCov" title="Branch 0 was taken 86430 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>][<span class="branchCov" title="Branch 2 was taken 86430 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineCov">     172860 :       tk::surfInt( m_system, m_ncomp, 1, m_offset, ndof, rdof, inpoel, coord,</span>
 <span class="lineNum">         </span>        [<span class="branchNoCov" title="Branch 4 was not taken"> - </span><span class="branchNoCov" title="Branch 5 was not taken"> - </span>]
-<span class="lineNum">     180 </span>                :            :           geoFace, inpoel, coord, t, Upwind::flux, Problem::prescribedVelocity,
-<span class="lineNum">     181 </span>        [<span class="branchCov" title="Branch 0 was taken 318720 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">     318720 :           b.second, U, ndofel, R, riemannDeriv );</span>
-<span class="lineNum">     182 </span>                :<span class="lineCov">      79680 :     }</span>
-<span class="lineNum">     183 </span>                :            : 
-<span class="lineNum">     184 </span>                :            :     //! Compute the minimum time step size
-<span class="lineNum">     185 </span>                :            : //     //! \param[in] U Solution vector at recent time step
-<span class="lineNum">     186 </span>                :            : //     //! \param[in] coord Mesh node coordinates
-<span class="lineNum">     187 </span>                :            : //     //! \param[in] inpoel Mesh element connectivity
-<span class="lineNum">     188 </span>                :            :     //! \return Minimum time step size
-<span class="lineNum">     189 </span>                :            :     tk::real dt( const std::array&lt; std::vector&lt; tk::real &gt;, 3 &gt;&amp; /*coord*/,
-<span class="lineNum">     190 </span>                :            :                  const std::vector&lt; std::size_t &gt;&amp; /*inpoel*/,
-<span class="lineNum">     191 </span>                :            :                  const inciter::FaceData&amp; /*fd*/,
-<span class="lineNum">     192 </span>                :            :                  const tk::Fields&amp; /*geoFace*/,
-<span class="lineNum">     193 </span>                :            :                  const tk::Fields&amp; /*geoElem*/,
-<span class="lineNum">     194 </span>                :            :                  const std::vector&lt; std::size_t &gt;&amp; /*ndofel*/,
-<span class="lineNum">     195 </span>                :            :                  const tk::Fields&amp; /*U*/ ) const
-<span class="lineNum">     196 </span>                :            :     {
-<span class="lineNum">     197 </span>                :            :       tk::real mindt = std::numeric_limits&lt; tk::real &gt;::max();
-<span class="lineNum">     198 </span>                :            :       return mindt;
-<span class="lineNum">     199 </span>                :            :     }
-<span class="lineNum">     200 </span>                :            : 
-<span class="lineNum">     201 </span>                :            :     //! \brief Query all side set IDs the user has configured for all components
-<span class="lineNum">     202 </span>                :            :     //!   in this PDE system
-<span class="lineNum">     203 </span>                :            :     //! \param[in,out] conf Set of unique side set IDs to add to
-<span class="lineNum">     204 </span>                :            :     void side( std::unordered_set&lt; int &gt;&amp; conf ) const
-<span class="lineNum">     205 </span>                :<span class="lineCov">         85 :     { m_problem.side( conf ); }</span>
-<span class="lineNum">     206 </span>                :            : 
-<span class="lineNum">     207 </span>                :            :     //! Return field names to be output to file
-<span class="lineNum">     208 </span>                :            :     //! \return Vector of strings labelling fields output in file
-<a name="209"><span class="lineNum">     209 </span>                :            :     //! \details This functions should be written in conjunction with</a>
-<span class="lineNum">     210 </span>                :            :     //!   fieldOutput(), which provides the vector of fields to be output
-<span class="lineNum">     211 </span>                :<span class="lineCov">       4740 :     std::vector&lt; std::string &gt; fieldNames() const {</span>
-<span class="lineNum">     212 </span>        [<span class="branchNoCov" title="Branch 0 was not taken"> - </span><span class="branchCov" title="Branch 1 was taken 4740 times"> + </span>]:<span class="lineCov">       4740 :       const auto pref = g_inputdeck.get&lt; tag::pref, tag::pref &gt;();</span>
-<span class="lineNum">     213 </span>                :            :       std::vector&lt; std::string &gt; n;
-<span class="lineNum">     214 </span>                :            :       const auto&amp; depvar =
-<span class="lineNum">     215 </span>        [<span class="branchNoCov" title="Branch 0 was not taken"> - </span><span class="branchCov" title="Branch 1 was taken 4740 times"> + </span>]:<span class="lineCov">       4740 :       g_inputdeck.get&lt; tag::param, eq, tag::depvar &gt;().at(m_system);</span>
-<span class="lineNum">     216 </span>                :            :       // will output numerical solution for all components
-<span class="lineNum">     217 </span>        [<span class="branchCov" title="Branch 0 was taken 4740 times"> + </span><span class="branchCov" title="Branch 1 was taken 4740 times"> + </span>]:<span class="lineCov">       9480 :       for (ncomp_t c=0; c&lt;m_ncomp; ++c)</span>
-<span class="lineNum">     218 </span>[<span class="branchCov" title="Branch 0 was taken 4740 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>][<span class="branchCov" title="Branch 2 was taken 4740 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineCov">       9480 :         n.push_back( depvar + std::to_string(c) + &quot;_numerical&quot; );</span>
-<span class="lineNum">         </span>[<span class="branchNoCov" title="Branch 4 was not taken"> - </span><span class="branchCov" title="Branch 5 was taken 4740 times"> + </span>][<span class="branchNoCov" title="Branch 6 was not taken"> - </span><span class="branchCov" title="Branch 7 was taken 4740 times"> + </span>]
-<span class="lineNum">         </span>[<span class="branchNoCov" title="Branch 8 was not taken"> - </span><span class="branchNoCov" title="Branch 9 was not taken"> - </span>][<span class="branchNoCov" title="Branch 10 was not taken"> - </span><span class="branchNoCov" title="Branch 11 was not taken"> - </span>]
-<span class="lineNum">     219 </span>                :            :       // will output analytic solution for all components
-<span class="lineNum">     220 </span>        [<span class="branchCov" title="Branch 0 was taken 4740 times"> + </span><span class="branchCov" title="Branch 1 was taken 4740 times"> + </span>]:<span class="lineCov">       9480 :       for (ncomp_t c=0; c&lt;m_ncomp; ++c)</span>
-<span class="lineNum">     221 </span>[<span class="branchCov" title="Branch 0 was taken 4740 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>][<span class="branchCov" title="Branch 2 was taken 4740 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineCov">       9480 :         n.push_back( depvar + std::to_string(c) + &quot;_analytic&quot; );</span>
-<span class="lineNum">         </span>[<span class="branchNoCov" title="Branch 4 was not taken"> - </span><span class="branchCov" title="Branch 5 was taken 4740 times"> + </span>][<span class="branchNoCov" title="Branch 6 was not taken"> - </span><span class="branchCov" title="Branch 7 was taken 4740 times"> + </span>]
-<span class="lineNum">         </span>[<span class="branchNoCov" title="Branch 8 was not taken"> - </span><span class="branchNoCov" title="Branch 9 was not taken"> - </span>][<span class="branchNoCov" title="Branch 10 was not taken"> - </span><span class="branchNoCov" title="Branch 11 was not taken"> - </span>]
-<span class="lineNum">     222 </span>                :            :       // will output error for all components
-<span class="lineNum">     223 </span>        [<span class="branchCov" title="Branch 0 was taken 4740 times"> + </span><span class="branchCov" title="Branch 1 was taken 4740 times"> + </span>]:<span class="lineCov">       9480 :       for (ncomp_t c=0; c&lt;m_ncomp; ++c)</span>
-<span class="lineNum">     224 </span>[<span class="branchCov" title="Branch 0 was taken 4740 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>][<span class="branchCov" title="Branch 2 was taken 4740 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineCov">       9480 :         n.push_back( depvar + std::to_string(c) + &quot;_error&quot; );</span>
-<span class="lineNum">         </span>[<span class="branchNoCov" title="Branch 4 was not taken"> - </span><span class="branchCov" title="Branch 5 was taken 4740 times"> + </span>][<span class="branchNoCov" title="Branch 6 was not taken"> - </span><span class="branchCov" title="Branch 7 was taken 4740 times"> + </span>]
-<span class="lineNum">         </span>[<span class="branchNoCov" title="Branch 8 was not taken"> - </span><span class="branchNoCov" title="Branch 9 was not taken"> - </span>][<span class="branchNoCov" title="Branch 10 was not taken"> - </span><span class="branchNoCov" title="Branch 11 was not taken"> - </span>]
-<span class="lineNum">     225 </span>        [<span class="branchCov" title="Branch 0 was taken 246 times"> + </span><span class="branchCov" title="Branch 1 was taken 4494 times"> + </span>]:<span class="lineCov">       4740 :       if(pref)           // Adaptive DG on</span>
-<span class="lineNum">     226 </span>        [<span class="branchCov" title="Branch 0 was taken 246 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">        492 :         n.push_back( &quot;ndof&quot; );</span>
-<span class="lineNum">     227 </span>                :<span class="lineCov">       4740 :       return n;</span>
-<span class="lineNum">     228 </span>                :            :     }
-<span class="lineNum">     229 </span>                :            : 
-<span class="lineNum">     230 </span>                :            :     //!
-<span class="lineNum">     231 </span>                :            :     std::vector&lt; std::vector&lt; tk::real &gt; &gt;
-<span class="lineNum">     232 </span>                :            :     avgElemToNode( const std::vector&lt; std::size_t &gt;&amp; /*inpoel*/,
-<span class="lineNum">     233 </span>                :            :                    const tk::UnsMesh::Coords&amp; /*coord*/,
-<span class="lineNum">     234 </span>                :            :                    const tk::Fields&amp; /*geoElem*/,
-<span class="lineNum">     235 </span>                :            :                    const tk::Fields&amp; /*U*/ ) const
-<span class="lineNum">     236 </span>                :            :     {
-<span class="lineNum">     237 </span>                :            :       std::vector&lt; std::vector&lt; tk::real &gt; &gt; out;
-<span class="lineNum">     238 </span>                :            :       return out;
-<span class="lineNum">     239 </span>                :            :     }
-<span class="lineNum">     240 </span>                :            : 
-<span class="lineNum">     241 </span>                :            :     //! Return field output going to file
-<span class="lineNum">     242 </span>                :            :     //! \param[in] t Physical time
-<span class="lineNum">     243 </span>                :            :     //! \param[in] geoElem Element geometry array
-<span class="lineNum">     244 </span>                :            :     //! \param[in,out] U Solution vector at recent time step
-<span class="lineNum">     245 </span>                :            :     //! \return Vector of vectors to be output to file
-<span class="lineNum">     246 </span>                :            :     //! \details This functions should be written in conjunction with names(),
-<span class="lineNum">     247 </span>                :            :     //!   which provides the vector of field names
-<a name="248"><span class="lineNum">     248 </span>                :            :     //! \note U is overwritten</a>
-<span class="lineNum">     249 </span>                :            :     std::vector&lt; std::vector&lt; tk::real &gt; &gt;
-<span class="lineNum">     250 </span>                :<span class="lineCov">       4740 :     fieldOutput( tk::real t,</span>
-<span class="lineNum">     251 </span>                :            :                  const tk::Fields&amp; geoElem,
-<span class="lineNum">     252 </span>                :            :                  tk::Fields&amp; U ) const
-<span class="lineNum">     253 </span>                :            :     {
-<span class="lineNum">     254 </span>                :<span class="lineCov">       4740 :       const auto rdof = g_inputdeck.get&lt; tag::discr, tag::rdof &gt;();</span>
-<span class="lineNum">     255 </span>                :            :       Assert( geoElem.nunk() == U.nunk(), &quot;Size mismatch&quot; );
-<span class="lineNum">     256 </span>                :            :       std::vector&lt; std::vector&lt; tk::real &gt; &gt; out;
-<span class="lineNum">     257 </span>                :            :       // will output numerical solution for all components
-<span class="lineNum">     258 </span>        [<span class="branchCov" title="Branch 0 was taken 4740 times"> + </span><span class="branchCov" title="Branch 1 was taken 4740 times"> + </span>]:<span class="lineCov">       9480 :       for (ncomp_t c=0; c&lt;m_ncomp; ++c)</span>
-<span class="lineNum">     259 </span>        [<span class="branchCov" title="Branch 0 was taken 4740 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">       9480 :         out.push_back( U.extract( c*rdof, m_offset ) );</span>
-<span class="lineNum">     260 </span>                :            :       // evaluate analytic solution at time t
-<span class="lineNum">     261 </span>                :            :       auto E = U;
-<span class="lineNum">     262 </span>        [<span class="branchCov" title="Branch 0 was taken 4740 times"> + </span><span class="branchCov" title="Branch 1 was taken 6373900 times"> + </span>]:<span class="lineCov">    6378646 :       for (std::size_t e=0; e&lt;U.nunk(); ++e)</span>
-<span class="lineNum">     263 </span>                :            :       {
-<span class="lineNum">     264 </span>        [<span class="branchCov" title="Branch 0 was taken 6373900 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">    6373900 :         auto s = Problem::solution( m_system, m_ncomp, geoElem(e,1,0),</span>
-<span class="lineNum">     265 </span>                :            :                                     geoElem(e,2,0), geoElem(e,3,0), t );
-<span class="lineNum">     266 </span>        [<span class="branchCov" title="Branch 0 was taken 6373900 times"> + </span><span class="branchCov" title="Branch 1 was taken 6373900 times"> + </span>]:<span class="lineCov">   12747798 :         for (ncomp_t c=0; c&lt;m_ncomp; ++c)</span>
-<span class="lineNum">     267 </span>                :<span class="lineCov">    6373900 :           E( e, c*rdof, m_offset ) = s[c];</span>
-<span class="lineNum">     268 </span>                :            :       }
-<span class="lineNum">     269 </span>                :            :       // will output analytic solution for all components
-<span class="lineNum">     270 </span>        [<span class="branchCov" title="Branch 0 was taken 4740 times"> + </span><span class="branchCov" title="Branch 1 was taken 4740 times"> + </span>]:<span class="lineCov">       9480 :       for (ncomp_t c=0; c&lt;m_ncomp; ++c)</span>
-<span class="lineNum">     271 </span>[<span class="branchCov" title="Branch 0 was taken 4740 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>][<span class="branchNoCov" title="Branch 2 was not taken"> - </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineCov">       9480 :         out.push_back( E.extract( c*rdof, m_offset ) );</span>
-<span class="lineNum">     272 </span>                :            :       // will output error for all components
-<span class="lineNum">     273 </span>        [<span class="branchCov" title="Branch 0 was taken 4740 times"> + </span><span class="branchCov" title="Branch 1 was taken 4740 times"> + </span>]:<span class="lineCov">       9480 :       for (ncomp_t c=0; c&lt;m_ncomp; ++c) {</span>
-<span class="lineNum">     274 </span>                :<span class="lineCov">       4740 :         auto mark = c*rdof;</span>
-<span class="lineNum">     275 </span>        [<span class="branchCov" title="Branch 0 was taken 4740 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">       4740 :         auto u = U.extract( mark, m_offset );</span>
-<span class="lineNum">     276 </span>        [<span class="branchCov" title="Branch 0 was taken 4740 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">       4740 :         auto e = E.extract( mark, m_offset );</span>
-<span class="lineNum">     277 </span>        [<span class="branchCov" title="Branch 0 was taken 6373900 times"> + </span><span class="branchCov" title="Branch 1 was taken 4740 times"> + </span>]:<span class="lineCov">    6378646 :         for (std::size_t i=0; i&lt;u.size(); ++i)</span>
-<span class="lineNum">     278 </span>                :<span class="lineCov">    6373900 :           e[i] = std::pow( e[i] - u[i], 2.0 ) * geoElem(i,0,0);</span>
-<span class="lineNum">     279 </span>        [<span class="branchCov" title="Branch 0 was taken 4740 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">       4740 :         out.push_back( e );</span>
-<span class="lineNum">     280 </span>                :            :       }
-<span class="lineNum">     281 </span>                :<span class="lineCov">       4740 :       return out;</span>
-<span class="lineNum">     282 </span>                :            :     }
-<span class="lineNum">     283 </span>                :            : 
-<a name="284"><span class="lineNum">     284 </span>                :            :     //! Return names of integral variables to be output to diagnostics file</a>
-<span class="lineNum">     285 </span>                :            :     //! \return Vector of strings labelling integral variables output
-<span class="lineNum">     286 </span>        [<span class="branchNoCov" title="Branch 0 was not taken"> - </span><span class="branchCov" title="Branch 1 was taken 85 times"> + </span>]:<span class="lineCov">         85 :     std::vector&lt; std::string &gt; names() const {</span>
-<span class="lineNum">     287 </span>                :            :       std::vector&lt; std::string &gt; n;
-<span class="lineNum">     288 </span>                :            :       const auto&amp; depvar =
-<span class="lineNum">     289 </span>        [<span class="branchNoCov" title="Branch 0 was not taken"> - </span><span class="branchCov" title="Branch 1 was taken 85 times"> + </span>]:<span class="lineCov">         85 :       g_inputdeck.get&lt; tag::param, eq, tag::depvar &gt;().at(m_system);</span>
-<span class="lineNum">     290 </span>                :            :       // construct the name of the numerical solution for all components
-<span class="lineNum">     291 </span>        [<span class="branchCov" title="Branch 0 was taken 85 times"> + </span><span class="branchCov" title="Branch 1 was taken 85 times"> + </span>]:<span class="lineCov">        170 :       for (ncomp_t c=0; c&lt;m_ncomp; ++c)</span>
-<span class="lineNum">     292 </span>[<span class="branchCov" title="Branch 0 was taken 85 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>][<span class="branchNoCov" title="Branch 2 was not taken"> - </span><span class="branchCov" title="Branch 3 was taken 85 times"> + </span>]:<span class="lineCov">        170 :         n.push_back( depvar + std::to_string(c) );</span>
+<span class="lineNum">     231 </span>                :            :                    fd, geoFace, Upwind::flux, Problem::prescribedVelocity, U,
+<span class="lineNum">     232 </span>                :            :                    ndofel, R, riemannDeriv );
+<span class="lineNum">     233 </span>                :            : 
+<span class="lineNum">     234 </span>        [<span class="branchCov" title="Branch 0 was taken 32625 times"> + </span><span class="branchCov" title="Branch 1 was taken 53805 times"> + </span>]:<span class="lineCov">      86430 :       if(ndof &gt; 1)</span>
+<span class="lineNum">     235 </span>                :            :         // compute volume integrals
+<span class="lineNum">     236 </span>[<span class="branchCov" title="Branch 0 was taken 32625 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>][<span class="branchCov" title="Branch 2 was taken 32625 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineCov">      97875 :         tk::volInt( m_system, m_ncomp, m_offset, ndof, inpoel, coord, geoElem,</span>
 <span class="lineNum">         </span>        [<span class="branchNoCov" title="Branch 4 was not taken"> - </span><span class="branchNoCov" title="Branch 5 was not taken"> - </span>]
-<span class="lineNum">     293 </span>                :<span class="lineCov">         85 :       return n;</span>
-<span class="lineNum">     294 </span>                :            :     }
-<span class="lineNum">     295 </span>                :            : 
-<span class="lineNum">     296 </span>                :            :     //! Return analytic solution (if defined by Problem) at xi, yi, zi, t
-<span class="lineNum">     297 </span>                :            :     //! \param[in] xi X-coordinate at which to evaluate the analytic solution
-<span class="lineNum">     298 </span>                :            :     //! \param[in] yi Y-coordinate at which to evaluate the analytic solution
-<span class="lineNum">     299 </span>                :            :     //! \param[in] zi Z-coordinate at which to evaluate the analytic solution
-<span class="lineNum">     300 </span>                :            :     //! \param[in] t Physical time at which to evaluate the analytic solution
-<span class="lineNum">     301 </span>                :            :     //! \return Vector of analytic solution at given spatial location and time
-<span class="lineNum">     302 </span>                :            :     std::vector&lt; tk::real &gt;
-<span class="lineNum">     303 </span>                :            :     analyticSolution( tk::real xi, tk::real yi, tk::real zi, tk::real t ) const
-<span class="lineNum">     304 </span>                :<span class="lineCov">   17635100 :     { return Problem::solution( m_system, m_ncomp, xi, yi, zi, t ); }</span>
-<span class="lineNum">     305 </span>                :            : 
-<span class="lineNum">     306 </span>                :            :   private:
-<span class="lineNum">     307 </span>                :            :     const Physics m_physics;            //!&lt; Physics policy
-<span class="lineNum">     308 </span>                :            :     const Problem m_problem;            //!&lt; Problem policy
-<span class="lineNum">     309 </span>                :            :     const ncomp_t m_system;             //!&lt; Equation system index
-<span class="lineNum">     310 </span>                :            :     const ncomp_t m_ncomp;              //!&lt; Number of components in this PDE
-<span class="lineNum">     311 </span>                :            :     const ncomp_t m_offset;             //!&lt; Offset this PDE operates from
-<span class="lineNum">     312 </span>                :            :     //! Extrapolation BC configuration
-<span class="lineNum">     313 </span>                :            :     const std::vector&lt; bcconf_t &gt; m_bcextrapolate;
-<span class="lineNum">     314 </span>                :            :     //! Inlet BC configuration
-<span class="lineNum">     315 </span>                :            :     const std::vector&lt; bcconf_t &gt; m_bcinlet;
-<span class="lineNum">     316 </span>                :            :     //! Outlet BC configuration
-<span class="lineNum">     317 </span>                :            :     const std::vector&lt; bcconf_t &gt; m_bcoutlet;
-<span class="lineNum">     318 </span>                :            :     //! Dirichlet BC configuration
-<span class="lineNum">     319 </span>                :            :     const std::vector&lt; bcconf_t &gt; m_bcdir;
-<span class="lineNum">     320 </span>                :            : 
-<span class="lineNum">     321 </span>                :            :     //! Evaluate physical flux function for this PDE system
-<span class="lineNum">     322 </span>                :            :     //! \param[in] ncomp Number of scalar components in this PDE system
-<span class="lineNum">     323 </span>                :            :     //! \param[in] ugp Numerical solution at the Gauss point at which to
-<span class="lineNum">     324 </span>                :            :     //!   evaluate the flux
-<span class="lineNum">     325 </span>                :            :     //! \param[in] v Prescribed velocity evaluated at the Gauss point at which
-<span class="lineNum">     326 </span>                :            :     //!   to evaluate the flux
-<span class="lineNum">     327 </span>                :            :     //! \return Flux vectors for all components in this PDE system
-<a name="328"><span class="lineNum">     328 </span>                :            :     //! \note The function signature must follow tk::FluxFn</a>
-<span class="lineNum">     329 </span>                :            :     static tk::FluxFn::result_type
-<span class="lineNum">     330 </span>                :<span class="lineCov">   36156100 :     flux( ncomp_t,</span>
-<span class="lineNum">     331 </span>                :            :           ncomp_t ncomp,
-<span class="lineNum">     332 </span>                :            :           const std::vector&lt; tk::real &gt;&amp; ugp,
-<span class="lineNum">     333 </span>                :            :           const std::vector&lt; std::array&lt; tk::real, 3 &gt; &gt;&amp; v )
-<span class="lineNum">     334 </span>                :            :     {
-<span class="lineNum">     335 </span>                :            :       Assert( ugp.size() == ncomp, &quot;Size mismatch&quot; );
-<span class="lineNum">     336 </span>                :            :       Assert( v.size() == ncomp, &quot;Size mismatch&quot; );
-<span class="lineNum">     337 </span>                :            : 
-<span class="lineNum">     338 </span>                :<span class="lineCov">   36156100 :       std::vector&lt; std::array&lt; tk::real, 3 &gt; &gt; fl( ugp.size() );</span>
-<span class="lineNum">     339 </span>                :            : 
-<span class="lineNum">     340 </span>        [<span class="branchCov" title="Branch 0 was taken 36156100 times"> + </span><span class="branchCov" title="Branch 1 was taken 36156100 times"> + </span>]:<span class="lineCov">   72312000 :       for (ncomp_t c=0; c&lt;ncomp; ++c)</span>
-<span class="lineNum">     341 </span>                :<span class="lineCov">   36156100 :         fl[c] = {{ v[c][0] * ugp[c], v[c][1] * ugp[c], v[c][2] * ugp[c] }};</span>
-<span class="lineNum">     342 </span>                :            : 
-<span class="lineNum">     343 </span>                :<span class="lineCov">   36156100 :       return fl;</span>
+<span class="lineNum">     237 </span>                :            :                     flux, Problem::prescribedVelocity, U, ndofel, R );
+<span class="lineNum">     238 </span>                :            : 
+<span class="lineNum">     239 </span>                :            :       // compute boundary surface flux integrals
+<span class="lineNum">     240 </span>        [<span class="branchCov" title="Branch 0 was taken 345720 times"> + </span><span class="branchCov" title="Branch 1 was taken 86430 times"> + </span>]:<span class="lineCov">     432150 :       for (const auto&amp; b : bctypes)</span>
+<span class="lineNum">     241 </span>[<span class="branchCov" title="Branch 0 was taken 345720 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>][<span class="branchCov" title="Branch 2 was taken 345720 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineCov">    1037160 :         tk::bndSurfInt( m_system, m_ncomp, 1, m_offset, ndof, rdof, b.first, fd,</span>
+<span class="lineNum">         </span>        [<span class="branchNoCov" title="Branch 4 was not taken"> - </span><span class="branchNoCov" title="Branch 5 was not taken"> - </span>]
+<span class="lineNum">     242 </span>                :            :           geoFace, inpoel, coord, t, Upwind::flux, Problem::prescribedVelocity,
+<span class="lineNum">     243 </span>        [<span class="branchCov" title="Branch 0 was taken 345720 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">     345720 :           b.second, U, ndofel, R, riemannDeriv );</span>
+<span class="lineNum">     244 </span>                :<span class="lineCov">      86430 :     }</span>
+<span class="lineNum">     245 </span>                :            : 
+<span class="lineNum">     246 </span>                :            :     //! Compute the minimum time step size
+<span class="lineNum">     247 </span>                :            : //     //! \param[in] U Solution vector at recent time step
+<span class="lineNum">     248 </span>                :            : //     //! \param[in] coord Mesh node coordinates
+<span class="lineNum">     249 </span>                :            : //     //! \param[in] inpoel Mesh element connectivity
+<span class="lineNum">     250 </span>                :            :     //! \return Minimum time step size
+<span class="lineNum">     251 </span>                :            :     tk::real dt( const std::array&lt; std::vector&lt; tk::real &gt;, 3 &gt;&amp; /*coord*/,
+<span class="lineNum">     252 </span>                :            :                  const std::vector&lt; std::size_t &gt;&amp; /*inpoel*/,
+<span class="lineNum">     253 </span>                :            :                  const inciter::FaceData&amp; /*fd*/,
+<span class="lineNum">     254 </span>                :            :                  const tk::Fields&amp; /*geoFace*/,
+<span class="lineNum">     255 </span>                :            :                  const tk::Fields&amp; /*geoElem*/,
+<span class="lineNum">     256 </span>                :            :                  const std::vector&lt; std::size_t &gt;&amp; /*ndofel*/,
+<span class="lineNum">     257 </span>                :            :                  const tk::Fields&amp; /*U*/ ) const
+<span class="lineNum">     258 </span>                :            :     {
+<span class="lineNum">     259 </span>                :            :       tk::real mindt = std::numeric_limits&lt; tk::real &gt;::max();
+<span class="lineNum">     260 </span>                :            :       return mindt;
+<span class="lineNum">     261 </span>                :            :     }
+<span class="lineNum">     262 </span>                :            : 
+<span class="lineNum">     263 </span>                :            :     //! \brief Query all side set IDs the user has configured for all components
+<span class="lineNum">     264 </span>                :            :     //!   in this PDE system
+<span class="lineNum">     265 </span>                :            :     //! \param[in,out] conf Set of unique side set IDs to add to
+<span class="lineNum">     266 </span>                :            :     void side( std::unordered_set&lt; int &gt;&amp; conf ) const
+<span class="lineNum">     267 </span>                :            :     { m_problem.side( conf ); }
+<span class="lineNum">     268 </span>                :            : 
+<span class="lineNum">     269 </span>                :            :     //! Return field names to be output to file
+<span class="lineNum">     270 </span>                :            :     //! \return Vector of strings labelling fields output in file
+<a name="271"><span class="lineNum">     271 </span>                :            :     //! \details This functions should be written in conjunction with</a>
+<span class="lineNum">     272 </span>                :            :     //!   fieldOutput(), which provides the vector of fields to be output
+<span class="lineNum">     273 </span>                :<span class="lineCov">       5010 :     std::vector&lt; std::string &gt; fieldNames() const {</span>
+<span class="lineNum">     274 </span>        [<span class="branchNoCov" title="Branch 0 was not taken"> - </span><span class="branchCov" title="Branch 1 was taken 5010 times"> + </span>]:<span class="lineCov">       5010 :       const auto pref = g_inputdeck.get&lt; tag::pref, tag::pref &gt;();</span>
+<span class="lineNum">     275 </span>                :            :       std::vector&lt; std::string &gt; n;
+<span class="lineNum">     276 </span>                :            :       const auto&amp; depvar =
+<span class="lineNum">     277 </span>        [<span class="branchNoCov" title="Branch 0 was not taken"> - </span><span class="branchCov" title="Branch 1 was taken 5010 times"> + </span>]:<span class="lineCov">       5010 :       g_inputdeck.get&lt; tag::param, eq, tag::depvar &gt;().at(m_system);</span>
+<span class="lineNum">     278 </span>                :            :       // will output numerical solution for all components
+<span class="lineNum">     279 </span>        [<span class="branchCov" title="Branch 0 was taken 5010 times"> + </span><span class="branchCov" title="Branch 1 was taken 5010 times"> + </span>]:<span class="lineCov">      10020 :       for (ncomp_t c=0; c&lt;m_ncomp; ++c)</span>
+<span class="lineNum">     280 </span>[<span class="branchCov" title="Branch 0 was taken 5010 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>][<span class="branchCov" title="Branch 2 was taken 5010 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineCov">      10020 :         n.push_back( depvar + std::to_string(c) + &quot;_numerical&quot; );</span>
+<span class="lineNum">         </span>[<span class="branchNoCov" title="Branch 4 was not taken"> - </span><span class="branchCov" title="Branch 5 was taken 5010 times"> + </span>][<span class="branchNoCov" title="Branch 6 was not taken"> - </span><span class="branchCov" title="Branch 7 was taken 5010 times"> + </span>]
+<span class="lineNum">         </span>[<span class="branchNoCov" title="Branch 8 was not taken"> - </span><span class="branchNoCov" title="Branch 9 was not taken"> - </span>][<span class="branchNoCov" title="Branch 10 was not taken"> - </span><span class="branchNoCov" title="Branch 11 was not taken"> - </span>]
+<span class="lineNum">     281 </span>                :            :       // will output analytic solution for all components
+<span class="lineNum">     282 </span>        [<span class="branchCov" title="Branch 0 was taken 5010 times"> + </span><span class="branchCov" title="Branch 1 was taken 5010 times"> + </span>]:<span class="lineCov">      10020 :       for (ncomp_t c=0; c&lt;m_ncomp; ++c)</span>
+<span class="lineNum">     283 </span>[<span class="branchCov" title="Branch 0 was taken 5010 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>][<span class="branchCov" title="Branch 2 was taken 5010 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineCov">      10020 :         n.push_back( depvar + std::to_string(c) + &quot;_analytic&quot; );</span>
+<span class="lineNum">         </span>[<span class="branchNoCov" title="Branch 4 was not taken"> - </span><span class="branchCov" title="Branch 5 was taken 5010 times"> + </span>][<span class="branchNoCov" title="Branch 6 was not taken"> - </span><span class="branchCov" title="Branch 7 was taken 5010 times"> + </span>]
+<span class="lineNum">         </span>[<span class="branchNoCov" title="Branch 8 was not taken"> - </span><span class="branchNoCov" title="Branch 9 was not taken"> - </span>][<span class="branchNoCov" title="Branch 10 was not taken"> - </span><span class="branchNoCov" title="Branch 11 was not taken"> - </span>]
+<span class="lineNum">     284 </span>                :            :       // will output error for all components
+<span class="lineNum">     285 </span>        [<span class="branchCov" title="Branch 0 was taken 5010 times"> + </span><span class="branchCov" title="Branch 1 was taken 5010 times"> + </span>]:<span class="lineCov">      10020 :       for (ncomp_t c=0; c&lt;m_ncomp; ++c)</span>
+<span class="lineNum">     286 </span>[<span class="branchCov" title="Branch 0 was taken 5010 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>][<span class="branchCov" title="Branch 2 was taken 5010 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineCov">      10020 :         n.push_back( depvar + std::to_string(c) + &quot;_error&quot; );</span>
+<span class="lineNum">         </span>[<span class="branchNoCov" title="Branch 4 was not taken"> - </span><span class="branchCov" title="Branch 5 was taken 5010 times"> + </span>][<span class="branchNoCov" title="Branch 6 was not taken"> - </span><span class="branchCov" title="Branch 7 was taken 5010 times"> + </span>]
+<span class="lineNum">         </span>[<span class="branchNoCov" title="Branch 8 was not taken"> - </span><span class="branchNoCov" title="Branch 9 was not taken"> - </span>][<span class="branchNoCov" title="Branch 10 was not taken"> - </span><span class="branchNoCov" title="Branch 11 was not taken"> - </span>]
+<span class="lineNum">     287 </span>        [<span class="branchCov" title="Branch 0 was taken 246 times"> + </span><span class="branchCov" title="Branch 1 was taken 4764 times"> + </span>]:<span class="lineCov">       5010 :       if(pref)           // Adaptive DG on</span>
+<span class="lineNum">     288 </span>        [<span class="branchCov" title="Branch 0 was taken 246 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">        492 :         n.push_back( &quot;ndof&quot; );</span>
+<span class="lineNum">     289 </span>                :<span class="lineCov">       5010 :       return n;</span>
+<span class="lineNum">     290 </span>                :            :     }
+<span class="lineNum">     291 </span>                :            : 
+<span class="lineNum">     292 </span>                :            :     //!
+<span class="lineNum">     293 </span>                :            :     std::vector&lt; std::vector&lt; tk::real &gt; &gt;
+<span class="lineNum">     294 </span>                :            :     avgElemToNode( const std::vector&lt; std::size_t &gt;&amp; /*inpoel*/,
+<span class="lineNum">     295 </span>                :            :                    const tk::UnsMesh::Coords&amp; /*coord*/,
+<span class="lineNum">     296 </span>                :            :                    const tk::Fields&amp; /*geoElem*/,
+<span class="lineNum">     297 </span>                :            :                    const tk::Fields&amp; /*U*/ ) const
+<span class="lineNum">     298 </span>                :            :     {
+<span class="lineNum">     299 </span>                :            :       std::vector&lt; std::vector&lt; tk::real &gt; &gt; out;
+<span class="lineNum">     300 </span>                :            :       return out;
+<span class="lineNum">     301 </span>                :            :     }
+<span class="lineNum">     302 </span>                :            : 
+<span class="lineNum">     303 </span>                :            :     //! Return field output going to file
+<span class="lineNum">     304 </span>                :            :     //! \param[in] t Physical time
+<span class="lineNum">     305 </span>                :            :     //! \param[in] geoElem Element geometry array
+<span class="lineNum">     306 </span>                :            :     //! \param[in,out] U Solution vector at recent time step
+<span class="lineNum">     307 </span>                :            :     //! \return Vector of vectors to be output to file
+<span class="lineNum">     308 </span>                :            :     //! \details This functions should be written in conjunction with names(),
+<span class="lineNum">     309 </span>                :            :     //!   which provides the vector of field names
+<a name="310"><span class="lineNum">     310 </span>                :            :     //! \note U is overwritten</a>
+<span class="lineNum">     311 </span>                :            :     std::vector&lt; std::vector&lt; tk::real &gt; &gt;
+<span class="lineNum">     312 </span>                :<span class="lineCov">       5010 :     fieldOutput( tk::real t,</span>
+<span class="lineNum">     313 </span>                :            :                  const tk::Fields&amp; geoElem,
+<span class="lineNum">     314 </span>                :            :                  tk::Fields&amp; U ) const
+<span class="lineNum">     315 </span>                :            :     {
+<span class="lineNum">     316 </span>                :<span class="lineCov">       5010 :       const auto rdof = g_inputdeck.get&lt; tag::discr, tag::rdof &gt;();</span>
+<span class="lineNum">     317 </span>                :            :       Assert( geoElem.nunk() == U.nunk(), &quot;Size mismatch&quot; );
+<span class="lineNum">     318 </span>                :            :       std::vector&lt; std::vector&lt; tk::real &gt; &gt; out;
+<span class="lineNum">     319 </span>                :            :       // will output numerical solution for all components
+<span class="lineNum">     320 </span>        [<span class="branchCov" title="Branch 0 was taken 5010 times"> + </span><span class="branchCov" title="Branch 1 was taken 5010 times"> + </span>]:<span class="lineCov">      10020 :       for (ncomp_t c=0; c&lt;m_ncomp; ++c)</span>
+<span class="lineNum">     321 </span>        [<span class="branchCov" title="Branch 0 was taken 5010 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">      10020 :         out.push_back( U.extract( c*rdof, m_offset ) );</span>
+<span class="lineNum">     322 </span>                :            :       // evaluate analytic solution at time t
+<span class="lineNum">     323 </span>                :            :       auto E = U;
+<span class="lineNum">     324 </span>        [<span class="branchCov" title="Branch 0 was taken 5010 times"> + </span><span class="branchCov" title="Branch 1 was taken 6446650 times"> + </span>]:<span class="lineCov">    6451666 :       for (std::size_t e=0; e&lt;U.nunk(); ++e)</span>
+<span class="lineNum">     325 </span>                :            :       {
+<span class="lineNum">     326 </span>        [<span class="branchCov" title="Branch 0 was taken 6446650 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">    6446650 :         auto s = Problem::solution( m_system, m_ncomp, geoElem(e,1,0),</span>
+<span class="lineNum">     327 </span>                :            :                                     geoElem(e,2,0), geoElem(e,3,0), t );
+<span class="lineNum">     328 </span>        [<span class="branchCov" title="Branch 0 was taken 6446650 times"> + </span><span class="branchCov" title="Branch 1 was taken 6446650 times"> + </span>]:<span class="lineCov">   12893298 :         for (ncomp_t c=0; c&lt;m_ncomp; ++c)</span>
+<span class="lineNum">     329 </span>                :<span class="lineCov">    6446650 :           E( e, c*rdof, m_offset ) = s[c];</span>
+<span class="lineNum">     330 </span>                :            :       }
+<span class="lineNum">     331 </span>                :            :       // will output analytic solution for all components
+<span class="lineNum">     332 </span>        [<span class="branchCov" title="Branch 0 was taken 5010 times"> + </span><span class="branchCov" title="Branch 1 was taken 5010 times"> + </span>]:<span class="lineCov">      10020 :       for (ncomp_t c=0; c&lt;m_ncomp; ++c)</span>
+<span class="lineNum">     333 </span>[<span class="branchCov" title="Branch 0 was taken 5010 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>][<span class="branchNoCov" title="Branch 2 was not taken"> - </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineCov">      10020 :         out.push_back( E.extract( c*rdof, m_offset ) );</span>
+<span class="lineNum">     334 </span>                :            :       // will output error for all components
+<span class="lineNum">     335 </span>        [<span class="branchCov" title="Branch 0 was taken 5010 times"> + </span><span class="branchCov" title="Branch 1 was taken 5010 times"> + </span>]:<span class="lineCov">      10020 :       for (ncomp_t c=0; c&lt;m_ncomp; ++c) {</span>
+<span class="lineNum">     336 </span>                :<span class="lineCov">       5010 :         auto mark = c*rdof;</span>
+<span class="lineNum">     337 </span>        [<span class="branchCov" title="Branch 0 was taken 5010 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">       5010 :         auto u = U.extract( mark, m_offset );</span>
+<span class="lineNum">     338 </span>        [<span class="branchCov" title="Branch 0 was taken 5010 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">       5010 :         auto e = E.extract( mark, m_offset );</span>
+<span class="lineNum">     339 </span>        [<span class="branchCov" title="Branch 0 was taken 6446650 times"> + </span><span class="branchCov" title="Branch 1 was taken 5010 times"> + </span>]:<span class="lineCov">    6451666 :         for (std::size_t i=0; i&lt;u.size(); ++i)</span>
+<span class="lineNum">     340 </span>                :<span class="lineCov">    6446650 :           e[i] = std::pow( e[i] - u[i], 2.0 ) * geoElem(i,0,0);</span>
+<span class="lineNum">     341 </span>        [<span class="branchCov" title="Branch 0 was taken 5010 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">       5010 :         out.push_back( e );</span>
+<span class="lineNum">     342 </span>                :            :       }
+<span class="lineNum">     343 </span>                :<span class="lineCov">       5010 :       return out;</span>
 <span class="lineNum">     344 </span>                :            :     }
 <span class="lineNum">     345 </span>                :            : 
-<span class="lineNum">     346 </span>                :            :     //! \brief Boundary state function providing the left and right state of a
-<span class="lineNum">     347 </span>                :            :     //!   face at extrapolation boundaries
-<span class="lineNum">     348 </span>                :            :     //! \param[in] ul Left (domain-internal) state
-<span class="lineNum">     349 </span>                :            :     //! \return Left and right states for all scalar components in this PDE
-<span class="lineNum">     350 </span>                :            :     //!   system
-<a name="351"><span class="lineNum">     351 </span>                :            :     //! \note The function signature must follow tk::StateFn</a>
-<span class="lineNum">     352 </span>                :            :     static tk::StateFn::result_type
-<span class="lineNum">     353 </span>                :<span class="lineCov">   15177120 :     Extrapolate( ncomp_t, ncomp_t, const std::vector&lt; tk::real &gt;&amp; ul,</span>
-<span class="lineNum">     354 </span>                :            :                  tk::real, tk::real, tk::real, tk::real,
-<span class="lineNum">     355 </span>                :            :                  const std::array&lt; tk::real, 3 &gt;&amp; )
-<span class="lineNum">     356 </span>                :            :     {
-<span class="lineNum">     357 </span>                :<span class="lineCov">   15177120 :       return {{ ul, ul }};</span>
-<span class="lineNum">     358 </span>                :            :     }
-<span class="lineNum">     359 </span>                :            : 
-<span class="lineNum">     360 </span>                :            :     //! \brief Boundary state function providing the left and right state of a
-<span class="lineNum">     361 </span>                :            :     //!   face at extrapolation boundaries
-<span class="lineNum">     362 </span>                :            :     //! \param[in] ul Left (domain-internal) state
-<span class="lineNum">     363 </span>                :            :     //! \return Left and right states for all scalar components in this PDE
-<span class="lineNum">     364 </span>                :            :     //!   system
-<a name="365"><span class="lineNum">     365 </span>                :            :     //! \note The function signature must follow tk::StateFn</a>
-<span class="lineNum">     366 </span>                :            :     static tk::StateFn::result_type
-<span class="lineNum">     367 </span>                :<span class="lineCov">     415200 :     Inlet( ncomp_t, ncomp_t, const std::vector&lt; tk::real &gt;&amp; ul,</span>
-<span class="lineNum">     368 </span>                :            :            tk::real, tk::real, tk::real, tk::real,
-<span class="lineNum">     369 </span>                :            :            const std::array&lt; tk::real, 3 &gt;&amp; )
-<span class="lineNum">     370 </span>                :            :     {
-<span class="lineNum">     371 </span>                :<span class="lineCov">     415200 :       auto ur = ul;</span>
-<span class="lineNum">     372 </span>                :            :       std::fill( begin(ur), end(ur), 0.0 );
-<span class="lineNum">     373 </span>        [<span class="branchCov" title="Branch 0 was taken 415200 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">     415200 :       return {{ ul, std::move(ur) }};</span>
-<span class="lineNum">     374 </span>                :            :     }
-<span class="lineNum">     375 </span>                :            : 
-<span class="lineNum">     376 </span>                :            :     //! \brief Boundary state function providing the left and right state of a
-<span class="lineNum">     377 </span>                :            :     //!   face at outlet boundaries
-<span class="lineNum">     378 </span>                :            :     //! \param[in] ul Left (domain-internal) state
-<span class="lineNum">     379 </span>                :            :     //! \return Left and right states for all scalar components in this PDE
-<span class="lineNum">     380 </span>                :            :     //!   system
-<a name="381"><span class="lineNum">     381 </span>                :            :     //! \note The function signature must follow tk::StateFn</a>
-<span class="lineNum">     382 </span>                :            :     static tk::StateFn::result_type
-<span class="lineNum">     383 </span>                :<span class="lineCov">    1185600 :     Outlet( ncomp_t, ncomp_t, const std::vector&lt; tk::real &gt;&amp; ul,</span>
-<span class="lineNum">     384 </span>                :            :             tk::real, tk::real, tk::real, tk::real,
-<span class="lineNum">     385 </span>                :            :             const std::array&lt; tk::real, 3 &gt;&amp; )
-<span class="lineNum">     386 </span>                :            :     {
-<span class="lineNum">     387 </span>                :<span class="lineCov">    1185600 :       return {{ ul, ul }};</span>
-<span class="lineNum">     388 </span>                :            :     }
-<span class="lineNum">     389 </span>                :            : 
-<span class="lineNum">     390 </span>                :            :     //! \brief Boundary state function providing the left and right state of a
-<span class="lineNum">     391 </span>                :            :     //!   face at Dirichlet boundaries
-<span class="lineNum">     392 </span>                :            :     //! \param[in] system Equation system index
-<span class="lineNum">     393 </span>                :            :     //! \param[in] ncomp Number of scalar components in this PDE system
-<span class="lineNum">     394 </span>                :            :     //! \param[in] ul Left (domain-internal) state
-<span class="lineNum">     395 </span>                :            :     //! \param[in] x X-coordinate at which to compute the states
-<span class="lineNum">     396 </span>                :            :     //! \param[in] y Y-coordinate at which to compute the states
-<span class="lineNum">     397 </span>                :            :     //! \param[in] z Z-coordinate at which to compute the states
-<span class="lineNum">     398 </span>                :            :     //! \param[in] t Physical time
-<span class="lineNum">     399 </span>                :            :     //! \return Left and right states for all scalar components in this PDE
-<span class="lineNum">     400 </span>                :            :     //!   system
-<a name="401"><span class="lineNum">     401 </span>                :            :     //! \note The function signature must follow tk::StateFn</a>
-<span class="lineNum">     402 </span>                :            :     static tk::StateFn::result_type
-<span class="lineNum">     403 </span>                :<span class="lineCov">   10021860 :     Dirichlet( ncomp_t system, ncomp_t ncomp, const std::vector&lt; tk::real &gt;&amp; ul,</span>
-<span class="lineNum">     404 </span>                :            :                tk::real x, tk::real y, tk::real z, tk::real t,
-<span class="lineNum">     405 </span>                :            :                const std::array&lt; tk::real, 3 &gt;&amp; )
-<span class="lineNum">     406 </span>                :            :     {
-<span class="lineNum">     407 </span>                :<span class="lineCov">   10021860 :       return {{ ul, Problem::solution( system, ncomp, x, y, z, t ) }};</span>
-<span class="lineNum">     408 </span>                :            :     }
-<span class="lineNum">     409 </span>                :            : };
-<span class="lineNum">     410 </span>                :            : 
-<span class="lineNum">     411 </span>                :            : } // dg::
-<span class="lineNum">     412 </span>                :            : } // inciter::
-<span class="lineNum">     413 </span>                :            : 
-<span class="lineNum">     414 </span>                :            : #endif // DGTransport_h
+<a name="346"><span class="lineNum">     346 </span>                :            :     //! Return names of integral variables to be output to diagnostics file</a>
+<span class="lineNum">     347 </span>                :            :     //! \return Vector of strings labelling integral variables output
+<span class="lineNum">     348 </span>        [<span class="branchNoCov" title="Branch 0 was not taken"> - </span><span class="branchCov" title="Branch 1 was taken 88 times"> + </span>]:<span class="lineCov">         88 :     std::vector&lt; std::string &gt; names() const {</span>
+<span class="lineNum">     349 </span>                :            :       std::vector&lt; std::string &gt; n;
+<span class="lineNum">     350 </span>                :            :       const auto&amp; depvar =
+<span class="lineNum">     351 </span>        [<span class="branchNoCov" title="Branch 0 was not taken"> - </span><span class="branchCov" title="Branch 1 was taken 88 times"> + </span>]:<span class="lineCov">         88 :       g_inputdeck.get&lt; tag::param, eq, tag::depvar &gt;().at(m_system);</span>
+<span class="lineNum">     352 </span>                :            :       // construct the name of the numerical solution for all components
+<span class="lineNum">     353 </span>        [<span class="branchCov" title="Branch 0 was taken 88 times"> + </span><span class="branchCov" title="Branch 1 was taken 88 times"> + </span>]:<span class="lineCov">        176 :       for (ncomp_t c=0; c&lt;m_ncomp; ++c)</span>
+<span class="lineNum">     354 </span>[<span class="branchCov" title="Branch 0 was taken 88 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>][<span class="branchNoCov" title="Branch 2 was not taken"> - </span><span class="branchCov" title="Branch 3 was taken 88 times"> + </span>]:<span class="lineCov">        176 :         n.push_back( depvar + std::to_string(c) );</span>
+<span class="lineNum">         </span>        [<span class="branchNoCov" title="Branch 4 was not taken"> - </span><span class="branchNoCov" title="Branch 5 was not taken"> - </span>]
+<span class="lineNum">     355 </span>                :<span class="lineCov">         88 :       return n;</span>
+<span class="lineNum">     356 </span>                :            :     }
+<span class="lineNum">     357 </span>                :            : 
+<span class="lineNum">     358 </span>                :            :     //! Return analytic solution (if defined by Problem) at xi, yi, zi, t
+<span class="lineNum">     359 </span>                :            :     //! \param[in] xi X-coordinate at which to evaluate the analytic solution
+<span class="lineNum">     360 </span>                :            :     //! \param[in] yi Y-coordinate at which to evaluate the analytic solution
+<span class="lineNum">     361 </span>                :            :     //! \param[in] zi Z-coordinate at which to evaluate the analytic solution
+<span class="lineNum">     362 </span>                :            :     //! \param[in] t Physical time at which to evaluate the analytic solution
+<span class="lineNum">     363 </span>                :            :     //! \return Vector of analytic solution at given spatial location and time
+<span class="lineNum">     364 </span>                :            :     std::vector&lt; tk::real &gt;
+<span class="lineNum">     365 </span>                :            :     analyticSolution( tk::real xi, tk::real yi, tk::real zi, tk::real t ) const
+<span class="lineNum">     366 </span>                :<span class="lineCov">   17908400 :     { return Problem::solution( m_system, m_ncomp, xi, yi, zi, t ); }</span>
+<span class="lineNum">     367 </span>                :            : 
+<span class="lineNum">     368 </span>                :            :   private:
+<span class="lineNum">     369 </span>                :            :     const Physics m_physics;            //!&lt; Physics policy
+<span class="lineNum">     370 </span>                :            :     const Problem m_problem;            //!&lt; Problem policy
+<span class="lineNum">     371 </span>                :            :     const ncomp_t m_system;             //!&lt; Equation system index
+<span class="lineNum">     372 </span>                :            :     const ncomp_t m_ncomp;              //!&lt; Number of components in this PDE
+<span class="lineNum">     373 </span>                :            :     const ncomp_t m_offset;             //!&lt; Offset this PDE operates from
+<span class="lineNum">     374 </span>                :            :     //! Extrapolation BC configuration
+<span class="lineNum">     375 </span>                :            :     const std::vector&lt; bcconf_t &gt; m_bcextrapolate;
+<span class="lineNum">     376 </span>                :            :     //! Inlet BC configuration
+<span class="lineNum">     377 </span>                :            :     const std::vector&lt; bcconf_t &gt; m_bcinlet;
+<span class="lineNum">     378 </span>                :            :     //! Outlet BC configuration
+<span class="lineNum">     379 </span>                :            :     const std::vector&lt; bcconf_t &gt; m_bcoutlet;
+<span class="lineNum">     380 </span>                :            :     //! Dirichlet BC configuration
+<span class="lineNum">     381 </span>                :            :     const std::vector&lt; bcconf_t &gt; m_bcdir;
+<span class="lineNum">     382 </span>                :            : 
+<span class="lineNum">     383 </span>                :            :     //! Evaluate physical flux function for this PDE system
+<span class="lineNum">     384 </span>                :            :     //! \param[in] ncomp Number of scalar components in this PDE system
+<span class="lineNum">     385 </span>                :            :     //! \param[in] ugp Numerical solution at the Gauss point at which to
+<span class="lineNum">     386 </span>                :            :     //!   evaluate the flux
+<span class="lineNum">     387 </span>                :            :     //! \param[in] v Prescribed velocity evaluated at the Gauss point at which
+<span class="lineNum">     388 </span>                :            :     //!   to evaluate the flux
+<span class="lineNum">     389 </span>                :            :     //! \return Flux vectors for all components in this PDE system
+<a name="390"><span class="lineNum">     390 </span>                :            :     //! \note The function signature must follow tk::FluxFn</a>
+<span class="lineNum">     391 </span>                :            :     static tk::FluxFn::result_type
+<span class="lineNum">     392 </span>                :<span class="lineCov">   36156100 :     flux( ncomp_t,</span>
+<span class="lineNum">     393 </span>                :            :           ncomp_t ncomp,
+<span class="lineNum">     394 </span>                :            :           const std::vector&lt; tk::real &gt;&amp; ugp,
+<span class="lineNum">     395 </span>                :            :           const std::vector&lt; std::array&lt; tk::real, 3 &gt; &gt;&amp; v )
+<span class="lineNum">     396 </span>                :            :     {
+<span class="lineNum">     397 </span>                :            :       Assert( ugp.size() == ncomp, &quot;Size mismatch&quot; );
+<span class="lineNum">     398 </span>                :            :       Assert( v.size() == ncomp, &quot;Size mismatch&quot; );
+<span class="lineNum">     399 </span>                :            : 
+<span class="lineNum">     400 </span>                :<span class="lineCov">   36156100 :       std::vector&lt; std::array&lt; tk::real, 3 &gt; &gt; fl( ugp.size() );</span>
+<span class="lineNum">     401 </span>                :            : 
+<span class="lineNum">     402 </span>        [<span class="branchCov" title="Branch 0 was taken 36156100 times"> + </span><span class="branchCov" title="Branch 1 was taken 36156100 times"> + </span>]:<span class="lineCov">   72312000 :       for (ncomp_t c=0; c&lt;ncomp; ++c)</span>
+<span class="lineNum">     403 </span>                :<span class="lineCov">   36156100 :         fl[c] = {{ v[c][0] * ugp[c], v[c][1] * ugp[c], v[c][2] * ugp[c] }};</span>
+<span class="lineNum">     404 </span>                :            : 
+<span class="lineNum">     405 </span>                :<span class="lineCov">   36156100 :       return fl;</span>
+<span class="lineNum">     406 </span>                :            :     }
+<span class="lineNum">     407 </span>                :            : 
+<span class="lineNum">     408 </span>                :            :     //! \brief Boundary state function providing the left and right state of a
+<span class="lineNum">     409 </span>                :            :     //!   face at extrapolation boundaries
+<span class="lineNum">     410 </span>                :            :     //! \param[in] ul Left (domain-internal) state
+<span class="lineNum">     411 </span>                :            :     //! \return Left and right states for all scalar components in this PDE
+<span class="lineNum">     412 </span>                :            :     //!   system
+<a name="413"><span class="lineNum">     413 </span>                :            :     //! \note The function signature must follow tk::StateFn</a>
+<span class="lineNum">     414 </span>                :            :     static tk::StateFn::result_type
+<span class="lineNum">     415 </span>                :<span class="lineCov">   17047320 :     Extrapolate( ncomp_t, ncomp_t, const std::vector&lt; tk::real &gt;&amp; ul,</span>
+<span class="lineNum">     416 </span>                :            :                  tk::real, tk::real, tk::real, tk::real,
+<span class="lineNum">     417 </span>                :            :                  const std::array&lt; tk::real, 3 &gt;&amp; )
+<span class="lineNum">     418 </span>                :            :     {
+<span class="lineNum">     419 </span>                :<span class="lineCov">   17047320 :       return {{ ul, ul }};</span>
+<span class="lineNum">     420 </span>                :            :     }
+<span class="lineNum">     421 </span>                :            : 
+<span class="lineNum">     422 </span>                :            :     //! \brief Boundary state function providing the left and right state of a
+<span class="lineNum">     423 </span>                :            :     //!   face at extrapolation boundaries
+<span class="lineNum">     424 </span>                :            :     //! \param[in] ul Left (domain-internal) state
+<span class="lineNum">     425 </span>                :            :     //! \return Left and right states for all scalar components in this PDE
+<span class="lineNum">     426 </span>                :            :     //!   system
+<a name="427"><span class="lineNum">     427 </span>                :            :     //! \note The function signature must follow tk::StateFn</a>
+<span class="lineNum">     428 </span>                :            :     static tk::StateFn::result_type
+<span class="lineNum">     429 </span>                :<span class="lineCov">     559200 :     Inlet( ncomp_t, ncomp_t, const std::vector&lt; tk::real &gt;&amp; ul,</span>
+<span class="lineNum">     430 </span>                :            :            tk::real, tk::real, tk::real, tk::real,
+<span class="lineNum">     431 </span>                :            :            const std::array&lt; tk::real, 3 &gt;&amp; )
+<span class="lineNum">     432 </span>                :            :     {
+<span class="lineNum">     433 </span>                :<span class="lineCov">     559200 :       auto ur = ul;</span>
+<span class="lineNum">     434 </span>                :            :       std::fill( begin(ur), end(ur), 0.0 );
+<span class="lineNum">     435 </span>        [<span class="branchCov" title="Branch 0 was taken 559200 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">     559200 :       return {{ ul, std::move(ur) }};</span>
+<span class="lineNum">     436 </span>                :            :     }
+<span class="lineNum">     437 </span>                :            : 
+<span class="lineNum">     438 </span>                :            :     //! \brief Boundary state function providing the left and right state of a
+<span class="lineNum">     439 </span>                :            :     //!   face at outlet boundaries
+<span class="lineNum">     440 </span>                :            :     //! \param[in] ul Left (domain-internal) state
+<span class="lineNum">     441 </span>                :            :     //! \return Left and right states for all scalar components in this PDE
+<span class="lineNum">     442 </span>                :            :     //!   system
+<a name="443"><span class="lineNum">     443 </span>                :            :     //! \note The function signature must follow tk::StateFn</a>
+<span class="lineNum">     444 </span>                :            :     static tk::StateFn::result_type
+<span class="lineNum">     445 </span>                :<span class="lineCov">    1329600 :     Outlet( ncomp_t, ncomp_t, const std::vector&lt; tk::real &gt;&amp; ul,</span>
+<span class="lineNum">     446 </span>                :            :             tk::real, tk::real, tk::real, tk::real,
+<span class="lineNum">     447 </span>                :            :             const std::array&lt; tk::real, 3 &gt;&amp; )
+<span class="lineNum">     448 </span>                :            :     {
+<span class="lineNum">     449 </span>                :<span class="lineCov">    1329600 :       return {{ ul, ul }};</span>
+<span class="lineNum">     450 </span>                :            :     }
+<span class="lineNum">     451 </span>                :            : 
+<span class="lineNum">     452 </span>                :            :     //! \brief Boundary state function providing the left and right state of a
+<span class="lineNum">     453 </span>                :            :     //!   face at Dirichlet boundaries
+<span class="lineNum">     454 </span>                :            :     //! \param[in] system Equation system index
+<span class="lineNum">     455 </span>                :            :     //! \param[in] ncomp Number of scalar components in this PDE system
+<span class="lineNum">     456 </span>                :            :     //! \param[in] ul Left (domain-internal) state
+<span class="lineNum">     457 </span>                :            :     //! \param[in] x X-coordinate at which to compute the states
+<span class="lineNum">     458 </span>                :            :     //! \param[in] y Y-coordinate at which to compute the states
+<span class="lineNum">     459 </span>                :            :     //! \param[in] z Z-coordinate at which to compute the states
+<span class="lineNum">     460 </span>                :            :     //! \param[in] t Physical time
+<span class="lineNum">     461 </span>                :            :     //! \return Left and right states for all scalar components in this PDE
+<span class="lineNum">     462 </span>                :            :     //!   system
+<a name="463"><span class="lineNum">     463 </span>                :            :     //! \note The function signature must follow tk::StateFn</a>
+<span class="lineNum">     464 </span>                :            :     static tk::StateFn::result_type
+<span class="lineNum">     465 </span>                :<span class="lineCov">   10021860 :     Dirichlet( ncomp_t system, ncomp_t ncomp, const std::vector&lt; tk::real &gt;&amp; ul,</span>
+<span class="lineNum">     466 </span>                :            :                tk::real x, tk::real y, tk::real z, tk::real t,
+<span class="lineNum">     467 </span>                :            :                const std::array&lt; tk::real, 3 &gt;&amp; )
+<span class="lineNum">     468 </span>                :            :     {
+<span class="lineNum">     469 </span>                :<span class="lineCov">   10021860 :       return {{ ul, Problem::solution( system, ncomp, x, y, z, t ) }};</span>
+<span class="lineNum">     470 </span>                :            :     }
+<span class="lineNum">     471 </span>                :            : };
+<span class="lineNum">     472 </span>                :            : 
+<span class="lineNum">     473 </span>                :            : } // dg::
+<span class="lineNum">     474 </span>                :            : } // inciter::
+<span class="lineNum">     475 </span>                :            : 
+<span class="lineNum">     476 </span>                :            : #endif // DGTransport_h
 </pre>
       </td>
     </tr>

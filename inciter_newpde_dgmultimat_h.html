@@ -122,6 +122,7 @@
 <span class="cp">#include</span> <span class="cpf">&quot;Integrate/Riemann/AUSM.hpp&quot;</span><span class="cp"></span>
 <span class="cp">#include</span> <span class="cpf">&quot;EoS/EoS.hpp&quot;</span><span class="cp"></span>
 <span class="cp">#include</span> <span class="cpf">&quot;MultiMat/MultiMatIndexing.hpp&quot;</span><span class="cp"></span>
+<span class="cp">#include</span> <span class="cpf">&quot;Reconstruction.hpp&quot;</span><span class="cp"></span>
 
 <span class="k">namespace</span> <span class="n">inciter</span> <span class="p">{</span>
 
@@ -198,6 +199,65 @@
     <span class="c1">//! \param[in,out] l Block diagonal mass matrix</span>
     <span class="kt">void</span> <span class="n">lhs</span><span class="p">(</span> <span class="k">const</span> <span class="n">tk</span><span class="o">::</span><span class="n">Fields</span><span class="o">&amp;</span> <span class="n">geoElem</span><span class="p">,</span> <span class="n">tk</span><span class="o">::</span><span class="n">Fields</span><span class="o">&amp;</span> <span class="n">l</span> <span class="p">)</span> <span class="k">const</span> <span class="p">{</span>
       <span class="n">tk</span><span class="o">::</span><span class="n">mass</span><span class="p">(</span> <span class="n">m_ncomp</span><span class="p">,</span> <span class="n">m_offset</span><span class="p">,</span> <span class="n">geoElem</span><span class="p">,</span> <span class="n">l</span> <span class="p">);</span>
+    <span class="p">}</span>
+
+    <span class="c1">//! Reconstruct second-order solution from first-order</span>
+    <span class="c1">//! \param[in] t Physical time</span>
+    <span class="c1">//! \param[in] geoFace Face geometry array</span>
+    <span class="c1">//! \param[in] geoElem Element geometry array</span>
+    <span class="c1">//! \param[in] fd Face connectivity and boundary conditions object</span>
+    <span class="c1">//! \param[in] inpoel Element-node connectivity</span>
+    <span class="c1">//! \param[in] coord Array of nodal coordinates</span>
+    <span class="c1">//! \param[in,out] U Solution vector at recent time step</span>
+    <span class="kt">void</span> <span class="n">reconstruct</span><span class="p">(</span> <span class="n">tk</span><span class="o">::</span><span class="n">real</span> <span class="n">t</span><span class="p">,</span>
+                      <span class="k">const</span> <span class="n">tk</span><span class="o">::</span><span class="n">Fields</span><span class="o">&amp;</span> <span class="n">geoFace</span><span class="p">,</span>
+                      <span class="k">const</span> <span class="n">tk</span><span class="o">::</span><span class="n">Fields</span><span class="o">&amp;</span> <span class="n">geoElem</span><span class="p">,</span>
+                      <span class="k">const</span> <span class="n">inciter</span><span class="o">::</span><span class="n">FaceData</span><span class="o">&amp;</span> <span class="n">fd</span><span class="p">,</span>
+                      <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span> <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="o">&gt;&amp;</span> <span class="n">inpoel</span><span class="p">,</span>
+                      <span class="k">const</span> <span class="n">tk</span><span class="o">::</span><span class="n">UnsMesh</span><span class="o">::</span><span class="n">Coords</span><span class="o">&amp;</span> <span class="n">coord</span><span class="p">,</span>
+                      <span class="n">tk</span><span class="o">::</span><span class="n">Fields</span><span class="o">&amp;</span> <span class="n">U</span> <span class="p">)</span> <span class="k">const</span>
+    <span class="p">{</span>
+      <span class="k">const</span> <span class="k">auto</span> <span class="n">rdof</span> <span class="o">=</span> <span class="n">g_inputdeck</span><span class="p">.</span><span class="n">get</span><span class="o">&lt;</span> <span class="n">tag</span><span class="o">::</span><span class="n">discr</span><span class="p">,</span> <span class="n">tag</span><span class="o">::</span><span class="n">rdof</span> <span class="o">&gt;</span><span class="p">();</span>
+
+      <span class="n">Assert</span><span class="p">(</span> <span class="n">U</span><span class="p">.</span><span class="n">nprop</span><span class="p">()</span> <span class="o">==</span> <span class="n">rdof</span><span class="o">*</span><span class="n">m_ncomp</span><span class="p">,</span> <span class="s">&quot;Number of components in solution &quot;</span>
+              <span class="s">&quot;vector must equal &quot;</span><span class="o">+</span> <span class="n">std</span><span class="o">::</span><span class="n">to_string</span><span class="p">(</span><span class="n">rdof</span><span class="o">*</span><span class="n">m_ncomp</span><span class="p">)</span> <span class="p">);</span>
+      <span class="n">Assert</span><span class="p">(</span> <span class="n">inpoel</span><span class="p">.</span><span class="n">size</span><span class="p">()</span><span class="o">/</span><span class="mi">4</span> <span class="o">==</span> <span class="n">U</span><span class="p">.</span><span class="n">nunk</span><span class="p">(),</span> <span class="s">&quot;Connectivity inpoel has incorrect &quot;</span>
+              <span class="s">&quot;size&quot;</span> <span class="p">);</span>
+      <span class="n">Assert</span><span class="p">(</span> <span class="n">fd</span><span class="p">.</span><span class="n">Inpofa</span><span class="p">().</span><span class="n">size</span><span class="p">()</span><span class="o">/</span><span class="mi">3</span> <span class="o">==</span> <span class="n">fd</span><span class="p">.</span><span class="n">Esuf</span><span class="p">().</span><span class="n">size</span><span class="p">()</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span>
+              <span class="s">&quot;Mismatch in inpofa size&quot;</span> <span class="p">);</span>
+
+      <span class="c1">// supported boundary condition types and associated state functions</span>
+      <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">pair</span><span class="o">&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span> <span class="n">bcconf_t</span> <span class="o">&gt;</span><span class="p">,</span> <span class="n">tk</span><span class="o">::</span><span class="n">StateFn</span> <span class="o">&gt;</span> <span class="o">&gt;</span> <span class="n">bctypes</span><span class="p">{{</span>
+        <span class="p">{</span> <span class="n">m_bcdir</span><span class="p">,</span> <span class="n">Dirichlet</span> <span class="p">},</span>
+        <span class="p">{</span> <span class="n">m_bcsym</span><span class="p">,</span> <span class="n">Symmetry</span> <span class="p">},</span>
+        <span class="p">{</span> <span class="n">m_bcextrapolate</span><span class="p">,</span> <span class="n">Extrapolate</span> <span class="p">}</span> <span class="p">}};</span>
+
+      <span class="c1">// allocate and initialize matrix and vector for reconstruction</span>
+      <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">array</span><span class="o">&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">array</span><span class="o">&lt;</span> <span class="n">tk</span><span class="o">::</span><span class="n">real</span><span class="p">,</span> <span class="mi">3</span> <span class="o">&gt;</span><span class="p">,</span> <span class="mi">3</span> <span class="o">&gt;</span> <span class="o">&gt;</span>
+        <span class="n">lhs_ls</span><span class="p">(</span> <span class="n">U</span><span class="p">.</span><span class="n">nunk</span><span class="p">(),</span> <span class="p">{{</span> <span class="p">{{</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">}},</span>
+                             <span class="p">{{</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">}},</span>
+                             <span class="p">{{</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">}}</span> <span class="p">}}</span> <span class="p">);</span>
+      <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">array</span><span class="o">&lt;</span> <span class="n">tk</span><span class="o">::</span><span class="n">real</span><span class="p">,</span> <span class="mi">3</span> <span class="o">&gt;</span> <span class="o">&gt;</span> <span class="o">&gt;</span>
+        <span class="n">rhs_ls</span><span class="p">(</span> <span class="n">U</span><span class="p">.</span><span class="n">nunk</span><span class="p">(),</span> <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">array</span><span class="o">&lt;</span> <span class="n">tk</span><span class="o">::</span><span class="n">real</span><span class="p">,</span> <span class="mi">3</span> <span class="o">&gt;</span> <span class="o">&gt;</span>
+          <span class="p">(</span> <span class="n">m_ncomp</span><span class="p">,</span>
+            <span class="p">{{</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span> <span class="p">}}</span> <span class="p">)</span> <span class="p">);</span>
+
+      <span class="c1">// reconstruct x,y,z-derivatives of unknowns</span>
+      <span class="n">tk</span><span class="o">::</span><span class="n">intLeastSq_P0P1</span><span class="p">(</span> <span class="n">m_ncomp</span><span class="p">,</span> <span class="n">m_offset</span><span class="p">,</span> <span class="n">rdof</span><span class="p">,</span> <span class="n">fd</span><span class="p">,</span> <span class="n">geoElem</span><span class="p">,</span> <span class="n">U</span><span class="p">,</span>
+                           <span class="n">lhs_ls</span><span class="p">,</span> <span class="n">rhs_ls</span> <span class="p">);</span>
+
+      <span class="c1">// compute boundary surface flux integrals</span>
+      <span class="k">for</span> <span class="p">(</span><span class="k">const</span> <span class="k">auto</span><span class="o">&amp;</span> <span class="nl">b</span> <span class="p">:</span> <span class="n">bctypes</span><span class="p">)</span>
+        <span class="n">tk</span><span class="o">::</span><span class="n">bndLeastSq_P0P1</span><span class="p">(</span> <span class="n">m_system</span><span class="p">,</span> <span class="n">m_ncomp</span><span class="p">,</span> <span class="n">m_offset</span><span class="p">,</span> <span class="n">rdof</span><span class="p">,</span> <span class="n">b</span><span class="p">.</span><span class="n">first</span><span class="p">,</span>
+                             <span class="n">fd</span><span class="p">,</span> <span class="n">geoFace</span><span class="p">,</span> <span class="n">geoElem</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">b</span><span class="p">.</span><span class="n">second</span><span class="p">,</span> <span class="n">U</span><span class="p">,</span> <span class="n">lhs_ls</span><span class="p">,</span>
+                             <span class="n">rhs_ls</span> <span class="p">);</span>
+
+      <span class="c1">// solve 3x3 least-squares system</span>
+      <span class="n">tk</span><span class="o">::</span><span class="n">solveLeastSq_P0P1</span><span class="p">(</span> <span class="n">m_ncomp</span><span class="p">,</span> <span class="n">m_offset</span><span class="p">,</span> <span class="n">rdof</span><span class="p">,</span> <span class="n">lhs_ls</span><span class="p">,</span> <span class="n">rhs_ls</span><span class="p">,</span> <span class="n">U</span> <span class="p">);</span>
+
+      <span class="c1">// transform reconstructed derivatives to Dubiner dofs</span>
+      <span class="n">tk</span><span class="o">::</span><span class="n">transform_P0P1</span><span class="p">(</span> <span class="n">m_ncomp</span><span class="p">,</span> <span class="n">m_offset</span><span class="p">,</span> <span class="n">rdof</span><span class="p">,</span> <span class="n">fd</span><span class="p">.</span><span class="n">Esuel</span><span class="p">().</span><span class="n">size</span><span class="p">()</span><span class="o">/</span><span class="mi">4</span><span class="p">,</span> <span class="n">inpoel</span><span class="p">,</span>
+                          <span class="n">coord</span><span class="p">,</span> <span class="n">U</span> <span class="p">);</span>
     <span class="p">}</span>
 
     <span class="c1">//! Compute right hand side</span>
@@ -793,7 +853,7 @@
   <div class="m-container">
     <div class="m-row">
       <div class="m-col-l-10 m-push-l-1">
-        <p>Quinoa docs, part of the <a href="http://quinoacomputing.org/">Quinoa project</a>. Copyright © J. Bakosi 2012&ndash;2015, Los Alamos National Security, LLC, 2016&ndash;2018, <a href="https://www.triadns.org/">Triad National Security, LLC,</a> 2019. Generated on Tuesday, Jul 09, 2019 based on <a href="https://github.com/quinoacomputing/quinoa/commit/411eb88">411eb88</a> by <a href="http://doxygen.org/">Doxygen</a> and <a href="http://mcss.mosra.cz/">m.css</a>. Contact us via <a href="https://github.com/quinoacomputing/quinoa/">GitHub</a>, <a href="https://groups.io/g/quinoa">Email</a> or <a href="https://https://quinoa.zulipchat.com">Chat</a>.</p>
+        <p>Quinoa docs, part of the <a href="http://quinoacomputing.org/">Quinoa project</a>. Copyright © J. Bakosi 2012&ndash;2015, Los Alamos National Security, LLC, 2016&ndash;2018, <a href="https://www.triadns.org/">Triad National Security, LLC,</a> 2019. Generated on Monday, Jul 29, 2019 based on <a href="https://github.com/quinoacomputing/quinoa/commit/f5bbdb9">f5bbdb9</a> by <a href="http://doxygen.org/">Doxygen</a> and <a href="http://mcss.mosra.cz/">m.css</a>. Contact us via <a href="https://github.com/quinoacomputing/quinoa/">GitHub</a>, <a href="https://groups.io/g/quinoa">Email</a> or <a href="https://https://quinoa.zulipchat.com">Chat</a>.</p>
       </div>
     </div>
   </div>
