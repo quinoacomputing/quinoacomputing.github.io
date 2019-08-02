@@ -123,6 +123,7 @@
 <span class="cp">#include</span> <span class="cpf">&quot;EoS/EoS.hpp&quot;</span><span class="cp"></span>
 <span class="cp">#include</span> <span class="cpf">&quot;MultiMat/MultiMatIndexing.hpp&quot;</span><span class="cp"></span>
 <span class="cp">#include</span> <span class="cpf">&quot;Reconstruction.hpp&quot;</span><span class="cp"></span>
+<span class="cp">#include</span> <span class="cpf">&quot;Limiter.hpp&quot;</span><span class="cp"></span>
 
 <span class="k">namespace</span> <span class="n">inciter</span> <span class="p">{</span>
 
@@ -176,6 +177,15 @@
       <span class="n">m_bcextrapolate</span><span class="p">(</span> <span class="n">config</span><span class="o">&lt;</span> <span class="n">tag</span><span class="o">::</span><span class="n">bcextrapolate</span> <span class="o">&gt;</span><span class="p">(</span> <span class="n">c</span> <span class="p">)</span> <span class="p">)</span>
     <span class="p">{}</span>
 
+    <span class="c1">//! Find the number of primitive quantities required for this PDE system</span>
+    <span class="c1">//! \return The number of primitive quantities required to be stored for</span>
+    <span class="c1">//!   this PDE system</span>
+    <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="n">nprim</span><span class="p">()</span> <span class="k">const</span>
+    <span class="p">{</span>
+      <span class="c1">// multimat needs and stores velocities currently</span>
+      <span class="k">return</span> <span class="mi">3</span><span class="p">;</span>
+    <span class="p">}</span>
+
     <span class="c1">//! Initalize the compressible flow equations, prepare for time integration</span>
     <span class="c1">//! \param[in] L Block diagonal mass matrix</span>
     <span class="c1">//! \param[in] inpoel Element-node connectivity</span>
@@ -201,6 +211,61 @@
       <span class="n">tk</span><span class="o">::</span><span class="n">mass</span><span class="p">(</span> <span class="n">m_ncomp</span><span class="p">,</span> <span class="n">m_offset</span><span class="p">,</span> <span class="n">geoElem</span><span class="p">,</span> <span class="n">l</span> <span class="p">);</span>
     <span class="p">}</span>
 
+    <span class="c1">//! Update the primitives for this PDE system</span>
+    <span class="c1">//! \param[in] unk Array of unknowns</span>
+    <span class="c1">//! \param[in,out] prim Array of primitives</span>
+    <span class="c1">//! \param[in] nielem Number of internal elements</span>
+    <span class="c1">//! \details This function computes and stores the dofs for primitive</span>
+    <span class="c1">//!   quantities, which are required for obtaining reconstructed states used</span>
+    <span class="c1">//!   in the Riemann solver. See /PDE/Integrate/Riemann/AUSM.hpp, where the</span>
+    <span class="c1">//!   normal velocity for advection is calculated from independently</span>
+    <span class="c1">//!   reconstructed velocities.</span>
+    <span class="kt">void</span> <span class="n">updatePrimitives</span><span class="p">(</span> <span class="k">const</span> <span class="n">tk</span><span class="o">::</span><span class="n">Fields</span><span class="o">&amp;</span> <span class="n">unk</span><span class="p">,</span>
+                           <span class="n">tk</span><span class="o">::</span><span class="n">Fields</span><span class="o">&amp;</span> <span class="n">prim</span><span class="p">,</span>
+                           <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="n">nielem</span> <span class="p">)</span> <span class="k">const</span>
+    <span class="p">{</span>
+      <span class="k">const</span> <span class="k">auto</span> <span class="n">ndof</span> <span class="o">=</span> <span class="n">g_inputdeck</span><span class="p">.</span><span class="n">get</span><span class="o">&lt;</span> <span class="n">tag</span><span class="o">::</span><span class="n">discr</span><span class="p">,</span> <span class="n">tag</span><span class="o">::</span><span class="n">ndof</span> <span class="o">&gt;</span><span class="p">();</span>
+      <span class="k">const</span> <span class="k">auto</span> <span class="n">rdof</span> <span class="o">=</span> <span class="n">g_inputdeck</span><span class="p">.</span><span class="n">get</span><span class="o">&lt;</span> <span class="n">tag</span><span class="o">::</span><span class="n">discr</span><span class="p">,</span> <span class="n">tag</span><span class="o">::</span><span class="n">rdof</span> <span class="o">&gt;</span><span class="p">();</span>
+      <span class="k">const</span> <span class="k">auto</span> <span class="n">nmat</span> <span class="o">=</span>
+        <span class="n">g_inputdeck</span><span class="p">.</span><span class="n">get</span><span class="o">&lt;</span> <span class="n">tag</span><span class="o">::</span><span class="n">param</span><span class="p">,</span> <span class="n">tag</span><span class="o">::</span><span class="n">multimat</span><span class="p">,</span> <span class="n">tag</span><span class="o">::</span><span class="n">nmat</span> <span class="o">&gt;</span><span class="p">()[</span><span class="n">m_system</span><span class="p">];</span>
+
+      <span class="n">Assert</span><span class="p">(</span> <span class="n">unk</span><span class="p">.</span><span class="n">nunk</span><span class="p">()</span> <span class="o">==</span> <span class="n">prim</span><span class="p">.</span><span class="n">nunk</span><span class="p">(),</span> <span class="s">&quot;Number of unknowns in solution &quot;</span>
+              <span class="s">&quot;vector and primitive vector at recent time step incorrect&quot;</span> <span class="p">);</span>
+      <span class="n">Assert</span><span class="p">(</span> <span class="n">unk</span><span class="p">.</span><span class="n">nprop</span><span class="p">()</span> <span class="o">==</span> <span class="n">rdof</span><span class="o">*</span><span class="n">m_ncomp</span><span class="p">,</span> <span class="s">&quot;Number of components in solution &quot;</span>
+              <span class="s">&quot;vector must equal &quot;</span><span class="o">+</span> <span class="n">std</span><span class="o">::</span><span class="n">to_string</span><span class="p">(</span><span class="n">rdof</span><span class="o">*</span><span class="n">m_ncomp</span><span class="p">)</span> <span class="p">);</span>
+      <span class="n">Assert</span><span class="p">(</span> <span class="n">prim</span><span class="p">.</span><span class="n">nprop</span><span class="p">()</span> <span class="o">==</span> <span class="n">rdof</span><span class="o">*</span><span class="n">nprim</span><span class="p">(),</span> <span class="s">&quot;Number of components in vector of &quot;</span>
+              <span class="s">&quot;primitive quantities must equal &quot;</span><span class="o">+</span> <span class="n">std</span><span class="o">::</span><span class="n">to_string</span><span class="p">(</span><span class="n">rdof</span><span class="o">*</span><span class="n">nprim</span><span class="p">())</span> <span class="p">);</span>
+
+      <span class="k">for</span> <span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="n">e</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">e</span><span class="o">&lt;</span><span class="n">nielem</span><span class="p">;</span> <span class="o">++</span><span class="n">e</span><span class="p">)</span>
+      <span class="p">{</span>
+        <span class="c1">// cell-average and high-order dofs of bulk density</span>
+        <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span> <span class="n">tk</span><span class="o">::</span><span class="n">real</span> <span class="o">&gt;</span> <span class="n">rhob</span><span class="p">(</span><span class="n">ndof</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">);</span>
+        <span class="k">for</span> <span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="n">k</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">k</span><span class="o">&lt;</span><span class="n">nmat</span><span class="p">;</span> <span class="o">++</span><span class="n">k</span><span class="p">)</span>
+        <span class="p">{</span>
+          <span class="k">for</span> <span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="n">j</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">j</span><span class="o">&lt;</span><span class="n">ndof</span><span class="p">;</span> <span class="o">++</span><span class="n">j</span><span class="p">)</span>
+            <span class="n">rhob</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">+=</span> <span class="n">unk</span><span class="p">(</span><span class="n">e</span><span class="p">,</span> <span class="n">densityIdx</span><span class="p">(</span><span class="n">nmat</span><span class="p">,</span> <span class="n">k</span><span class="p">)</span><span class="o">*</span><span class="n">rdof</span><span class="o">+</span><span class="n">j</span><span class="p">,</span> <span class="n">m_offset</span><span class="p">);</span>
+        <span class="p">}</span>
+
+        <span class="c1">// cell-average velocity</span>
+        <span class="n">std</span><span class="o">::</span><span class="n">array</span><span class="o">&lt;</span> <span class="n">tk</span><span class="o">::</span><span class="n">real</span><span class="p">,</span> <span class="mi">3</span> <span class="o">&gt;</span>
+          <span class="n">vel</span><span class="p">{{</span> <span class="n">unk</span><span class="p">(</span><span class="n">e</span><span class="p">,</span> <span class="n">momentumIdx</span><span class="p">(</span><span class="n">nmat</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span><span class="o">*</span><span class="n">rdof</span><span class="p">,</span> <span class="n">m_offset</span><span class="p">)</span><span class="o">/</span><span class="n">rhob</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+                <span class="n">unk</span><span class="p">(</span><span class="n">e</span><span class="p">,</span> <span class="n">momentumIdx</span><span class="p">(</span><span class="n">nmat</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span><span class="o">*</span><span class="n">rdof</span><span class="p">,</span> <span class="n">m_offset</span><span class="p">)</span><span class="o">/</span><span class="n">rhob</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+                <span class="n">unk</span><span class="p">(</span><span class="n">e</span><span class="p">,</span> <span class="n">momentumIdx</span><span class="p">(</span><span class="n">nmat</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span><span class="o">*</span><span class="n">rdof</span><span class="p">,</span> <span class="n">m_offset</span><span class="p">)</span><span class="o">/</span><span class="n">rhob</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="p">}};</span>
+
+        <span class="c1">// fill up vector of primitives</span>
+        <span class="k">for</span> <span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="n">idir</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">idir</span><span class="o">&lt;</span><span class="mi">3</span><span class="p">;</span> <span class="o">++</span><span class="n">idir</span><span class="p">)</span>
+        <span class="p">{</span>
+          <span class="n">prim</span><span class="p">(</span><span class="n">e</span><span class="p">,</span> <span class="n">velocityIdx</span><span class="p">(</span><span class="n">nmat</span><span class="p">,</span> <span class="n">idir</span><span class="p">)</span><span class="o">*</span><span class="n">rdof</span><span class="p">,</span> <span class="n">m_offset</span><span class="p">)</span> <span class="o">=</span> <span class="n">vel</span><span class="p">[</span><span class="n">idir</span><span class="p">];</span>
+          <span class="k">for</span> <span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="n">j</span><span class="o">=</span><span class="mi">1</span><span class="p">;</span> <span class="n">j</span><span class="o">&lt;</span><span class="n">ndof</span><span class="p">;</span> <span class="o">++</span><span class="n">j</span><span class="p">)</span>
+          <span class="p">{</span>
+            <span class="n">prim</span><span class="p">(</span><span class="n">e</span><span class="p">,</span> <span class="n">velocityIdx</span><span class="p">(</span><span class="n">nmat</span><span class="p">,</span> <span class="n">idir</span><span class="p">)</span><span class="o">*</span><span class="n">rdof</span><span class="o">+</span><span class="n">j</span><span class="p">,</span> <span class="n">m_offset</span><span class="p">)</span> <span class="o">=</span>
+              <span class="p">(</span> <span class="n">unk</span><span class="p">(</span><span class="n">e</span><span class="p">,</span> <span class="n">momentumIdx</span><span class="p">(</span><span class="n">nmat</span><span class="p">,</span> <span class="n">idir</span><span class="p">)</span><span class="o">*</span><span class="n">rdof</span><span class="o">+</span><span class="n">j</span><span class="p">,</span> <span class="n">m_offset</span><span class="p">)</span>
+              <span class="o">-</span> <span class="n">vel</span><span class="p">[</span><span class="n">idir</span><span class="p">]</span><span class="o">*</span><span class="n">rhob</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="p">)</span><span class="o">/</span><span class="n">rhob</span><span class="p">[</span><span class="mi">0</span><span class="p">];</span>
+          <span class="p">}</span>
+        <span class="p">}</span>
+      <span class="p">}</span>
+    <span class="p">}</span>
+
     <span class="c1">//! Reconstruct second-order solution from first-order</span>
     <span class="c1">//! \param[in] t Physical time</span>
     <span class="c1">//! \param[in] geoFace Face geometry array</span>
@@ -209,15 +274,19 @@
     <span class="c1">//! \param[in] inpoel Element-node connectivity</span>
     <span class="c1">//! \param[in] coord Array of nodal coordinates</span>
     <span class="c1">//! \param[in,out] U Solution vector at recent time step</span>
+    <span class="c1">//! \param[in,out] P Vector of primitives at recent time step</span>
     <span class="kt">void</span> <span class="n">reconstruct</span><span class="p">(</span> <span class="n">tk</span><span class="o">::</span><span class="n">real</span> <span class="n">t</span><span class="p">,</span>
                       <span class="k">const</span> <span class="n">tk</span><span class="o">::</span><span class="n">Fields</span><span class="o">&amp;</span> <span class="n">geoFace</span><span class="p">,</span>
                       <span class="k">const</span> <span class="n">tk</span><span class="o">::</span><span class="n">Fields</span><span class="o">&amp;</span> <span class="n">geoElem</span><span class="p">,</span>
                       <span class="k">const</span> <span class="n">inciter</span><span class="o">::</span><span class="n">FaceData</span><span class="o">&amp;</span> <span class="n">fd</span><span class="p">,</span>
                       <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span> <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="o">&gt;&amp;</span> <span class="n">inpoel</span><span class="p">,</span>
                       <span class="k">const</span> <span class="n">tk</span><span class="o">::</span><span class="n">UnsMesh</span><span class="o">::</span><span class="n">Coords</span><span class="o">&amp;</span> <span class="n">coord</span><span class="p">,</span>
-                      <span class="n">tk</span><span class="o">::</span><span class="n">Fields</span><span class="o">&amp;</span> <span class="n">U</span> <span class="p">)</span> <span class="k">const</span>
+                      <span class="n">tk</span><span class="o">::</span><span class="n">Fields</span><span class="o">&amp;</span> <span class="n">U</span><span class="p">,</span>
+                      <span class="n">tk</span><span class="o">::</span><span class="n">Fields</span><span class="o">&amp;</span> <span class="n">P</span> <span class="p">)</span> <span class="k">const</span>
     <span class="p">{</span>
       <span class="k">const</span> <span class="k">auto</span> <span class="n">rdof</span> <span class="o">=</span> <span class="n">g_inputdeck</span><span class="p">.</span><span class="n">get</span><span class="o">&lt;</span> <span class="n">tag</span><span class="o">::</span><span class="n">discr</span><span class="p">,</span> <span class="n">tag</span><span class="o">::</span><span class="n">rdof</span> <span class="o">&gt;</span><span class="p">();</span>
+      <span class="k">const</span> <span class="k">auto</span> <span class="n">nmat</span> <span class="o">=</span>
+        <span class="n">g_inputdeck</span><span class="p">.</span><span class="n">get</span><span class="o">&lt;</span> <span class="n">tag</span><span class="o">::</span><span class="n">param</span><span class="p">,</span> <span class="n">tag</span><span class="o">::</span><span class="n">multimat</span><span class="p">,</span> <span class="n">tag</span><span class="o">::</span><span class="n">nmat</span> <span class="o">&gt;</span><span class="p">()[</span><span class="n">m_system</span><span class="p">];</span>
 
       <span class="n">Assert</span><span class="p">(</span> <span class="n">U</span><span class="p">.</span><span class="n">nprop</span><span class="p">()</span> <span class="o">==</span> <span class="n">rdof</span><span class="o">*</span><span class="n">m_ncomp</span><span class="p">,</span> <span class="s">&quot;Number of components in solution &quot;</span>
               <span class="s">&quot;vector must equal &quot;</span><span class="o">+</span> <span class="n">std</span><span class="o">::</span><span class="n">to_string</span><span class="p">(</span><span class="n">rdof</span><span class="o">*</span><span class="n">m_ncomp</span><span class="p">)</span> <span class="p">);</span>
@@ -227,10 +296,11 @@
               <span class="s">&quot;Mismatch in inpofa size&quot;</span> <span class="p">);</span>
 
       <span class="c1">// supported boundary condition types and associated state functions</span>
-      <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">pair</span><span class="o">&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span> <span class="n">bcconf_t</span> <span class="o">&gt;</span><span class="p">,</span> <span class="n">tk</span><span class="o">::</span><span class="n">StateFn</span> <span class="o">&gt;</span> <span class="o">&gt;</span> <span class="n">bctypes</span><span class="p">{{</span>
-        <span class="p">{</span> <span class="n">m_bcdir</span><span class="p">,</span> <span class="n">Dirichlet</span> <span class="p">},</span>
-        <span class="p">{</span> <span class="n">m_bcsym</span><span class="p">,</span> <span class="n">Symmetry</span> <span class="p">},</span>
-        <span class="p">{</span> <span class="n">m_bcextrapolate</span><span class="p">,</span> <span class="n">Extrapolate</span> <span class="p">}</span> <span class="p">}};</span>
+      <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">pair</span><span class="o">&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span> <span class="n">bcconf_t</span> <span class="o">&gt;</span><span class="p">,</span> <span class="n">tk</span><span class="o">::</span><span class="n">StateFn</span> <span class="o">&gt;</span> <span class="o">&gt;</span>
+        <span class="n">bctypes</span><span class="p">{{</span>
+          <span class="p">{</span> <span class="n">m_bcdir</span><span class="p">,</span> <span class="n">Dirichlet</span> <span class="p">},</span>
+          <span class="p">{</span> <span class="n">m_bcsym</span><span class="p">,</span> <span class="n">Symmetry</span> <span class="p">},</span>
+          <span class="p">{</span> <span class="n">m_bcextrapolate</span><span class="p">,</span> <span class="n">Extrapolate</span> <span class="p">}</span> <span class="p">}};</span>
 
       <span class="c1">// allocate and initialize matrix and vector for reconstruction</span>
       <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">array</span><span class="o">&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">array</span><span class="o">&lt;</span> <span class="n">tk</span><span class="o">::</span><span class="n">real</span><span class="p">,</span> <span class="mi">3</span> <span class="o">&gt;</span><span class="p">,</span> <span class="mi">3</span> <span class="o">&gt;</span> <span class="o">&gt;</span>
@@ -250,7 +320,7 @@
       <span class="k">for</span> <span class="p">(</span><span class="k">const</span> <span class="k">auto</span><span class="o">&amp;</span> <span class="nl">b</span> <span class="p">:</span> <span class="n">bctypes</span><span class="p">)</span>
         <span class="n">tk</span><span class="o">::</span><span class="n">bndLeastSq_P0P1</span><span class="p">(</span> <span class="n">m_system</span><span class="p">,</span> <span class="n">m_ncomp</span><span class="p">,</span> <span class="n">m_offset</span><span class="p">,</span> <span class="n">rdof</span><span class="p">,</span> <span class="n">b</span><span class="p">.</span><span class="n">first</span><span class="p">,</span>
                              <span class="n">fd</span><span class="p">,</span> <span class="n">geoFace</span><span class="p">,</span> <span class="n">geoElem</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">b</span><span class="p">.</span><span class="n">second</span><span class="p">,</span> <span class="n">U</span><span class="p">,</span> <span class="n">lhs_ls</span><span class="p">,</span>
-                             <span class="n">rhs_ls</span> <span class="p">);</span>
+                             <span class="n">rhs_ls</span><span class="p">,</span> <span class="n">nprim</span><span class="p">()</span> <span class="p">);</span>
 
       <span class="c1">// solve 3x3 least-squares system</span>
       <span class="n">tk</span><span class="o">::</span><span class="n">solveLeastSq_P0P1</span><span class="p">(</span> <span class="n">m_ncomp</span><span class="p">,</span> <span class="n">m_offset</span><span class="p">,</span> <span class="n">rdof</span><span class="p">,</span> <span class="n">lhs_ls</span><span class="p">,</span> <span class="n">rhs_ls</span><span class="p">,</span> <span class="n">U</span> <span class="p">);</span>
@@ -258,6 +328,51 @@
       <span class="c1">// transform reconstructed derivatives to Dubiner dofs</span>
       <span class="n">tk</span><span class="o">::</span><span class="n">transform_P0P1</span><span class="p">(</span> <span class="n">m_ncomp</span><span class="p">,</span> <span class="n">m_offset</span><span class="p">,</span> <span class="n">rdof</span><span class="p">,</span> <span class="n">fd</span><span class="p">.</span><span class="n">Esuel</span><span class="p">().</span><span class="n">size</span><span class="p">()</span><span class="o">/</span><span class="mi">4</span><span class="p">,</span> <span class="n">inpoel</span><span class="p">,</span>
                           <span class="n">coord</span><span class="p">,</span> <span class="n">U</span> <span class="p">);</span>
+
+      <span class="c1">// reconstruct vector of primitives from solution vector</span>
+      <span class="n">getMultiMatPrimitives_P0P1</span><span class="p">(</span> <span class="n">m_offset</span><span class="p">,</span> <span class="n">nmat</span><span class="p">,</span> <span class="n">rdof</span><span class="p">,</span> <span class="n">fd</span><span class="p">.</span><span class="n">Esuel</span><span class="p">().</span><span class="n">size</span><span class="p">()</span><span class="o">/</span><span class="mi">4</span><span class="p">,</span> <span class="n">U</span><span class="p">,</span>
+                                  <span class="n">P</span> <span class="p">);</span>
+    <span class="p">}</span>
+
+    <span class="c1">//! Limit second-order solution, and primitive quantities separately</span>
+    <span class="c1">//! \param[in] t Physical time</span>
+    <span class="c1">//! \param[in] geoFace Face geometry array</span>
+    <span class="c1">//! \param[in] geoElem Element geometry array</span>
+    <span class="c1">//! \param[in] fd Face connectivity and boundary conditions object</span>
+    <span class="c1">//! \param[in] inpoel Element-node connectivity</span>
+    <span class="c1">//! \param[in] coord Array of nodal coordinates</span>
+    <span class="c1">//! \param[in] ndofel Vector of local number of degrees of freedome</span>
+    <span class="c1">//! \param[in,out] U Solution vector at recent time step</span>
+    <span class="c1">//! \param[in,out] P Vector of primitives at recent time step</span>
+    <span class="kt">void</span> <span class="n">limit</span><span class="p">(</span> <span class="n">tk</span><span class="o">::</span><span class="n">real</span> <span class="n">t</span><span class="p">,</span>
+                <span class="k">const</span> <span class="n">tk</span><span class="o">::</span><span class="n">Fields</span><span class="o">&amp;</span> <span class="n">geoFace</span><span class="p">,</span>
+                <span class="k">const</span> <span class="n">tk</span><span class="o">::</span><span class="n">Fields</span><span class="o">&amp;</span> <span class="n">geoElem</span><span class="p">,</span>
+                <span class="k">const</span> <span class="n">inciter</span><span class="o">::</span><span class="n">FaceData</span><span class="o">&amp;</span> <span class="n">fd</span><span class="p">,</span>
+                <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span> <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="o">&gt;&amp;</span> <span class="n">inpoel</span><span class="p">,</span>
+                <span class="k">const</span> <span class="n">tk</span><span class="o">::</span><span class="n">UnsMesh</span><span class="o">::</span><span class="n">Coords</span><span class="o">&amp;</span> <span class="n">coord</span><span class="p">,</span>
+                <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span> <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="o">&gt;&amp;</span> <span class="n">ndofel</span><span class="p">,</span>
+                <span class="n">tk</span><span class="o">::</span><span class="n">Fields</span><span class="o">&amp;</span> <span class="n">U</span><span class="p">,</span>
+                <span class="n">tk</span><span class="o">::</span><span class="n">Fields</span><span class="o">&amp;</span> <span class="n">P</span> <span class="p">)</span> <span class="k">const</span>
+    <span class="p">{</span>
+      <span class="n">IGNORE</span><span class="p">(</span><span class="n">t</span><span class="p">);</span>
+      <span class="n">IGNORE</span><span class="p">(</span><span class="n">geoFace</span><span class="p">);</span>
+      <span class="n">IGNORE</span><span class="p">(</span><span class="n">geoElem</span><span class="p">);</span>
+
+      <span class="n">Assert</span><span class="p">(</span> <span class="n">U</span><span class="p">.</span><span class="n">nunk</span><span class="p">()</span> <span class="o">==</span> <span class="n">P</span><span class="p">.</span><span class="n">nunk</span><span class="p">(),</span> <span class="s">&quot;Number of unknowns in solution &quot;</span>
+              <span class="s">&quot;vector and primitive vector at recent time step incorrect&quot;</span> <span class="p">);</span>
+
+      <span class="k">const</span> <span class="k">auto</span> <span class="n">limiter</span> <span class="o">=</span> <span class="n">g_inputdeck</span><span class="p">.</span><span class="n">get</span><span class="o">&lt;</span> <span class="n">tag</span><span class="o">::</span><span class="n">discr</span><span class="p">,</span> <span class="n">tag</span><span class="o">::</span><span class="n">limiter</span> <span class="o">&gt;</span><span class="p">();</span>
+      <span class="k">const</span> <span class="k">auto</span> <span class="n">nmat</span> <span class="o">=</span>
+        <span class="n">g_inputdeck</span><span class="p">.</span><span class="n">get</span><span class="o">&lt;</span> <span class="n">tag</span><span class="o">::</span><span class="n">param</span><span class="p">,</span> <span class="n">tag</span><span class="o">::</span><span class="n">multimat</span><span class="p">,</span> <span class="n">tag</span><span class="o">::</span><span class="n">nmat</span> <span class="o">&gt;</span><span class="p">()[</span><span class="n">m_system</span><span class="p">];</span>
+
+      <span class="k">if</span> <span class="p">(</span><span class="n">limiter</span> <span class="o">==</span> <span class="n">ctr</span><span class="o">::</span><span class="n">LimiterType</span><span class="o">::</span><span class="n">SUPERBEEP1</span><span class="p">)</span>
+      <span class="p">{</span>
+        <span class="c1">// limit solution vector</span>
+        <span class="n">Superbee_P1</span><span class="p">(</span> <span class="n">fd</span><span class="p">.</span><span class="n">Esuel</span><span class="p">(),</span> <span class="n">inpoel</span><span class="p">,</span> <span class="n">ndofel</span><span class="p">,</span> <span class="n">m_offset</span><span class="p">,</span> <span class="n">coord</span><span class="p">,</span> <span class="n">U</span><span class="p">,</span> <span class="n">nmat</span> <span class="p">);</span>
+
+        <span class="c1">// limit vector of primitives</span>
+        <span class="n">Superbee_P1</span><span class="p">(</span> <span class="n">fd</span><span class="p">.</span><span class="n">Esuel</span><span class="p">(),</span> <span class="n">inpoel</span><span class="p">,</span> <span class="n">ndofel</span><span class="p">,</span> <span class="n">m_offset</span><span class="p">,</span> <span class="n">coord</span><span class="p">,</span> <span class="n">P</span> <span class="p">);</span>
+      <span class="p">}</span>
     <span class="p">}</span>
 
     <span class="c1">//! Compute right hand side</span>
@@ -268,6 +383,7 @@
     <span class="c1">//! \param[in] inpoel Element-node connectivity</span>
     <span class="c1">//! \param[in] coord Array of nodal coordinates</span>
     <span class="c1">//! \param[in] U Solution vector at recent time step</span>
+    <span class="c1">//! \param[in] P Primitive vector at recent time step</span>
     <span class="c1">//! \param[in] ndofel Vector of local number of degrees of freedome</span>
     <span class="c1">//! \param[in,out] R Right-hand side vector computed</span>
     <span class="kt">void</span> <span class="n">rhs</span><span class="p">(</span> <span class="n">tk</span><span class="o">::</span><span class="n">real</span> <span class="n">t</span><span class="p">,</span>
@@ -277,6 +393,7 @@
               <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span> <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="o">&gt;&amp;</span> <span class="n">inpoel</span><span class="p">,</span>
               <span class="k">const</span> <span class="n">tk</span><span class="o">::</span><span class="n">UnsMesh</span><span class="o">::</span><span class="n">Coords</span><span class="o">&amp;</span> <span class="n">coord</span><span class="p">,</span>
               <span class="k">const</span> <span class="n">tk</span><span class="o">::</span><span class="n">Fields</span><span class="o">&amp;</span> <span class="n">U</span><span class="p">,</span>
+              <span class="k">const</span> <span class="n">tk</span><span class="o">::</span><span class="n">Fields</span><span class="o">&amp;</span> <span class="n">P</span><span class="p">,</span>
               <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span> <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="o">&gt;&amp;</span> <span class="n">ndofel</span><span class="p">,</span>
               <span class="n">tk</span><span class="o">::</span><span class="n">Fields</span><span class="o">&amp;</span> <span class="n">R</span> <span class="p">)</span> <span class="k">const</span>
     <span class="p">{</span>
@@ -285,10 +402,14 @@
       <span class="k">const</span> <span class="k">auto</span> <span class="n">nmat</span> <span class="o">=</span>
         <span class="n">g_inputdeck</span><span class="p">.</span><span class="n">get</span><span class="o">&lt;</span> <span class="n">tag</span><span class="o">::</span><span class="n">param</span><span class="p">,</span> <span class="n">tag</span><span class="o">::</span><span class="n">multimat</span><span class="p">,</span> <span class="n">tag</span><span class="o">::</span><span class="n">nmat</span> <span class="o">&gt;</span><span class="p">()[</span><span class="n">m_system</span><span class="p">];</span>
 
+      <span class="n">Assert</span><span class="p">(</span> <span class="n">U</span><span class="p">.</span><span class="n">nunk</span><span class="p">()</span> <span class="o">==</span> <span class="n">P</span><span class="p">.</span><span class="n">nunk</span><span class="p">(),</span> <span class="s">&quot;Number of unknowns in solution &quot;</span>
+              <span class="s">&quot;vector and primitive vector at recent time step incorrect&quot;</span> <span class="p">);</span>
       <span class="n">Assert</span><span class="p">(</span> <span class="n">U</span><span class="p">.</span><span class="n">nunk</span><span class="p">()</span> <span class="o">==</span> <span class="n">R</span><span class="p">.</span><span class="n">nunk</span><span class="p">(),</span> <span class="s">&quot;Number of unknowns in solution &quot;</span>
               <span class="s">&quot;vector and right-hand side at recent time step incorrect&quot;</span> <span class="p">);</span>
       <span class="n">Assert</span><span class="p">(</span> <span class="n">U</span><span class="p">.</span><span class="n">nprop</span><span class="p">()</span> <span class="o">==</span> <span class="n">rdof</span><span class="o">*</span><span class="n">m_ncomp</span><span class="p">,</span> <span class="s">&quot;Number of components in solution &quot;</span>
               <span class="s">&quot;vector must equal &quot;</span><span class="o">+</span> <span class="n">std</span><span class="o">::</span><span class="n">to_string</span><span class="p">(</span><span class="n">rdof</span><span class="o">*</span><span class="n">m_ncomp</span><span class="p">)</span> <span class="p">);</span>
+      <span class="n">Assert</span><span class="p">(</span> <span class="n">P</span><span class="p">.</span><span class="n">nprop</span><span class="p">()</span> <span class="o">==</span> <span class="n">rdof</span><span class="o">*</span><span class="n">nprim</span><span class="p">(),</span> <span class="s">&quot;Number of components in primitive &quot;</span>
+              <span class="s">&quot;vector must equal &quot;</span><span class="o">+</span> <span class="n">std</span><span class="o">::</span><span class="n">to_string</span><span class="p">(</span><span class="n">rdof</span><span class="o">*</span><span class="n">nprim</span><span class="p">())</span> <span class="p">);</span>
       <span class="n">Assert</span><span class="p">(</span> <span class="n">R</span><span class="p">.</span><span class="n">nprop</span><span class="p">()</span> <span class="o">==</span> <span class="n">ndof</span><span class="o">*</span><span class="n">m_ncomp</span><span class="p">,</span> <span class="s">&quot;Number of components in right-hand &quot;</span>
               <span class="s">&quot;side vector must equal &quot;</span><span class="o">+</span> <span class="n">std</span><span class="o">::</span><span class="n">to_string</span><span class="p">(</span><span class="n">ndof</span><span class="o">*</span><span class="n">m_ncomp</span><span class="p">)</span> <span class="p">);</span>
       <span class="n">Assert</span><span class="p">(</span> <span class="n">inpoel</span><span class="p">.</span><span class="n">size</span><span class="p">()</span><span class="o">/</span><span class="mi">4</span> <span class="o">==</span> <span class="n">U</span><span class="p">.</span><span class="n">nunk</span><span class="p">(),</span> <span class="s">&quot;Connectivity inpoel has incorrect &quot;</span>
@@ -316,7 +437,8 @@
 
       <span class="c1">// compute internal surface flux integrals</span>
       <span class="n">tk</span><span class="o">::</span><span class="n">surfInt</span><span class="p">(</span> <span class="n">m_system</span><span class="p">,</span> <span class="n">m_ncomp</span><span class="p">,</span> <span class="n">nmat</span><span class="p">,</span> <span class="n">m_offset</span><span class="p">,</span> <span class="n">ndof</span><span class="p">,</span> <span class="n">rdof</span><span class="p">,</span> <span class="n">inpoel</span><span class="p">,</span> <span class="n">coord</span><span class="p">,</span>
-                   <span class="n">fd</span><span class="p">,</span> <span class="n">geoFace</span><span class="p">,</span> <span class="n">AUSM</span><span class="o">::</span><span class="n">flux</span><span class="p">,</span> <span class="n">velfn</span><span class="p">,</span> <span class="n">U</span><span class="p">,</span> <span class="n">ndofel</span><span class="p">,</span> <span class="n">R</span><span class="p">,</span> <span class="n">riemannDeriv</span> <span class="p">);</span>
+                   <span class="n">fd</span><span class="p">,</span> <span class="n">geoFace</span><span class="p">,</span> <span class="n">AUSM</span><span class="o">::</span><span class="n">flux</span><span class="p">,</span> <span class="n">velfn</span><span class="p">,</span> <span class="n">U</span><span class="p">,</span> <span class="n">P</span><span class="p">,</span> <span class="n">ndofel</span><span class="p">,</span> <span class="n">R</span><span class="p">,</span>
+                   <span class="n">riemannDeriv</span> <span class="p">);</span>
 
       <span class="c1">// compute source term integrals</span>
       <span class="n">tk</span><span class="o">::</span><span class="n">srcInt</span><span class="p">(</span> <span class="n">m_system</span><span class="p">,</span> <span class="n">m_ncomp</span><span class="p">,</span> <span class="n">m_offset</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">ndof</span><span class="p">,</span> <span class="n">inpoel</span><span class="p">,</span> <span class="n">coord</span><span class="p">,</span> <span class="n">geoElem</span><span class="p">,</span>
@@ -331,7 +453,7 @@
       <span class="k">for</span> <span class="p">(</span><span class="k">const</span> <span class="k">auto</span><span class="o">&amp;</span> <span class="nl">b</span> <span class="p">:</span> <span class="n">bctypes</span><span class="p">)</span>
         <span class="n">tk</span><span class="o">::</span><span class="n">bndSurfInt</span><span class="p">(</span> <span class="n">m_system</span><span class="p">,</span> <span class="n">m_ncomp</span><span class="p">,</span> <span class="n">nmat</span><span class="p">,</span> <span class="n">m_offset</span><span class="p">,</span> <span class="n">ndof</span><span class="p">,</span> <span class="n">rdof</span><span class="p">,</span> <span class="n">b</span><span class="p">.</span><span class="n">first</span><span class="p">,</span>
                         <span class="n">fd</span><span class="p">,</span> <span class="n">geoFace</span><span class="p">,</span> <span class="n">inpoel</span><span class="p">,</span> <span class="n">coord</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">AUSM</span><span class="o">::</span><span class="n">flux</span><span class="p">,</span> <span class="n">velfn</span><span class="p">,</span>
-                        <span class="n">b</span><span class="p">.</span><span class="n">second</span><span class="p">,</span> <span class="n">U</span><span class="p">,</span> <span class="n">ndofel</span><span class="p">,</span> <span class="n">R</span><span class="p">,</span> <span class="n">riemannDeriv</span> <span class="p">);</span>
+                        <span class="n">b</span><span class="p">.</span><span class="n">second</span><span class="p">,</span> <span class="n">U</span><span class="p">,</span> <span class="n">P</span><span class="p">,</span> <span class="n">ndofel</span><span class="p">,</span> <span class="n">R</span><span class="p">,</span> <span class="n">riemannDeriv</span> <span class="p">);</span>
 
       <span class="n">Assert</span><span class="p">(</span> <span class="n">riemannDeriv</span><span class="p">.</span><span class="n">size</span><span class="p">()</span> <span class="o">==</span> <span class="mi">3</span><span class="o">*</span><span class="n">nmat</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="s">&quot;Size of Riemann derivative &quot;</span>
               <span class="s">&quot;vector incorrect&quot;</span> <span class="p">);</span>
@@ -749,23 +871,46 @@
                <span class="n">tk</span><span class="o">::</span><span class="n">real</span> <span class="n">x</span><span class="p">,</span> <span class="n">tk</span><span class="o">::</span><span class="n">real</span> <span class="n">y</span><span class="p">,</span> <span class="n">tk</span><span class="o">::</span><span class="n">real</span> <span class="n">z</span><span class="p">,</span> <span class="n">tk</span><span class="o">::</span><span class="n">real</span> <span class="n">t</span><span class="p">,</span>
                <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">array</span><span class="o">&lt;</span> <span class="n">tk</span><span class="o">::</span><span class="n">real</span><span class="p">,</span> <span class="mi">3</span> <span class="o">&gt;&amp;</span> <span class="p">)</span>
     <span class="p">{</span>
-      <span class="k">return</span> <span class="p">{{</span> <span class="n">ul</span><span class="p">,</span> <span class="n">Problem</span><span class="o">::</span><span class="n">solution</span><span class="p">(</span> <span class="n">system</span><span class="p">,</span> <span class="n">ncomp</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="n">t</span> <span class="p">)</span> <span class="p">}};</span>
+      <span class="k">const</span> <span class="k">auto</span> <span class="n">nmat</span> <span class="o">=</span>
+        <span class="n">g_inputdeck</span><span class="p">.</span><span class="n">get</span><span class="o">&lt;</span> <span class="n">tag</span><span class="o">::</span><span class="n">param</span><span class="p">,</span> <span class="n">tag</span><span class="o">::</span><span class="n">multimat</span><span class="p">,</span> <span class="n">tag</span><span class="o">::</span><span class="n">nmat</span> <span class="o">&gt;</span><span class="p">()[</span><span class="n">system</span><span class="p">];</span>
+
+      <span class="k">auto</span> <span class="n">ur</span> <span class="o">=</span> <span class="n">Problem</span><span class="o">::</span><span class="n">solution</span><span class="p">(</span> <span class="n">system</span><span class="p">,</span> <span class="n">ncomp</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="n">t</span> <span class="p">);</span>
+      <span class="n">Assert</span><span class="p">(</span> <span class="n">ur</span><span class="p">.</span><span class="n">size</span><span class="p">()</span> <span class="o">==</span> <span class="n">ncomp</span><span class="p">,</span> <span class="s">&quot;Incorrect size for boundary state vector&quot;</span> <span class="p">);</span>
+
+      <span class="n">tk</span><span class="o">::</span><span class="n">real</span> <span class="n">rho</span><span class="p">(</span><span class="mf">0.0</span><span class="p">);</span>
+      <span class="k">for</span> <span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="n">k</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">k</span><span class="o">&lt;</span><span class="n">nmat</span><span class="p">;</span> <span class="o">++</span><span class="n">k</span><span class="p">)</span>
+        <span class="n">rho</span> <span class="o">+=</span> <span class="n">ul</span><span class="p">[</span><span class="n">densityIdx</span><span class="p">(</span><span class="n">nmat</span><span class="p">,</span> <span class="n">k</span><span class="p">)];</span>
+
+      <span class="c1">// get primitives in boundary state</span>
+      <span class="n">ur</span><span class="p">.</span><span class="n">push_back</span><span class="p">(</span> <span class="n">ur</span><span class="p">[</span><span class="n">momentumIdx</span><span class="p">(</span><span class="n">nmat</span><span class="p">,</span> <span class="mi">0</span><span class="p">)]</span> <span class="o">/</span> <span class="n">rho</span> <span class="p">);</span>
+      <span class="n">ur</span><span class="p">.</span><span class="n">push_back</span><span class="p">(</span> <span class="n">ur</span><span class="p">[</span><span class="n">momentumIdx</span><span class="p">(</span><span class="n">nmat</span><span class="p">,</span> <span class="mi">1</span><span class="p">)]</span> <span class="o">/</span> <span class="n">rho</span> <span class="p">);</span>
+      <span class="n">ur</span><span class="p">.</span><span class="n">push_back</span><span class="p">(</span> <span class="n">ur</span><span class="p">[</span><span class="n">momentumIdx</span><span class="p">(</span><span class="n">nmat</span><span class="p">,</span> <span class="mi">2</span><span class="p">)]</span> <span class="o">/</span> <span class="n">rho</span> <span class="p">);</span>
+
+      <span class="n">Assert</span><span class="p">(</span> <span class="n">ur</span><span class="p">.</span><span class="n">size</span><span class="p">()</span> <span class="o">==</span> <span class="n">ncomp</span><span class="o">+</span><span class="mi">3</span><span class="p">,</span> <span class="s">&quot;Incorrect size for appended boundary &quot;</span>
+              <span class="s">&quot;state vector&quot;</span> <span class="p">);</span>
+
+      <span class="k">return</span> <span class="p">{{</span> <span class="n">std</span><span class="o">::</span><span class="n">move</span><span class="p">(</span><span class="n">ul</span><span class="p">),</span> <span class="n">std</span><span class="o">::</span><span class="n">move</span><span class="p">(</span><span class="n">ur</span><span class="p">)</span> <span class="p">}};</span>
     <span class="p">}</span>
 
     <span class="c1">//! \brief Boundary state function providing the left and right state of a</span>
     <span class="c1">//!   face at symmetry boundaries</span>
+    <span class="c1">//! \param[in] system Equation system index</span>
+    <span class="c1">//! \param[in] ncomp Number of scalar components in this PDE system</span>
     <span class="c1">//! \param[in] ul Left (domain-internal) state</span>
     <span class="c1">//! \param[in] fn Unit face normal</span>
     <span class="c1">//! \return Left and right states for all scalar components in this PDE</span>
     <span class="c1">//!   system</span>
     <span class="c1">//! \note The function signature must follow tk::StateFn</span>
     <span class="k">static</span> <span class="n">tk</span><span class="o">::</span><span class="n">StateFn</span><span class="o">::</span><span class="n">result_type</span>
-    <span class="n">Symmetry</span><span class="p">(</span> <span class="n">ncomp_t</span> <span class="n">system</span><span class="p">,</span> <span class="n">ncomp_t</span><span class="p">,</span> <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span> <span class="n">tk</span><span class="o">::</span><span class="n">real</span> <span class="o">&gt;&amp;</span> <span class="n">ul</span><span class="p">,</span>
+    <span class="n">Symmetry</span><span class="p">(</span> <span class="n">ncomp_t</span> <span class="n">system</span><span class="p">,</span> <span class="n">ncomp_t</span> <span class="n">ncomp</span><span class="p">,</span> <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span> <span class="n">tk</span><span class="o">::</span><span class="n">real</span> <span class="o">&gt;&amp;</span> <span class="n">ul</span><span class="p">,</span>
               <span class="n">tk</span><span class="o">::</span><span class="n">real</span><span class="p">,</span> <span class="n">tk</span><span class="o">::</span><span class="n">real</span><span class="p">,</span> <span class="n">tk</span><span class="o">::</span><span class="n">real</span><span class="p">,</span> <span class="n">tk</span><span class="o">::</span><span class="n">real</span><span class="p">,</span>
               <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">array</span><span class="o">&lt;</span> <span class="n">tk</span><span class="o">::</span><span class="n">real</span><span class="p">,</span> <span class="mi">3</span> <span class="o">&gt;&amp;</span> <span class="n">fn</span> <span class="p">)</span>
     <span class="p">{</span>
       <span class="k">const</span> <span class="k">auto</span> <span class="n">nmat</span> <span class="o">=</span>
         <span class="n">g_inputdeck</span><span class="p">.</span><span class="n">get</span><span class="o">&lt;</span> <span class="n">tag</span><span class="o">::</span><span class="n">param</span><span class="p">,</span> <span class="n">tag</span><span class="o">::</span><span class="n">multimat</span><span class="p">,</span> <span class="n">tag</span><span class="o">::</span><span class="n">nmat</span> <span class="o">&gt;</span><span class="p">()[</span><span class="n">system</span><span class="p">];</span>
+
+      <span class="n">Assert</span><span class="p">(</span> <span class="n">ul</span><span class="p">.</span><span class="n">size</span><span class="p">()</span> <span class="o">==</span> <span class="n">ncomp</span><span class="o">+</span><span class="mi">3</span><span class="p">,</span> <span class="s">&quot;Incorrect size for appended internal &quot;</span>
+              <span class="s">&quot;state vector&quot;</span> <span class="p">);</span>
 
       <span class="n">tk</span><span class="o">::</span><span class="n">real</span> <span class="n">rho</span><span class="p">(</span><span class="mf">0.0</span><span class="p">);</span>
       <span class="k">for</span> <span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="n">k</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">k</span><span class="o">&lt;</span><span class="n">nmat</span><span class="p">;</span> <span class="o">++</span><span class="n">k</span><span class="p">)</span>
@@ -793,6 +938,26 @@
       <span class="n">ur</span><span class="p">[</span><span class="n">momentumIdx</span><span class="p">(</span><span class="n">nmat</span><span class="p">,</span> <span class="mi">0</span><span class="p">)]</span> <span class="o">=</span> <span class="n">rho</span> <span class="o">*</span> <span class="n">v1r</span><span class="p">;</span>
       <span class="n">ur</span><span class="p">[</span><span class="n">momentumIdx</span><span class="p">(</span><span class="n">nmat</span><span class="p">,</span> <span class="mi">1</span><span class="p">)]</span> <span class="o">=</span> <span class="n">rho</span> <span class="o">*</span> <span class="n">v2r</span><span class="p">;</span>
       <span class="n">ur</span><span class="p">[</span><span class="n">momentumIdx</span><span class="p">(</span><span class="n">nmat</span><span class="p">,</span> <span class="mi">2</span><span class="p">)]</span> <span class="o">=</span> <span class="n">rho</span> <span class="o">*</span> <span class="n">v3r</span><span class="p">;</span>
+
+      <span class="c1">// Internal cell velocity components using the reconstructed primitive</span>
+      <span class="c1">// quantities. This is used to get ghost state for primitive quantities</span>
+      <span class="n">v1l</span> <span class="o">=</span> <span class="n">ul</span><span class="p">[</span><span class="n">ncomp</span><span class="p">];</span>
+      <span class="n">v2l</span> <span class="o">=</span> <span class="n">ul</span><span class="p">[</span><span class="n">ncomp</span><span class="o">+</span><span class="mi">1</span><span class="p">];</span>
+      <span class="n">v3l</span> <span class="o">=</span> <span class="n">ul</span><span class="p">[</span><span class="n">ncomp</span><span class="o">+</span><span class="mi">2</span><span class="p">];</span>
+      <span class="c1">// Normal component of velocity</span>
+      <span class="n">vnl</span> <span class="o">=</span> <span class="n">v1l</span><span class="o">*</span><span class="n">fn</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">v2l</span><span class="o">*</span><span class="n">fn</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">v3l</span><span class="o">*</span><span class="n">fn</span><span class="p">[</span><span class="mi">2</span><span class="p">];</span>
+      <span class="c1">// Ghost state velocity components</span>
+      <span class="n">v1r</span> <span class="o">=</span> <span class="n">v1l</span> <span class="o">-</span> <span class="mf">2.0</span><span class="o">*</span><span class="n">vnl</span><span class="o">*</span><span class="n">fn</span><span class="p">[</span><span class="mi">0</span><span class="p">];</span>
+      <span class="n">v2r</span> <span class="o">=</span> <span class="n">v2l</span> <span class="o">-</span> <span class="mf">2.0</span><span class="o">*</span><span class="n">vnl</span><span class="o">*</span><span class="n">fn</span><span class="p">[</span><span class="mi">1</span><span class="p">];</span>
+      <span class="n">v3r</span> <span class="o">=</span> <span class="n">v3l</span> <span class="o">-</span> <span class="mf">2.0</span><span class="o">*</span><span class="n">vnl</span><span class="o">*</span><span class="n">fn</span><span class="p">[</span><span class="mi">2</span><span class="p">];</span>
+      <span class="c1">// get primitives in boundary state</span>
+      <span class="n">ur</span><span class="p">[</span><span class="n">ncomp</span><span class="p">]</span> <span class="o">=</span> <span class="n">v1r</span><span class="p">;</span>
+      <span class="n">ur</span><span class="p">[</span><span class="n">ncomp</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">v2r</span><span class="p">;</span>
+      <span class="n">ur</span><span class="p">[</span><span class="n">ncomp</span><span class="o">+</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="n">v3r</span><span class="p">;</span>
+
+      <span class="n">Assert</span><span class="p">(</span> <span class="n">ur</span><span class="p">.</span><span class="n">size</span><span class="p">()</span> <span class="o">==</span> <span class="n">ncomp</span><span class="o">+</span><span class="mi">3</span><span class="p">,</span> <span class="s">&quot;Incorrect size for appended boundary &quot;</span>
+              <span class="s">&quot;state vector&quot;</span> <span class="p">);</span>
+
       <span class="k">return</span> <span class="p">{{</span> <span class="n">std</span><span class="o">::</span><span class="n">move</span><span class="p">(</span><span class="n">ul</span><span class="p">),</span> <span class="n">std</span><span class="o">::</span><span class="n">move</span><span class="p">(</span><span class="n">ur</span><span class="p">)</span> <span class="p">}};</span>
     <span class="p">}</span>
 
@@ -853,7 +1018,7 @@
   <div class="m-container">
     <div class="m-row">
       <div class="m-col-l-10 m-push-l-1">
-        <p>Quinoa docs, part of the <a href="http://quinoacomputing.org/">Quinoa project</a>. Copyright © J. Bakosi 2012&ndash;2015, Los Alamos National Security, LLC, 2016&ndash;2018, <a href="https://www.triadns.org/">Triad National Security, LLC,</a> 2019. Generated on Monday, Jul 29, 2019 based on <a href="https://github.com/quinoacomputing/quinoa/commit/f5bbdb9">f5bbdb9</a> by <a href="http://doxygen.org/">Doxygen</a> and <a href="http://mcss.mosra.cz/">m.css</a>. Contact us via <a href="https://github.com/quinoacomputing/quinoa/">GitHub</a>, <a href="https://groups.io/g/quinoa">Email</a> or <a href="https://https://quinoa.zulipchat.com">Chat</a>.</p>
+        <p>Quinoa docs, part of the <a href="http://quinoacomputing.org/">Quinoa project</a>. Copyright © J. Bakosi 2012&ndash;2015, Los Alamos National Security, LLC, 2016&ndash;2018, <a href="https://www.triadns.org/">Triad National Security, LLC,</a> 2019. Generated on Thursday, Aug 01, 2019 based on <a href="https://github.com/quinoacomputing/quinoa/commit/d1a8e94">d1a8e94</a> by <a href="http://doxygen.org/">Doxygen</a> and <a href="http://mcss.mosra.cz/">m.css</a>. Contact us via <a href="https://github.com/quinoacomputing/quinoa/">GitHub</a>, <a href="https://groups.io/g/quinoa">Email</a> or <a href="https://https://quinoa.zulipchat.com">Chat</a>.</p>
       </div>
     </div>
   </div>
