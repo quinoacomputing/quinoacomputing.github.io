@@ -517,6 +517,7 @@
 <span class="c1">//    //! \param[in] ndofel Vector of local number of degrees of freedom</span>
     <span class="c1">//! \param[in] U Solution vector at recent time step</span>
     <span class="c1">//! \param[in] P Vector of primitive quantities at recent time step</span>
+    <span class="c1">//! \param[in] nielem Number of internal elements</span>
     <span class="c1">//! \return Minimum time step size</span>
     <span class="n">tk</span><span class="o">::</span><span class="n">real</span> <span class="n">dt</span><span class="p">(</span> <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">array</span><span class="o">&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span> <span class="n">tk</span><span class="o">::</span><span class="n">real</span> <span class="o">&gt;</span><span class="p">,</span> <span class="mi">3</span> <span class="o">&gt;&amp;</span> <span class="n">coord</span><span class="p">,</span>
                  <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span> <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="o">&gt;&amp;</span> <span class="n">inpoel</span><span class="p">,</span>
@@ -525,7 +526,8 @@
                  <span class="k">const</span> <span class="n">tk</span><span class="o">::</span><span class="n">Fields</span><span class="o">&amp;</span> <span class="n">geoElem</span><span class="p">,</span>
                  <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span> <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="o">&gt;&amp;</span> <span class="cm">/*ndofel*/</span><span class="p">,</span>
                  <span class="k">const</span> <span class="n">tk</span><span class="o">::</span><span class="n">Fields</span><span class="o">&amp;</span> <span class="n">U</span><span class="p">,</span>
-                 <span class="k">const</span> <span class="n">tk</span><span class="o">::</span><span class="n">Fields</span><span class="o">&amp;</span> <span class="n">P</span> <span class="p">)</span> <span class="k">const</span>
+                 <span class="k">const</span> <span class="n">tk</span><span class="o">::</span><span class="n">Fields</span><span class="o">&amp;</span> <span class="n">P</span><span class="p">,</span>
+                 <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="n">nielem</span> <span class="p">)</span> <span class="k">const</span>
     <span class="p">{</span>
       <span class="k">const</span> <span class="k">auto</span> <span class="n">ndof</span> <span class="o">=</span> <span class="n">g_inputdeck</span><span class="p">.</span><span class="n">get</span><span class="o">&lt;</span> <span class="n">tag</span><span class="o">::</span><span class="n">discr</span><span class="p">,</span> <span class="n">tag</span><span class="o">::</span><span class="n">ndof</span> <span class="o">&gt;</span><span class="p">();</span>
       <span class="k">const</span> <span class="k">auto</span> <span class="n">rdof</span> <span class="o">=</span> <span class="n">g_inputdeck</span><span class="p">.</span><span class="n">get</span><span class="o">&lt;</span> <span class="n">tag</span><span class="o">::</span><span class="n">discr</span><span class="p">,</span> <span class="n">tag</span><span class="o">::</span><span class="n">rdof</span> <span class="o">&gt;</span><span class="p">();</span>
@@ -556,7 +558,7 @@
       <span class="c1">// get quadrature point weights and coordinates for triangle</span>
       <span class="n">tk</span><span class="o">::</span><span class="n">GaussQuadratureTri</span><span class="p">(</span> <span class="n">ng</span><span class="p">,</span> <span class="n">coordgp</span><span class="p">,</span> <span class="n">wgp</span> <span class="p">);</span>
 
-      <span class="c1">// compute internal surface maximum characteristic speed</span>
+      <span class="c1">// compute maximum characteristic speed at all internal element faces</span>
       <span class="k">for</span> <span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="n">f</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">f</span><span class="o">&lt;</span><span class="n">esuf</span><span class="p">.</span><span class="n">size</span><span class="p">()</span><span class="o">/</span><span class="mi">2</span><span class="p">;</span> <span class="o">++</span><span class="n">f</span><span class="p">)</span>
       <span class="p">{</span>
         <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="n">el</span> <span class="o">=</span> <span class="k">static_cast</span><span class="o">&lt;</span> <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="o">&gt;</span><span class="p">(</span><span class="n">esuf</span><span class="p">[</span><span class="mi">2</span><span class="o">*</span><span class="n">f</span><span class="p">]);</span>
@@ -599,22 +601,25 @@
 
           <span class="n">std</span><span class="o">::</span><span class="n">array</span><span class="o">&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span> <span class="n">tk</span><span class="o">::</span><span class="n">real</span> <span class="o">&gt;</span><span class="p">,</span> <span class="mi">2</span> <span class="o">&gt;</span> <span class="n">ugp</span><span class="p">,</span> <span class="n">pgp</span><span class="p">;</span>
 
-          <span class="c1">// left element</span>
+          <span class="c1">// get left element conserved quantities</span>
           <span class="k">for</span> <span class="p">(</span><span class="n">ncomp_t</span> <span class="n">c</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">c</span><span class="o">&lt;</span><span class="n">m_ncomp</span><span class="p">;</span> <span class="o">++</span><span class="n">c</span><span class="p">)</span>
           <span class="p">{</span>
             <span class="k">auto</span> <span class="n">mark</span> <span class="o">=</span> <span class="n">c</span><span class="o">*</span><span class="n">rdof</span><span class="p">;</span>
             <span class="n">ugp</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="n">push_back</span><span class="p">(</span> <span class="n">U</span><span class="p">(</span><span class="n">el</span><span class="p">,</span> <span class="n">mark</span><span class="p">,</span> <span class="n">m_offset</span><span class="p">)</span> <span class="p">);</span>
           <span class="p">}</span>
+          <span class="c1">// get left element primitive quantities</span>
           <span class="k">for</span> <span class="p">(</span><span class="n">ncomp_t</span> <span class="n">c</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">c</span><span class="o">&lt;</span><span class="n">nprim</span><span class="p">();</span> <span class="o">++</span><span class="n">c</span><span class="p">)</span>
           <span class="p">{</span>
             <span class="k">auto</span> <span class="n">mark</span> <span class="o">=</span> <span class="n">c</span><span class="o">*</span><span class="n">rdof</span><span class="p">;</span>
             <span class="n">pgp</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="n">push_back</span><span class="p">(</span> <span class="n">P</span><span class="p">(</span><span class="n">el</span><span class="p">,</span> <span class="n">mark</span><span class="p">,</span> <span class="n">m_offset</span><span class="p">)</span> <span class="p">);</span>
           <span class="p">}</span>
 
+          <span class="c1">// advection velocity</span>
           <span class="n">u</span> <span class="o">=</span> <span class="n">pgp</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="n">velocityIdx</span><span class="p">(</span><span class="n">nmat</span><span class="p">,</span> <span class="mi">0</span><span class="p">)];</span>
           <span class="n">v</span> <span class="o">=</span> <span class="n">pgp</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="n">velocityIdx</span><span class="p">(</span><span class="n">nmat</span><span class="p">,</span> <span class="mi">1</span><span class="p">)];</span>
           <span class="n">w</span> <span class="o">=</span> <span class="n">pgp</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="n">velocityIdx</span><span class="p">(</span><span class="n">nmat</span><span class="p">,</span> <span class="mi">2</span><span class="p">)];</span>
 
+          <span class="c1">// acoustic speed</span>
           <span class="n">a</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">;</span>
           <span class="k">for</span> <span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="n">k</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">k</span><span class="o">&lt;</span><span class="n">nmat</span><span class="p">;</span> <span class="o">++</span><span class="n">k</span><span class="p">)</span>
           <span class="p">{</span>
@@ -656,21 +661,25 @@
              <span class="n">tk</span><span class="o">::</span><span class="n">Jacobian</span><span class="p">(</span><span class="n">coordel_r</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">coordel_r</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">gp</span><span class="p">,</span> <span class="n">coordel_r</span><span class="p">[</span><span class="mi">3</span><span class="p">])</span><span class="o">/</span><span class="n">detT_r</span><span class="p">,</span>
              <span class="n">tk</span><span class="o">::</span><span class="n">Jacobian</span><span class="p">(</span><span class="n">coordel_r</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">coordel_r</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">coordel_r</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">gp</span><span class="p">)</span><span class="o">/</span><span class="n">detT_r</span><span class="p">);</span>
 
+            <span class="c1">// get right element conserved quantities</span>
             <span class="k">for</span> <span class="p">(</span><span class="n">ncomp_t</span> <span class="n">c</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">c</span><span class="o">&lt;</span><span class="n">m_ncomp</span><span class="p">;</span> <span class="o">++</span><span class="n">c</span><span class="p">)</span>
             <span class="p">{</span>
               <span class="k">auto</span> <span class="n">mark</span> <span class="o">=</span> <span class="n">c</span><span class="o">*</span><span class="n">rdof</span><span class="p">;</span>
               <span class="n">ugp</span><span class="p">[</span><span class="mi">1</span><span class="p">].</span><span class="n">push_back</span><span class="p">(</span> <span class="n">U</span><span class="p">(</span><span class="n">eR</span><span class="p">,</span> <span class="n">mark</span><span class="p">,</span> <span class="n">m_offset</span><span class="p">)</span> <span class="p">);</span>
             <span class="p">}</span>
+            <span class="c1">// get right element primitive quantities</span>
             <span class="k">for</span> <span class="p">(</span><span class="n">ncomp_t</span> <span class="n">c</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">c</span><span class="o">&lt;</span><span class="n">nprim</span><span class="p">();</span> <span class="o">++</span><span class="n">c</span><span class="p">)</span>
             <span class="p">{</span>
               <span class="k">auto</span> <span class="n">mark</span> <span class="o">=</span> <span class="n">c</span><span class="o">*</span><span class="n">rdof</span><span class="p">;</span>
               <span class="n">pgp</span><span class="p">[</span><span class="mi">1</span><span class="p">].</span><span class="n">push_back</span><span class="p">(</span> <span class="n">P</span><span class="p">(</span><span class="n">eR</span><span class="p">,</span> <span class="n">mark</span><span class="p">,</span> <span class="n">m_offset</span><span class="p">)</span> <span class="p">);</span>
             <span class="p">}</span>
 
+            <span class="c1">// advection velocity</span>
             <span class="n">u</span> <span class="o">=</span> <span class="n">pgp</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="n">velocityIdx</span><span class="p">(</span><span class="n">nmat</span><span class="p">,</span> <span class="mi">0</span><span class="p">)];</span>
             <span class="n">v</span> <span class="o">=</span> <span class="n">pgp</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="n">velocityIdx</span><span class="p">(</span><span class="n">nmat</span><span class="p">,</span> <span class="mi">1</span><span class="p">)];</span>
             <span class="n">w</span> <span class="o">=</span> <span class="n">pgp</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="n">velocityIdx</span><span class="p">(</span><span class="n">nmat</span><span class="p">,</span> <span class="mi">2</span><span class="p">)];</span>
 
+            <span class="c1">// acoustic speed</span>
             <span class="n">a</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">;</span>
             <span class="k">for</span> <span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="n">k</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">k</span><span class="o">&lt;</span><span class="n">nmat</span><span class="p">;</span> <span class="o">++</span><span class="n">k</span><span class="p">)</span>
             <span class="p">{</span>
@@ -694,7 +703,7 @@
       <span class="n">tk</span><span class="o">::</span><span class="n">real</span> <span class="n">mindt</span> <span class="o">=</span> <span class="n">std</span><span class="o">::</span><span class="n">numeric_limits</span><span class="o">&lt;</span> <span class="n">tk</span><span class="o">::</span><span class="n">real</span> <span class="o">&gt;::</span><span class="n">max</span><span class="p">();</span>
 
       <span class="c1">// compute allowable dt</span>
-      <span class="k">for</span> <span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="n">e</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">e</span><span class="o">&lt;</span><span class="n">U</span><span class="p">.</span><span class="n">nunk</span><span class="p">();</span> <span class="o">++</span><span class="n">e</span><span class="p">)</span>
+      <span class="k">for</span> <span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="n">e</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">e</span><span class="o">&lt;</span><span class="n">nielem</span><span class="p">;</span> <span class="o">++</span><span class="n">e</span><span class="p">)</span>
       <span class="p">{</span>
         <span class="n">mindt</span> <span class="o">=</span> <span class="n">std</span><span class="o">::</span><span class="n">min</span><span class="p">(</span> <span class="n">mindt</span><span class="p">,</span> <span class="n">geoElem</span><span class="p">(</span><span class="n">e</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span><span class="o">/</span><span class="n">delt</span><span class="p">[</span><span class="n">e</span><span class="p">]</span> <span class="p">);</span>
       <span class="p">}</span>
@@ -998,17 +1007,7 @@
       <span class="c1">// Internal cell primitive quantities using the separately reconstructed</span>
       <span class="c1">// primitive quantities. This is used to get ghost state for primitive</span>
       <span class="c1">// quantities</span>
-      <span class="n">v1l</span> <span class="o">=</span> <span class="n">ul</span><span class="p">[</span><span class="n">ncomp</span><span class="o">+</span><span class="n">velocityIdx</span><span class="p">(</span><span class="n">nmat</span><span class="p">,</span> <span class="mi">0</span><span class="p">)];</span>
-      <span class="n">v2l</span> <span class="o">=</span> <span class="n">ul</span><span class="p">[</span><span class="n">ncomp</span><span class="o">+</span><span class="n">velocityIdx</span><span class="p">(</span><span class="n">nmat</span><span class="p">,</span> <span class="mi">1</span><span class="p">)];</span>
-      <span class="n">v3l</span> <span class="o">=</span> <span class="n">ul</span><span class="p">[</span><span class="n">ncomp</span><span class="o">+</span><span class="n">velocityIdx</span><span class="p">(</span><span class="n">nmat</span><span class="p">,</span> <span class="mi">2</span><span class="p">)];</span>
-      <span class="c1">// Normal component of velocity</span>
-      <span class="n">vnl</span> <span class="o">=</span> <span class="n">v1l</span><span class="o">*</span><span class="n">fn</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">v2l</span><span class="o">*</span><span class="n">fn</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">v3l</span><span class="o">*</span><span class="n">fn</span><span class="p">[</span><span class="mi">2</span><span class="p">];</span>
-      <span class="c1">// Ghost state velocity components</span>
-      <span class="n">v1r</span> <span class="o">=</span> <span class="n">v1l</span> <span class="o">-</span> <span class="mf">2.0</span><span class="o">*</span><span class="n">vnl</span><span class="o">*</span><span class="n">fn</span><span class="p">[</span><span class="mi">0</span><span class="p">];</span>
-      <span class="n">v2r</span> <span class="o">=</span> <span class="n">v2l</span> <span class="o">-</span> <span class="mf">2.0</span><span class="o">*</span><span class="n">vnl</span><span class="o">*</span><span class="n">fn</span><span class="p">[</span><span class="mi">1</span><span class="p">];</span>
-      <span class="n">v3r</span> <span class="o">=</span> <span class="n">v3l</span> <span class="o">-</span> <span class="mf">2.0</span><span class="o">*</span><span class="n">vnl</span><span class="o">*</span><span class="n">fn</span><span class="p">[</span><span class="mi">2</span><span class="p">];</span>
 
-      <span class="c1">// get primitives in boundary state</span>
       <span class="c1">// velocity</span>
       <span class="n">ur</span><span class="p">[</span><span class="n">ncomp</span><span class="o">+</span><span class="n">velocityIdx</span><span class="p">(</span><span class="n">nmat</span><span class="p">,</span> <span class="mi">0</span><span class="p">)]</span> <span class="o">=</span> <span class="n">v1r</span><span class="p">;</span>
       <span class="n">ur</span><span class="p">[</span><span class="n">ncomp</span><span class="o">+</span><span class="n">velocityIdx</span><span class="p">(</span><span class="n">nmat</span><span class="p">,</span> <span class="mi">1</span><span class="p">)]</span> <span class="o">=</span> <span class="n">v2r</span><span class="p">;</span>
@@ -1082,7 +1081,7 @@
   <div class="m-container">
     <div class="m-row">
       <div class="m-col-l-10 m-push-l-1">
-        <p>Quinoa docs, part of the <a href="http://quinoacomputing.org/">Quinoa project</a>. Copyright © J. Bakosi 2012&ndash;2015, Los Alamos National Security, LLC, 2016&ndash;2018, <a href="https://www.triadns.org/">Triad National Security, LLC,</a> 2019. Generated on Saturday, Oct 12, 2019 based on <a href="https://github.com/quinoacomputing/quinoa/commit/f8f884d">f8f884d</a> by <a href="http://doxygen.org/">Doxygen</a> and <a href="http://mcss.mosra.cz/">m.css</a>. Contact us via <a href="https://github.com/quinoacomputing/quinoa/">GitHub</a>, <a href="https://groups.io/g/quinoa">Email</a> or <a href="https://quinoa.zulipchat.com">Chat</a>.</p>
+        <p>Quinoa docs, part of the <a href="http://quinoacomputing.org/">Quinoa project</a>. Copyright © J. Bakosi 2012&ndash;2015, Los Alamos National Security, LLC, 2016&ndash;2018, <a href="https://www.triadns.org/">Triad National Security, LLC,</a> 2019. Generated on Monday, Oct 21, 2019 based on <a href="https://github.com/quinoacomputing/quinoa/commit/0e1087c">0e1087c</a> by <a href="http://doxygen.org/">Doxygen</a> and <a href="http://mcss.mosra.cz/">m.css</a>. Contact us via <a href="https://github.com/quinoacomputing/quinoa/">GitHub</a>, <a href="https://groups.io/g/quinoa">Email</a> or <a href="https://quinoa.zulipchat.com">Chat</a>.</p>
       </div>
     </div>
   </div>
