@@ -3,7 +3,7 @@
 <html lang="en">
   <head>
     <meta charset="utf-8">
-    <title>Cppcheck - HTML report - [<a href=https://github.com/quinoacomputing/quinoa/commit/265b730>Quinoa_v0.2-3582-g265b730</a>]</title>
+    <title>Cppcheck - HTML report - [<a href=https://github.com/quinoacomputing/quinoa/commit/2a048ea>Quinoa_v0.2-3593-g2a048ea</a>]</title>
     <link rel="stylesheet" href="style.css">
     <style>
 .highlight .hll { background-color: #ffffcc }
@@ -124,11 +124,11 @@
   </head>
   <body onload="init_expandables()">
       <div id="header">
-        <h1>Cppcheck report - [<a href=https://github.com/quinoacomputing/quinoa/commit/265b730>Quinoa_v0.2-3582-g265b730</a>]: /tmp/TeamCity-12/work/821a9fd6f64749d9/src/PDE/Limiter.cpp </h1>
+        <h1>Cppcheck report - [<a href=https://github.com/quinoacomputing/quinoa/commit/2a048ea>Quinoa_v0.2-3593-g2a048ea</a>]: /tmp/TeamCity-12/work/821a9fd6f64749d9/src/PDE/Reconstruction.cpp </h1>
       </div>
       <div id="menu" dir="rtl">
-       <p id="filename"><a href="index.html">Defects:</a> Limiter.cpp</p>
-<a href='28.html#line-437'> useStlAlgorithm 437</a>
+       <p id="filename"><a href="index.html">Defects:</a> Reconstruction.cpp</p>
+<a href='28.html#line-37'> unreadVariable 37</a><a href='28.html#line-128'> unreadVariable 128</a>
       </div>
       <div id="content">
 <table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>  1
@@ -577,17 +577,19 @@
 444
 445
 446
-447</pre></div></td><td class="code"><div class="highlight"><pre><span></span><a name="line-1"></a><span class="c1">// *****************************************************************************</span>
+447
+448
+449</pre></div></td><td class="code"><div class="highlight"><pre><span></span><a name="line-1"></a><span class="c1">// *****************************************************************************</span>
 <a name="line-2"></a><span class="cm">/*!</span>
-<a name="line-3"></a><span class="cm">  \file      src/PDE/Limiter.cpp</span>
+<a name="line-3"></a><span class="cm">  \file      src/PDE/Reconstruction.cpp</span>
 <a name="line-4"></a><span class="cm">  \copyright 2012-2015 J. Bakosi,</span>
 <a name="line-5"></a><span class="cm">             2016-2018 Los Alamos National Security, LLC.,</span>
 <a name="line-6"></a><span class="cm">             2019 Triad National Security, LLC.</span>
 <a name="line-7"></a><span class="cm">             All rights reserved. See the LICENSE file for details.</span>
-<a name="line-8"></a><span class="cm">  \brief     Limiters for discontiunous Galerkin methods</span>
-<a name="line-9"></a><span class="cm">  \details   This file contains functions that provide limiter function</span>
-<a name="line-10"></a><span class="cm">    calculations for maintaining monotonicity near solution discontinuities</span>
-<a name="line-11"></a><span class="cm">    for the DG discretization.</span>
+<a name="line-8"></a><span class="cm">  \brief     Reconstruction for reconstructed discontinuous Galerkin methods</span>
+<a name="line-9"></a><span class="cm">  \details   This file contains functions that reconstruct an &quot;n&quot;th order</span>
+<a name="line-10"></a><span class="cm">    polynomial to an &quot;n+1&quot;th order polynomial using a least-squares</span>
+<a name="line-11"></a><span class="cm">    reconstruction procedure.</span>
 <a name="line-12"></a><span class="cm">*/</span>
 <a name="line-13"></a><span class="c1">// *****************************************************************************</span>
 <a name="line-14"></a>
@@ -595,435 +597,437 @@
 <a name="line-16"></a><span class="cp">#include</span> <span class="cpf">&lt;vector&gt;</span><span class="cp"></span>
 <a name="line-17"></a>
 <a name="line-18"></a><span class="cp">#include</span> <span class="cpf">&quot;Vector.hpp&quot;</span><span class="cp"></span>
-<a name="line-19"></a><span class="cp">#include</span> <span class="cpf">&quot;Limiter.hpp&quot;</span><span class="cp"></span>
-<a name="line-20"></a><span class="cp">#include</span> <span class="cpf">&quot;DerivedData.hpp&quot;</span><span class="cp"></span>
-<a name="line-21"></a><span class="cp">#include</span> <span class="cpf">&quot;Integrate/Quadrature.hpp&quot;</span><span class="cp"></span>
-<a name="line-22"></a><span class="cp">#include</span> <span class="cpf">&quot;Integrate/Basis.hpp&quot;</span><span class="cp"></span>
-<a name="line-23"></a><span class="cp">#include</span> <span class="cpf">&quot;Inciter/InputDeck/InputDeck.hpp&quot;</span><span class="cp"></span>
-<a name="line-24"></a>
-<a name="line-25"></a><span class="k">namespace</span> <span class="n">inciter</span> <span class="p">{</span>
-<a name="line-26"></a>
-<a name="line-27"></a><span class="k">extern</span> <span class="n">ctr</span><span class="o">::</span><span class="n">InputDeck</span> <span class="n">g_inputdeck</span><span class="p">;</span>
-<a name="line-28"></a>
-<a name="line-29"></a><span class="kt">void</span>
-<a name="line-30"></a><span class="nf">WENO_P1</span><span class="p">(</span> <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span> <span class="kt">int</span> <span class="o">&gt;&amp;</span> <span class="n">esuel</span><span class="p">,</span>
-<a name="line-31"></a>         <span class="n">inciter</span><span class="o">::</span><span class="n">ncomp_t</span> <span class="n">offset</span><span class="p">,</span>
-<a name="line-32"></a>         <span class="n">tk</span><span class="o">::</span><span class="n">Fields</span><span class="o">&amp;</span> <span class="n">U</span> <span class="p">)</span>
-<a name="line-33"></a><span class="c1">// *****************************************************************************</span>
-<a name="line-34"></a><span class="c1">//  Weighted Essentially Non-Oscillatory (WENO) limiter for DGP1</span>
-<a name="line-35"></a><span class="c1">//! \param[in] esuel Elements surrounding elements</span>
-<a name="line-36"></a><span class="c1">//! \param[in] offset Index for equation systems</span>
-<a name="line-37"></a><span class="c1">//! \param[in,out] U High-order solution vector which gets limited</span>
-<a name="line-38"></a><span class="c1">//! \note This limiter function is experimental and untested. Use with caution.</span>
-<a name="line-39"></a><span class="c1">// *****************************************************************************</span>
-<a name="line-40"></a><span class="p">{</span>
-<a name="line-41"></a>  <span class="k">const</span> <span class="k">auto</span> <span class="n">rdof</span> <span class="o">=</span> <span class="n">inciter</span><span class="o">::</span><span class="n">g_inputdeck</span><span class="p">.</span><span class="n">get</span><span class="o">&lt;</span> <span class="n">tag</span><span class="o">::</span><span class="n">discr</span><span class="p">,</span> <span class="n">tag</span><span class="o">::</span><span class="n">rdof</span> <span class="o">&gt;</span><span class="p">();</span>
-<a name="line-42"></a>  <span class="k">const</span> <span class="k">auto</span> <span class="n">cweight</span> <span class="o">=</span> <span class="n">inciter</span><span class="o">::</span><span class="n">g_inputdeck</span><span class="p">.</span><span class="n">get</span><span class="o">&lt;</span> <span class="n">tag</span><span class="o">::</span><span class="n">discr</span><span class="p">,</span> <span class="n">tag</span><span class="o">::</span><span class="n">cweight</span> <span class="o">&gt;</span><span class="p">();</span>
-<a name="line-43"></a>  <span class="n">std</span><span class="o">::</span><span class="n">array</span><span class="o">&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span> <span class="n">tk</span><span class="o">::</span><span class="n">real</span> <span class="o">&gt;</span><span class="p">,</span> <span class="mi">3</span> <span class="o">&gt;</span> <span class="n">limU</span><span class="p">;</span>
-<a name="line-44"></a>  <span class="n">limU</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="n">resize</span><span class="p">(</span> <span class="n">U</span><span class="p">.</span><span class="n">nunk</span><span class="p">()</span> <span class="p">);</span>
-<a name="line-45"></a>  <span class="n">limU</span><span class="p">[</span><span class="mi">1</span><span class="p">].</span><span class="n">resize</span><span class="p">(</span> <span class="n">U</span><span class="p">.</span><span class="n">nunk</span><span class="p">()</span> <span class="p">);</span>
-<a name="line-46"></a>  <span class="n">limU</span><span class="p">[</span><span class="mi">2</span><span class="p">].</span><span class="n">resize</span><span class="p">(</span> <span class="n">U</span><span class="p">.</span><span class="n">nunk</span><span class="p">()</span> <span class="p">);</span>
-<a name="line-47"></a>
-<a name="line-48"></a>  <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="n">ncomp</span> <span class="o">=</span> <span class="n">U</span><span class="p">.</span><span class="n">nprop</span><span class="p">()</span><span class="o">/</span><span class="n">rdof</span><span class="p">;</span>
+<a name="line-19"></a><span class="cp">#include</span> <span class="cpf">&quot;Reconstruction.hpp&quot;</span><span class="cp"></span>
+<a name="line-20"></a>
+<a name="line-21"></a><span class="kt">void</span>
+<a name="line-22"></a><span class="n">tk</span><span class="o">::</span><span class="n">lhsLeastSq_P0P1</span><span class="p">(</span> <span class="k">const</span> <span class="n">inciter</span><span class="o">::</span><span class="n">FaceData</span><span class="o">&amp;</span> <span class="n">fd</span><span class="p">,</span>
+<a name="line-23"></a>  <span class="k">const</span> <span class="n">Fields</span><span class="o">&amp;</span> <span class="n">geoElem</span><span class="p">,</span>
+<a name="line-24"></a>  <span class="k">const</span> <span class="n">Fields</span><span class="o">&amp;</span> <span class="n">geoFace</span><span class="p">,</span>
+<a name="line-25"></a>  <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">array</span><span class="o">&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">array</span><span class="o">&lt;</span> <span class="n">real</span><span class="p">,</span> <span class="mi">3</span> <span class="o">&gt;</span><span class="p">,</span> <span class="mi">3</span> <span class="o">&gt;</span> <span class="o">&gt;&amp;</span> <span class="n">lhs_ls</span> <span class="p">)</span>
+<a name="line-26"></a><span class="c1">// *****************************************************************************</span>
+<a name="line-27"></a><span class="c1">//  Compute lhs matrix for the least-squares reconstruction</span>
+<a name="line-28"></a><span class="c1">//! \param[in] fd Face connectivity and boundary conditions object</span>
+<a name="line-29"></a><span class="c1">//! \param[in] geoElem Element geometry array</span>
+<a name="line-30"></a><span class="c1">//! \param[in] geoFace Face geometry array</span>
+<a name="line-31"></a><span class="c1">//! \param[in,out] lhs_ls LHS reconstruction matrix</span>
+<a name="line-32"></a><span class="c1">//! \details This function computing the lhs matrix for reconstruction, is</span>
+<a name="line-33"></a><span class="c1">//!   common for primitive and conserved quantities.</span>
+<a name="line-34"></a><span class="c1">// *****************************************************************************</span>
+<a name="line-35"></a><span class="p">{</span>
+<a name="line-36"></a>  <span class="k">const</span> <span class="k">auto</span><span class="o">&amp;</span> <span class="n">esuf</span> <span class="o">=</span> <span class="n">fd</span><span class="p">.</span><span class="n">Esuf</span><span class="p">();</span>
+<a name="line-37"></a><span class="hll">  <span class="k">const</span> <span class="k">auto</span> <span class="n">nelem</span> <span class="o">=</span> <span class="n">fd</span><span class="p">.</span><span class="n">Esuel</span><span class="p">().</span><span class="n">size</span><span class="p">()</span><span class="o">/</span><span class="mi">4</span><span class="p">;</span><span class='error2'>&lt;--- Variable 'nelem' is assigned a value that is never used.</span>
+</span><a name="line-38"></a>
+<a name="line-39"></a>  <span class="c1">// Compute internal and boundary face contributions</span>
+<a name="line-40"></a>  <span class="k">for</span> <span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="n">f</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">f</span><span class="o">&lt;</span><span class="n">esuf</span><span class="p">.</span><span class="n">size</span><span class="p">()</span><span class="o">/</span><span class="mi">2</span><span class="p">;</span> <span class="o">++</span><span class="n">f</span><span class="p">)</span>
+<a name="line-41"></a>  <span class="p">{</span>
+<a name="line-42"></a>    <span class="n">Assert</span><span class="p">(</span> <span class="n">esuf</span><span class="p">[</span><span class="mi">2</span><span class="o">*</span><span class="n">f</span><span class="p">]</span> <span class="o">&gt;</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="s">&quot;Left-side element detected as -1&quot;</span> <span class="p">);</span>
+<a name="line-43"></a>
+<a name="line-44"></a>    <span class="k">auto</span> <span class="n">el</span> <span class="o">=</span> <span class="k">static_cast</span><span class="o">&lt;</span> <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="o">&gt;</span><span class="p">(</span><span class="n">esuf</span><span class="p">[</span><span class="mi">2</span><span class="o">*</span><span class="n">f</span><span class="p">]);</span>
+<a name="line-45"></a>    <span class="k">auto</span> <span class="n">er</span> <span class="o">=</span> <span class="n">esuf</span><span class="p">[</span><span class="mi">2</span><span class="o">*</span><span class="n">f</span><span class="o">+</span><span class="mi">1</span><span class="p">];</span>
+<a name="line-46"></a>
+<a name="line-47"></a>    <span class="n">std</span><span class="o">::</span><span class="n">array</span><span class="o">&lt;</span> <span class="n">real</span><span class="p">,</span> <span class="mi">3</span> <span class="o">&gt;</span> <span class="n">geoElemR</span><span class="p">;</span>
+<a name="line-48"></a>    <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="n">eR</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span>
 <a name="line-49"></a>
-<a name="line-50"></a>  <span class="n">std</span><span class="o">::</span><span class="n">array</span><span class="o">&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">array</span><span class="o">&lt;</span> <span class="n">tk</span><span class="o">::</span><span class="n">real</span><span class="p">,</span> <span class="mi">3</span> <span class="o">&gt;</span><span class="p">,</span> <span class="mi">5</span> <span class="o">&gt;</span> <span class="n">gradu</span><span class="p">;</span>
-<a name="line-51"></a>  <span class="n">std</span><span class="o">::</span><span class="n">array</span><span class="o">&lt;</span> <span class="n">tk</span><span class="o">::</span><span class="n">real</span><span class="p">,</span> <span class="mi">5</span> <span class="o">&gt;</span> <span class="n">wtStencil</span><span class="p">,</span> <span class="n">osc</span><span class="p">,</span> <span class="n">wtDof</span><span class="p">;</span>
-<a name="line-52"></a>
-<a name="line-53"></a>  <span class="k">for</span> <span class="p">(</span><span class="n">inciter</span><span class="o">::</span><span class="n">ncomp_t</span> <span class="n">c</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">c</span><span class="o">&lt;</span><span class="n">ncomp</span><span class="p">;</span> <span class="o">++</span><span class="n">c</span><span class="p">)</span>
-<a name="line-54"></a>  <span class="p">{</span>
-<a name="line-55"></a>    <span class="k">auto</span> <span class="n">mark</span> <span class="o">=</span> <span class="n">c</span><span class="o">*</span><span class="n">rdof</span><span class="p">;</span>
-<a name="line-56"></a>
-<a name="line-57"></a>    <span class="k">for</span> <span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="n">e</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">e</span><span class="o">&lt;</span><span class="n">esuel</span><span class="p">.</span><span class="n">size</span><span class="p">()</span><span class="o">/</span><span class="mi">4</span><span class="p">;</span> <span class="o">++</span><span class="n">e</span><span class="p">)</span>
-<a name="line-58"></a>    <span class="p">{</span>
-<a name="line-59"></a>      <span class="c1">// reset all stencil values to zero</span>
-<a name="line-60"></a>      <span class="k">for</span> <span class="p">(</span><span class="k">auto</span><span class="o">&amp;</span> <span class="nl">g</span> <span class="p">:</span> <span class="n">gradu</span><span class="p">)</span> <span class="n">g</span><span class="p">.</span><span class="n">fill</span><span class="p">(</span><span class="mf">0.0</span><span class="p">);</span>
-<a name="line-61"></a>      <span class="n">osc</span><span class="p">.</span><span class="n">fill</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span>
-<a name="line-62"></a>      <span class="n">wtDof</span><span class="p">.</span><span class="n">fill</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span>
-<a name="line-63"></a>      <span class="n">wtStencil</span><span class="p">.</span><span class="n">fill</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span>
-<a name="line-64"></a>
-<a name="line-65"></a>      <span class="c1">// The WENO limiter uses solution data from the neighborhood in the form</span>
-<a name="line-66"></a>      <span class="c1">// of stencils to enforce non-oscillatory conditions. The immediate</span>
-<a name="line-67"></a>      <span class="c1">// (Von Neumann) neighborhood of a tetrahedral cell consists of the 4</span>
-<a name="line-68"></a>      <span class="c1">// cells that share faces with it. These are the 4 neighborhood-stencils</span>
-<a name="line-69"></a>      <span class="c1">// for the tetrahedron. The primary stencil is the tet itself. Weights are</span>
-<a name="line-70"></a>      <span class="c1">// assigned to these stencils, with the primary stencil usually assigned</span>
-<a name="line-71"></a>      <span class="c1">// the highest weight. The lower the primary/central weight, the more</span>
-<a name="line-72"></a>      <span class="c1">// dissipative the limiting effect. This central weight is usually problem</span>
-<a name="line-73"></a>      <span class="c1">// dependent. It is set higher for relatively weaker discontinuities, and</span>
-<a name="line-74"></a>      <span class="c1">// lower for stronger discontinuities.</span>
-<a name="line-75"></a>
-<a name="line-76"></a>      <span class="c1">// primary stencil</span>
-<a name="line-77"></a>      <span class="n">gradu</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">U</span><span class="p">(</span><span class="n">e</span><span class="p">,</span> <span class="n">mark</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="n">offset</span><span class="p">);</span>
-<a name="line-78"></a>      <span class="n">gradu</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">U</span><span class="p">(</span><span class="n">e</span><span class="p">,</span> <span class="n">mark</span><span class="o">+</span><span class="mi">2</span><span class="p">,</span> <span class="n">offset</span><span class="p">);</span>
-<a name="line-79"></a>      <span class="n">gradu</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="n">U</span><span class="p">(</span><span class="n">e</span><span class="p">,</span> <span class="n">mark</span><span class="o">+</span><span class="mi">3</span><span class="p">,</span> <span class="n">offset</span><span class="p">);</span>
-<a name="line-80"></a>      <span class="n">wtStencil</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">cweight</span><span class="p">;</span>
-<a name="line-81"></a>
-<a name="line-82"></a>      <span class="c1">// stencils from the neighborhood</span>
-<a name="line-83"></a>      <span class="k">for</span> <span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="n">is</span><span class="o">=</span><span class="mi">1</span><span class="p">;</span> <span class="n">is</span><span class="o">&lt;</span><span class="mi">5</span><span class="p">;</span> <span class="o">++</span><span class="n">is</span><span class="p">)</span>
-<a name="line-84"></a>      <span class="p">{</span>
-<a name="line-85"></a>        <span class="k">auto</span> <span class="n">nel</span> <span class="o">=</span> <span class="n">esuel</span><span class="p">[</span> <span class="mi">4</span><span class="o">*</span><span class="n">e</span><span class="o">+</span><span class="p">(</span><span class="n">is</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="p">];</span>
-<a name="line-86"></a>
-<a name="line-87"></a>        <span class="c1">// ignore physical domain ghosts</span>
-<a name="line-88"></a>        <span class="k">if</span> <span class="p">(</span><span class="n">nel</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
-<a name="line-89"></a>        <span class="p">{</span>
-<a name="line-90"></a>          <span class="n">gradu</span><span class="p">[</span><span class="n">is</span><span class="p">].</span><span class="n">fill</span><span class="p">(</span><span class="mf">0.0</span><span class="p">);</span>
-<a name="line-91"></a>          <span class="n">wtStencil</span><span class="p">[</span><span class="n">is</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">;</span>
-<a name="line-92"></a>          <span class="k">continue</span><span class="p">;</span>
-<a name="line-93"></a>        <span class="p">}</span>
-<a name="line-94"></a>
-<a name="line-95"></a>        <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="n">n</span> <span class="o">=</span> <span class="k">static_cast</span><span class="o">&lt;</span> <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="o">&gt;</span><span class="p">(</span> <span class="n">nel</span> <span class="p">);</span>
-<a name="line-96"></a>        <span class="n">gradu</span><span class="p">[</span><span class="n">is</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">U</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">mark</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="n">offset</span><span class="p">);</span>
-<a name="line-97"></a>        <span class="n">gradu</span><span class="p">[</span><span class="n">is</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">U</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">mark</span><span class="o">+</span><span class="mi">2</span><span class="p">,</span> <span class="n">offset</span><span class="p">);</span>
-<a name="line-98"></a>        <span class="n">gradu</span><span class="p">[</span><span class="n">is</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="n">U</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">mark</span><span class="o">+</span><span class="mi">3</span><span class="p">,</span> <span class="n">offset</span><span class="p">);</span>
-<a name="line-99"></a>        <span class="n">wtStencil</span><span class="p">[</span><span class="n">is</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">;</span>
-<a name="line-100"></a>      <span class="p">}</span>
+<a name="line-50"></a>    <span class="c1">// A second-order (piecewise linear) solution polynomial can be obtained</span>
+<a name="line-51"></a>    <span class="c1">// from the first-order (piecewise constant) FV solutions by using a</span>
+<a name="line-52"></a>    <span class="c1">// least-squares (LS) reconstruction process. LS uses the first-order</span>
+<a name="line-53"></a>    <span class="c1">// solutions from the cell being processed, and the cells surrounding it.</span>
+<a name="line-54"></a>    <span class="c1">// The LS system is obtaining by requiring the following to hold:</span>
+<a name="line-55"></a>    <span class="c1">// &#39;Taylor expansions of solution from cell-i to the centroids of each of</span>
+<a name="line-56"></a>    <span class="c1">// its neighboring cells should be equal to the cell average solution on</span>
+<a name="line-57"></a>    <span class="c1">// that neighbor cell.&#39;</span>
+<a name="line-58"></a>    <span class="c1">// This gives a system of equations for the three second-order DOFs that are</span>
+<a name="line-59"></a>    <span class="c1">// to be determined. In 3D tetrahedral meshes, this would give four</span>
+<a name="line-60"></a>    <span class="c1">// equations (one for each neighbor )for the three unknown DOFs. This</span>
+<a name="line-61"></a>    <span class="c1">// overdetermined system is solved in the least-squares sense using the</span>
+<a name="line-62"></a>    <span class="c1">// normal equations approach. The normal equations approach involves</span>
+<a name="line-63"></a>    <span class="c1">// pre-multiplying the overdetermined system by the transpose of the system</span>
+<a name="line-64"></a>    <span class="c1">// matrix to obtain a square matrix (3x3 in this case).</span>
+<a name="line-65"></a>
+<a name="line-66"></a>    <span class="c1">// get a 3x3 system by applying the normal equation approach to the</span>
+<a name="line-67"></a>    <span class="c1">// least-squares overdetermined system</span>
+<a name="line-68"></a>
+<a name="line-69"></a>    <span class="k">if</span> <span class="p">(</span><span class="n">er</span> <span class="o">&gt;</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="p">{</span>
+<a name="line-70"></a>    <span class="c1">// internal face contribution</span>
+<a name="line-71"></a>      <span class="n">eR</span> <span class="o">=</span> <span class="k">static_cast</span><span class="o">&lt;</span> <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="o">&gt;</span><span class="p">(</span><span class="n">er</span><span class="p">);</span>
+<a name="line-72"></a>      <span class="c1">// Put in cell-centroid coordinates</span>
+<a name="line-73"></a>      <span class="n">geoElemR</span> <span class="o">=</span> <span class="p">{{</span> <span class="n">geoElem</span><span class="p">(</span><span class="n">eR</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">),</span> <span class="n">geoElem</span><span class="p">(</span><span class="n">eR</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">0</span><span class="p">),</span> <span class="n">geoElem</span><span class="p">(</span><span class="n">eR</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span> <span class="p">}};</span>
+<a name="line-74"></a>    <span class="p">}</span>
+<a name="line-75"></a>    <span class="k">else</span> <span class="p">{</span>
+<a name="line-76"></a>    <span class="c1">// boundary face contribution</span>
+<a name="line-77"></a>      <span class="c1">// Put in face-centroid coordinates</span>
+<a name="line-78"></a>      <span class="n">geoElemR</span> <span class="o">=</span> <span class="p">{{</span> <span class="n">geoFace</span><span class="p">(</span><span class="n">f</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">0</span><span class="p">),</span> <span class="n">geoFace</span><span class="p">(</span><span class="n">f</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">0</span><span class="p">),</span> <span class="n">geoFace</span><span class="p">(</span><span class="n">f</span><span class="p">,</span><span class="mi">6</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span> <span class="p">}};</span>
+<a name="line-79"></a>    <span class="p">}</span>
+<a name="line-80"></a>
+<a name="line-81"></a>    <span class="n">std</span><span class="o">::</span><span class="n">array</span><span class="o">&lt;</span> <span class="n">real</span><span class="p">,</span> <span class="mi">3</span> <span class="o">&gt;</span> <span class="n">wdeltax</span><span class="p">{{</span> <span class="n">geoElemR</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">-</span><span class="n">geoElem</span><span class="p">(</span><span class="n">el</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">),</span>
+<a name="line-82"></a>                                    <span class="n">geoElemR</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">-</span><span class="n">geoElem</span><span class="p">(</span><span class="n">el</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">0</span><span class="p">),</span>
+<a name="line-83"></a>                                    <span class="n">geoElemR</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">-</span><span class="n">geoElem</span><span class="p">(</span><span class="n">el</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span> <span class="p">}};</span>
+<a name="line-84"></a>
+<a name="line-85"></a>    <span class="c1">// define a lambda for contributing to lhs matrix</span>
+<a name="line-86"></a>    <span class="k">auto</span> <span class="n">lhs</span> <span class="o">=</span> <span class="p">[</span><span class="o">&amp;</span><span class="p">](</span> <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="n">e</span> <span class="p">){</span>
+<a name="line-87"></a>    <span class="k">for</span> <span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="n">idir</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">idir</span><span class="o">&lt;</span><span class="mi">3</span><span class="p">;</span> <span class="o">++</span><span class="n">idir</span><span class="p">)</span>
+<a name="line-88"></a>      <span class="k">for</span> <span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="n">jdir</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">jdir</span><span class="o">&lt;</span><span class="mi">3</span><span class="p">;</span> <span class="o">++</span><span class="n">jdir</span><span class="p">)</span>
+<a name="line-89"></a>        <span class="n">lhs_ls</span><span class="p">[</span><span class="n">e</span><span class="p">][</span><span class="n">idir</span><span class="p">][</span><span class="n">jdir</span><span class="p">]</span> <span class="o">+=</span> <span class="n">wdeltax</span><span class="p">[</span><span class="n">idir</span><span class="p">]</span> <span class="o">*</span> <span class="n">wdeltax</span><span class="p">[</span><span class="n">jdir</span><span class="p">];</span>
+<a name="line-90"></a>    <span class="p">};</span>
+<a name="line-91"></a>
+<a name="line-92"></a>    <span class="c1">// always add left element contribution (at a boundary face, the internal</span>
+<a name="line-93"></a>    <span class="c1">// element is always the left element)</span>
+<a name="line-94"></a>    <span class="n">lhs</span><span class="p">(</span><span class="n">el</span><span class="p">);</span>
+<a name="line-95"></a>    <span class="c1">// add right element contribution for internal faces only</span>
+<a name="line-96"></a>    <span class="k">if</span> <span class="p">(</span><span class="n">er</span> <span class="o">&gt;</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+<a name="line-97"></a>      <span class="k">if</span> <span class="p">(</span><span class="n">eR</span> <span class="o">&lt;</span> <span class="n">nelem</span><span class="p">)</span> <span class="n">lhs</span><span class="p">(</span><span class="n">eR</span><span class="p">);</span>
+<a name="line-98"></a>
+<a name="line-99"></a>  <span class="p">}</span>
+<a name="line-100"></a><span class="p">}</span>
 <a name="line-101"></a>
-<a name="line-102"></a>      <span class="c1">// From these stencils, an oscillation indicator is calculated, which</span>
-<a name="line-103"></a>      <span class="c1">// determines the effective weights for the high-order solution DOFs.</span>
-<a name="line-104"></a>      <span class="c1">// These effective weights determine the contribution of each of the</span>
-<a name="line-105"></a>      <span class="c1">// stencils to the high-order solution DOFs of the current cell which are</span>
-<a name="line-106"></a>      <span class="c1">// being limited. If this indicator detects a large oscillation in the</span>
-<a name="line-107"></a>      <span class="c1">// solution of the current cell, it reduces the effective weight for the</span>
-<a name="line-108"></a>      <span class="c1">// central stencil contribution to its high-order DOFs. This results in</span>
-<a name="line-109"></a>      <span class="c1">// a more dissipative and well-behaved solution in the troubled cell.</span>
-<a name="line-110"></a>
-<a name="line-111"></a>      <span class="c1">// oscillation indicators</span>
-<a name="line-112"></a>      <span class="k">for</span> <span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="n">is</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">is</span><span class="o">&lt;</span><span class="mi">5</span><span class="p">;</span> <span class="o">++</span><span class="n">is</span><span class="p">)</span>
-<a name="line-113"></a>        <span class="n">osc</span><span class="p">[</span><span class="n">is</span><span class="p">]</span> <span class="o">=</span> <span class="n">std</span><span class="o">::</span><span class="n">sqrt</span><span class="p">(</span> <span class="n">tk</span><span class="o">::</span><span class="n">dot</span><span class="p">(</span><span class="n">gradu</span><span class="p">[</span><span class="n">is</span><span class="p">],</span> <span class="n">gradu</span><span class="p">[</span><span class="n">is</span><span class="p">])</span> <span class="p">);</span>
-<a name="line-114"></a>
-<a name="line-115"></a>      <span class="n">tk</span><span class="o">::</span><span class="n">real</span> <span class="n">wtotal</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
-<a name="line-116"></a>
-<a name="line-117"></a>      <span class="c1">// effective weights for dofs</span>
-<a name="line-118"></a>      <span class="k">for</span> <span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="n">is</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">is</span><span class="o">&lt;</span><span class="mi">5</span><span class="p">;</span> <span class="o">++</span><span class="n">is</span><span class="p">)</span>
-<a name="line-119"></a>      <span class="p">{</span>
-<a name="line-120"></a>        <span class="c1">// A small number (1.0e-8) is needed here to avoid dividing by a zero in</span>
-<a name="line-121"></a>        <span class="c1">// the case of a constant solution, where osc would be zero. The number</span>
-<a name="line-122"></a>        <span class="c1">// is not set to machine zero because it is squared, and a number</span>
-<a name="line-123"></a>        <span class="c1">// between 1.0e-8 to 1.0e-6 is needed.</span>
-<a name="line-124"></a>        <span class="n">wtDof</span><span class="p">[</span><span class="n">is</span><span class="p">]</span> <span class="o">=</span> <span class="n">wtStencil</span><span class="p">[</span><span class="n">is</span><span class="p">]</span> <span class="o">*</span> <span class="n">pow</span><span class="p">(</span> <span class="p">(</span><span class="mf">1.0e-8</span> <span class="o">+</span> <span class="n">osc</span><span class="p">[</span><span class="n">is</span><span class="p">]),</span> <span class="o">-</span><span class="mi">2</span> <span class="p">);</span>
-<a name="line-125"></a>        <span class="n">wtotal</span> <span class="o">+=</span> <span class="n">wtDof</span><span class="p">[</span><span class="n">is</span><span class="p">];</span>
-<a name="line-126"></a>      <span class="p">}</span>
-<a name="line-127"></a>
-<a name="line-128"></a>      <span class="k">for</span> <span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="n">is</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">is</span><span class="o">&lt;</span><span class="mi">5</span><span class="p">;</span> <span class="o">++</span><span class="n">is</span><span class="p">)</span>
-<a name="line-129"></a>      <span class="p">{</span>
-<a name="line-130"></a>        <span class="n">wtDof</span><span class="p">[</span><span class="n">is</span><span class="p">]</span> <span class="o">=</span> <span class="n">wtDof</span><span class="p">[</span><span class="n">is</span><span class="p">]</span><span class="o">/</span><span class="n">wtotal</span><span class="p">;</span>
-<a name="line-131"></a>      <span class="p">}</span>
-<a name="line-132"></a>
-<a name="line-133"></a>      <span class="n">limU</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="n">e</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">;</span>
-<a name="line-134"></a>      <span class="n">limU</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="n">e</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">;</span>
-<a name="line-135"></a>      <span class="n">limU</span><span class="p">[</span><span class="mi">2</span><span class="p">][</span><span class="n">e</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">;</span>
-<a name="line-136"></a>
-<a name="line-137"></a>      <span class="c1">// limiter function</span>
-<a name="line-138"></a>      <span class="k">for</span> <span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="n">is</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">is</span><span class="o">&lt;</span><span class="mi">5</span><span class="p">;</span> <span class="o">++</span><span class="n">is</span><span class="p">)</span>
-<a name="line-139"></a>      <span class="p">{</span>
-<a name="line-140"></a>        <span class="n">limU</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="n">e</span><span class="p">]</span> <span class="o">+=</span> <span class="n">wtDof</span><span class="p">[</span><span class="n">is</span><span class="p">]</span><span class="o">*</span><span class="n">gradu</span><span class="p">[</span><span class="n">is</span><span class="p">][</span><span class="mi">0</span><span class="p">];</span>
-<a name="line-141"></a>        <span class="n">limU</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="n">e</span><span class="p">]</span> <span class="o">+=</span> <span class="n">wtDof</span><span class="p">[</span><span class="n">is</span><span class="p">]</span><span class="o">*</span><span class="n">gradu</span><span class="p">[</span><span class="n">is</span><span class="p">][</span><span class="mi">1</span><span class="p">];</span>
-<a name="line-142"></a>        <span class="n">limU</span><span class="p">[</span><span class="mi">2</span><span class="p">][</span><span class="n">e</span><span class="p">]</span> <span class="o">+=</span> <span class="n">wtDof</span><span class="p">[</span><span class="n">is</span><span class="p">]</span><span class="o">*</span><span class="n">gradu</span><span class="p">[</span><span class="n">is</span><span class="p">][</span><span class="mi">2</span><span class="p">];</span>
-<a name="line-143"></a>      <span class="p">}</span>
-<a name="line-144"></a>    <span class="p">}</span>
-<a name="line-145"></a>
-<a name="line-146"></a>    <span class="k">for</span> <span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="n">e</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">e</span><span class="o">&lt;</span><span class="n">esuel</span><span class="p">.</span><span class="n">size</span><span class="p">()</span><span class="o">/</span><span class="mi">4</span><span class="p">;</span> <span class="o">++</span><span class="n">e</span><span class="p">)</span>
-<a name="line-147"></a>    <span class="p">{</span>
-<a name="line-148"></a>      <span class="n">U</span><span class="p">(</span><span class="n">e</span><span class="p">,</span> <span class="n">mark</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="n">offset</span><span class="p">)</span> <span class="o">=</span> <span class="n">limU</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="n">e</span><span class="p">];</span>
-<a name="line-149"></a>      <span class="n">U</span><span class="p">(</span><span class="n">e</span><span class="p">,</span> <span class="n">mark</span><span class="o">+</span><span class="mi">2</span><span class="p">,</span> <span class="n">offset</span><span class="p">)</span> <span class="o">=</span> <span class="n">limU</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="n">e</span><span class="p">];</span>
-<a name="line-150"></a>      <span class="n">U</span><span class="p">(</span><span class="n">e</span><span class="p">,</span> <span class="n">mark</span><span class="o">+</span><span class="mi">3</span><span class="p">,</span> <span class="n">offset</span><span class="p">)</span> <span class="o">=</span> <span class="n">limU</span><span class="p">[</span><span class="mi">2</span><span class="p">][</span><span class="n">e</span><span class="p">];</span>
-<a name="line-151"></a>    <span class="p">}</span>
-<a name="line-152"></a>  <span class="p">}</span>
-<a name="line-153"></a><span class="p">}</span>
-<a name="line-154"></a>
-<a name="line-155"></a><span class="kt">void</span>
-<a name="line-156"></a><span class="nf">Superbee_P1</span><span class="p">(</span> <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span> <span class="kt">int</span> <span class="o">&gt;&amp;</span> <span class="n">esuel</span><span class="p">,</span>
-<a name="line-157"></a>             <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span> <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="o">&gt;&amp;</span> <span class="n">inpoel</span><span class="p">,</span>
-<a name="line-158"></a>             <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span> <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="o">&gt;&amp;</span> <span class="n">ndofel</span><span class="p">,</span>
-<a name="line-159"></a>             <span class="n">inciter</span><span class="o">::</span><span class="n">ncomp_t</span> <span class="n">offset</span><span class="p">,</span>
-<a name="line-160"></a>             <span class="k">const</span> <span class="n">tk</span><span class="o">::</span><span class="n">UnsMesh</span><span class="o">::</span><span class="n">Coords</span><span class="o">&amp;</span> <span class="n">coord</span><span class="p">,</span>
-<a name="line-161"></a>             <span class="n">tk</span><span class="o">::</span><span class="n">Fields</span><span class="o">&amp;</span> <span class="n">U</span><span class="p">,</span>
-<a name="line-162"></a>             <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="n">nmat</span> <span class="p">)</span>
-<a name="line-163"></a><span class="c1">// *****************************************************************************</span>
-<a name="line-164"></a><span class="c1">//  Superbee limiter for DGP1</span>
-<a name="line-165"></a><span class="c1">//! \param[in] esuel Elements surrounding elements</span>
-<a name="line-166"></a><span class="c1">//! \param[in] inpoel Element connectivity</span>
-<a name="line-167"></a><span class="c1">//! \param[in] ndofel Vector of local number of degrees of freedom</span>
-<a name="line-168"></a><span class="c1">//! \param[in] offset Index for equation systems</span>
-<a name="line-169"></a><span class="c1">//! \param[in] coord Array of nodal coordinates</span>
-<a name="line-170"></a><span class="c1">//! \param[in,out] U High-order solution vector which gets limited</span>
-<a name="line-171"></a><span class="c1">//! \param[in] nmat Number of materials in this PDE system. Default is 1, so</span>
-<a name="line-172"></a><span class="c1">//!   this argument can be left unspecified for single-material by the calling</span>
-<a name="line-173"></a><span class="c1">//!   code.</span>
-<a name="line-174"></a><span class="c1">// *****************************************************************************</span>
-<a name="line-175"></a><span class="p">{</span>
-<a name="line-176"></a>  <span class="k">const</span> <span class="k">auto</span> <span class="n">rdof</span> <span class="o">=</span> <span class="n">inciter</span><span class="o">::</span><span class="n">g_inputdeck</span><span class="p">.</span><span class="n">get</span><span class="o">&lt;</span> <span class="n">tag</span><span class="o">::</span><span class="n">discr</span><span class="p">,</span> <span class="n">tag</span><span class="o">::</span><span class="n">rdof</span> <span class="o">&gt;</span><span class="p">();</span>
-<a name="line-177"></a>  <span class="k">const</span> <span class="k">auto</span> <span class="n">ndof</span> <span class="o">=</span> <span class="n">inciter</span><span class="o">::</span><span class="n">g_inputdeck</span><span class="p">.</span><span class="n">get</span><span class="o">&lt;</span> <span class="n">tag</span><span class="o">::</span><span class="n">discr</span><span class="p">,</span> <span class="n">tag</span><span class="o">::</span><span class="n">ndof</span> <span class="o">&gt;</span><span class="p">();</span>
-<a name="line-178"></a>  <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="n">ncomp</span> <span class="o">=</span> <span class="n">U</span><span class="p">.</span><span class="n">nprop</span><span class="p">()</span><span class="o">/</span><span class="n">rdof</span><span class="p">;</span>
-<a name="line-179"></a>
-<a name="line-180"></a>  <span class="k">auto</span> <span class="n">beta_lim</span> <span class="o">=</span> <span class="mf">2.0</span><span class="p">;</span>
-<a name="line-181"></a>
-<a name="line-182"></a>  <span class="k">for</span> <span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="n">e</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">e</span><span class="o">&lt;</span><span class="n">esuel</span><span class="p">.</span><span class="n">size</span><span class="p">()</span><span class="o">/</span><span class="mi">4</span><span class="p">;</span> <span class="o">++</span><span class="n">e</span><span class="p">)</span>
-<a name="line-183"></a>  <span class="p">{</span>
-<a name="line-184"></a>    <span class="c1">// If an rDG method is set up (P0P1), then, currently we compute the P1</span>
-<a name="line-185"></a>    <span class="c1">// basis functions and solutions by default. This implies that P0P1 is</span>
-<a name="line-186"></a>    <span class="c1">// unsupported in the p-adaptive DG (PDG). This is a workaround until we</span>
-<a name="line-187"></a>    <span class="c1">// have rdofel, which is needed to distinguish between ndofs and rdofs per</span>
-<a name="line-188"></a>    <span class="c1">// element for pDG.</span>
-<a name="line-189"></a>    <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="n">dof_el</span><span class="p">;</span>
-<a name="line-190"></a>    <span class="k">if</span> <span class="p">(</span><span class="n">rdof</span> <span class="o">&gt;</span> <span class="n">ndof</span><span class="p">)</span>
-<a name="line-191"></a>    <span class="p">{</span>
-<a name="line-192"></a>      <span class="n">dof_el</span> <span class="o">=</span> <span class="n">rdof</span><span class="p">;</span>
-<a name="line-193"></a>    <span class="p">}</span>
-<a name="line-194"></a>    <span class="k">else</span>
-<a name="line-195"></a>    <span class="p">{</span>
-<a name="line-196"></a>      <span class="n">dof_el</span> <span class="o">=</span> <span class="n">ndofel</span><span class="p">[</span><span class="n">e</span><span class="p">];</span>
-<a name="line-197"></a>    <span class="p">}</span>
-<a name="line-198"></a>
-<a name="line-199"></a>    <span class="k">if</span> <span class="p">(</span><span class="n">dof_el</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">)</span>
-<a name="line-200"></a>    <span class="p">{</span>
-<a name="line-201"></a>      <span class="c1">// Superbee is a TVD limiter, which uses min-max bounds that the</span>
-<a name="line-202"></a>      <span class="c1">// high-order solution should satisfy, to ensure TVD properties. For a</span>
-<a name="line-203"></a>      <span class="c1">// high-order method like DG, this involves 3 steps:</span>
-<a name="line-204"></a>      <span class="c1">// 1. Find min-max bounds in the immediate neighborhood of cell.</span>
-<a name="line-205"></a>      <span class="c1">// 2. Calculate the Superbee function for all the points where solution</span>
-<a name="line-206"></a>      <span class="c1">//    needs to be reconstructed to (all quadrature points). From these,</span>
-<a name="line-207"></a>      <span class="c1">//    use the minimum value of the limiter function.</span>
-<a name="line-208"></a>      <span class="c1">// 3. Limit the high-order terms using this function.</span>
-<a name="line-209"></a>
-<a name="line-210"></a>      <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span> <span class="n">tk</span><span class="o">::</span><span class="n">real</span> <span class="o">&gt;</span> <span class="n">uMin</span><span class="p">(</span><span class="n">ncomp</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">),</span> <span class="n">uMax</span><span class="p">(</span><span class="n">ncomp</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">);</span>
-<a name="line-211"></a>
-<a name="line-212"></a>      <span class="k">for</span> <span class="p">(</span><span class="n">inciter</span><span class="o">::</span><span class="n">ncomp_t</span> <span class="n">c</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">c</span><span class="o">&lt;</span><span class="n">ncomp</span><span class="p">;</span> <span class="o">++</span><span class="n">c</span><span class="p">)</span>
+<a name="line-102"></a><span class="kt">void</span>
+<a name="line-103"></a><span class="n">tk</span><span class="o">::</span><span class="n">intLeastSq_P0P1</span><span class="p">(</span> <span class="n">ncomp_t</span> <span class="n">ncomp</span><span class="p">,</span>
+<a name="line-104"></a>                     <span class="n">ncomp_t</span> <span class="n">offset</span><span class="p">,</span>
+<a name="line-105"></a>                     <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="n">rdof</span><span class="p">,</span>
+<a name="line-106"></a>                     <span class="k">const</span> <span class="n">inciter</span><span class="o">::</span><span class="n">FaceData</span><span class="o">&amp;</span> <span class="n">fd</span><span class="p">,</span>
+<a name="line-107"></a>                     <span class="k">const</span> <span class="n">Fields</span><span class="o">&amp;</span> <span class="n">geoElem</span><span class="p">,</span>
+<a name="line-108"></a>                     <span class="k">const</span> <span class="n">Fields</span><span class="o">&amp;</span> <span class="n">W</span><span class="p">,</span>
+<a name="line-109"></a>                     <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">array</span><span class="o">&lt;</span> <span class="n">real</span><span class="p">,</span> <span class="mi">3</span> <span class="o">&gt;</span> <span class="o">&gt;</span> <span class="o">&gt;&amp;</span> <span class="n">rhs_ls</span> <span class="p">)</span>
+<a name="line-110"></a><span class="c1">// *****************************************************************************</span>
+<a name="line-111"></a><span class="c1">//  \brief Compute internal surface contributions to rhs vector of the</span>
+<a name="line-112"></a><span class="c1">//    least-squares reconstruction</span>
+<a name="line-113"></a><span class="c1">//! \param[in] ncomp Number of scalar components in this PDE system</span>
+<a name="line-114"></a><span class="c1">//! \param[in] offset Offset this PDE system operates from</span>
+<a name="line-115"></a><span class="c1">//! \param[in] rdof Maximum number of reconstructed degrees of freedom</span>
+<a name="line-116"></a><span class="c1">//! \param[in] fd Face connectivity and boundary conditions object</span>
+<a name="line-117"></a><span class="c1">//! \param[in] geoElem Element geometry array</span>
+<a name="line-118"></a><span class="c1">//! \param[in] W Solution vector to be reconstructed at recent time step</span>
+<a name="line-119"></a><span class="c1">//! \param[in,out] rhs_ls RHS reconstruction vector</span>
+<a name="line-120"></a><span class="c1">//! \details This function computing the internal face contributions to the rhs</span>
+<a name="line-121"></a><span class="c1">//!   vector for reconstruction, is common for primitive and conserved</span>
+<a name="line-122"></a><span class="c1">//!   quantities. If `W` == `U`, compute internal face contributions for the</span>
+<a name="line-123"></a><span class="c1">//!   conserved variables. If `W` == `P`, compute internal face contributions</span>
+<a name="line-124"></a><span class="c1">//!   for the primitive variables.</span>
+<a name="line-125"></a><span class="c1">// *****************************************************************************</span>
+<a name="line-126"></a><span class="p">{</span>
+<a name="line-127"></a>  <span class="k">const</span> <span class="k">auto</span><span class="o">&amp;</span> <span class="n">esuf</span> <span class="o">=</span> <span class="n">fd</span><span class="p">.</span><span class="n">Esuf</span><span class="p">();</span>
+<a name="line-128"></a><span class="hll">  <span class="k">const</span> <span class="k">auto</span> <span class="n">nelem</span> <span class="o">=</span> <span class="n">fd</span><span class="p">.</span><span class="n">Esuel</span><span class="p">().</span><span class="n">size</span><span class="p">()</span><span class="o">/</span><span class="mi">4</span><span class="p">;</span><span class='error2'>&lt;--- Variable 'nelem' is assigned a value that is never used.</span>
+</span><a name="line-129"></a>
+<a name="line-130"></a>  <span class="c1">// Compute internal face contributions</span>
+<a name="line-131"></a>  <span class="k">for</span> <span class="p">(</span><span class="k">auto</span> <span class="n">f</span><span class="o">=</span><span class="n">fd</span><span class="p">.</span><span class="n">Nbfac</span><span class="p">();</span> <span class="n">f</span><span class="o">&lt;</span><span class="n">esuf</span><span class="p">.</span><span class="n">size</span><span class="p">()</span><span class="o">/</span><span class="mi">2</span><span class="p">;</span> <span class="o">++</span><span class="n">f</span><span class="p">)</span>
+<a name="line-132"></a>  <span class="p">{</span>
+<a name="line-133"></a>    <span class="n">Assert</span><span class="p">(</span> <span class="n">esuf</span><span class="p">[</span><span class="mi">2</span><span class="o">*</span><span class="n">f</span><span class="p">]</span> <span class="o">&gt;</span> <span class="o">-</span><span class="mi">1</span> <span class="o">&amp;&amp;</span> <span class="n">esuf</span><span class="p">[</span><span class="mi">2</span><span class="o">*</span><span class="n">f</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span> <span class="o">&gt;</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="s">&quot;Interior element detected &quot;</span>
+<a name="line-134"></a>            <span class="s">&quot;as -1&quot;</span> <span class="p">);</span>
+<a name="line-135"></a>
+<a name="line-136"></a>    <span class="k">auto</span> <span class="n">el</span> <span class="o">=</span> <span class="k">static_cast</span><span class="o">&lt;</span> <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="o">&gt;</span><span class="p">(</span><span class="n">esuf</span><span class="p">[</span><span class="mi">2</span><span class="o">*</span><span class="n">f</span><span class="p">]);</span>
+<a name="line-137"></a>    <span class="k">auto</span> <span class="n">er</span> <span class="o">=</span> <span class="k">static_cast</span><span class="o">&lt;</span> <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="o">&gt;</span><span class="p">(</span><span class="n">esuf</span><span class="p">[</span><span class="mi">2</span><span class="o">*</span><span class="n">f</span><span class="o">+</span><span class="mi">1</span><span class="p">]);</span>
+<a name="line-138"></a>
+<a name="line-139"></a>    <span class="c1">// get a 3x3 system by applying the normal equation approach to the</span>
+<a name="line-140"></a>    <span class="c1">// least-squares overdetermined system</span>
+<a name="line-141"></a>
+<a name="line-142"></a>    <span class="c1">// &#39;wdeltax&#39; is the distance vector between the centroids of this element</span>
+<a name="line-143"></a>    <span class="c1">// and its neighbor</span>
+<a name="line-144"></a>    <span class="n">std</span><span class="o">::</span><span class="n">array</span><span class="o">&lt;</span> <span class="n">real</span><span class="p">,</span> <span class="mi">3</span> <span class="o">&gt;</span> <span class="n">wdeltax</span><span class="p">{{</span> <span class="n">geoElem</span><span class="p">(</span><span class="n">er</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span><span class="o">-</span><span class="n">geoElem</span><span class="p">(</span><span class="n">el</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">),</span>
+<a name="line-145"></a>                                    <span class="n">geoElem</span><span class="p">(</span><span class="n">er</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span><span class="o">-</span><span class="n">geoElem</span><span class="p">(</span><span class="n">el</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">0</span><span class="p">),</span>
+<a name="line-146"></a>                                    <span class="n">geoElem</span><span class="p">(</span><span class="n">er</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span><span class="o">-</span><span class="n">geoElem</span><span class="p">(</span><span class="n">el</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span> <span class="p">}};</span>
+<a name="line-147"></a>
+<a name="line-148"></a>    <span class="k">for</span> <span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="n">idir</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">idir</span><span class="o">&lt;</span><span class="mi">3</span><span class="p">;</span> <span class="o">++</span><span class="n">idir</span><span class="p">)</span>
+<a name="line-149"></a>    <span class="p">{</span>
+<a name="line-150"></a>      <span class="c1">// rhs vector</span>
+<a name="line-151"></a>      <span class="k">for</span> <span class="p">(</span><span class="n">ncomp_t</span> <span class="n">c</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">c</span><span class="o">&lt;</span><span class="n">ncomp</span><span class="p">;</span> <span class="o">++</span><span class="n">c</span><span class="p">)</span>
+<a name="line-152"></a>      <span class="p">{</span>
+<a name="line-153"></a>        <span class="k">auto</span> <span class="n">mark</span> <span class="o">=</span> <span class="n">c</span><span class="o">*</span><span class="n">rdof</span><span class="p">;</span>
+<a name="line-154"></a>        <span class="n">rhs_ls</span><span class="p">[</span><span class="n">el</span><span class="p">][</span><span class="n">c</span><span class="p">][</span><span class="n">idir</span><span class="p">]</span> <span class="o">+=</span>
+<a name="line-155"></a>          <span class="n">wdeltax</span><span class="p">[</span><span class="n">idir</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="n">W</span><span class="p">(</span><span class="n">er</span><span class="p">,</span><span class="n">mark</span><span class="p">,</span><span class="n">offset</span><span class="p">)</span><span class="o">-</span><span class="n">W</span><span class="p">(</span><span class="n">el</span><span class="p">,</span><span class="n">mark</span><span class="p">,</span><span class="n">offset</span><span class="p">));</span>
+<a name="line-156"></a>        <span class="k">if</span> <span class="p">(</span><span class="n">er</span> <span class="o">&lt;</span> <span class="n">nelem</span><span class="p">)</span>
+<a name="line-157"></a>          <span class="n">rhs_ls</span><span class="p">[</span><span class="n">er</span><span class="p">][</span><span class="n">c</span><span class="p">][</span><span class="n">idir</span><span class="p">]</span> <span class="o">+=</span>
+<a name="line-158"></a>            <span class="n">wdeltax</span><span class="p">[</span><span class="n">idir</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="n">W</span><span class="p">(</span><span class="n">er</span><span class="p">,</span><span class="n">mark</span><span class="p">,</span><span class="n">offset</span><span class="p">)</span><span class="o">-</span><span class="n">W</span><span class="p">(</span><span class="n">el</span><span class="p">,</span><span class="n">mark</span><span class="p">,</span><span class="n">offset</span><span class="p">));</span>
+<a name="line-159"></a>      <span class="p">}</span>
+<a name="line-160"></a>    <span class="p">}</span>
+<a name="line-161"></a>  <span class="p">}</span>
+<a name="line-162"></a><span class="p">}</span>
+<a name="line-163"></a>
+<a name="line-164"></a><span class="kt">void</span>
+<a name="line-165"></a><span class="n">tk</span><span class="o">::</span><span class="n">bndLeastSqConservedVar_P0P1</span><span class="p">(</span> <span class="n">ncomp_t</span> <span class="n">system</span><span class="p">,</span>
+<a name="line-166"></a>  <span class="n">ncomp_t</span> <span class="n">ncomp</span><span class="p">,</span>
+<a name="line-167"></a>  <span class="n">ncomp_t</span> <span class="n">offset</span><span class="p">,</span>
+<a name="line-168"></a>  <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="n">rdof</span><span class="p">,</span>
+<a name="line-169"></a>  <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span> <span class="n">bcconf_t</span> <span class="o">&gt;&amp;</span> <span class="n">bcconfig</span><span class="p">,</span>
+<a name="line-170"></a>  <span class="k">const</span> <span class="n">inciter</span><span class="o">::</span><span class="n">FaceData</span><span class="o">&amp;</span> <span class="n">fd</span><span class="p">,</span>
+<a name="line-171"></a>  <span class="k">const</span> <span class="n">Fields</span><span class="o">&amp;</span> <span class="n">geoFace</span><span class="p">,</span>
+<a name="line-172"></a>  <span class="k">const</span> <span class="n">Fields</span><span class="o">&amp;</span> <span class="n">geoElem</span><span class="p">,</span>
+<a name="line-173"></a>  <span class="n">real</span> <span class="n">t</span><span class="p">,</span>
+<a name="line-174"></a>  <span class="k">const</span> <span class="n">StateFn</span><span class="o">&amp;</span> <span class="n">state</span><span class="p">,</span>
+<a name="line-175"></a>  <span class="k">const</span> <span class="n">Fields</span><span class="o">&amp;</span> <span class="n">U</span><span class="p">,</span>
+<a name="line-176"></a>  <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">array</span><span class="o">&lt;</span> <span class="n">real</span><span class="p">,</span> <span class="mi">3</span> <span class="o">&gt;</span> <span class="o">&gt;</span> <span class="o">&gt;&amp;</span> <span class="n">rhs_ls</span><span class="p">,</span>
+<a name="line-177"></a>  <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="n">nprim</span> <span class="p">)</span>
+<a name="line-178"></a><span class="c1">// *****************************************************************************</span>
+<a name="line-179"></a><span class="c1">//  \brief Compute boundary surface contributions to rhs vector of the</span>
+<a name="line-180"></a><span class="c1">//    least-squares reconstruction of conserved quantities of the PDE system</span>
+<a name="line-181"></a><span class="c1">//! \param[in] system Equation system index</span>
+<a name="line-182"></a><span class="c1">//! \param[in] ncomp Number of scalar components in this PDE system</span>
+<a name="line-183"></a><span class="c1">//! \param[in] offset Offset this PDE system operates from</span>
+<a name="line-184"></a><span class="c1">//! \param[in] rdof Maximum number of reconstructed degrees of freedom</span>
+<a name="line-185"></a><span class="c1">//! \param[in] bcconfig BC configuration vector for multiple side sets</span>
+<a name="line-186"></a><span class="c1">//! \param[in] fd Face connectivity and boundary conditions object</span>
+<a name="line-187"></a><span class="c1">//! \param[in] geoFace Face geometry array</span>
+<a name="line-188"></a><span class="c1">//! \param[in] geoElem Element geometry array</span>
+<a name="line-189"></a><span class="c1">//! \param[in] t Physical time</span>
+<a name="line-190"></a><span class="c1">//! \param[in] state Function to evaluate the left and right solution state at</span>
+<a name="line-191"></a><span class="c1">//!   boundaries</span>
+<a name="line-192"></a><span class="c1">//! \param[in] U Solution vector to be reconstructed at recent time step</span>
+<a name="line-193"></a><span class="c1">//! \param[in,out] rhs_ls RHS reconstruction vector</span>
+<a name="line-194"></a><span class="c1">//! \param[in] nprim This is the number of primitive quantities stored for this</span>
+<a name="line-195"></a><span class="c1">//!   PDE system. This is necessary to extend the state vector to the right</span>
+<a name="line-196"></a><span class="c1">//!   size, so that correct boundary conditions are obtained.</span>
+<a name="line-197"></a><span class="c1">//!   A default is set to 0, so that calling code for systems that do not store</span>
+<a name="line-198"></a><span class="c1">//!   primitive quantities does not need to specify this argument.</span>
+<a name="line-199"></a><span class="c1">//! \details This function computing the boundary face contributions to the rhs</span>
+<a name="line-200"></a><span class="c1">//!   vector for reconstruction, is specialized for conserved quantities. Also</span>
+<a name="line-201"></a><span class="c1">//!   see the version for primitve quantities bndLeastSqPrimitiveVar_P0P1().</span>
+<a name="line-202"></a><span class="c1">// *****************************************************************************</span>
+<a name="line-203"></a><span class="p">{</span>
+<a name="line-204"></a>  <span class="k">const</span> <span class="k">auto</span><span class="o">&amp;</span> <span class="n">bface</span> <span class="o">=</span> <span class="n">fd</span><span class="p">.</span><span class="n">Bface</span><span class="p">();</span>
+<a name="line-205"></a>  <span class="k">const</span> <span class="k">auto</span><span class="o">&amp;</span> <span class="n">esuf</span> <span class="o">=</span> <span class="n">fd</span><span class="p">.</span><span class="n">Esuf</span><span class="p">();</span>
+<a name="line-206"></a>
+<a name="line-207"></a>  <span class="k">for</span> <span class="p">(</span><span class="k">const</span> <span class="k">auto</span><span class="o">&amp;</span> <span class="nl">s</span> <span class="p">:</span> <span class="n">bcconfig</span><span class="p">)</span> <span class="p">{</span>       <span class="c1">// for all bc sidesets</span>
+<a name="line-208"></a>    <span class="k">auto</span> <span class="n">bc</span> <span class="o">=</span> <span class="n">bface</span><span class="p">.</span><span class="n">find</span><span class="p">(</span> <span class="n">std</span><span class="o">::</span><span class="n">stoi</span><span class="p">(</span><span class="n">s</span><span class="p">)</span> <span class="p">);</span><span class="c1">// faces for side set</span>
+<a name="line-209"></a>    <span class="k">if</span> <span class="p">(</span><span class="n">bc</span> <span class="o">!=</span> <span class="n">end</span><span class="p">(</span><span class="n">bface</span><span class="p">))</span>
+<a name="line-210"></a>    <span class="p">{</span>
+<a name="line-211"></a>      <span class="c1">// Compute boundary face contributions</span>
+<a name="line-212"></a>      <span class="k">for</span> <span class="p">(</span><span class="k">const</span> <span class="k">auto</span><span class="o">&amp;</span> <span class="nl">f</span> <span class="p">:</span> <span class="n">bc</span><span class="o">-&gt;</span><span class="n">second</span><span class="p">)</span>
 <a name="line-213"></a>      <span class="p">{</span>
-<a name="line-214"></a>        <span class="k">auto</span> <span class="n">mark</span> <span class="o">=</span> <span class="n">c</span><span class="o">*</span><span class="n">rdof</span><span class="p">;</span>
-<a name="line-215"></a>        <span class="n">uMin</span><span class="p">[</span><span class="n">c</span><span class="p">]</span> <span class="o">=</span> <span class="n">U</span><span class="p">(</span><span class="n">e</span><span class="p">,</span> <span class="n">mark</span><span class="p">,</span> <span class="n">offset</span><span class="p">);</span>
-<a name="line-216"></a>        <span class="n">uMax</span><span class="p">[</span><span class="n">c</span><span class="p">]</span> <span class="o">=</span> <span class="n">U</span><span class="p">(</span><span class="n">e</span><span class="p">,</span> <span class="n">mark</span><span class="p">,</span> <span class="n">offset</span><span class="p">);</span>
-<a name="line-217"></a>      <span class="p">}</span>
-<a name="line-218"></a>
-<a name="line-219"></a>      <span class="c1">// ----- Step-1: find min/max in the neighborhood</span>
-<a name="line-220"></a>      <span class="k">for</span> <span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="n">is</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">is</span><span class="o">&lt;</span><span class="mi">4</span><span class="p">;</span> <span class="o">++</span><span class="n">is</span><span class="p">)</span>
-<a name="line-221"></a>      <span class="p">{</span>
-<a name="line-222"></a>        <span class="k">auto</span> <span class="n">nel</span> <span class="o">=</span> <span class="n">esuel</span><span class="p">[</span> <span class="mi">4</span><span class="o">*</span><span class="n">e</span><span class="o">+</span><span class="n">is</span> <span class="p">];</span>
+<a name="line-214"></a>        <span class="n">Assert</span><span class="p">(</span> <span class="n">esuf</span><span class="p">[</span><span class="mi">2</span><span class="o">*</span><span class="n">f</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="s">&quot;physical boundary element not -1&quot;</span> <span class="p">);</span>
+<a name="line-215"></a>
+<a name="line-216"></a>        <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="n">el</span> <span class="o">=</span> <span class="k">static_cast</span><span class="o">&lt;</span> <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="o">&gt;</span><span class="p">(</span><span class="n">esuf</span><span class="p">[</span><span class="mi">2</span><span class="o">*</span><span class="n">f</span><span class="p">]);</span>
+<a name="line-217"></a>
+<a name="line-218"></a>        <span class="c1">// arrays for quadrature points</span>
+<a name="line-219"></a>        <span class="n">std</span><span class="o">::</span><span class="n">array</span><span class="o">&lt;</span> <span class="n">real</span><span class="p">,</span> <span class="mi">3</span> <span class="o">&gt;</span>
+<a name="line-220"></a>          <span class="n">fc</span><span class="p">{{</span> <span class="n">geoFace</span><span class="p">(</span><span class="n">f</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">0</span><span class="p">),</span> <span class="n">geoFace</span><span class="p">(</span><span class="n">f</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">0</span><span class="p">),</span> <span class="n">geoFace</span><span class="p">(</span><span class="n">f</span><span class="p">,</span><span class="mi">6</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span> <span class="p">}};</span>
+<a name="line-221"></a>        <span class="n">std</span><span class="o">::</span><span class="n">array</span><span class="o">&lt;</span> <span class="n">real</span><span class="p">,</span> <span class="mi">3</span> <span class="o">&gt;</span>
+<a name="line-222"></a>          <span class="n">fn</span><span class="p">{{</span> <span class="n">geoFace</span><span class="p">(</span><span class="n">f</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">),</span> <span class="n">geoFace</span><span class="p">(</span><span class="n">f</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">0</span><span class="p">),</span> <span class="n">geoFace</span><span class="p">(</span><span class="n">f</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span> <span class="p">}};</span>
 <a name="line-223"></a>
-<a name="line-224"></a>        <span class="c1">// ignore physical domain ghosts</span>
-<a name="line-225"></a>        <span class="k">if</span> <span class="p">(</span><span class="n">nel</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="k">continue</span><span class="p">;</span>
-<a name="line-226"></a>
-<a name="line-227"></a>        <span class="k">auto</span> <span class="n">n</span> <span class="o">=</span> <span class="k">static_cast</span><span class="o">&lt;</span> <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="o">&gt;</span><span class="p">(</span> <span class="n">nel</span> <span class="p">);</span>
-<a name="line-228"></a>        <span class="k">for</span> <span class="p">(</span><span class="n">inciter</span><span class="o">::</span><span class="n">ncomp_t</span> <span class="n">c</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">c</span><span class="o">&lt;</span><span class="n">ncomp</span><span class="p">;</span> <span class="o">++</span><span class="n">c</span><span class="p">)</span>
-<a name="line-229"></a>        <span class="p">{</span>
-<a name="line-230"></a>          <span class="k">auto</span> <span class="n">mark</span> <span class="o">=</span> <span class="n">c</span><span class="o">*</span><span class="n">rdof</span><span class="p">;</span>
-<a name="line-231"></a>          <span class="n">uMin</span><span class="p">[</span><span class="n">c</span><span class="p">]</span> <span class="o">=</span> <span class="n">std</span><span class="o">::</span><span class="n">min</span><span class="p">(</span><span class="n">uMin</span><span class="p">[</span><span class="n">c</span><span class="p">],</span> <span class="n">U</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">mark</span><span class="p">,</span> <span class="n">offset</span><span class="p">));</span>
-<a name="line-232"></a>          <span class="n">uMax</span><span class="p">[</span><span class="n">c</span><span class="p">]</span> <span class="o">=</span> <span class="n">std</span><span class="o">::</span><span class="n">max</span><span class="p">(</span><span class="n">uMax</span><span class="p">[</span><span class="n">c</span><span class="p">],</span> <span class="n">U</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">mark</span><span class="p">,</span> <span class="n">offset</span><span class="p">));</span>
-<a name="line-233"></a>        <span class="p">}</span>
-<a name="line-234"></a>      <span class="p">}</span>
-<a name="line-235"></a>
-<a name="line-236"></a>      <span class="c1">// ----- Step-2: loop over all quadrature points to get limiter function</span>
+<a name="line-224"></a>        <span class="c1">// Compute the state variables at the left element</span>
+<a name="line-225"></a>        <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span> <span class="n">real</span> <span class="o">&gt;</span><span class="n">B</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mf">1.0</span><span class="p">);</span>
+<a name="line-226"></a>        <span class="k">auto</span> <span class="n">ul</span> <span class="o">=</span> <span class="n">eval_state</span><span class="p">(</span> <span class="n">ncomp</span><span class="p">,</span> <span class="n">offset</span><span class="p">,</span> <span class="n">rdof</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">el</span><span class="p">,</span> <span class="n">U</span><span class="p">,</span> <span class="n">B</span> <span class="p">);</span>
+<a name="line-227"></a>        <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span> <span class="n">real</span> <span class="o">&gt;</span><span class="n">uprim</span><span class="p">(</span><span class="n">nprim</span><span class="p">,</span><span class="mf">0.0</span><span class="p">);</span>
+<a name="line-228"></a>
+<a name="line-229"></a>        <span class="c1">// consolidate primitives into state vector</span>
+<a name="line-230"></a>        <span class="n">ul</span><span class="p">.</span><span class="n">insert</span><span class="p">(</span><span class="n">ul</span><span class="p">.</span><span class="n">end</span><span class="p">(),</span> <span class="n">uprim</span><span class="p">.</span><span class="n">begin</span><span class="p">(),</span> <span class="n">uprim</span><span class="p">.</span><span class="n">end</span><span class="p">());</span>
+<a name="line-231"></a>
+<a name="line-232"></a>        <span class="n">Assert</span><span class="p">(</span> <span class="n">ul</span><span class="p">.</span><span class="n">size</span><span class="p">()</span> <span class="o">==</span> <span class="n">ncomp</span><span class="o">+</span><span class="n">nprim</span><span class="p">,</span> <span class="s">&quot;Incorrect size for &quot;</span>
+<a name="line-233"></a>                <span class="s">&quot;appended state vector&quot;</span> <span class="p">);</span>
+<a name="line-234"></a>
+<a name="line-235"></a>        <span class="c1">// Compute the state at the face-center using BC</span>
+<a name="line-236"></a>        <span class="k">auto</span> <span class="n">ustate</span> <span class="o">=</span> <span class="n">state</span><span class="p">(</span> <span class="n">system</span><span class="p">,</span> <span class="n">ncomp</span><span class="p">,</span> <span class="n">ul</span><span class="p">,</span> <span class="n">fc</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">fc</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">fc</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">t</span><span class="p">,</span> <span class="n">fn</span> <span class="p">);</span>
 <a name="line-237"></a>
-<a name="line-238"></a>      <span class="c1">// to loop over all the quadrature points of all faces of element e,</span>
-<a name="line-239"></a>      <span class="c1">// coordinates of the quadrature points are needed.</span>
-<a name="line-240"></a>      <span class="c1">// Number of quadrature points for face integration</span>
-<a name="line-241"></a>      <span class="k">auto</span> <span class="n">ng</span> <span class="o">=</span> <span class="n">tk</span><span class="o">::</span><span class="n">NGfa</span><span class="p">(</span><span class="n">ndof</span><span class="p">);</span>
-<a name="line-242"></a>
-<a name="line-243"></a>      <span class="c1">// arrays for quadrature points</span>
-<a name="line-244"></a>      <span class="n">std</span><span class="o">::</span><span class="n">array</span><span class="o">&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span> <span class="n">tk</span><span class="o">::</span><span class="n">real</span> <span class="o">&gt;</span><span class="p">,</span> <span class="mi">2</span> <span class="o">&gt;</span> <span class="n">coordgp</span><span class="p">;</span>
-<a name="line-245"></a>      <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span> <span class="n">tk</span><span class="o">::</span><span class="n">real</span> <span class="o">&gt;</span> <span class="n">wgp</span><span class="p">;</span>
-<a name="line-246"></a>
-<a name="line-247"></a>      <span class="n">coordgp</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="n">resize</span><span class="p">(</span> <span class="n">ng</span> <span class="p">);</span>
-<a name="line-248"></a>      <span class="n">coordgp</span><span class="p">[</span><span class="mi">1</span><span class="p">].</span><span class="n">resize</span><span class="p">(</span> <span class="n">ng</span> <span class="p">);</span>
-<a name="line-249"></a>      <span class="n">wgp</span><span class="p">.</span><span class="n">resize</span><span class="p">(</span> <span class="n">ng</span> <span class="p">);</span>
-<a name="line-250"></a>
-<a name="line-251"></a>      <span class="c1">// get quadrature point weights and coordinates for triangle</span>
-<a name="line-252"></a>      <span class="n">tk</span><span class="o">::</span><span class="n">GaussQuadratureTri</span><span class="p">(</span> <span class="n">ng</span><span class="p">,</span> <span class="n">coordgp</span><span class="p">,</span> <span class="n">wgp</span> <span class="p">);</span>
+<a name="line-238"></a>        <span class="n">std</span><span class="o">::</span><span class="n">array</span><span class="o">&lt;</span> <span class="n">real</span><span class="p">,</span> <span class="mi">3</span> <span class="o">&gt;</span> <span class="n">wdeltax</span><span class="p">{{</span> <span class="n">fc</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">-</span><span class="n">geoElem</span><span class="p">(</span><span class="n">el</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">),</span>
+<a name="line-239"></a>                                        <span class="n">fc</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">-</span><span class="n">geoElem</span><span class="p">(</span><span class="n">el</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">0</span><span class="p">),</span>
+<a name="line-240"></a>                                        <span class="n">fc</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">-</span><span class="n">geoElem</span><span class="p">(</span><span class="n">el</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span> <span class="p">}};</span>
+<a name="line-241"></a>
+<a name="line-242"></a>        <span class="k">for</span> <span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="n">idir</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">idir</span><span class="o">&lt;</span><span class="mi">3</span><span class="p">;</span> <span class="o">++</span><span class="n">idir</span><span class="p">)</span>
+<a name="line-243"></a>        <span class="p">{</span>
+<a name="line-244"></a>          <span class="c1">// rhs vector</span>
+<a name="line-245"></a>          <span class="k">for</span> <span class="p">(</span><span class="n">ncomp_t</span> <span class="n">c</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">c</span><span class="o">&lt;</span><span class="n">ncomp</span><span class="p">;</span> <span class="o">++</span><span class="n">c</span><span class="p">)</span>
+<a name="line-246"></a>            <span class="n">rhs_ls</span><span class="p">[</span><span class="n">el</span><span class="p">][</span><span class="n">c</span><span class="p">][</span><span class="n">idir</span><span class="p">]</span> <span class="o">+=</span>
+<a name="line-247"></a>              <span class="n">wdeltax</span><span class="p">[</span><span class="n">idir</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="n">ustate</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="n">c</span><span class="p">]</span><span class="o">-</span><span class="n">ustate</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="n">c</span><span class="p">]);</span>
+<a name="line-248"></a>        <span class="p">}</span>
+<a name="line-249"></a>      <span class="p">}</span>
+<a name="line-250"></a>    <span class="p">}</span>
+<a name="line-251"></a>  <span class="p">}</span>
+<a name="line-252"></a><span class="p">}</span>
 <a name="line-253"></a>
-<a name="line-254"></a>      <span class="k">const</span> <span class="k">auto</span><span class="o">&amp;</span> <span class="n">cx</span> <span class="o">=</span> <span class="n">coord</span><span class="p">[</span><span class="mi">0</span><span class="p">];</span>
-<a name="line-255"></a>      <span class="k">const</span> <span class="k">auto</span><span class="o">&amp;</span> <span class="n">cy</span> <span class="o">=</span> <span class="n">coord</span><span class="p">[</span><span class="mi">1</span><span class="p">];</span>
-<a name="line-256"></a>      <span class="k">const</span> <span class="k">auto</span><span class="o">&amp;</span> <span class="n">cz</span> <span class="o">=</span> <span class="n">coord</span><span class="p">[</span><span class="mi">2</span><span class="p">];</span>
-<a name="line-257"></a>
-<a name="line-258"></a>      <span class="c1">// Extract the element coordinates</span>
-<a name="line-259"></a>      <span class="n">std</span><span class="o">::</span><span class="n">array</span><span class="o">&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">array</span><span class="o">&lt;</span> <span class="n">tk</span><span class="o">::</span><span class="n">real</span><span class="p">,</span> <span class="mi">3</span><span class="o">&gt;</span><span class="p">,</span> <span class="mi">4</span> <span class="o">&gt;</span> <span class="n">coordel</span> <span class="p">{{</span>
-<a name="line-260"></a>        <span class="p">{{</span> <span class="n">cx</span><span class="p">[</span> <span class="n">inpoel</span><span class="p">[</span><span class="mi">4</span><span class="o">*</span><span class="n">e</span>  <span class="p">]</span> <span class="p">],</span> <span class="n">cy</span><span class="p">[</span> <span class="n">inpoel</span><span class="p">[</span><span class="mi">4</span><span class="o">*</span><span class="n">e</span>  <span class="p">]</span> <span class="p">],</span> <span class="n">cz</span><span class="p">[</span> <span class="n">inpoel</span><span class="p">[</span><span class="mi">4</span><span class="o">*</span><span class="n">e</span>  <span class="p">]</span> <span class="p">]</span> <span class="p">}},</span>
-<a name="line-261"></a>        <span class="p">{{</span> <span class="n">cx</span><span class="p">[</span> <span class="n">inpoel</span><span class="p">[</span><span class="mi">4</span><span class="o">*</span><span class="n">e</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span> <span class="p">],</span> <span class="n">cy</span><span class="p">[</span> <span class="n">inpoel</span><span class="p">[</span><span class="mi">4</span><span class="o">*</span><span class="n">e</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span> <span class="p">],</span> <span class="n">cz</span><span class="p">[</span> <span class="n">inpoel</span><span class="p">[</span><span class="mi">4</span><span class="o">*</span><span class="n">e</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span> <span class="p">]</span> <span class="p">}},</span>
-<a name="line-262"></a>        <span class="p">{{</span> <span class="n">cx</span><span class="p">[</span> <span class="n">inpoel</span><span class="p">[</span><span class="mi">4</span><span class="o">*</span><span class="n">e</span><span class="o">+</span><span class="mi">2</span><span class="p">]</span> <span class="p">],</span> <span class="n">cy</span><span class="p">[</span> <span class="n">inpoel</span><span class="p">[</span><span class="mi">4</span><span class="o">*</span><span class="n">e</span><span class="o">+</span><span class="mi">2</span><span class="p">]</span> <span class="p">],</span> <span class="n">cz</span><span class="p">[</span> <span class="n">inpoel</span><span class="p">[</span><span class="mi">4</span><span class="o">*</span><span class="n">e</span><span class="o">+</span><span class="mi">2</span><span class="p">]</span> <span class="p">]</span> <span class="p">}},</span>
-<a name="line-263"></a>        <span class="p">{{</span> <span class="n">cx</span><span class="p">[</span> <span class="n">inpoel</span><span class="p">[</span><span class="mi">4</span><span class="o">*</span><span class="n">e</span><span class="o">+</span><span class="mi">3</span><span class="p">]</span> <span class="p">],</span> <span class="n">cy</span><span class="p">[</span> <span class="n">inpoel</span><span class="p">[</span><span class="mi">4</span><span class="o">*</span><span class="n">e</span><span class="o">+</span><span class="mi">3</span><span class="p">]</span> <span class="p">],</span> <span class="n">cz</span><span class="p">[</span> <span class="n">inpoel</span><span class="p">[</span><span class="mi">4</span><span class="o">*</span><span class="n">e</span><span class="o">+</span><span class="mi">3</span><span class="p">]</span> <span class="p">]</span> <span class="p">}}</span> <span class="p">}};</span>
-<a name="line-264"></a>
-<a name="line-265"></a>      <span class="c1">// Compute the determinant of Jacobian matrix</span>
-<a name="line-266"></a>      <span class="k">auto</span> <span class="n">detT</span> <span class="o">=</span>
-<a name="line-267"></a>        <span class="n">tk</span><span class="o">::</span><span class="n">Jacobian</span><span class="p">(</span> <span class="n">coordel</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">coordel</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">coordel</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">coordel</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="p">);</span>
-<a name="line-268"></a>
-<a name="line-269"></a>      <span class="c1">// initialize limiter function</span>
-<a name="line-270"></a>      <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span> <span class="n">tk</span><span class="o">::</span><span class="n">real</span> <span class="o">&gt;</span> <span class="n">phi</span><span class="p">(</span><span class="n">ncomp</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">);</span>
-<a name="line-271"></a>      <span class="k">for</span> <span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="n">lf</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">lf</span><span class="o">&lt;</span><span class="mi">4</span><span class="p">;</span> <span class="o">++</span><span class="n">lf</span><span class="p">)</span>
-<a name="line-272"></a>      <span class="p">{</span>
-<a name="line-273"></a>        <span class="c1">// Extract the face coordinates</span>
-<a name="line-274"></a>        <span class="n">std</span><span class="o">::</span><span class="n">array</span><span class="o">&lt;</span> <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="p">,</span> <span class="mi">3</span> <span class="o">&gt;</span> <span class="n">inpofa_l</span> <span class="p">{{</span> <span class="n">inpoel</span><span class="p">[</span><span class="mi">4</span><span class="o">*</span><span class="n">e</span><span class="o">+</span><span class="n">tk</span><span class="o">::</span><span class="n">lpofa</span><span class="p">[</span><span class="n">lf</span><span class="p">][</span><span class="mi">0</span><span class="p">]],</span>
-<a name="line-275"></a>                                                 <span class="n">inpoel</span><span class="p">[</span><span class="mi">4</span><span class="o">*</span><span class="n">e</span><span class="o">+</span><span class="n">tk</span><span class="o">::</span><span class="n">lpofa</span><span class="p">[</span><span class="n">lf</span><span class="p">][</span><span class="mi">1</span><span class="p">]],</span>
-<a name="line-276"></a>                                                 <span class="n">inpoel</span><span class="p">[</span><span class="mi">4</span><span class="o">*</span><span class="n">e</span><span class="o">+</span><span class="n">tk</span><span class="o">::</span><span class="n">lpofa</span><span class="p">[</span><span class="n">lf</span><span class="p">][</span><span class="mi">2</span><span class="p">]]</span> <span class="p">}};</span>
-<a name="line-277"></a>
-<a name="line-278"></a>        <span class="n">std</span><span class="o">::</span><span class="n">array</span><span class="o">&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">array</span><span class="o">&lt;</span> <span class="n">tk</span><span class="o">::</span><span class="n">real</span><span class="p">,</span> <span class="mi">3</span><span class="o">&gt;</span><span class="p">,</span> <span class="mi">3</span> <span class="o">&gt;</span> <span class="n">coordfa</span> <span class="p">{{</span>
-<a name="line-279"></a>          <span class="p">{{</span> <span class="n">cx</span><span class="p">[</span> <span class="n">inpofa_l</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="p">],</span> <span class="n">cy</span><span class="p">[</span> <span class="n">inpofa_l</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="p">],</span> <span class="n">cz</span><span class="p">[</span> <span class="n">inpofa_l</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="p">]</span> <span class="p">}},</span>
-<a name="line-280"></a>          <span class="p">{{</span> <span class="n">cx</span><span class="p">[</span> <span class="n">inpofa_l</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="p">],</span> <span class="n">cy</span><span class="p">[</span> <span class="n">inpofa_l</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="p">],</span> <span class="n">cz</span><span class="p">[</span> <span class="n">inpofa_l</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="p">]</span> <span class="p">}},</span>
-<a name="line-281"></a>          <span class="p">{{</span> <span class="n">cx</span><span class="p">[</span> <span class="n">inpofa_l</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="p">],</span> <span class="n">cy</span><span class="p">[</span> <span class="n">inpofa_l</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="p">],</span> <span class="n">cz</span><span class="p">[</span> <span class="n">inpofa_l</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="p">]</span> <span class="p">}}</span> <span class="p">}};</span>
-<a name="line-282"></a>
-<a name="line-283"></a>        <span class="c1">// Gaussian quadrature</span>
-<a name="line-284"></a>        <span class="k">for</span> <span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="n">igp</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">igp</span><span class="o">&lt;</span><span class="n">ng</span><span class="p">;</span> <span class="o">++</span><span class="n">igp</span><span class="p">)</span>
-<a name="line-285"></a>        <span class="p">{</span>
-<a name="line-286"></a>          <span class="c1">// Compute the coordinates of quadrature point at physical domain</span>
-<a name="line-287"></a>          <span class="k">auto</span> <span class="n">gp</span> <span class="o">=</span> <span class="n">tk</span><span class="o">::</span><span class="n">eval_gp</span><span class="p">(</span> <span class="n">igp</span><span class="p">,</span> <span class="n">coordfa</span><span class="p">,</span> <span class="n">coordgp</span> <span class="p">);</span>
-<a name="line-288"></a>
-<a name="line-289"></a>          <span class="c1">//Compute the basis functions</span>
-<a name="line-290"></a>          <span class="k">auto</span> <span class="n">B_l</span> <span class="o">=</span> <span class="n">tk</span><span class="o">::</span><span class="n">eval_basis</span><span class="p">(</span> <span class="n">rdof</span><span class="p">,</span>
-<a name="line-291"></a>                <span class="n">tk</span><span class="o">::</span><span class="n">Jacobian</span><span class="p">(</span> <span class="n">coordel</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">gp</span><span class="p">,</span> <span class="n">coordel</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">coordel</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="p">)</span> <span class="o">/</span> <span class="n">detT</span><span class="p">,</span>
-<a name="line-292"></a>                <span class="n">tk</span><span class="o">::</span><span class="n">Jacobian</span><span class="p">(</span> <span class="n">coordel</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">coordel</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">gp</span><span class="p">,</span> <span class="n">coordel</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="p">)</span> <span class="o">/</span> <span class="n">detT</span><span class="p">,</span>
-<a name="line-293"></a>                <span class="n">tk</span><span class="o">::</span><span class="n">Jacobian</span><span class="p">(</span> <span class="n">coordel</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">coordel</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">coordel</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">gp</span> <span class="p">)</span> <span class="o">/</span> <span class="n">detT</span> <span class="p">);</span>
-<a name="line-294"></a>
-<a name="line-295"></a>          <span class="k">auto</span> <span class="n">state</span> <span class="o">=</span> <span class="n">tk</span><span class="o">::</span><span class="n">eval_state</span><span class="p">(</span> <span class="n">ncomp</span><span class="p">,</span> <span class="n">offset</span><span class="p">,</span> <span class="n">rdof</span><span class="p">,</span> <span class="n">dof_el</span><span class="p">,</span> <span class="n">e</span><span class="p">,</span> <span class="n">U</span><span class="p">,</span> <span class="n">B_l</span> <span class="p">);</span>
-<a name="line-296"></a>
-<a name="line-297"></a>          <span class="n">Assert</span><span class="p">(</span> <span class="n">state</span><span class="p">.</span><span class="n">size</span><span class="p">()</span> <span class="o">==</span> <span class="n">ncomp</span><span class="p">,</span> <span class="s">&quot;Size mismatch&quot;</span> <span class="p">);</span>
+<a name="line-254"></a><span class="kt">void</span>
+<a name="line-255"></a><span class="n">tk</span><span class="o">::</span><span class="n">bndLeastSqPrimitiveVar_P0P1</span><span class="p">(</span> <span class="n">ncomp_t</span> <span class="n">system</span><span class="p">,</span>
+<a name="line-256"></a>  <span class="n">ncomp_t</span> <span class="n">nprim</span><span class="p">,</span>
+<a name="line-257"></a>  <span class="n">ncomp_t</span> <span class="n">offset</span><span class="p">,</span>
+<a name="line-258"></a>  <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="n">rdof</span><span class="p">,</span>
+<a name="line-259"></a>  <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span> <span class="n">bcconf_t</span> <span class="o">&gt;&amp;</span> <span class="n">bcconfig</span><span class="p">,</span>
+<a name="line-260"></a>  <span class="k">const</span> <span class="n">inciter</span><span class="o">::</span><span class="n">FaceData</span><span class="o">&amp;</span> <span class="n">fd</span><span class="p">,</span>
+<a name="line-261"></a>  <span class="k">const</span> <span class="n">Fields</span><span class="o">&amp;</span> <span class="n">geoFace</span><span class="p">,</span>
+<a name="line-262"></a>  <span class="k">const</span> <span class="n">Fields</span><span class="o">&amp;</span> <span class="n">geoElem</span><span class="p">,</span>
+<a name="line-263"></a>  <span class="n">real</span> <span class="n">t</span><span class="p">,</span>
+<a name="line-264"></a>  <span class="k">const</span> <span class="n">StateFn</span><span class="o">&amp;</span> <span class="n">state</span><span class="p">,</span>
+<a name="line-265"></a>  <span class="k">const</span> <span class="n">Fields</span><span class="o">&amp;</span> <span class="n">P</span><span class="p">,</span>
+<a name="line-266"></a>  <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">array</span><span class="o">&lt;</span> <span class="n">real</span><span class="p">,</span> <span class="mi">3</span> <span class="o">&gt;</span> <span class="o">&gt;</span> <span class="o">&gt;&amp;</span> <span class="n">rhs_ls</span><span class="p">,</span>
+<a name="line-267"></a>  <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="n">ncomp</span> <span class="p">)</span>
+<a name="line-268"></a><span class="c1">// *****************************************************************************</span>
+<a name="line-269"></a><span class="c1">//  \brief Compute boundary surface contributions to rhs vector of the</span>
+<a name="line-270"></a><span class="c1">//    least-squares reconstruction of primitive quantities of the PDE system</span>
+<a name="line-271"></a><span class="c1">//! \param[in] system Equation system index</span>
+<a name="line-272"></a><span class="c1">//! \param[in] nprim Number of primitive quantities stored for this PDE system</span>
+<a name="line-273"></a><span class="c1">//! \param[in] offset Offset this PDE system operates from</span>
+<a name="line-274"></a><span class="c1">//! \param[in] rdof Maximum number of reconstructed degrees of freedom</span>
+<a name="line-275"></a><span class="c1">//! \param[in] bcconfig BC configuration vector for multiple side sets</span>
+<a name="line-276"></a><span class="c1">//! \param[in] fd Face connectivity and boundary conditions object</span>
+<a name="line-277"></a><span class="c1">//! \param[in] geoFace Face geometry array</span>
+<a name="line-278"></a><span class="c1">//! \param[in] geoElem Element geometry array</span>
+<a name="line-279"></a><span class="c1">//! \param[in] t Physical time</span>
+<a name="line-280"></a><span class="c1">//! \param[in] state Function to evaluate the left and right solution state at</span>
+<a name="line-281"></a><span class="c1">//!   boundaries</span>
+<a name="line-282"></a><span class="c1">//! \param[in] P Primitive vector to be reconstructed at recent time step</span>
+<a name="line-283"></a><span class="c1">//! \param[in,out] rhs_ls RHS reconstruction vector</span>
+<a name="line-284"></a><span class="c1">//! \param[in] ncomp This is the number of conserved quantities stored for this</span>
+<a name="line-285"></a><span class="c1">//!   system. This is necessary to extend the state vector to the right size,</span>
+<a name="line-286"></a><span class="c1">//!   so that correct boundary conditions are obtained.</span>
+<a name="line-287"></a><span class="c1">//! \details Since this function computes rhs contributions of boundary faces</span>
+<a name="line-288"></a><span class="c1">//!   for the reconstruction of primitive quantities only, it should not be</span>
+<a name="line-289"></a><span class="c1">//!   called for systems of PDEs that do not store primitive quantities. Also</span>
+<a name="line-290"></a><span class="c1">//!   see the version for conserved quantities bndLeastSqConservedVar_P0P1().</span>
+<a name="line-291"></a><span class="c1">// *****************************************************************************</span>
+<a name="line-292"></a><span class="p">{</span>
+<a name="line-293"></a>  <span class="k">const</span> <span class="k">auto</span><span class="o">&amp;</span> <span class="n">bface</span> <span class="o">=</span> <span class="n">fd</span><span class="p">.</span><span class="n">Bface</span><span class="p">();</span>
+<a name="line-294"></a>  <span class="k">const</span> <span class="k">auto</span><span class="o">&amp;</span> <span class="n">esuf</span> <span class="o">=</span> <span class="n">fd</span><span class="p">.</span><span class="n">Esuf</span><span class="p">();</span>
+<a name="line-295"></a>
+<a name="line-296"></a>  <span class="n">Assert</span><span class="p">(</span> <span class="n">nprim</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">,</span> <span class="s">&quot;Primitive variables reconstruction should not be called &quot;</span>
+<a name="line-297"></a>          <span class="s">&quot;for PDE systems not storing primitive quantities&quot;</span><span class="p">);</span>
 <a name="line-298"></a>
-<a name="line-299"></a>          <span class="c1">// compute the limiter function</span>
-<a name="line-300"></a>          <span class="k">for</span> <span class="p">(</span><span class="n">inciter</span><span class="o">::</span><span class="n">ncomp_t</span> <span class="n">c</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">c</span><span class="o">&lt;</span><span class="n">ncomp</span><span class="p">;</span> <span class="o">++</span><span class="n">c</span><span class="p">)</span>
-<a name="line-301"></a>          <span class="p">{</span>
-<a name="line-302"></a>            <span class="k">auto</span> <span class="n">phi_gp</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">;</span>
-<a name="line-303"></a>            <span class="k">auto</span> <span class="n">mark</span> <span class="o">=</span> <span class="n">c</span><span class="o">*</span><span class="n">rdof</span><span class="p">;</span>
-<a name="line-304"></a>            <span class="k">auto</span> <span class="n">uNeg</span> <span class="o">=</span> <span class="n">state</span><span class="p">[</span><span class="n">c</span><span class="p">]</span> <span class="o">-</span> <span class="n">U</span><span class="p">(</span><span class="n">e</span><span class="p">,</span> <span class="n">mark</span><span class="p">,</span> <span class="n">offset</span><span class="p">);</span>
-<a name="line-305"></a>            <span class="k">if</span> <span class="p">(</span><span class="n">uNeg</span> <span class="o">&gt;</span> <span class="mf">1.0e-14</span><span class="p">)</span>
-<a name="line-306"></a>            <span class="p">{</span>
-<a name="line-307"></a>              <span class="n">phi_gp</span> <span class="o">=</span> <span class="n">std</span><span class="o">::</span><span class="n">min</span><span class="p">(</span> <span class="mf">1.0</span><span class="p">,</span> <span class="p">(</span><span class="n">uMax</span><span class="p">[</span><span class="n">c</span><span class="p">]</span><span class="o">-</span><span class="n">U</span><span class="p">(</span><span class="n">e</span><span class="p">,</span> <span class="n">mark</span><span class="p">,</span> <span class="n">offset</span><span class="p">))</span><span class="o">/</span><span class="p">(</span><span class="mf">2.0</span><span class="o">*</span><span class="n">uNeg</span><span class="p">)</span> <span class="p">);</span>
-<a name="line-308"></a>            <span class="p">}</span>
-<a name="line-309"></a>            <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="n">uNeg</span> <span class="o">&lt;</span> <span class="o">-</span><span class="mf">1.0e-14</span><span class="p">)</span>
-<a name="line-310"></a>            <span class="p">{</span>
-<a name="line-311"></a>              <span class="n">phi_gp</span> <span class="o">=</span> <span class="n">std</span><span class="o">::</span><span class="n">min</span><span class="p">(</span> <span class="mf">1.0</span><span class="p">,</span> <span class="p">(</span><span class="n">uMin</span><span class="p">[</span><span class="n">c</span><span class="p">]</span><span class="o">-</span><span class="n">U</span><span class="p">(</span><span class="n">e</span><span class="p">,</span> <span class="n">mark</span><span class="p">,</span> <span class="n">offset</span><span class="p">))</span><span class="o">/</span><span class="p">(</span><span class="mf">2.0</span><span class="o">*</span><span class="n">uNeg</span><span class="p">)</span> <span class="p">);</span>
-<a name="line-312"></a>            <span class="p">}</span>
-<a name="line-313"></a>            <span class="k">else</span>
-<a name="line-314"></a>            <span class="p">{</span>
-<a name="line-315"></a>              <span class="n">phi_gp</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">;</span>
-<a name="line-316"></a>            <span class="p">}</span>
-<a name="line-317"></a>            <span class="n">phi_gp</span> <span class="o">=</span> <span class="n">std</span><span class="o">::</span><span class="n">max</span><span class="p">(</span> <span class="mf">0.0</span><span class="p">,</span>
-<a name="line-318"></a>                               <span class="n">std</span><span class="o">::</span><span class="n">max</span><span class="p">(</span> <span class="n">std</span><span class="o">::</span><span class="n">min</span><span class="p">(</span><span class="n">beta_lim</span><span class="o">*</span><span class="n">phi_gp</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">),</span>
-<a name="line-319"></a>                                         <span class="n">std</span><span class="o">::</span><span class="n">min</span><span class="p">(</span><span class="n">phi_gp</span><span class="p">,</span> <span class="n">beta_lim</span><span class="p">)</span> <span class="p">)</span> <span class="p">);</span>
-<a name="line-320"></a>            <span class="n">phi</span><span class="p">[</span><span class="n">c</span><span class="p">]</span> <span class="o">=</span> <span class="n">std</span><span class="o">::</span><span class="n">min</span><span class="p">(</span> <span class="n">phi</span><span class="p">[</span><span class="n">c</span><span class="p">],</span> <span class="n">phi_gp</span> <span class="p">);</span>
-<a name="line-321"></a>          <span class="p">}</span>
-<a name="line-322"></a>        <span class="p">}</span>
-<a name="line-323"></a>      <span class="p">}</span>
-<a name="line-324"></a>
-<a name="line-325"></a>      <span class="k">if</span> <span class="p">(</span><span class="n">nmat</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">)</span>
-<a name="line-326"></a>        <span class="n">consistentMultiMatLimiting_P1</span><span class="p">(</span><span class="n">nmat</span><span class="p">,</span> <span class="n">offset</span><span class="p">,</span> <span class="n">rdof</span><span class="p">,</span> <span class="n">e</span><span class="p">,</span> <span class="n">U</span><span class="p">,</span> <span class="n">phi</span><span class="p">);</span>
-<a name="line-327"></a>
-<a name="line-328"></a>      <span class="c1">// ----- Step-3: apply limiter function</span>
-<a name="line-329"></a>      <span class="k">for</span> <span class="p">(</span><span class="n">inciter</span><span class="o">::</span><span class="n">ncomp_t</span> <span class="n">c</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">c</span><span class="o">&lt;</span><span class="n">ncomp</span><span class="p">;</span> <span class="o">++</span><span class="n">c</span><span class="p">)</span>
-<a name="line-330"></a>      <span class="p">{</span>
-<a name="line-331"></a>        <span class="k">auto</span> <span class="n">mark</span> <span class="o">=</span> <span class="n">c</span><span class="o">*</span><span class="n">rdof</span><span class="p">;</span>
-<a name="line-332"></a>        <span class="n">U</span><span class="p">(</span><span class="n">e</span><span class="p">,</span> <span class="n">mark</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="n">offset</span><span class="p">)</span> <span class="o">=</span> <span class="n">phi</span><span class="p">[</span><span class="n">c</span><span class="p">]</span> <span class="o">*</span> <span class="n">U</span><span class="p">(</span><span class="n">e</span><span class="p">,</span> <span class="n">mark</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="n">offset</span><span class="p">);</span>
-<a name="line-333"></a>        <span class="n">U</span><span class="p">(</span><span class="n">e</span><span class="p">,</span> <span class="n">mark</span><span class="o">+</span><span class="mi">2</span><span class="p">,</span> <span class="n">offset</span><span class="p">)</span> <span class="o">=</span> <span class="n">phi</span><span class="p">[</span><span class="n">c</span><span class="p">]</span> <span class="o">*</span> <span class="n">U</span><span class="p">(</span><span class="n">e</span><span class="p">,</span> <span class="n">mark</span><span class="o">+</span><span class="mi">2</span><span class="p">,</span> <span class="n">offset</span><span class="p">);</span>
-<a name="line-334"></a>        <span class="n">U</span><span class="p">(</span><span class="n">e</span><span class="p">,</span> <span class="n">mark</span><span class="o">+</span><span class="mi">3</span><span class="p">,</span> <span class="n">offset</span><span class="p">)</span> <span class="o">=</span> <span class="n">phi</span><span class="p">[</span><span class="n">c</span><span class="p">]</span> <span class="o">*</span> <span class="n">U</span><span class="p">(</span><span class="n">e</span><span class="p">,</span> <span class="n">mark</span><span class="o">+</span><span class="mi">3</span><span class="p">,</span> <span class="n">offset</span><span class="p">);</span>
-<a name="line-335"></a>      <span class="p">}</span>
-<a name="line-336"></a>    <span class="p">}</span>
-<a name="line-337"></a>  <span class="p">}</span>
-<a name="line-338"></a><span class="p">}</span>
-<a name="line-339"></a>
-<a name="line-340"></a><span class="kt">void</span> <span class="nf">consistentMultiMatLimiting_P1</span><span class="p">(</span> <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="n">nmat</span><span class="p">,</span>
-<a name="line-341"></a>                                    <span class="n">ncomp_t</span> <span class="n">offset</span><span class="p">,</span>
-<a name="line-342"></a>                                    <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="n">rdof</span><span class="p">,</span>
-<a name="line-343"></a>                                    <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="n">e</span><span class="p">,</span>
-<a name="line-344"></a>                                    <span class="n">tk</span><span class="o">::</span><span class="n">Fields</span><span class="o">&amp;</span> <span class="n">U</span><span class="p">,</span>
-<a name="line-345"></a>                                    <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span> <span class="n">tk</span><span class="o">::</span><span class="n">real</span> <span class="o">&gt;&amp;</span> <span class="n">phi</span> <span class="p">)</span>
-<a name="line-346"></a><span class="c1">// *****************************************************************************</span>
-<a name="line-347"></a><span class="c1">//  Consistent limiter modifications for P1 dofs</span>
-<a name="line-348"></a><span class="c1">//! \param[in] nmat Number of materials in this PDE system</span>
-<a name="line-349"></a><span class="c1">//! \param[in] offset Index for equation system</span>
-<a name="line-350"></a><span class="c1">//! \param[in] rdof Total number of reconstructed dofs</span>
-<a name="line-351"></a><span class="c1">//! \param[in] e Element being checked for consistency</span>
-<a name="line-352"></a><span class="c1">//! \param[in,out] U Second-order solution vector which gets modified near</span>
-<a name="line-353"></a><span class="c1">//!   material interfaces for consistency</span>
-<a name="line-354"></a><span class="c1">//! \param[in,out] phi Vector of limiter functions for the ncomp unknowns</span>
-<a name="line-355"></a><span class="c1">// *****************************************************************************</span>
-<a name="line-356"></a><span class="p">{</span>
-<a name="line-357"></a>  <span class="k">using</span> <span class="n">inciter</span><span class="o">::</span><span class="n">volfracIdx</span><span class="p">;</span>
-<a name="line-358"></a>  <span class="k">using</span> <span class="n">inciter</span><span class="o">::</span><span class="n">densityIdx</span><span class="p">;</span>
-<a name="line-359"></a>  <span class="k">using</span> <span class="n">inciter</span><span class="o">::</span><span class="n">momentumIdx</span><span class="p">;</span>
-<a name="line-360"></a>  <span class="k">using</span> <span class="n">inciter</span><span class="o">::</span><span class="n">energyIdx</span><span class="p">;</span>
-<a name="line-361"></a>  <span class="k">using</span> <span class="n">inciter</span><span class="o">::</span><span class="n">volfracDofIdx</span><span class="p">;</span>
-<a name="line-362"></a>
-<a name="line-363"></a>  <span class="c1">// find the limiter-function for volume-fractions</span>
-<a name="line-364"></a>  <span class="k">auto</span> <span class="n">phi_al</span><span class="p">(</span><span class="mf">1.0</span><span class="p">),</span> <span class="n">almax</span><span class="p">(</span><span class="mf">0.0</span><span class="p">),</span> <span class="n">dalmax</span><span class="p">(</span><span class="mf">0.0</span><span class="p">);</span>
-<a name="line-365"></a>  <span class="c1">//std::size_t nmax(0);</span>
-<a name="line-366"></a>  <span class="k">for</span> <span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="n">k</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">k</span><span class="o">&lt;</span><span class="n">nmat</span><span class="p">;</span> <span class="o">++</span><span class="n">k</span><span class="p">)</span>
-<a name="line-367"></a>  <span class="p">{</span>
-<a name="line-368"></a>    <span class="n">phi_al</span> <span class="o">=</span> <span class="n">std</span><span class="o">::</span><span class="n">min</span><span class="p">(</span> <span class="n">phi_al</span><span class="p">,</span> <span class="n">phi</span><span class="p">[</span><span class="n">volfracIdx</span><span class="p">(</span><span class="n">nmat</span><span class="p">,</span> <span class="n">k</span><span class="p">)]</span> <span class="p">);</span>
-<a name="line-369"></a>    <span class="k">if</span> <span class="p">(</span><span class="n">almax</span> <span class="o">&lt;</span> <span class="n">U</span><span class="p">(</span><span class="n">e</span><span class="p">,</span><span class="n">volfracDofIdx</span><span class="p">(</span><span class="n">nmat</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">rdof</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span><span class="n">offset</span><span class="p">))</span>
-<a name="line-370"></a>    <span class="p">{</span>
-<a name="line-371"></a>      <span class="c1">//nmax = k;</span>
-<a name="line-372"></a>      <span class="n">almax</span> <span class="o">=</span> <span class="n">U</span><span class="p">(</span><span class="n">e</span><span class="p">,</span><span class="n">volfracDofIdx</span><span class="p">(</span><span class="n">nmat</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">rdof</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span><span class="n">offset</span><span class="p">);</span>
-<a name="line-373"></a>    <span class="p">}</span>
-<a name="line-374"></a>    <span class="k">auto</span> <span class="n">dmax</span> <span class="o">=</span> <span class="n">std</span><span class="o">::</span><span class="n">max</span><span class="p">(</span>
-<a name="line-375"></a>                  <span class="n">std</span><span class="o">::</span><span class="n">max</span><span class="p">(</span>
-<a name="line-376"></a>                    <span class="n">std</span><span class="o">::</span><span class="n">abs</span><span class="p">(</span><span class="n">U</span><span class="p">(</span><span class="n">e</span><span class="p">,</span><span class="n">volfracDofIdx</span><span class="p">(</span><span class="n">nmat</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">rdof</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span><span class="n">offset</span><span class="p">)),</span>
-<a name="line-377"></a>                    <span class="n">std</span><span class="o">::</span><span class="n">abs</span><span class="p">(</span><span class="n">U</span><span class="p">(</span><span class="n">e</span><span class="p">,</span><span class="n">volfracDofIdx</span><span class="p">(</span><span class="n">nmat</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">rdof</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span><span class="n">offset</span><span class="p">))</span> <span class="p">),</span>
-<a name="line-378"></a>                  <span class="n">std</span><span class="o">::</span><span class="n">abs</span><span class="p">(</span><span class="n">U</span><span class="p">(</span><span class="n">e</span><span class="p">,</span><span class="n">volfracDofIdx</span><span class="p">(</span><span class="n">nmat</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">rdof</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span><span class="n">offset</span><span class="p">))</span> <span class="p">);</span>
-<a name="line-379"></a>    <span class="n">dalmax</span> <span class="o">=</span> <span class="n">std</span><span class="o">::</span><span class="n">max</span><span class="p">(</span> <span class="n">dalmax</span><span class="p">,</span> <span class="n">dmax</span> <span class="p">);</span>
-<a name="line-380"></a>  <span class="p">}</span>
-<a name="line-381"></a>
-<a name="line-382"></a>  <span class="c1">//phi_al = phi[nmax];</span>
-<a name="line-383"></a>
-<a name="line-384"></a>  <span class="c1">// determine if cell is a material-interface cell based on ad-hoc tolerances.</span>
-<a name="line-385"></a>  <span class="c1">// if interface-cell, then modify high-order dofs of conserved unknowns</span>
-<a name="line-386"></a>  <span class="c1">// consistently and use same limiter for all equations.</span>
-<a name="line-387"></a>  <span class="c1">// Slopes of solution variables \alpha_k \rho_k and \alpha_k \rho_k E_k need</span>
-<a name="line-388"></a>  <span class="c1">// to be modified in interface cells, such that slopes in the \rho_k and</span>
-<a name="line-389"></a>  <span class="c1">// \rho_k E_k part are ignored and only slopes in \alpha_k are considered.</span>
-<a name="line-390"></a>  <span class="c1">// Ideally, we would like to not do this, but this is a necessity to avoid</span>
-<a name="line-391"></a>  <span class="c1">// limiter-limiter interactions in multiphase CFD (see &quot;K.-M. Shyue, F. Xiao,</span>
-<a name="line-392"></a>  <span class="c1">// An Eulerian interface sharpening algorithm for compressible two-phase flow:</span>
-<a name="line-393"></a>  <span class="c1">// the algebraic THINC approach, Journal of Computational Physics 268, 2014,</span>
-<a name="line-394"></a>  <span class="c1">// 326–354. doi:10.1016/j.jcp.2014.03.010.&quot; and &quot;A. Chiapolino, R. Saurel,</span>
-<a name="line-395"></a>  <span class="c1">// B. Nkonga, Sharpening diffuse interfaces with compressible fluids on</span>
-<a name="line-396"></a>  <span class="c1">// unstructured meshes, Journal of Computational Physics 340 (2017) 389–417.</span>
-<a name="line-397"></a>  <span class="c1">// doi:10.1016/j.jcp.2017.03.042.&quot;). This approximation should be applied in</span>
-<a name="line-398"></a>  <span class="c1">// as narrow a band of interface-cells as possible. The following if-test</span>
-<a name="line-399"></a>  <span class="c1">// defines this band of interface-cells. This tests checks the value of the</span>
-<a name="line-400"></a>  <span class="c1">// maximum volume-fraction in the cell (almax) and the maximum change in</span>
-<a name="line-401"></a>  <span class="c1">// volume-fraction in the cell (dalmax, calculated from second-order DOFs),</span>
-<a name="line-402"></a>  <span class="c1">// to determine the band of interface-cells where the aforementioned fix needs</span>
-<a name="line-403"></a>  <span class="c1">// to be applied. This if-test says that, the fix is applied when the change</span>
-<a name="line-404"></a>  <span class="c1">// in volume-fraction across a cell is greater than 0.1, *and* the</span>
-<a name="line-405"></a>  <span class="c1">// volume-fraction is between 0.1 and 0.9.</span>
-<a name="line-406"></a>  <span class="k">if</span> <span class="p">(</span> <span class="n">dalmax</span> <span class="o">&gt;</span> <span class="mf">0.1</span> <span class="o">&amp;&amp;</span>
-<a name="line-407"></a>       <span class="p">(</span><span class="n">almax</span> <span class="o">&gt;</span> <span class="mf">0.1</span> <span class="o">&amp;&amp;</span> <span class="n">almax</span> <span class="o">&lt;</span> <span class="p">(</span><span class="mf">1.0</span><span class="o">-</span><span class="mf">0.1</span><span class="p">))</span> <span class="p">)</span>
-<a name="line-408"></a>  <span class="p">{</span>
-<a name="line-409"></a>    <span class="c1">// 1. consistent high-order dofs</span>
-<a name="line-410"></a>    <span class="n">std</span><span class="o">::</span><span class="n">array</span><span class="o">&lt;</span> <span class="n">tk</span><span class="o">::</span><span class="n">real</span><span class="p">,</span> <span class="mi">3</span> <span class="o">&gt;</span> <span class="n">drhob</span> <span class="p">{{</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span> <span class="p">}};</span>
-<a name="line-411"></a>    <span class="k">auto</span> <span class="n">rhob</span><span class="p">(</span><span class="mf">0.0</span><span class="p">),</span> <span class="n">vel</span><span class="p">(</span><span class="mf">0.0</span><span class="p">);</span>
-<a name="line-412"></a>    <span class="k">for</span> <span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="n">k</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">k</span><span class="o">&lt;</span><span class="n">nmat</span><span class="p">;</span> <span class="o">++</span><span class="n">k</span><span class="p">)</span>
-<a name="line-413"></a>    <span class="p">{</span>
-<a name="line-414"></a>      <span class="k">auto</span> <span class="n">alk</span> <span class="o">=</span> <span class="n">std</span><span class="o">::</span><span class="n">max</span><span class="p">(</span> <span class="mf">1.0e-14</span><span class="p">,</span> <span class="n">U</span><span class="p">(</span><span class="n">e</span><span class="p">,</span><span class="n">volfracDofIdx</span><span class="p">(</span><span class="n">nmat</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">rdof</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span><span class="n">offset</span><span class="p">)</span> <span class="p">);</span>
-<a name="line-415"></a>      <span class="k">auto</span> <span class="n">rhok</span> <span class="o">=</span> <span class="n">U</span><span class="p">(</span><span class="n">e</span><span class="p">,</span><span class="n">densityDofIdx</span><span class="p">(</span><span class="n">nmat</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">rdof</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span><span class="n">offset</span><span class="p">)</span><span class="o">/</span><span class="n">alk</span><span class="p">;</span>
-<a name="line-416"></a>      <span class="k">auto</span> <span class="n">rhoEk</span> <span class="o">=</span> <span class="n">U</span><span class="p">(</span><span class="n">e</span><span class="p">,</span><span class="n">energyDofIdx</span><span class="p">(</span><span class="n">nmat</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">rdof</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span><span class="n">offset</span><span class="p">)</span><span class="o">/</span><span class="n">alk</span><span class="p">;</span>
-<a name="line-417"></a>      <span class="k">for</span> <span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="n">idir</span><span class="o">=</span><span class="mi">1</span><span class="p">;</span> <span class="n">idir</span><span class="o">&lt;=</span><span class="mi">3</span><span class="p">;</span> <span class="o">++</span><span class="n">idir</span><span class="p">)</span>
-<a name="line-418"></a>      <span class="p">{</span>
-<a name="line-419"></a>        <span class="n">U</span><span class="p">(</span><span class="n">e</span><span class="p">,</span><span class="n">densityDofIdx</span><span class="p">(</span><span class="n">nmat</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">rdof</span><span class="p">,</span> <span class="n">idir</span><span class="p">),</span><span class="n">offset</span><span class="p">)</span> <span class="o">=</span> <span class="n">rhok</span> <span class="o">*</span>
-<a name="line-420"></a>          <span class="n">U</span><span class="p">(</span><span class="n">e</span><span class="p">,</span><span class="n">volfracDofIdx</span><span class="p">(</span><span class="n">nmat</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">rdof</span><span class="p">,</span> <span class="n">idir</span><span class="p">),</span><span class="n">offset</span><span class="p">);</span>
-<a name="line-421"></a>        <span class="n">U</span><span class="p">(</span><span class="n">e</span><span class="p">,</span><span class="n">energyDofIdx</span><span class="p">(</span><span class="n">nmat</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">rdof</span><span class="p">,</span> <span class="n">idir</span><span class="p">),</span><span class="n">offset</span><span class="p">)</span> <span class="o">=</span> <span class="n">rhoEk</span> <span class="o">*</span>
-<a name="line-422"></a>          <span class="n">U</span><span class="p">(</span><span class="n">e</span><span class="p">,</span><span class="n">volfracDofIdx</span><span class="p">(</span><span class="n">nmat</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">rdof</span><span class="p">,</span> <span class="n">idir</span><span class="p">),</span><span class="n">offset</span><span class="p">);</span>
-<a name="line-423"></a>        <span class="n">drhob</span><span class="p">[</span><span class="n">idir</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">+=</span> <span class="n">U</span><span class="p">(</span><span class="n">e</span><span class="p">,</span><span class="n">densityDofIdx</span><span class="p">(</span><span class="n">nmat</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">rdof</span><span class="p">,</span> <span class="n">idir</span><span class="p">),</span><span class="n">offset</span><span class="p">);</span>
-<a name="line-424"></a>      <span class="p">}</span>
-<a name="line-425"></a>      <span class="n">rhob</span> <span class="o">+=</span> <span class="n">U</span><span class="p">(</span><span class="n">e</span><span class="p">,</span><span class="n">densityDofIdx</span><span class="p">(</span><span class="n">nmat</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">rdof</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span><span class="n">offset</span><span class="p">);</span>
-<a name="line-426"></a>    <span class="p">}</span>
-<a name="line-427"></a>    <span class="k">for</span> <span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="n">idir</span><span class="o">=</span><span class="mi">1</span><span class="p">;</span> <span class="n">idir</span><span class="o">&lt;=</span><span class="mi">3</span><span class="p">;</span> <span class="o">++</span><span class="n">idir</span><span class="p">)</span>
-<a name="line-428"></a>    <span class="p">{</span>
-<a name="line-429"></a>      <span class="k">for</span> <span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="n">jdir</span><span class="o">=</span><span class="mi">1</span><span class="p">;</span> <span class="n">jdir</span><span class="o">&lt;=</span><span class="mi">3</span><span class="p">;</span> <span class="o">++</span><span class="n">jdir</span><span class="p">)</span>
-<a name="line-430"></a>      <span class="p">{</span>
-<a name="line-431"></a>        <span class="n">vel</span> <span class="o">=</span> <span class="n">U</span><span class="p">(</span><span class="n">e</span><span class="p">,</span><span class="n">momentumDofIdx</span><span class="p">(</span><span class="n">nmat</span><span class="p">,</span> <span class="n">jdir</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">rdof</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span><span class="n">offset</span><span class="p">)</span><span class="o">/</span><span class="n">rhob</span><span class="p">;</span>
-<a name="line-432"></a>        <span class="n">U</span><span class="p">(</span><span class="n">e</span><span class="p">,</span><span class="n">momentumDofIdx</span><span class="p">(</span><span class="n">nmat</span><span class="p">,</span> <span class="n">jdir</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">rdof</span><span class="p">,</span> <span class="n">idir</span><span class="p">),</span><span class="n">offset</span><span class="p">)</span> <span class="o">=</span> <span class="n">vel</span> <span class="o">*</span> <span class="n">drhob</span><span class="p">[</span><span class="n">idir</span><span class="o">-</span><span class="mi">1</span><span class="p">];</span>
-<a name="line-433"></a>      <span class="p">}</span>
-<a name="line-434"></a>    <span class="p">}</span>
-<a name="line-435"></a>
-<a name="line-436"></a>    <span class="c1">// 2. same limiter for all equations</span>
-<a name="line-437"></a><span class="hll">    <span class="k">for</span> <span class="p">(</span><span class="k">auto</span><span class="o">&amp;</span> <span class="nl">p</span> <span class="p">:</span> <span class="n">phi</span><span class="p">)</span> <span class="n">p</span> <span class="o">=</span> <span class="n">phi_al</span><span class="p">;</span><span class='error2'>&lt;--- Consider using std::fill algorithm instead of a raw loop.</span>
-</span><a name="line-438"></a>  <span class="p">}</span>
-<a name="line-439"></a>  <span class="k">else</span>
-<a name="line-440"></a>  <span class="p">{</span>
-<a name="line-441"></a>    <span class="c1">// same limiter for all volume-fractions</span>
-<a name="line-442"></a>    <span class="k">for</span> <span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="n">k</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">k</span><span class="o">&lt;</span><span class="n">nmat</span><span class="p">;</span> <span class="o">++</span><span class="n">k</span><span class="p">)</span>
-<a name="line-443"></a>      <span class="n">phi</span><span class="p">[</span><span class="n">volfracIdx</span><span class="p">(</span><span class="n">nmat</span><span class="p">,</span> <span class="n">k</span><span class="p">)]</span> <span class="o">=</span> <span class="n">phi_al</span><span class="p">;</span>
-<a name="line-444"></a>  <span class="p">}</span>
-<a name="line-445"></a><span class="p">}</span>
-<a name="line-446"></a>
-<a name="line-447"></a><span class="p">}</span> <span class="c1">// inciter::</span>
+<a name="line-299"></a>  <span class="k">for</span> <span class="p">(</span><span class="k">const</span> <span class="k">auto</span><span class="o">&amp;</span> <span class="nl">s</span> <span class="p">:</span> <span class="n">bcconfig</span><span class="p">)</span> <span class="p">{</span>       <span class="c1">// for all bc sidesets</span>
+<a name="line-300"></a>    <span class="k">auto</span> <span class="n">bc</span> <span class="o">=</span> <span class="n">bface</span><span class="p">.</span><span class="n">find</span><span class="p">(</span> <span class="n">std</span><span class="o">::</span><span class="n">stoi</span><span class="p">(</span><span class="n">s</span><span class="p">)</span> <span class="p">);</span><span class="c1">// faces for side set</span>
+<a name="line-301"></a>    <span class="k">if</span> <span class="p">(</span><span class="n">bc</span> <span class="o">!=</span> <span class="n">end</span><span class="p">(</span><span class="n">bface</span><span class="p">))</span>
+<a name="line-302"></a>    <span class="p">{</span>
+<a name="line-303"></a>      <span class="c1">// Compute boundary face contributions</span>
+<a name="line-304"></a>      <span class="k">for</span> <span class="p">(</span><span class="k">const</span> <span class="k">auto</span><span class="o">&amp;</span> <span class="nl">f</span> <span class="p">:</span> <span class="n">bc</span><span class="o">-&gt;</span><span class="n">second</span><span class="p">)</span>
+<a name="line-305"></a>      <span class="p">{</span>
+<a name="line-306"></a>        <span class="n">Assert</span><span class="p">(</span> <span class="n">esuf</span><span class="p">[</span><span class="mi">2</span><span class="o">*</span><span class="n">f</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="s">&quot;physical boundary element not -1&quot;</span> <span class="p">);</span>
+<a name="line-307"></a>
+<a name="line-308"></a>        <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="n">el</span> <span class="o">=</span> <span class="k">static_cast</span><span class="o">&lt;</span> <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="o">&gt;</span><span class="p">(</span><span class="n">esuf</span><span class="p">[</span><span class="mi">2</span><span class="o">*</span><span class="n">f</span><span class="p">]);</span>
+<a name="line-309"></a>
+<a name="line-310"></a>        <span class="c1">// arrays for quadrature points</span>
+<a name="line-311"></a>        <span class="n">std</span><span class="o">::</span><span class="n">array</span><span class="o">&lt;</span> <span class="n">real</span><span class="p">,</span> <span class="mi">3</span> <span class="o">&gt;</span>
+<a name="line-312"></a>          <span class="n">fc</span><span class="p">{{</span> <span class="n">geoFace</span><span class="p">(</span><span class="n">f</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">0</span><span class="p">),</span> <span class="n">geoFace</span><span class="p">(</span><span class="n">f</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">0</span><span class="p">),</span> <span class="n">geoFace</span><span class="p">(</span><span class="n">f</span><span class="p">,</span><span class="mi">6</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span> <span class="p">}};</span>
+<a name="line-313"></a>        <span class="n">std</span><span class="o">::</span><span class="n">array</span><span class="o">&lt;</span> <span class="n">real</span><span class="p">,</span> <span class="mi">3</span> <span class="o">&gt;</span>
+<a name="line-314"></a>          <span class="n">fn</span><span class="p">{{</span> <span class="n">geoFace</span><span class="p">(</span><span class="n">f</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">),</span> <span class="n">geoFace</span><span class="p">(</span><span class="n">f</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">0</span><span class="p">),</span> <span class="n">geoFace</span><span class="p">(</span><span class="n">f</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span> <span class="p">}};</span>
+<a name="line-315"></a>
+<a name="line-316"></a>        <span class="c1">// Compute the state variables at the left element</span>
+<a name="line-317"></a>        <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span> <span class="n">real</span> <span class="o">&gt;</span><span class="n">B</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mf">1.0</span><span class="p">);</span>
+<a name="line-318"></a>        <span class="k">auto</span> <span class="n">ul</span> <span class="o">=</span> <span class="n">eval_state</span><span class="p">(</span> <span class="n">nprim</span><span class="p">,</span> <span class="n">offset</span><span class="p">,</span> <span class="n">rdof</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">el</span><span class="p">,</span> <span class="n">P</span><span class="p">,</span> <span class="n">B</span> <span class="p">);</span>
+<a name="line-319"></a>        <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span> <span class="n">real</span> <span class="o">&gt;</span><span class="n">ucomp</span><span class="p">(</span><span class="n">ncomp</span><span class="p">,</span><span class="mf">0.0</span><span class="p">);</span>
+<a name="line-320"></a>
+<a name="line-321"></a>        <span class="c1">// consolidate conserved quantities into state vector</span>
+<a name="line-322"></a>        <span class="n">ul</span><span class="p">.</span><span class="n">insert</span><span class="p">(</span><span class="n">ul</span><span class="p">.</span><span class="n">begin</span><span class="p">(),</span> <span class="n">ucomp</span><span class="p">.</span><span class="n">begin</span><span class="p">(),</span> <span class="n">ucomp</span><span class="p">.</span><span class="n">end</span><span class="p">());</span>
+<a name="line-323"></a>
+<a name="line-324"></a>        <span class="n">Assert</span><span class="p">(</span> <span class="n">ul</span><span class="p">.</span><span class="n">size</span><span class="p">()</span> <span class="o">==</span> <span class="n">ncomp</span><span class="o">+</span><span class="n">nprim</span><span class="p">,</span> <span class="s">&quot;Incorrect size for &quot;</span>
+<a name="line-325"></a>                <span class="s">&quot;appended state vector&quot;</span> <span class="p">);</span>
+<a name="line-326"></a>
+<a name="line-327"></a>        <span class="c1">// Compute the state at the face-center using BC</span>
+<a name="line-328"></a>        <span class="k">auto</span> <span class="n">ustate</span> <span class="o">=</span> <span class="n">state</span><span class="p">(</span> <span class="n">system</span><span class="p">,</span> <span class="n">ncomp</span><span class="p">,</span> <span class="n">ul</span><span class="p">,</span> <span class="n">fc</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">fc</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">fc</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">t</span><span class="p">,</span> <span class="n">fn</span> <span class="p">);</span>
+<a name="line-329"></a>
+<a name="line-330"></a>        <span class="n">std</span><span class="o">::</span><span class="n">array</span><span class="o">&lt;</span> <span class="n">real</span><span class="p">,</span> <span class="mi">3</span> <span class="o">&gt;</span> <span class="n">wdeltax</span><span class="p">{{</span> <span class="n">fc</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">-</span><span class="n">geoElem</span><span class="p">(</span><span class="n">el</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">),</span>
+<a name="line-331"></a>                                        <span class="n">fc</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">-</span><span class="n">geoElem</span><span class="p">(</span><span class="n">el</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">0</span><span class="p">),</span>
+<a name="line-332"></a>                                        <span class="n">fc</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">-</span><span class="n">geoElem</span><span class="p">(</span><span class="n">el</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span> <span class="p">}};</span>
+<a name="line-333"></a>
+<a name="line-334"></a>        <span class="k">for</span> <span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="n">idir</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">idir</span><span class="o">&lt;</span><span class="mi">3</span><span class="p">;</span> <span class="o">++</span><span class="n">idir</span><span class="p">)</span>
+<a name="line-335"></a>        <span class="p">{</span>
+<a name="line-336"></a>          <span class="c1">// rhs vector</span>
+<a name="line-337"></a>          <span class="k">for</span> <span class="p">(</span><span class="n">ncomp_t</span> <span class="n">c</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">c</span><span class="o">&lt;</span><span class="n">nprim</span><span class="p">;</span> <span class="o">++</span><span class="n">c</span><span class="p">)</span>
+<a name="line-338"></a>          <span class="p">{</span>
+<a name="line-339"></a>            <span class="k">auto</span> <span class="n">cp</span> <span class="o">=</span> <span class="n">ustate</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="n">size</span><span class="p">()</span><span class="o">-</span><span class="n">nprim</span><span class="o">+</span><span class="n">c</span><span class="p">;</span>
+<a name="line-340"></a>            <span class="n">rhs_ls</span><span class="p">[</span><span class="n">el</span><span class="p">][</span><span class="n">c</span><span class="p">][</span><span class="n">idir</span><span class="p">]</span> <span class="o">+=</span>
+<a name="line-341"></a>              <span class="n">wdeltax</span><span class="p">[</span><span class="n">idir</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="n">ustate</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="n">cp</span><span class="p">]</span><span class="o">-</span><span class="n">ustate</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="n">cp</span><span class="p">]);</span>
+<a name="line-342"></a>          <span class="p">}</span>
+<a name="line-343"></a>        <span class="p">}</span>
+<a name="line-344"></a>      <span class="p">}</span>
+<a name="line-345"></a>    <span class="p">}</span>
+<a name="line-346"></a>  <span class="p">}</span>
+<a name="line-347"></a><span class="p">}</span>
+<a name="line-348"></a>
+<a name="line-349"></a><span class="kt">void</span>
+<a name="line-350"></a><span class="n">tk</span><span class="o">::</span><span class="n">solveLeastSq_P0P1</span><span class="p">(</span> <span class="n">ncomp_t</span> <span class="n">ncomp</span><span class="p">,</span>
+<a name="line-351"></a>  <span class="n">ncomp_t</span> <span class="n">offset</span><span class="p">,</span>
+<a name="line-352"></a>  <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="n">rdof</span><span class="p">,</span>
+<a name="line-353"></a>  <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">array</span><span class="o">&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">array</span><span class="o">&lt;</span> <span class="n">real</span><span class="p">,</span> <span class="mi">3</span> <span class="o">&gt;</span><span class="p">,</span> <span class="mi">3</span> <span class="o">&gt;</span> <span class="o">&gt;&amp;</span> <span class="n">lhs</span><span class="p">,</span>
+<a name="line-354"></a>  <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">array</span><span class="o">&lt;</span> <span class="n">real</span><span class="p">,</span> <span class="mi">3</span> <span class="o">&gt;</span> <span class="o">&gt;</span> <span class="o">&gt;&amp;</span> <span class="n">rhs</span><span class="p">,</span>
+<a name="line-355"></a>  <span class="n">Fields</span><span class="o">&amp;</span> <span class="n">W</span> <span class="p">)</span>
+<a name="line-356"></a><span class="c1">// *****************************************************************************</span>
+<a name="line-357"></a><span class="c1">//  Solve the 3x3 linear system for least-squares reconstruction</span>
+<a name="line-358"></a><span class="c1">//! \param[in] ncomp Number of scalar components in this PDE system</span>
+<a name="line-359"></a><span class="c1">//! \param[in] offset Offset this PDE system operates from</span>
+<a name="line-360"></a><span class="c1">//! \param[in] rdof Maximum number of reconstructed degrees of freedom</span>
+<a name="line-361"></a><span class="c1">//! \param[in] lhs LHS reconstruction matrix</span>
+<a name="line-362"></a><span class="c1">//! \param[in] rhs RHS reconstruction vector</span>
+<a name="line-363"></a><span class="c1">//! \param[in,out] W Solution vector to be reconstructed at recent time step</span>
+<a name="line-364"></a><span class="c1">//! \details Solves the 3x3 linear system for each element, individually. For</span>
+<a name="line-365"></a><span class="c1">//!   systems that require reconstructions of primitive quantities, this should</span>
+<a name="line-366"></a><span class="c1">//!   be called twice, once with the argument &#39;W&#39; as U (conserved), and again</span>
+<a name="line-367"></a><span class="c1">//!   with &#39;W&#39; as P (primitive).</span>
+<a name="line-368"></a><span class="c1">// *****************************************************************************</span>
+<a name="line-369"></a><span class="p">{</span>
+<a name="line-370"></a>  <span class="k">auto</span> <span class="n">nelem</span> <span class="o">=</span> <span class="n">lhs</span><span class="p">.</span><span class="n">size</span><span class="p">();</span>
+<a name="line-371"></a>
+<a name="line-372"></a>  <span class="k">for</span> <span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="n">e</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">e</span><span class="o">&lt;</span><span class="n">nelem</span><span class="p">;</span> <span class="o">++</span><span class="n">e</span><span class="p">)</span>
+<a name="line-373"></a>  <span class="p">{</span>
+<a name="line-374"></a>    <span class="k">for</span> <span class="p">(</span><span class="n">ncomp_t</span> <span class="n">c</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">c</span><span class="o">&lt;</span><span class="n">ncomp</span><span class="p">;</span> <span class="o">++</span><span class="n">c</span><span class="p">)</span>
+<a name="line-375"></a>    <span class="p">{</span>
+<a name="line-376"></a>      <span class="k">auto</span> <span class="n">mark</span> <span class="o">=</span> <span class="n">c</span><span class="o">*</span><span class="n">rdof</span><span class="p">;</span>
+<a name="line-377"></a>
+<a name="line-378"></a>      <span class="c1">// solve system using Cramer&#39;s rule</span>
+<a name="line-379"></a>      <span class="k">auto</span> <span class="n">ux</span> <span class="o">=</span> <span class="n">tk</span><span class="o">::</span><span class="n">cramer</span><span class="p">(</span> <span class="n">lhs</span><span class="p">[</span><span class="n">e</span><span class="p">],</span> <span class="n">rhs</span><span class="p">[</span><span class="n">e</span><span class="p">][</span><span class="n">c</span><span class="p">]</span> <span class="p">);</span>
+<a name="line-380"></a>
+<a name="line-381"></a>      <span class="n">W</span><span class="p">(</span><span class="n">e</span><span class="p">,</span><span class="n">mark</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span><span class="n">offset</span><span class="p">)</span> <span class="o">=</span> <span class="n">ux</span><span class="p">[</span><span class="mi">0</span><span class="p">];</span>
+<a name="line-382"></a>      <span class="n">W</span><span class="p">(</span><span class="n">e</span><span class="p">,</span><span class="n">mark</span><span class="o">+</span><span class="mi">2</span><span class="p">,</span><span class="n">offset</span><span class="p">)</span> <span class="o">=</span> <span class="n">ux</span><span class="p">[</span><span class="mi">1</span><span class="p">];</span>
+<a name="line-383"></a>      <span class="n">W</span><span class="p">(</span><span class="n">e</span><span class="p">,</span><span class="n">mark</span><span class="o">+</span><span class="mi">3</span><span class="p">,</span><span class="n">offset</span><span class="p">)</span> <span class="o">=</span> <span class="n">ux</span><span class="p">[</span><span class="mi">2</span><span class="p">];</span>
+<a name="line-384"></a>    <span class="p">}</span>
+<a name="line-385"></a>  <span class="p">}</span>
+<a name="line-386"></a><span class="p">}</span>
+<a name="line-387"></a>
+<a name="line-388"></a><span class="kt">void</span>
+<a name="line-389"></a><span class="n">tk</span><span class="o">::</span><span class="n">transform_P0P1</span><span class="p">(</span> <span class="n">ncomp_t</span> <span class="n">ncomp</span><span class="p">,</span>
+<a name="line-390"></a>                    <span class="n">ncomp_t</span> <span class="n">offset</span><span class="p">,</span>
+<a name="line-391"></a>                    <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="n">rdof</span><span class="p">,</span>
+<a name="line-392"></a>                    <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="n">nelem</span><span class="p">,</span>
+<a name="line-393"></a>                    <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span> <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="o">&gt;&amp;</span> <span class="n">inpoel</span><span class="p">,</span>
+<a name="line-394"></a>                    <span class="k">const</span> <span class="n">UnsMesh</span><span class="o">::</span><span class="n">Coords</span><span class="o">&amp;</span> <span class="n">coord</span><span class="p">,</span>
+<a name="line-395"></a>                    <span class="n">Fields</span><span class="o">&amp;</span> <span class="n">W</span> <span class="p">)</span>
+<a name="line-396"></a><span class="c1">// *****************************************************************************</span>
+<a name="line-397"></a><span class="c1">//  Transform the reconstructed P1-derivatives to the Dubiner dofs</span>
+<a name="line-398"></a><span class="c1">//! \param[in] ncomp Number of scalar components in this PDE system</span>
+<a name="line-399"></a><span class="c1">//! \param[in] offset Index for equation systems</span>
+<a name="line-400"></a><span class="c1">//! \param[in] rdof Total number of reconstructed dofs</span>
+<a name="line-401"></a><span class="c1">//! \param[in] nelem Total number of elements</span>
+<a name="line-402"></a><span class="c1">//! \param[in] inpoel Element-node connectivity</span>
+<a name="line-403"></a><span class="c1">//! \param[in] coord Array of nodal coordinates</span>
+<a name="line-404"></a><span class="c1">//! \param[in,out] W Second-order reconstructed vector which gets transformed to</span>
+<a name="line-405"></a><span class="c1">//!   the Dubiner reference space</span>
+<a name="line-406"></a><span class="c1">//! \details Since the DG solution (and the primitive quantities) are assumed to</span>
+<a name="line-407"></a><span class="c1">//!   be stored in the Dubiner space, this transformation from Taylor</span>
+<a name="line-408"></a><span class="c1">//!   coefficients to Dubiner coefficients is necessary.</span>
+<a name="line-409"></a><span class="c1">// *****************************************************************************</span>
+<a name="line-410"></a><span class="p">{</span>
+<a name="line-411"></a>  <span class="k">const</span> <span class="k">auto</span><span class="o">&amp;</span> <span class="n">cx</span> <span class="o">=</span> <span class="n">coord</span><span class="p">[</span><span class="mi">0</span><span class="p">];</span>
+<a name="line-412"></a>  <span class="k">const</span> <span class="k">auto</span><span class="o">&amp;</span> <span class="n">cy</span> <span class="o">=</span> <span class="n">coord</span><span class="p">[</span><span class="mi">1</span><span class="p">];</span>
+<a name="line-413"></a>  <span class="k">const</span> <span class="k">auto</span><span class="o">&amp;</span> <span class="n">cz</span> <span class="o">=</span> <span class="n">coord</span><span class="p">[</span><span class="mi">2</span><span class="p">];</span>
+<a name="line-414"></a>
+<a name="line-415"></a>  <span class="k">for</span> <span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="n">e</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">e</span><span class="o">&lt;</span><span class="n">nelem</span><span class="p">;</span> <span class="o">++</span><span class="n">e</span><span class="p">)</span>
+<a name="line-416"></a>  <span class="p">{</span>
+<a name="line-417"></a>    <span class="c1">// Extract the element coordinates</span>
+<a name="line-418"></a>    <span class="n">std</span><span class="o">::</span><span class="n">array</span><span class="o">&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">array</span><span class="o">&lt;</span> <span class="n">real</span><span class="p">,</span> <span class="mi">3</span><span class="o">&gt;</span><span class="p">,</span> <span class="mi">4</span> <span class="o">&gt;</span> <span class="n">coordel</span> <span class="p">{{</span>
+<a name="line-419"></a>      <span class="p">{{</span> <span class="n">cx</span><span class="p">[</span> <span class="n">inpoel</span><span class="p">[</span><span class="mi">4</span><span class="o">*</span><span class="n">e</span>  <span class="p">]</span> <span class="p">],</span> <span class="n">cy</span><span class="p">[</span> <span class="n">inpoel</span><span class="p">[</span><span class="mi">4</span><span class="o">*</span><span class="n">e</span>  <span class="p">]</span> <span class="p">],</span> <span class="n">cz</span><span class="p">[</span> <span class="n">inpoel</span><span class="p">[</span><span class="mi">4</span><span class="o">*</span><span class="n">e</span>  <span class="p">]</span> <span class="p">]</span> <span class="p">}},</span>
+<a name="line-420"></a>      <span class="p">{{</span> <span class="n">cx</span><span class="p">[</span> <span class="n">inpoel</span><span class="p">[</span><span class="mi">4</span><span class="o">*</span><span class="n">e</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span> <span class="p">],</span> <span class="n">cy</span><span class="p">[</span> <span class="n">inpoel</span><span class="p">[</span><span class="mi">4</span><span class="o">*</span><span class="n">e</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span> <span class="p">],</span> <span class="n">cz</span><span class="p">[</span> <span class="n">inpoel</span><span class="p">[</span><span class="mi">4</span><span class="o">*</span><span class="n">e</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span> <span class="p">]</span> <span class="p">}},</span>
+<a name="line-421"></a>      <span class="p">{{</span> <span class="n">cx</span><span class="p">[</span> <span class="n">inpoel</span><span class="p">[</span><span class="mi">4</span><span class="o">*</span><span class="n">e</span><span class="o">+</span><span class="mi">2</span><span class="p">]</span> <span class="p">],</span> <span class="n">cy</span><span class="p">[</span> <span class="n">inpoel</span><span class="p">[</span><span class="mi">4</span><span class="o">*</span><span class="n">e</span><span class="o">+</span><span class="mi">2</span><span class="p">]</span> <span class="p">],</span> <span class="n">cz</span><span class="p">[</span> <span class="n">inpoel</span><span class="p">[</span><span class="mi">4</span><span class="o">*</span><span class="n">e</span><span class="o">+</span><span class="mi">2</span><span class="p">]</span> <span class="p">]</span> <span class="p">}},</span>
+<a name="line-422"></a>      <span class="p">{{</span> <span class="n">cx</span><span class="p">[</span> <span class="n">inpoel</span><span class="p">[</span><span class="mi">4</span><span class="o">*</span><span class="n">e</span><span class="o">+</span><span class="mi">3</span><span class="p">]</span> <span class="p">],</span> <span class="n">cy</span><span class="p">[</span> <span class="n">inpoel</span><span class="p">[</span><span class="mi">4</span><span class="o">*</span><span class="n">e</span><span class="o">+</span><span class="mi">3</span><span class="p">]</span> <span class="p">],</span> <span class="n">cz</span><span class="p">[</span> <span class="n">inpoel</span><span class="p">[</span><span class="mi">4</span><span class="o">*</span><span class="n">e</span><span class="o">+</span><span class="mi">3</span><span class="p">]</span> <span class="p">]</span> <span class="p">}}</span>
+<a name="line-423"></a>    <span class="p">}};</span>
+<a name="line-424"></a>
+<a name="line-425"></a>    <span class="k">auto</span> <span class="n">jacInv</span> <span class="o">=</span>
+<a name="line-426"></a>      <span class="n">tk</span><span class="o">::</span><span class="n">inverseJacobian</span><span class="p">(</span> <span class="n">coordel</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">coordel</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">coordel</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">coordel</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="p">);</span>
+<a name="line-427"></a>
+<a name="line-428"></a>    <span class="c1">// Compute the derivatives of basis function for DG(P1)</span>
+<a name="line-429"></a>    <span class="k">auto</span> <span class="n">dBdx</span> <span class="o">=</span> <span class="n">tk</span><span class="o">::</span><span class="n">eval_dBdx_p1</span><span class="p">(</span> <span class="n">rdof</span><span class="p">,</span> <span class="n">jacInv</span> <span class="p">);</span>
+<a name="line-430"></a>
+<a name="line-431"></a>    <span class="k">for</span> <span class="p">(</span><span class="n">ncomp_t</span> <span class="n">c</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">c</span><span class="o">&lt;</span><span class="n">ncomp</span><span class="p">;</span> <span class="o">++</span><span class="n">c</span><span class="p">)</span>
+<a name="line-432"></a>    <span class="p">{</span>
+<a name="line-433"></a>      <span class="k">auto</span> <span class="n">mark</span> <span class="o">=</span> <span class="n">c</span><span class="o">*</span><span class="n">rdof</span><span class="p">;</span>
+<a name="line-434"></a>
+<a name="line-435"></a>      <span class="c1">// solve system using Cramer&#39;s rule</span>
+<a name="line-436"></a>      <span class="k">auto</span> <span class="n">ux</span> <span class="o">=</span> <span class="n">tk</span><span class="o">::</span><span class="n">cramer</span><span class="p">(</span> <span class="p">{{</span> <span class="p">{{</span><span class="n">dBdx</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">],</span> <span class="n">dBdx</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">2</span><span class="p">],</span> <span class="n">dBdx</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">3</span><span class="p">]}},</span>
+<a name="line-437"></a>                               <span class="p">{{</span><span class="n">dBdx</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">1</span><span class="p">],</span> <span class="n">dBdx</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">2</span><span class="p">],</span> <span class="n">dBdx</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">3</span><span class="p">]}},</span>
+<a name="line-438"></a>                               <span class="p">{{</span><span class="n">dBdx</span><span class="p">[</span><span class="mi">2</span><span class="p">][</span><span class="mi">1</span><span class="p">],</span> <span class="n">dBdx</span><span class="p">[</span><span class="mi">2</span><span class="p">][</span><span class="mi">2</span><span class="p">],</span> <span class="n">dBdx</span><span class="p">[</span><span class="mi">2</span><span class="p">][</span><span class="mi">3</span><span class="p">]}}</span> <span class="p">}},</span>
+<a name="line-439"></a>                            <span class="p">{{</span> <span class="n">W</span><span class="p">(</span><span class="n">e</span><span class="p">,</span><span class="n">mark</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span><span class="n">offset</span><span class="p">),</span>
+<a name="line-440"></a>                               <span class="n">W</span><span class="p">(</span><span class="n">e</span><span class="p">,</span><span class="n">mark</span><span class="o">+</span><span class="mi">2</span><span class="p">,</span><span class="n">offset</span><span class="p">),</span>
+<a name="line-441"></a>                               <span class="n">W</span><span class="p">(</span><span class="n">e</span><span class="p">,</span><span class="n">mark</span><span class="o">+</span><span class="mi">3</span><span class="p">,</span><span class="n">offset</span><span class="p">)</span> <span class="p">}}</span> <span class="p">);</span>
+<a name="line-442"></a>
+<a name="line-443"></a>      <span class="c1">// replace physical derivatives with transformed dofs</span>
+<a name="line-444"></a>      <span class="n">W</span><span class="p">(</span><span class="n">e</span><span class="p">,</span><span class="n">mark</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span><span class="n">offset</span><span class="p">)</span> <span class="o">=</span> <span class="n">ux</span><span class="p">[</span><span class="mi">0</span><span class="p">];</span>
+<a name="line-445"></a>      <span class="n">W</span><span class="p">(</span><span class="n">e</span><span class="p">,</span><span class="n">mark</span><span class="o">+</span><span class="mi">2</span><span class="p">,</span><span class="n">offset</span><span class="p">)</span> <span class="o">=</span> <span class="n">ux</span><span class="p">[</span><span class="mi">1</span><span class="p">];</span>
+<a name="line-446"></a>      <span class="n">W</span><span class="p">(</span><span class="n">e</span><span class="p">,</span><span class="n">mark</span><span class="o">+</span><span class="mi">3</span><span class="p">,</span><span class="n">offset</span><span class="p">)</span> <span class="o">=</span> <span class="n">ux</span><span class="p">[</span><span class="mi">2</span><span class="p">];</span>
+<a name="line-447"></a>    <span class="p">}</span>
+<a name="line-448"></a>  <span class="p">}</span>
+<a name="line-449"></a><span class="p">}</span>
 </pre></div>
 </td></tr></table>
       </div>
