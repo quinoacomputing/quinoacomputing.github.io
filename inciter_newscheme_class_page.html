@@ -115,6 +115,9 @@
 <span class="cp">#include</span> <span class="cpf">&quot;NodeBC.hpp&quot;</span><span class="cp"></span>
 <span class="cp">#include</span> <span class="cpf">&quot;Refiner.hpp&quot;</span><span class="cp"></span>
 <span class="cp">#include</span> <span class="cpf">&quot;Reorder.hpp&quot;</span><span class="cp"></span>
+<span class="cp">#include</span> <span class="cpf">&quot;Around.hpp&quot;</span><span class="cp"></span>
+<span class="cp">#include</span> <span class="cpf">&quot;CGPDE.hpp&quot;</span><span class="cp"></span>
+<span class="cp">#include</span> <span class="cpf">&quot;Integrate/Mass.hpp&quot;</span><span class="cp"></span>
 
 <span class="cp">#ifdef HAS_ROOT</span>
   <span class="cp">#include</span> <span class="cpf">&quot;RootMeshWriter.hpp&quot;</span><span class="cp"></span>
@@ -126,38 +129,57 @@
 <span class="k">extern</span> <span class="n">ctr</span><span class="o">::</span><span class="n">InputDeck</span> <span class="n">g_inputdeck_defaults</span><span class="p">;</span>
 <span class="k">extern</span> <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span> <span class="n">CGPDE</span> <span class="o">&gt;</span> <span class="n">g_cgpde</span><span class="p">;</span>
 
+<span class="c1">//! Runge-Kutta coefficients</span>
+<span class="k">static</span> <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">array</span><span class="o">&lt;</span> <span class="n">tk</span><span class="o">::</span><span class="n">real</span><span class="p">,</span> <span class="mi">3</span> <span class="o">&gt;</span> <span class="n">rkcoef</span><span class="p">{{</span> <span class="mf">1.0</span><span class="o">/</span><span class="mf">3.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="o">/</span><span class="mf">2.0</span><span class="p">,</span> <span class="mf">1.0</span> <span class="p">}};</span>
+
 <span class="p">}</span> <span class="c1">// inciter::</span>
 
 <span class="k">using</span> <span class="n">inciter</span><span class="o">::</span><span class="n">ALECG</span><span class="p">;</span>
 
 <span class="n">ALECG</span><span class="o">::</span><span class="n">ALECG</span><span class="p">(</span> <span class="k">const</span> <span class="n">CProxy_Discretization</span><span class="o">&amp;</span> <span class="n">disc</span><span class="p">,</span>
-              <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">map</span><span class="o">&lt;</span> <span class="kt">int</span><span class="p">,</span> <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span> <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="o">&gt;</span> <span class="o">&gt;&amp;</span> <span class="cm">/* bface */</span><span class="p">,</span>
+              <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">map</span><span class="o">&lt;</span> <span class="kt">int</span><span class="p">,</span> <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span> <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="o">&gt;</span> <span class="o">&gt;&amp;</span> <span class="n">bface</span><span class="p">,</span>
               <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">map</span><span class="o">&lt;</span> <span class="kt">int</span><span class="p">,</span> <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span> <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="o">&gt;</span> <span class="o">&gt;&amp;</span> <span class="n">bnode</span><span class="p">,</span>
-              <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span> <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="o">&gt;&amp;</span> <span class="cm">/* triinpoel */</span> <span class="p">)</span> <span class="o">:</span>
+              <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span> <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="o">&gt;&amp;</span> <span class="n">triinpoel</span> <span class="p">)</span> <span class="o">:</span>
   <span class="n">m_disc</span><span class="p">(</span> <span class="n">disc</span> <span class="p">),</span>
   <span class="n">m_initial</span><span class="p">(</span> <span class="mi">1</span> <span class="p">),</span>
   <span class="n">m_nsol</span><span class="p">(</span> <span class="mi">0</span> <span class="p">),</span>
   <span class="n">m_nlhs</span><span class="p">(</span> <span class="mi">0</span> <span class="p">),</span>
+  <span class="n">m_ngrad</span><span class="p">(</span> <span class="mi">0</span> <span class="p">),</span>
   <span class="n">m_nrhs</span><span class="p">(</span> <span class="mi">0</span> <span class="p">),</span>
+  <span class="n">m_nbnorm</span><span class="p">(</span> <span class="mi">0</span> <span class="p">),</span>
+  <span class="n">m_ndfnorm</span><span class="p">(</span> <span class="mi">0</span> <span class="p">),</span>
   <span class="n">m_bnode</span><span class="p">(</span> <span class="n">bnode</span> <span class="p">),</span>
+  <span class="n">m_bface</span><span class="p">(</span> <span class="n">bface</span> <span class="p">),</span>
+  <span class="n">m_triinpoel</span><span class="p">(</span> <span class="n">triinpoel</span> <span class="p">),</span>
+  <span class="n">m_bndel</span><span class="p">(</span> <span class="n">bndel</span><span class="p">()</span> <span class="p">),</span>
+  <span class="n">m_dfnorm</span><span class="p">(),</span>
   <span class="n">m_u</span><span class="p">(</span> <span class="n">m_disc</span><span class="p">[</span><span class="n">thisIndex</span><span class="p">].</span><span class="n">ckLocal</span><span class="p">()</span><span class="o">-&gt;</span><span class="n">Gid</span><span class="p">().</span><span class="n">size</span><span class="p">(),</span>
        <span class="n">g_inputdeck</span><span class="p">.</span><span class="n">get</span><span class="o">&lt;</span> <span class="n">tag</span><span class="o">::</span><span class="n">component</span> <span class="o">&gt;</span><span class="p">().</span><span class="n">nprop</span><span class="p">()</span> <span class="p">),</span>
-  <span class="n">m_du</span><span class="p">(</span> <span class="n">m_u</span><span class="p">.</span><span class="n">nunk</span><span class="p">(),</span> <span class="n">m_u</span><span class="p">.</span><span class="n">nprop</span><span class="p">()</span> <span class="p">),</span>
+  <span class="n">m_un</span><span class="p">(</span> <span class="n">m_u</span><span class="p">.</span><span class="n">nunk</span><span class="p">(),</span> <span class="n">m_u</span><span class="p">.</span><span class="n">nprop</span><span class="p">()</span> <span class="p">),</span>
   <span class="n">m_lhs</span><span class="p">(</span> <span class="n">m_u</span><span class="p">.</span><span class="n">nunk</span><span class="p">(),</span> <span class="n">m_u</span><span class="p">.</span><span class="n">nprop</span><span class="p">()</span> <span class="p">),</span>
   <span class="n">m_rhs</span><span class="p">(</span> <span class="n">m_u</span><span class="p">.</span><span class="n">nunk</span><span class="p">(),</span> <span class="n">m_u</span><span class="p">.</span><span class="n">nprop</span><span class="p">()</span> <span class="p">),</span>
+  <span class="n">m_grad</span><span class="p">(</span> <span class="n">Disc</span><span class="p">()</span><span class="o">-&gt;</span><span class="n">Bid</span><span class="p">().</span><span class="n">size</span><span class="p">(),</span> <span class="n">m_u</span><span class="p">.</span><span class="n">nprop</span><span class="p">()</span><span class="o">*</span><span class="mi">3</span> <span class="p">),</span>
+  <span class="n">m_bcdir</span><span class="p">(),</span>
   <span class="n">m_lhsc</span><span class="p">(),</span>
+  <span class="n">m_gradc</span><span class="p">(),</span>
   <span class="n">m_rhsc</span><span class="p">(),</span>
-  <span class="n">m_diag</span><span class="p">()</span>
+  <span class="n">m_diag</span><span class="p">(),</span>
+  <span class="n">m_bnorm</span><span class="p">(),</span>
+  <span class="n">m_bnormc</span><span class="p">(),</span>
+  <span class="n">m_dfnormc</span><span class="p">(),</span>
+  <span class="n">m_stage</span><span class="p">(</span> <span class="mi">0</span> <span class="p">)</span>
 <span class="c1">// *****************************************************************************</span>
 <span class="c1">//  Constructor</span>
 <span class="c1">//! \param[in] disc Discretization proxy</span>
-<span class="c1">//! \param[in] bnode Boundary-node lists mapped to side set ids</span>
+<span class="c1">//! \param[in] bface Boundary-faces mapped to side set ids where BCs set</span>
+<span class="c1">//! \param[in] bnode Boundary-node lists mapped to side set ids where BCs set</span>
+<span class="c1">//! \param[in] triinpoel Boundary-face connectivity where BCs set (global ids)</span>
 <span class="c1">// *****************************************************************************</span>
 <span class="c1">//! [Constructor]</span>
 <span class="p">{</span>
   <span class="n">usesAtSync</span> <span class="o">=</span> <span class="nb">true</span><span class="p">;</span>    <span class="c1">// enable migration at AtSync</span>
 
-  <span class="c1">// Activate SDAG wait for initially computing the left-hand side</span>
+  <span class="c1">// Activate SDAG wait for initially computing the left-hand side and normals</span>
   <span class="n">thisProxy</span><span class="p">[</span> <span class="n">thisIndex</span> <span class="p">].</span><span class="n">wait4lhs</span><span class="p">();</span>
 
   <span class="c1">// Signal the runtime system that the workers have been created</span>
@@ -165,6 +187,203 @@
     <span class="n">CkCallback</span><span class="p">(</span><span class="n">CkReductionTarget</span><span class="p">(</span><span class="n">Transporter</span><span class="p">,</span><span class="n">comfinal</span><span class="p">),</span> <span class="n">Disc</span><span class="p">()</span><span class="o">-&gt;</span><span class="n">Tr</span><span class="p">())</span> <span class="p">);</span>
 <span class="p">}</span>
 <span class="c1">//! [Constructor]</span>
+
+<span class="kt">void</span>
+<span class="n">ALECG</span><span class="o">::</span><span class="n">norm</span><span class="p">()</span>
+<span class="c1">// *****************************************************************************</span>
+<span class="c1">// Start (re-)computing boundare point-, and dual-face normals</span>
+<span class="c1">// *****************************************************************************</span>
+<span class="p">{</span>
+  <span class="c1">// Query nodes at which symmetry BCs are specified</span>
+  <span class="n">std</span><span class="o">::</span><span class="n">unordered_set</span><span class="o">&lt;</span> <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="o">&gt;</span> <span class="n">symbcnodes</span><span class="p">;</span>
+  <span class="k">for</span> <span class="p">(</span><span class="k">const</span> <span class="k">auto</span><span class="o">&amp;</span> <span class="nl">eq</span> <span class="p">:</span> <span class="n">g_cgpde</span><span class="p">)</span>
+    <span class="n">eq</span><span class="p">.</span><span class="n">symbcnodes</span><span class="p">(</span> <span class="n">m_bface</span><span class="p">,</span> <span class="n">m_triinpoel</span><span class="p">,</span> <span class="n">symbcnodes</span> <span class="p">);</span>
+
+  <span class="c1">// Compute boundary point normals</span>
+  <span class="n">bnorm</span><span class="p">(</span> <span class="n">std</span><span class="o">::</span><span class="n">move</span><span class="p">(</span><span class="n">symbcnodes</span><span class="p">)</span> <span class="p">);</span>
+
+  <span class="c1">// Compute dual-face normals associated to edges</span>
+  <span class="n">dfnorm</span><span class="p">();</span>
+<span class="p">}</span>
+
+<span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span> <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="o">&gt;</span>
+<span class="n">ALECG</span><span class="o">::</span><span class="n">bndel</span><span class="p">()</span> <span class="k">const</span>
+<span class="c1">// *****************************************************************************</span>
+<span class="c1">// Find elements along our mesh chunk boundary</span>
+<span class="c1">//! \return List of local element ids that have at least a single node</span>
+<span class="c1">//!   contributing to a chare boundary</span>
+<span class="c1">// *****************************************************************************</span>
+<span class="p">{</span>
+  <span class="c1">// Lambda to find out if a mesh node is shared with another chare</span>
+  <span class="k">auto</span> <span class="n">shared</span> <span class="o">=</span> <span class="p">[</span><span class="k">this</span><span class="p">](</span> <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="n">i</span> <span class="p">){</span>
+    <span class="k">for</span> <span class="p">(</span><span class="k">const</span> <span class="k">auto</span><span class="o">&amp;</span> <span class="p">[</span><span class="n">c</span><span class="p">,</span><span class="n">n</span><span class="p">]</span> <span class="o">:</span> <span class="n">Disc</span><span class="p">()</span><span class="o">-&gt;</span><span class="n">NodeCommMap</span><span class="p">())</span>
+      <span class="k">if</span> <span class="p">(</span><span class="n">n</span><span class="p">.</span><span class="n">find</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="o">!=</span> <span class="n">end</span><span class="p">(</span><span class="n">n</span><span class="p">))</span> <span class="k">return</span> <span class="nb">true</span><span class="p">;</span>
+    <span class="k">return</span> <span class="nb">false</span><span class="p">;</span>
+  <span class="p">};</span>
+
+  <span class="c1">// Find elements along our mesh chunk boundary</span>
+  <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span> <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="o">&gt;</span> <span class="n">e</span><span class="p">;</span>
+  <span class="k">const</span> <span class="k">auto</span><span class="o">&amp;</span> <span class="n">inpoel</span> <span class="o">=</span> <span class="n">Disc</span><span class="p">()</span><span class="o">-&gt;</span><span class="n">Inpoel</span><span class="p">();</span>
+  <span class="k">const</span> <span class="k">auto</span> <span class="n">gid</span> <span class="o">=</span> <span class="n">Disc</span><span class="p">()</span><span class="o">-&gt;</span><span class="n">Gid</span><span class="p">();</span>
+  <span class="k">for</span> <span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="n">n</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">n</span><span class="o">&lt;</span><span class="n">inpoel</span><span class="p">.</span><span class="n">size</span><span class="p">();</span> <span class="o">++</span><span class="n">n</span><span class="p">)</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">shared</span><span class="p">(</span> <span class="n">gid</span><span class="p">[</span> <span class="n">inpoel</span><span class="p">[</span><span class="n">n</span><span class="p">]</span> <span class="p">]</span> <span class="p">))</span> <span class="n">e</span><span class="p">.</span><span class="n">push_back</span><span class="p">(</span> <span class="n">n</span><span class="o">/</span><span class="mi">4</span> <span class="p">);</span>
+  <span class="n">tk</span><span class="o">::</span><span class="n">unique</span><span class="p">(</span> <span class="n">e</span> <span class="p">);</span>
+
+  <span class="k">return</span> <span class="n">e</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kt">void</span>
+<span class="n">ALECG</span><span class="o">::</span><span class="n">dfnorm</span><span class="p">()</span>
+<span class="c1">// *****************************************************************************</span>
+<span class="c1">// Compute dual-face normals associated to edges</span>
+<span class="c1">// *****************************************************************************</span>
+<span class="p">{</span>
+  <span class="k">auto</span> <span class="n">d</span> <span class="o">=</span> <span class="n">Disc</span><span class="p">();</span>
+  <span class="k">const</span> <span class="k">auto</span><span class="o">&amp;</span> <span class="n">inpoel</span> <span class="o">=</span> <span class="n">d</span><span class="o">-&gt;</span><span class="n">Inpoel</span><span class="p">();</span>
+  <span class="k">const</span> <span class="k">auto</span><span class="o">&amp;</span> <span class="n">coord</span> <span class="o">=</span> <span class="n">d</span><span class="o">-&gt;</span><span class="n">Coord</span><span class="p">();</span>
+  <span class="k">const</span> <span class="k">auto</span><span class="o">&amp;</span> <span class="n">gid</span> <span class="o">=</span> <span class="n">d</span><span class="o">-&gt;</span><span class="n">Gid</span><span class="p">();</span>
+
+  <span class="c1">// compute derived data structures</span>
+  <span class="k">auto</span> <span class="n">esup</span> <span class="o">=</span> <span class="n">tk</span><span class="o">::</span><span class="n">genEsup</span><span class="p">(</span> <span class="n">inpoel</span><span class="p">,</span> <span class="mi">4</span> <span class="p">);</span>
+  <span class="k">auto</span> <span class="n">psup</span> <span class="o">=</span> <span class="n">tk</span><span class="o">::</span><span class="n">genPsup</span><span class="p">(</span> <span class="n">inpoel</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="n">esup</span> <span class="p">);</span>
+  <span class="k">auto</span> <span class="n">esued</span> <span class="o">=</span> <span class="n">tk</span><span class="o">::</span><span class="n">genEsued</span><span class="p">(</span> <span class="n">inpoel</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="n">esup</span> <span class="p">);</span>
+
+  <span class="c1">// Compute dual-face normals for domain edges</span>
+  <span class="k">for</span> <span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="n">p</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">p</span><span class="o">&lt;</span><span class="n">gid</span><span class="p">.</span><span class="n">size</span><span class="p">();</span> <span class="o">++</span><span class="n">p</span><span class="p">)</span>    <span class="c1">// for each point p</span>
+    <span class="k">for</span> <span class="p">(</span><span class="k">auto</span> <span class="nl">q</span> <span class="p">:</span> <span class="n">tk</span><span class="o">::</span><span class="n">Around</span><span class="p">(</span><span class="n">psup</span><span class="p">,</span><span class="n">p</span><span class="p">))</span>         <span class="c1">// for each edge p-q</span>
+      <span class="k">if</span> <span class="p">(</span><span class="n">gid</span><span class="p">[</span><span class="n">p</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">gid</span><span class="p">[</span><span class="n">q</span><span class="p">])</span>
+        <span class="n">m_dfnorm</span><span class="p">[{</span><span class="n">gid</span><span class="p">[</span><span class="n">p</span><span class="p">],</span><span class="n">gid</span><span class="p">[</span><span class="n">q</span><span class="p">]}]</span> <span class="o">=</span> <span class="n">cg</span><span class="o">::</span><span class="n">edfnorm</span><span class="p">(</span> <span class="p">{</span><span class="n">p</span><span class="p">,</span><span class="n">q</span><span class="p">},</span> <span class="n">coord</span><span class="p">,</span> <span class="n">inpoel</span><span class="p">,</span> <span class="n">esued</span> <span class="p">);</span>
+
+  <span class="c1">// Send our dual-face normal contributions to neighbor chares</span>
+  <span class="k">if</span> <span class="p">(</span><span class="n">d</span><span class="o">-&gt;</span><span class="n">EdgeCommMap</span><span class="p">().</span><span class="n">empty</span><span class="p">())</span>
+    <span class="n">comdfnorm_complete</span><span class="p">();</span>
+  <span class="k">else</span> <span class="p">{</span>
+    <span class="k">for</span> <span class="p">(</span><span class="k">const</span> <span class="k">auto</span><span class="o">&amp;</span> <span class="p">[</span><span class="n">c</span><span class="p">,</span><span class="n">edges</span><span class="p">]</span> <span class="o">:</span> <span class="n">d</span><span class="o">-&gt;</span><span class="n">EdgeCommMap</span><span class="p">())</span> <span class="p">{</span>
+      <span class="k">decltype</span><span class="p">(</span><span class="n">m_dfnorm</span><span class="p">)</span> <span class="n">exp</span><span class="p">;</span>
+      <span class="k">for</span> <span class="p">(</span><span class="k">const</span> <span class="k">auto</span><span class="o">&amp;</span> <span class="nl">e</span> <span class="p">:</span> <span class="n">edges</span><span class="p">)</span> <span class="n">exp</span><span class="p">[</span><span class="n">e</span><span class="p">]</span> <span class="o">=</span> <span class="n">tk</span><span class="o">::</span><span class="n">cref_find</span><span class="p">(</span><span class="n">m_dfnorm</span><span class="p">,</span><span class="n">e</span><span class="p">);</span>
+      <span class="n">thisProxy</span><span class="p">[</span><span class="n">c</span><span class="p">].</span><span class="n">comdfnorm</span><span class="p">(</span> <span class="n">exp</span> <span class="p">);</span>
+    <span class="p">}</span>
+  <span class="p">}</span>
+
+  <span class="n">owndfnorm_complete</span><span class="p">();</span>
+<span class="p">}</span>
+
+<span class="kt">void</span>
+<span class="n">ALECG</span><span class="o">::</span><span class="n">comdfnorm</span><span class="p">(</span> <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">unordered_map</span><span class="o">&lt;</span> <span class="n">tk</span><span class="o">::</span><span class="n">UnsMesh</span><span class="o">::</span><span class="n">Edge</span><span class="p">,</span>
+                    <span class="n">std</span><span class="o">::</span><span class="n">array</span><span class="o">&lt;</span> <span class="n">tk</span><span class="o">::</span><span class="n">real</span><span class="p">,</span> <span class="mi">3</span> <span class="o">&gt;</span><span class="p">,</span>
+                    <span class="n">tk</span><span class="o">::</span><span class="n">UnsMesh</span><span class="o">::</span><span class="n">Hash</span><span class="o">&lt;</span><span class="mi">2</span><span class="o">&gt;</span><span class="p">,</span> <span class="n">tk</span><span class="o">::</span><span class="n">UnsMesh</span><span class="o">::</span><span class="n">Eq</span><span class="o">&lt;</span><span class="mi">2</span><span class="o">&gt;</span> <span class="o">&gt;&amp;</span> <span class="n">dfnorm</span> <span class="p">)</span>
+<span class="c1">// *****************************************************************************</span>
+<span class="c1">// Receive contributions to dual-face normals on chare-boundaries</span>
+<span class="c1">//! \param[in] dfnorm Incoming partial sums of dual-face normals associated to</span>
+<span class="c1">//!   chare-boundary edges</span>
+<span class="c1">// *****************************************************************************</span>
+<span class="p">{</span>
+  <span class="c1">// Buffer up inccoming contributions to dual-face normals</span>
+  <span class="k">for</span> <span class="p">(</span><span class="k">const</span> <span class="k">auto</span><span class="o">&amp;</span> <span class="p">[</span><span class="n">e</span><span class="p">,</span><span class="n">n</span><span class="p">]</span> <span class="o">:</span> <span class="n">dfnorm</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">auto</span><span class="o">&amp;</span> <span class="n">dfn</span> <span class="o">=</span> <span class="n">m_dfnormc</span><span class="p">[</span><span class="n">e</span><span class="p">];</span>
+    <span class="n">dfn</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+=</span> <span class="n">n</span><span class="p">[</span><span class="mi">0</span><span class="p">];</span>
+    <span class="n">dfn</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+=</span> <span class="n">n</span><span class="p">[</span><span class="mi">1</span><span class="p">];</span>
+    <span class="n">dfn</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">+=</span> <span class="n">n</span><span class="p">[</span><span class="mi">2</span><span class="p">];</span>
+  <span class="p">}</span>
+
+  <span class="k">if</span> <span class="p">(</span><span class="o">++</span><span class="n">m_ndfnorm</span> <span class="o">==</span> <span class="n">Disc</span><span class="p">()</span><span class="o">-&gt;</span><span class="n">EdgeCommMap</span><span class="p">().</span><span class="n">size</span><span class="p">())</span> <span class="p">{</span>
+    <span class="n">m_ndfnorm</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+    <span class="n">comdfnorm_complete</span><span class="p">();</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="kt">void</span>
+<span class="n">ALECG</span><span class="o">::</span><span class="n">bnorm</span><span class="p">(</span> <span class="n">std</span><span class="o">::</span><span class="n">unordered_set</span><span class="o">&lt;</span> <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="o">&gt;&amp;&amp;</span> <span class="n">symbcnodes</span> <span class="p">)</span>
+<span class="c1">// *****************************************************************************</span>
+<span class="c1">//  Compute boundary point normals</span>
+<span class="c1">//! \param[in] Node ids at which symmetry BCs are set</span>
+<span class="c1">// *****************************************************************************</span>
+<span class="p">{</span>
+  <span class="k">auto</span> <span class="n">d</span> <span class="o">=</span> <span class="n">Disc</span><span class="p">();</span>
+
+  <span class="k">const</span> <span class="k">auto</span><span class="o">&amp;</span> <span class="n">coord</span> <span class="o">=</span> <span class="n">d</span><span class="o">-&gt;</span><span class="n">Coord</span><span class="p">();</span>
+  <span class="k">const</span> <span class="k">auto</span><span class="o">&amp;</span> <span class="n">lid</span> <span class="o">=</span> <span class="n">d</span><span class="o">-&gt;</span><span class="n">Lid</span><span class="p">();</span>
+  <span class="k">const</span> <span class="k">auto</span><span class="o">&amp;</span> <span class="n">x</span> <span class="o">=</span> <span class="n">coord</span><span class="p">[</span><span class="mi">0</span><span class="p">];</span>
+  <span class="k">const</span> <span class="k">auto</span><span class="o">&amp;</span> <span class="n">y</span> <span class="o">=</span> <span class="n">coord</span><span class="p">[</span><span class="mi">1</span><span class="p">];</span>
+  <span class="k">const</span> <span class="k">auto</span><span class="o">&amp;</span> <span class="n">z</span> <span class="o">=</span> <span class="n">coord</span><span class="p">[</span><span class="mi">2</span><span class="p">];</span>
+
+  <span class="c1">// Lambda to compute the inverse distance squared between boundary face</span>
+  <span class="c1">// centroid and boundary point. Here p is the global node id and g is the</span>
+  <span class="c1">// geometry of the boundary face, see tk::geoFaceTri().</span>
+  <span class="k">auto</span> <span class="n">invdistsq</span> <span class="o">=</span> <span class="p">[</span><span class="o">&amp;</span><span class="p">](</span> <span class="k">const</span> <span class="n">tk</span><span class="o">::</span><span class="n">Fields</span><span class="o">&amp;</span> <span class="n">g</span><span class="p">,</span> <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="n">p</span> <span class="p">){</span>
+    <span class="k">return</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="p">(</span> <span class="p">(</span><span class="n">g</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span> <span class="o">-</span> <span class="n">x</span><span class="p">[</span><span class="n">p</span><span class="p">])</span><span class="o">*</span><span class="p">(</span><span class="n">g</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span> <span class="o">-</span> <span class="n">x</span><span class="p">[</span><span class="n">p</span><span class="p">])</span> <span class="o">+</span>
+                   <span class="p">(</span><span class="n">g</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span> <span class="o">-</span> <span class="n">y</span><span class="p">[</span><span class="n">p</span><span class="p">])</span><span class="o">*</span><span class="p">(</span><span class="n">g</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span> <span class="o">-</span> <span class="n">y</span><span class="p">[</span><span class="n">p</span><span class="p">])</span> <span class="o">+</span>
+                   <span class="p">(</span><span class="n">g</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">6</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span> <span class="o">-</span> <span class="n">z</span><span class="p">[</span><span class="n">p</span><span class="p">])</span><span class="o">*</span><span class="p">(</span><span class="n">g</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">6</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span> <span class="o">-</span> <span class="n">z</span><span class="p">[</span><span class="n">p</span><span class="p">])</span> <span class="p">);</span>
+  <span class="p">};</span>
+
+  <span class="c1">// Compute boundary point normals on all side sets summing inverse distance</span>
+  <span class="c1">// weighted face normals to points. This is only a partial sum at shared</span>
+  <span class="c1">// boundary points in parallel.</span>
+  <span class="k">const</span> <span class="k">auto</span><span class="o">&amp;</span> <span class="n">gid</span> <span class="o">=</span> <span class="n">d</span><span class="o">-&gt;</span><span class="n">Gid</span><span class="p">();</span>
+  <span class="k">for</span> <span class="p">(</span><span class="k">const</span> <span class="k">auto</span><span class="o">&amp;</span> <span class="p">[</span> <span class="n">setid</span><span class="p">,</span> <span class="n">faceids</span> <span class="p">]</span> <span class="o">:</span> <span class="n">m_bface</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">for</span> <span class="p">(</span><span class="k">auto</span> <span class="nl">f</span> <span class="p">:</span> <span class="n">faceids</span><span class="p">)</span> <span class="p">{</span>
+      <span class="n">tk</span><span class="o">::</span><span class="n">UnsMesh</span><span class="o">::</span><span class="n">Face</span>
+        <span class="n">face</span><span class="p">{</span> <span class="n">tk</span><span class="o">::</span><span class="n">cref_find</span><span class="p">(</span> <span class="n">lid</span><span class="p">,</span> <span class="n">m_triinpoel</span><span class="p">[</span><span class="n">f</span><span class="o">*</span><span class="mi">3</span><span class="o">+</span><span class="mi">0</span><span class="p">]</span> <span class="p">),</span>
+              <span class="n">tk</span><span class="o">::</span><span class="n">cref_find</span><span class="p">(</span> <span class="n">lid</span><span class="p">,</span> <span class="n">m_triinpoel</span><span class="p">[</span><span class="n">f</span><span class="o">*</span><span class="mi">3</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span> <span class="p">),</span>
+              <span class="n">tk</span><span class="o">::</span><span class="n">cref_find</span><span class="p">(</span> <span class="n">lid</span><span class="p">,</span> <span class="n">m_triinpoel</span><span class="p">[</span><span class="n">f</span><span class="o">*</span><span class="mi">3</span><span class="o">+</span><span class="mi">2</span><span class="p">]</span> <span class="p">)</span> <span class="p">};</span>
+      <span class="n">std</span><span class="o">::</span><span class="n">array</span><span class="o">&lt;</span> <span class="n">tk</span><span class="o">::</span><span class="n">real</span><span class="p">,</span> <span class="mi">3</span> <span class="o">&gt;</span> <span class="n">fx</span><span class="p">{</span> <span class="n">x</span><span class="p">[</span><span class="n">face</span><span class="p">[</span><span class="mi">0</span><span class="p">]],</span> <span class="n">x</span><span class="p">[</span><span class="n">face</span><span class="p">[</span><span class="mi">1</span><span class="p">]],</span> <span class="n">x</span><span class="p">[</span><span class="n">face</span><span class="p">[</span><span class="mi">2</span><span class="p">]]</span> <span class="p">};</span>
+      <span class="n">std</span><span class="o">::</span><span class="n">array</span><span class="o">&lt;</span> <span class="n">tk</span><span class="o">::</span><span class="n">real</span><span class="p">,</span> <span class="mi">3</span> <span class="o">&gt;</span> <span class="n">fy</span><span class="p">{</span> <span class="n">y</span><span class="p">[</span><span class="n">face</span><span class="p">[</span><span class="mi">0</span><span class="p">]],</span> <span class="n">y</span><span class="p">[</span><span class="n">face</span><span class="p">[</span><span class="mi">1</span><span class="p">]],</span> <span class="n">y</span><span class="p">[</span><span class="n">face</span><span class="p">[</span><span class="mi">2</span><span class="p">]]</span> <span class="p">};</span>
+      <span class="n">std</span><span class="o">::</span><span class="n">array</span><span class="o">&lt;</span> <span class="n">tk</span><span class="o">::</span><span class="n">real</span><span class="p">,</span> <span class="mi">3</span> <span class="o">&gt;</span> <span class="n">fz</span><span class="p">{</span> <span class="n">z</span><span class="p">[</span><span class="n">face</span><span class="p">[</span><span class="mi">0</span><span class="p">]],</span> <span class="n">z</span><span class="p">[</span><span class="n">face</span><span class="p">[</span><span class="mi">1</span><span class="p">]],</span> <span class="n">z</span><span class="p">[</span><span class="n">face</span><span class="p">[</span><span class="mi">2</span><span class="p">]]</span> <span class="p">};</span>
+      <span class="k">auto</span> <span class="n">g</span> <span class="o">=</span> <span class="n">tk</span><span class="o">::</span><span class="n">geoFaceTri</span><span class="p">(</span> <span class="n">fx</span><span class="p">,</span> <span class="n">fy</span><span class="p">,</span> <span class="n">fz</span> <span class="p">);</span>
+      <span class="k">for</span> <span class="p">(</span><span class="k">auto</span> <span class="nl">p</span> <span class="p">:</span> <span class="n">face</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">auto</span> <span class="n">i</span> <span class="o">=</span> <span class="n">symbcnodes</span><span class="p">.</span><span class="n">find</span><span class="p">(</span> <span class="n">gid</span><span class="p">[</span><span class="n">p</span><span class="p">]</span> <span class="p">);</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">i</span> <span class="o">!=</span> <span class="n">end</span><span class="p">(</span><span class="n">symbcnodes</span><span class="p">))</span> <span class="p">{</span>     <span class="c1">// only if user set symbc on node</span>
+          <span class="n">tk</span><span class="o">::</span><span class="n">real</span> <span class="n">r</span> <span class="o">=</span> <span class="n">invdistsq</span><span class="p">(</span> <span class="n">g</span><span class="p">,</span> <span class="n">p</span> <span class="p">);</span>
+          <span class="k">auto</span><span class="o">&amp;</span> <span class="n">n</span> <span class="o">=</span> <span class="n">m_bnorm</span><span class="p">[</span> <span class="n">gid</span><span class="p">[</span><span class="n">p</span><span class="p">]</span> <span class="p">];</span>  <span class="c1">// associate global node id</span>
+          <span class="n">n</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+=</span> <span class="n">r</span><span class="o">*</span><span class="n">g</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">);</span>
+          <span class="n">n</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+=</span> <span class="n">r</span><span class="o">*</span><span class="n">g</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">0</span><span class="p">);</span>
+          <span class="n">n</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">+=</span> <span class="n">r</span><span class="o">*</span><span class="n">g</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">0</span><span class="p">);</span>
+          <span class="n">n</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="o">+=</span> <span class="n">r</span><span class="p">;</span>
+        <span class="p">}</span>
+      <span class="p">}</span>
+    <span class="p">}</span>
+  <span class="p">}</span>
+
+  <span class="c1">// Send our nodal normal contributions to neighbor chares</span>
+  <span class="k">if</span> <span class="p">(</span><span class="n">d</span><span class="o">-&gt;</span><span class="n">NodeCommMap</span><span class="p">().</span><span class="n">empty</span><span class="p">())</span>
+   <span class="n">comnorm_complete</span><span class="p">();</span>
+  <span class="k">else</span>
+    <span class="nf">for</span> <span class="p">(</span><span class="k">const</span> <span class="k">auto</span><span class="o">&amp;</span> <span class="p">[</span> <span class="n">neighborchare</span><span class="p">,</span> <span class="n">sharednodes</span> <span class="p">]</span> <span class="o">:</span> <span class="n">d</span><span class="o">-&gt;</span><span class="n">NodeCommMap</span><span class="p">())</span> <span class="p">{</span>
+      <span class="n">std</span><span class="o">::</span><span class="n">unordered_map</span><span class="o">&lt;</span> <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="p">,</span> <span class="n">std</span><span class="o">::</span><span class="n">array</span><span class="o">&lt;</span> <span class="n">tk</span><span class="o">::</span><span class="n">real</span><span class="p">,</span> <span class="mi">4</span> <span class="o">&gt;</span> <span class="o">&gt;</span> <span class="n">exp</span><span class="p">;</span>
+      <span class="k">for</span> <span class="p">(</span><span class="k">auto</span> <span class="nl">i</span> <span class="p">:</span> <span class="n">sharednodes</span><span class="p">)</span> <span class="p">{</span>      <span class="c1">// symmetry BCs may be specified on only</span>
+        <span class="k">auto</span> <span class="n">j</span> <span class="o">=</span> <span class="n">m_bnorm</span><span class="p">.</span><span class="n">find</span><span class="p">(</span><span class="n">i</span><span class="p">);</span>       <span class="c1">// a subset of chare boundary nodes</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">j</span> <span class="o">!=</span> <span class="n">end</span><span class="p">(</span><span class="n">m_bnorm</span><span class="p">))</span> <span class="n">exp</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">j</span><span class="o">-&gt;</span><span class="n">second</span><span class="p">;</span>
+      <span class="p">}</span>
+      <span class="n">thisProxy</span><span class="p">[</span> <span class="n">neighborchare</span> <span class="p">].</span><span class="n">comnorm</span><span class="p">(</span> <span class="n">exp</span> <span class="p">);</span>
+    <span class="p">}</span>
+
+  <span class="n">ownnorm_complete</span><span class="p">();</span>
+<span class="p">}</span>
+
+<span class="kt">void</span>
+<span class="n">ALECG</span><span class="o">::</span><span class="n">comnorm</span><span class="p">(</span>
+  <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">unordered_map</span><span class="o">&lt;</span> <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="p">,</span> <span class="n">std</span><span class="o">::</span><span class="n">array</span><span class="o">&lt;</span> <span class="n">tk</span><span class="o">::</span><span class="n">real</span><span class="p">,</span> <span class="mi">4</span> <span class="o">&gt;</span> <span class="o">&gt;&amp;</span> <span class="n">innorm</span> <span class="p">)</span>
+<span class="c1">// *****************************************************************************</span>
+<span class="c1">// Receive boundary point normals on chare-boundaries</span>
+<span class="c1">//! \param[in] innorm Incoming partial sums of boundary point normal</span>
+<span class="c1">//!   contributions to normals (first 3 components), inverse distance squared</span>
+<span class="c1">//!   (4th component)</span>
+<span class="c1">// *****************************************************************************</span>
+<span class="p">{</span>
+  <span class="c1">// Buffer up inccoming contributions</span>
+  <span class="k">for</span> <span class="p">(</span><span class="k">const</span> <span class="k">auto</span><span class="o">&amp;</span> <span class="p">[</span> <span class="n">p</span><span class="p">,</span> <span class="n">n</span> <span class="p">]</span> <span class="o">:</span> <span class="n">innorm</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">auto</span><span class="o">&amp;</span> <span class="n">bnorm</span> <span class="o">=</span> <span class="n">m_bnormc</span><span class="p">[</span> <span class="n">p</span> <span class="p">];</span>
+    <span class="n">bnorm</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+=</span> <span class="n">n</span><span class="p">[</span><span class="mi">0</span><span class="p">];</span>
+    <span class="n">bnorm</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+=</span> <span class="n">n</span><span class="p">[</span><span class="mi">1</span><span class="p">];</span>
+    <span class="n">bnorm</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">+=</span> <span class="n">n</span><span class="p">[</span><span class="mi">2</span><span class="p">];</span>
+    <span class="n">bnorm</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="o">+=</span> <span class="n">n</span><span class="p">[</span><span class="mi">3</span><span class="p">];</span>
+  <span class="p">}</span>
+
+  <span class="k">if</span> <span class="p">(</span><span class="o">++</span><span class="n">m_nbnorm</span> <span class="o">==</span> <span class="n">Disc</span><span class="p">()</span><span class="o">-&gt;</span><span class="n">NodeCommMap</span><span class="p">().</span><span class="n">size</span><span class="p">())</span> <span class="p">{</span>
+    <span class="n">m_nbnorm</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+    <span class="n">comnorm_complete</span><span class="p">();</span>
+  <span class="p">}</span>
+<span class="p">}</span>
 
 <span class="kt">void</span>
 <span class="n">ALECG</span><span class="o">::</span><span class="n">registerReducers</span><span class="p">()</span>
@@ -204,6 +423,9 @@
   <span class="c1">// Set initial conditions for all PDEs</span>
   <span class="k">for</span> <span class="p">(</span><span class="k">const</span> <span class="k">auto</span><span class="o">&amp;</span> <span class="nl">eq</span> <span class="p">:</span> <span class="n">g_cgpde</span><span class="p">)</span> <span class="n">eq</span><span class="p">.</span><span class="n">initialize</span><span class="p">(</span> <span class="n">d</span><span class="o">-&gt;</span><span class="n">Coord</span><span class="p">(),</span> <span class="n">m_u</span><span class="p">,</span> <span class="n">d</span><span class="o">-&gt;</span><span class="n">T</span><span class="p">()</span> <span class="p">);</span>
 
+  <span class="c1">// Apply symmetry boundary conditions on initial conditions</span>
+  <span class="k">for</span> <span class="p">(</span><span class="k">const</span> <span class="k">auto</span><span class="o">&amp;</span> <span class="nl">eq</span> <span class="p">:</span> <span class="n">g_cgpde</span><span class="p">)</span> <span class="n">eq</span><span class="p">.</span><span class="n">symbc</span><span class="p">(</span> <span class="n">m_u</span><span class="p">,</span> <span class="n">m_bnorm</span> <span class="p">);</span>
+
   <span class="c1">// Output initial conditions to file (regardless of whether it was requested)</span>
   <span class="n">writeFields</span><span class="p">(</span> <span class="n">CkCallback</span><span class="p">(</span><span class="n">CkIndex_ALECG</span><span class="o">::</span><span class="n">init</span><span class="p">(),</span> <span class="n">thisProxy</span><span class="p">[</span><span class="n">thisIndex</span><span class="p">])</span> <span class="p">);</span>
 <span class="p">}</span>
@@ -219,6 +441,7 @@
   <span class="n">lhs</span><span class="p">();</span>
 <span class="p">}</span>
 <span class="c1">//! [init and lhs]</span>
+
 
 <span class="kt">void</span>
 <span class="n">ALECG</span><span class="o">::</span><span class="n">start</span><span class="p">()</span>
@@ -238,24 +461,28 @@
 <span class="n">ALECG</span><span class="o">::</span><span class="n">lhs</span><span class="p">()</span>
 <span class="c1">// *****************************************************************************</span>
 <span class="c1">// Compute the left-hand side of transport equations</span>
+<span class="c1">//! \details Also (re-)compute all data structures if the mesh changed.</span>
 <span class="c1">// *****************************************************************************</span>
 <span class="p">{</span>
   <span class="k">auto</span> <span class="n">d</span> <span class="o">=</span> <span class="n">Disc</span><span class="p">();</span>
 
-  <span class="c1">// Compute own portion of the lhs</span>
-  <span class="c1">// m_lhs = ...</span>
+  <span class="c1">// Compute lumped mass lhs</span>
+  <span class="n">m_lhs</span> <span class="o">=</span> <span class="n">tk</span><span class="o">::</span><span class="n">lump</span><span class="p">(</span> <span class="n">m_u</span><span class="p">.</span><span class="n">nprop</span><span class="p">(),</span> <span class="n">d</span><span class="o">-&gt;</span><span class="n">Coord</span><span class="p">(),</span> <span class="n">d</span><span class="o">-&gt;</span><span class="n">Inpoel</span><span class="p">()</span> <span class="p">);</span>
 
-  <span class="k">if</span> <span class="p">(</span><span class="n">d</span><span class="o">-&gt;</span><span class="n">Msum</span><span class="p">().</span><span class="n">empty</span><span class="p">())</span>        <span class="c1">// in serial we are done</span>
+  <span class="k">if</span> <span class="p">(</span><span class="n">d</span><span class="o">-&gt;</span><span class="n">NodeCommMap</span><span class="p">().</span><span class="n">empty</span><span class="p">())</span>        <span class="c1">// in serial we are done</span>
     <span class="n">comlhs_complete</span><span class="p">();</span>
   <span class="k">else</span> <span class="c1">// send contributions of lhs to chare-boundary nodes to fellow chares</span>
-    <span class="k">for</span> <span class="p">(</span><span class="k">const</span> <span class="k">auto</span><span class="o">&amp;</span> <span class="nl">n</span> <span class="p">:</span> <span class="n">d</span><span class="o">-&gt;</span><span class="n">Msum</span><span class="p">())</span> <span class="p">{</span>
-      <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span> <span class="n">tk</span><span class="o">::</span><span class="n">real</span> <span class="o">&gt;</span> <span class="o">&gt;</span> <span class="n">l</span><span class="p">(</span> <span class="n">n</span><span class="p">.</span><span class="n">second</span><span class="p">.</span><span class="n">size</span><span class="p">()</span> <span class="p">);</span>
+    <span class="k">for</span> <span class="p">(</span><span class="k">const</span> <span class="k">auto</span><span class="o">&amp;</span> <span class="p">[</span><span class="n">c</span><span class="p">,</span><span class="n">n</span><span class="p">]</span> <span class="o">:</span> <span class="n">d</span><span class="o">-&gt;</span><span class="n">NodeCommMap</span><span class="p">())</span> <span class="p">{</span>
+      <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span> <span class="n">tk</span><span class="o">::</span><span class="n">real</span> <span class="o">&gt;</span> <span class="o">&gt;</span> <span class="n">l</span><span class="p">(</span> <span class="n">n</span><span class="p">.</span><span class="n">size</span><span class="p">()</span> <span class="p">);</span>
       <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="n">j</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
-      <span class="k">for</span> <span class="p">(</span><span class="k">auto</span> <span class="nl">i</span> <span class="p">:</span> <span class="n">n</span><span class="p">.</span><span class="n">second</span><span class="p">)</span> <span class="n">l</span><span class="p">[</span> <span class="n">j</span><span class="o">++</span> <span class="p">]</span> <span class="o">=</span> <span class="n">m_lhs</span><span class="p">[</span> <span class="n">tk</span><span class="o">::</span><span class="n">cref_find</span><span class="p">(</span><span class="n">d</span><span class="o">-&gt;</span><span class="n">Lid</span><span class="p">(),</span><span class="n">i</span><span class="p">)</span> <span class="p">];</span>
-      <span class="n">thisProxy</span><span class="p">[</span> <span class="n">n</span><span class="p">.</span><span class="n">first</span> <span class="p">].</span><span class="n">comlhs</span><span class="p">(</span> <span class="n">n</span><span class="p">.</span><span class="n">second</span><span class="p">,</span> <span class="n">l</span> <span class="p">);</span>
+      <span class="k">for</span> <span class="p">(</span><span class="k">auto</span> <span class="nl">i</span> <span class="p">:</span> <span class="n">n</span><span class="p">)</span> <span class="n">l</span><span class="p">[</span> <span class="n">j</span><span class="o">++</span> <span class="p">]</span> <span class="o">=</span> <span class="n">m_lhs</span><span class="p">[</span> <span class="n">tk</span><span class="o">::</span><span class="n">cref_find</span><span class="p">(</span><span class="n">d</span><span class="o">-&gt;</span><span class="n">Lid</span><span class="p">(),</span><span class="n">i</span><span class="p">)</span> <span class="p">];</span>
+      <span class="n">thisProxy</span><span class="p">[</span><span class="n">c</span><span class="p">].</span><span class="n">comlhs</span><span class="p">(</span> <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="o">&gt;</span><span class="p">(</span><span class="n">begin</span><span class="p">(</span><span class="n">n</span><span class="p">),</span><span class="n">end</span><span class="p">(</span><span class="n">n</span><span class="p">)),</span> <span class="n">l</span> <span class="p">);</span>
     <span class="p">}</span>
 
   <span class="n">ownlhs_complete</span><span class="p">();</span>
+
+  <span class="c1">// (Re-)compute boundary point-, and dual-face normals</span>
+  <span class="n">norm</span><span class="p">();</span>
 <span class="p">}</span>
 <span class="c1">//! [Compute own and send lhs on chare-boundary]</span>
 
@@ -285,7 +512,7 @@
   <span class="p">}</span>
 
   <span class="c1">// When we have heard from all chares we communicate with, this chare is done</span>
-  <span class="k">if</span> <span class="p">(</span><span class="o">++</span><span class="n">m_nlhs</span> <span class="o">==</span> <span class="n">d</span><span class="o">-&gt;</span><span class="n">Msum</span><span class="p">().</span><span class="n">size</span><span class="p">())</span> <span class="p">{</span>
+  <span class="k">if</span> <span class="p">(</span><span class="o">++</span><span class="n">m_nlhs</span> <span class="o">==</span> <span class="n">d</span><span class="o">-&gt;</span><span class="n">NodeCommMap</span><span class="p">().</span><span class="n">size</span><span class="p">())</span> <span class="p">{</span>
     <span class="n">m_nlhs</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
     <span class="n">comlhs_complete</span><span class="p">();</span>
   <span class="p">}</span>
@@ -312,10 +539,68 @@
   <span class="c1">// Clear receive buffer</span>
   <span class="n">tk</span><span class="o">::</span><span class="n">destroy</span><span class="p">(</span><span class="n">m_lhsc</span><span class="p">);</span>
 
+  <span class="c1">// Combine own and communicated contributions of normals</span>
+  <span class="n">normfinal</span><span class="p">();</span>
+
   <span class="c1">// Continue after lhs is complete</span>
   <span class="k">if</span> <span class="p">(</span><span class="n">m_initial</span><span class="p">)</span> <span class="n">start</span><span class="p">();</span> <span class="k">else</span> <span class="nf">lhs_complete</span><span class="p">();</span>
 <span class="p">}</span>
 <span class="c1">//! [Merge lhs and continue]</span>
+
+<span class="kt">void</span>
+<span class="n">ALECG</span><span class="o">::</span><span class="n">normfinal</span><span class="p">()</span>
+<span class="c1">// *****************************************************************************</span>
+<span class="c1">//  Finish computing dual-face and boundary point normals</span>
+<span class="c1">// *****************************************************************************</span>
+<span class="p">{</span>
+  <span class="k">auto</span> <span class="n">d</span> <span class="o">=</span> <span class="n">Disc</span><span class="p">();</span>
+  <span class="k">const</span> <span class="k">auto</span><span class="o">&amp;</span> <span class="n">lid</span> <span class="o">=</span> <span class="n">d</span><span class="o">-&gt;</span><span class="n">Lid</span><span class="p">();</span>
+
+  <span class="c1">// Combine own and communicated contributions to boundary point normals</span>
+  <span class="k">for</span> <span class="p">(</span><span class="k">auto</span><span class="o">&amp;</span> <span class="p">[</span> <span class="n">p</span><span class="p">,</span> <span class="n">n</span> <span class="p">]</span> <span class="o">:</span> <span class="n">m_bnormc</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">auto</span> <span class="n">j</span> <span class="o">=</span> <span class="n">m_bnorm</span><span class="p">.</span><span class="n">find</span><span class="p">(</span><span class="n">p</span><span class="p">);</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">j</span> <span class="o">!=</span> <span class="n">end</span><span class="p">(</span><span class="n">m_bnorm</span><span class="p">))</span> <span class="p">{</span>
+      <span class="k">auto</span><span class="o">&amp;</span> <span class="n">norm</span> <span class="o">=</span> <span class="n">j</span><span class="o">-&gt;</span><span class="n">second</span><span class="p">;</span>
+      <span class="n">norm</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+=</span> <span class="n">n</span><span class="p">[</span><span class="mi">0</span><span class="p">];</span>
+      <span class="n">norm</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+=</span> <span class="n">n</span><span class="p">[</span><span class="mi">1</span><span class="p">];</span>
+      <span class="n">norm</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">+=</span> <span class="n">n</span><span class="p">[</span><span class="mi">2</span><span class="p">];</span>
+      <span class="n">norm</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="o">+=</span> <span class="n">n</span><span class="p">[</span><span class="mi">3</span><span class="p">];</span>
+    <span class="p">}</span>
+  <span class="p">}</span>
+  <span class="n">tk</span><span class="o">::</span><span class="n">destroy</span><span class="p">(</span> <span class="n">m_bnormc</span> <span class="p">);</span>
+
+  <span class="c1">// Divie summed point normals by the sum of inverse distance squared</span>
+  <span class="k">for</span> <span class="p">(</span><span class="k">auto</span><span class="o">&amp;</span> <span class="p">[</span><span class="n">p</span><span class="p">,</span><span class="n">n</span><span class="p">]</span> <span class="o">:</span> <span class="n">m_bnorm</span><span class="p">)</span> <span class="p">{</span>
+    <span class="n">n</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">/=</span> <span class="n">n</span><span class="p">[</span><span class="mi">3</span><span class="p">];</span>
+    <span class="n">n</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">/=</span> <span class="n">n</span><span class="p">[</span><span class="mi">3</span><span class="p">];</span>
+    <span class="n">n</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">/=</span> <span class="n">n</span><span class="p">[</span><span class="mi">3</span><span class="p">];</span>
+    <span class="n">Assert</span><span class="p">(</span> <span class="p">(</span><span class="n">n</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="n">n</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">n</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">*</span><span class="n">n</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">n</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">*</span><span class="n">n</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">-</span> <span class="mf">1.0</span><span class="p">)</span> <span class="o">&lt;</span>
+            <span class="n">std</span><span class="o">::</span><span class="n">numeric_limits</span><span class="o">&lt;</span> <span class="n">tk</span><span class="o">::</span><span class="n">real</span> <span class="o">&gt;::</span><span class="n">epsilon</span><span class="p">(),</span> <span class="s">&quot;Non-unit normal&quot;</span> <span class="p">);</span>
+  <span class="p">}</span>
+
+  <span class="c1">// Replace global-&gt;local ids associated to boundary normals of symbc nodes</span>
+  <span class="k">decltype</span><span class="p">(</span><span class="n">m_bnorm</span><span class="p">)</span> <span class="n">bnorm</span><span class="p">;</span>
+  <span class="k">for</span> <span class="p">(</span><span class="k">auto</span><span class="o">&amp;&amp;</span> <span class="p">[</span><span class="n">g</span><span class="p">,</span><span class="n">n</span><span class="p">]</span> <span class="o">:</span> <span class="n">m_bnorm</span><span class="p">)</span> <span class="n">bnorm</span><span class="p">[</span> <span class="n">tk</span><span class="o">::</span><span class="n">cref_find</span><span class="p">(</span><span class="n">lid</span><span class="p">,</span><span class="n">g</span><span class="p">)</span> <span class="p">]</span> <span class="o">=</span> <span class="n">std</span><span class="o">::</span><span class="n">move</span><span class="p">(</span><span class="n">n</span><span class="p">);</span>
+  <span class="n">m_bnorm</span> <span class="o">=</span> <span class="n">std</span><span class="o">::</span><span class="n">move</span><span class="p">(</span><span class="n">bnorm</span><span class="p">);</span>
+
+  <span class="c1">// Count contributions to chare-boundary edges</span>
+  <span class="n">std</span><span class="o">::</span><span class="n">unordered_map</span><span class="o">&lt;</span> <span class="n">tk</span><span class="o">::</span><span class="n">UnsMesh</span><span class="o">::</span><span class="n">Edge</span><span class="p">,</span> <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="p">,</span>
+    <span class="n">tk</span><span class="o">::</span><span class="n">UnsMesh</span><span class="o">::</span><span class="n">Hash</span><span class="o">&lt;</span><span class="mi">2</span><span class="o">&gt;</span><span class="p">,</span> <span class="n">tk</span><span class="o">::</span><span class="n">UnsMesh</span><span class="o">::</span><span class="n">Eq</span><span class="o">&lt;</span><span class="mi">2</span><span class="o">&gt;</span> <span class="o">&gt;</span> <span class="n">edge_node_count</span><span class="p">;</span>
+  <span class="k">for</span> <span class="p">(</span><span class="k">const</span> <span class="k">auto</span><span class="o">&amp;</span> <span class="p">[</span><span class="n">c</span><span class="p">,</span><span class="n">edges</span><span class="p">]</span> <span class="o">:</span> <span class="n">d</span><span class="o">-&gt;</span><span class="n">EdgeCommMap</span><span class="p">())</span>
+    <span class="k">for</span> <span class="p">(</span><span class="k">const</span> <span class="k">auto</span><span class="o">&amp;</span> <span class="nl">e</span> <span class="p">:</span> <span class="n">edges</span><span class="p">)</span>
+      <span class="o">++</span><span class="n">edge_node_count</span><span class="p">[</span><span class="n">e</span><span class="p">];</span>
+
+  <span class="c1">// Combine and weigh communicated contributions to dual-face normals</span>
+  <span class="k">for</span> <span class="p">(</span><span class="k">auto</span><span class="o">&amp;</span> <span class="p">[</span><span class="n">e</span><span class="p">,</span><span class="n">n</span><span class="p">]</span> <span class="o">:</span> <span class="n">m_dfnormc</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">const</span> <span class="k">auto</span><span class="o">&amp;</span> <span class="n">dfn</span> <span class="o">=</span> <span class="n">tk</span><span class="o">::</span><span class="n">cref_find</span><span class="p">(</span> <span class="n">m_dfnorm</span><span class="p">,</span> <span class="n">e</span> <span class="p">);</span>
+    <span class="n">n</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+=</span> <span class="n">dfn</span><span class="p">[</span><span class="mi">0</span><span class="p">];</span>
+    <span class="n">n</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+=</span> <span class="n">dfn</span><span class="p">[</span><span class="mi">1</span><span class="p">];</span>
+    <span class="n">n</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">+=</span> <span class="n">dfn</span><span class="p">[</span><span class="mi">2</span><span class="p">];</span>
+    <span class="k">auto</span> <span class="n">count</span> <span class="o">=</span> <span class="k">static_cast</span><span class="o">&lt;</span> <span class="n">tk</span><span class="o">::</span><span class="n">real</span> <span class="o">&gt;</span><span class="p">(</span> <span class="n">tk</span><span class="o">::</span><span class="n">cref_find</span><span class="p">(</span> <span class="n">edge_node_count</span><span class="p">,</span> <span class="n">e</span> <span class="p">)</span> <span class="p">);</span>
+    <span class="k">auto</span> <span class="n">factor</span> <span class="o">=</span> <span class="mf">1.0</span><span class="o">/</span><span class="p">(</span><span class="n">count</span> <span class="o">+</span> <span class="mf">1.0</span><span class="p">);</span>
+    <span class="k">for</span> <span class="p">(</span><span class="k">auto</span> <span class="o">&amp;</span> <span class="nl">x</span> <span class="p">:</span> <span class="n">n</span><span class="p">)</span> <span class="n">x</span> <span class="o">*=</span> <span class="n">factor</span><span class="p">;</span>
+  <span class="p">}</span>
+<span class="p">}</span>
 
 <span class="kt">void</span>
 <span class="n">ALECG</span><span class="o">::</span><span class="n">next</span><span class="p">()</span>
@@ -360,14 +645,83 @@
   <span class="p">}</span>
 
   <span class="c1">//! [Advance]</span>
-  <span class="c1">// Actiavate SDAG waits for time step</span>
+  <span class="c1">// Actiavate SDAG waits for next time step stage</span>
+  <span class="n">thisProxy</span><span class="p">[</span> <span class="n">thisIndex</span> <span class="p">].</span><span class="n">wait4grad</span><span class="p">();</span>
   <span class="n">thisProxy</span><span class="p">[</span> <span class="n">thisIndex</span> <span class="p">].</span><span class="n">wait4rhs</span><span class="p">();</span>
-  <span class="n">thisProxy</span><span class="p">[</span> <span class="n">thisIndex</span> <span class="p">].</span><span class="n">wait4out</span><span class="p">();</span>
+  <span class="n">thisProxy</span><span class="p">[</span> <span class="n">thisIndex</span> <span class="p">].</span><span class="n">wait4stage</span><span class="p">();</span>
 
   <span class="c1">// Contribute to minimum dt across all chares the advance to next step</span>
   <span class="n">contribute</span><span class="p">(</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">tk</span><span class="o">::</span><span class="n">real</span><span class="p">),</span> <span class="o">&amp;</span><span class="n">mindt</span><span class="p">,</span> <span class="n">CkReduction</span><span class="o">::</span><span class="n">min_double</span><span class="p">,</span>
               <span class="n">CkCallback</span><span class="p">(</span><span class="n">CkReductionTarget</span><span class="p">(</span><span class="n">ALECG</span><span class="p">,</span><span class="n">advance</span><span class="p">),</span> <span class="n">thisProxy</span><span class="p">)</span> <span class="p">);</span>
   <span class="c1">//! [Advance]</span>
+<span class="p">}</span>
+
+<span class="kt">void</span>
+<span class="n">ALECG</span><span class="o">::</span><span class="n">advance</span><span class="p">(</span> <span class="n">tk</span><span class="o">::</span><span class="n">real</span> <span class="n">newdt</span> <span class="p">)</span>
+<span class="c1">// *****************************************************************************</span>
+<span class="c1">// Advance equations to next time step</span>
+<span class="c1">//! \param[in] newdt Size of this new time step</span>
+<span class="c1">// *****************************************************************************</span>
+<span class="p">{</span>
+  <span class="k">auto</span> <span class="n">d</span> <span class="o">=</span> <span class="n">Disc</span><span class="p">();</span>
+
+  <span class="c1">// Set new time step size</span>
+  <span class="k">if</span> <span class="p">(</span><span class="n">m_stage</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span> <span class="n">d</span><span class="o">-&gt;</span><span class="n">setdt</span><span class="p">(</span> <span class="n">newdt</span> <span class="p">);</span>
+
+  <span class="c1">// Compute gradients for next time step</span>
+  <span class="n">grad</span><span class="p">();</span>
+<span class="p">}</span>
+
+<span class="kt">void</span>
+<span class="n">ALECG</span><span class="o">::</span><span class="n">grad</span><span class="p">()</span>
+<span class="c1">// *****************************************************************************</span>
+<span class="c1">// Compute nodal gradients</span>
+<span class="c1">// *****************************************************************************</span>
+<span class="p">{</span>
+  <span class="k">auto</span> <span class="n">d</span> <span class="o">=</span> <span class="n">Disc</span><span class="p">();</span>
+
+  <span class="c1">// Compute own portion of gradients for all equations</span>
+  <span class="k">for</span> <span class="p">(</span><span class="k">const</span> <span class="k">auto</span><span class="o">&amp;</span> <span class="nl">eq</span> <span class="p">:</span> <span class="n">g_cgpde</span><span class="p">)</span>
+    <span class="n">eq</span><span class="p">.</span><span class="n">grad</span><span class="p">(</span><span class="n">d</span><span class="o">-&gt;</span><span class="n">Coord</span><span class="p">(),</span> <span class="n">d</span><span class="o">-&gt;</span><span class="n">Inpoel</span><span class="p">(),</span> <span class="n">m_bndel</span><span class="p">,</span> <span class="n">d</span><span class="o">-&gt;</span><span class="n">Gid</span><span class="p">(),</span> <span class="n">d</span><span class="o">-&gt;</span><span class="n">Bid</span><span class="p">(),</span> <span class="n">m_u</span><span class="p">,</span> <span class="n">m_grad</span><span class="p">);</span>
+
+  <span class="c1">// Communicate gradients to other chares on chare-boundary</span>
+  <span class="k">if</span> <span class="p">(</span><span class="n">d</span><span class="o">-&gt;</span><span class="n">NodeCommMap</span><span class="p">().</span><span class="n">empty</span><span class="p">())</span>        <span class="c1">// in serial we are done</span>
+    <span class="n">comgrad_complete</span><span class="p">();</span>
+  <span class="k">else</span> <span class="c1">// send gradients contributions to chare-boundary nodes to fellow chares</span>
+    <span class="k">for</span> <span class="p">(</span><span class="k">const</span> <span class="k">auto</span><span class="o">&amp;</span> <span class="p">[</span><span class="n">c</span><span class="p">,</span><span class="n">n</span><span class="p">]</span> <span class="o">:</span> <span class="n">d</span><span class="o">-&gt;</span><span class="n">NodeCommMap</span><span class="p">())</span> <span class="p">{</span>
+      <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span> <span class="n">tk</span><span class="o">::</span><span class="n">real</span> <span class="o">&gt;</span> <span class="o">&gt;</span> <span class="n">g</span><span class="p">(</span> <span class="n">n</span><span class="p">.</span><span class="n">size</span><span class="p">()</span> <span class="p">);</span>
+      <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="n">j</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+      <span class="k">for</span> <span class="p">(</span><span class="k">auto</span> <span class="nl">i</span> <span class="p">:</span> <span class="n">n</span><span class="p">)</span> <span class="n">g</span><span class="p">[</span> <span class="n">j</span><span class="o">++</span> <span class="p">]</span> <span class="o">=</span> <span class="n">m_grad</span><span class="p">[</span> <span class="n">tk</span><span class="o">::</span><span class="n">cref_find</span><span class="p">(</span><span class="n">d</span><span class="o">-&gt;</span><span class="n">Bid</span><span class="p">(),</span><span class="n">i</span><span class="p">)</span> <span class="p">];</span>
+      <span class="n">thisProxy</span><span class="p">[</span><span class="n">c</span><span class="p">].</span><span class="n">comgrad</span><span class="p">(</span> <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="o">&gt;</span><span class="p">(</span><span class="n">begin</span><span class="p">(</span><span class="n">n</span><span class="p">),</span><span class="n">end</span><span class="p">(</span><span class="n">n</span><span class="p">)),</span> <span class="n">g</span> <span class="p">);</span>
+    <span class="p">}</span>
+
+  <span class="n">owngrad_complete</span><span class="p">();</span>
+<span class="p">}</span>
+
+<span class="kt">void</span>
+<span class="n">ALECG</span><span class="o">::</span><span class="n">comgrad</span><span class="p">(</span> <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span> <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="o">&gt;&amp;</span> <span class="n">gid</span><span class="p">,</span>
+                <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span> <span class="n">tk</span><span class="o">::</span><span class="n">real</span> <span class="o">&gt;</span> <span class="o">&gt;&amp;</span> <span class="n">G</span> <span class="p">)</span>
+<span class="c1">// *****************************************************************************</span>
+<span class="c1">//  Receive contributions to nodal gradients on chare-boundaries</span>
+<span class="c1">//! \param[in] gid Global mesh node IDs at which we receive grad contributions</span>
+<span class="c1">//! \param[in] G Partial contributions of gradients to chare-boundary nodes</span>
+<span class="c1">//! \details This function receives contributions to m_grad, which stores the</span>
+<span class="c1">//!   nodal gradients at mesh nodes. While m_grad stores own</span>
+<span class="c1">//!   contributions, m_gradc collects the neighbor chare contributions during</span>
+<span class="c1">//!   communication. This way work on m_grad and m_gradc is overlapped. The two</span>
+<span class="c1">//!   are combined in rhs().</span>
+<span class="c1">// *****************************************************************************</span>
+<span class="p">{</span>
+  <span class="n">Assert</span><span class="p">(</span> <span class="n">G</span><span class="p">.</span><span class="n">size</span><span class="p">()</span> <span class="o">==</span> <span class="n">gid</span><span class="p">.</span><span class="n">size</span><span class="p">(),</span> <span class="s">&quot;Size mismatch&quot;</span> <span class="p">);</span>
+
+  <span class="k">using</span> <span class="n">tk</span><span class="o">::</span><span class="k">operator</span><span class="o">+=</span><span class="p">;</span>
+
+  <span class="k">for</span> <span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">i</span><span class="o">&lt;</span><span class="n">gid</span><span class="p">.</span><span class="n">size</span><span class="p">();</span> <span class="o">++</span><span class="n">i</span><span class="p">)</span> <span class="n">m_gradc</span><span class="p">[</span> <span class="n">gid</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="p">]</span> <span class="o">+=</span> <span class="n">G</span><span class="p">[</span><span class="n">i</span><span class="p">];</span>
+
+  <span class="k">if</span> <span class="p">(</span><span class="o">++</span><span class="n">m_ngrad</span> <span class="o">==</span> <span class="n">Disc</span><span class="p">()</span><span class="o">-&gt;</span><span class="n">NodeCommMap</span><span class="p">().</span><span class="n">size</span><span class="p">())</span> <span class="p">{</span>
+    <span class="n">m_ngrad</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+    <span class="n">comgrad_complete</span><span class="p">();</span>
+  <span class="p">}</span>
 <span class="p">}</span>
 
 <span class="kt">void</span>
@@ -378,18 +732,34 @@
 <span class="p">{</span>
   <span class="k">auto</span> <span class="n">d</span> <span class="o">=</span> <span class="n">Disc</span><span class="p">();</span>
 
-  <span class="c1">// Compute own portion of the right-hand side</span>
-  <span class="c1">// ...</span>
+  <span class="c1">// Combine own and communicated contributions to nodal gradients</span>
+  <span class="k">for</span> <span class="p">(</span><span class="k">const</span> <span class="k">auto</span><span class="o">&amp;</span> <span class="p">[</span><span class="n">gid</span><span class="p">,</span><span class="n">g</span><span class="p">]</span> <span class="o">:</span> <span class="n">m_gradc</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">auto</span> <span class="n">bid</span> <span class="o">=</span> <span class="n">tk</span><span class="o">::</span><span class="n">cref_find</span><span class="p">(</span> <span class="n">d</span><span class="o">-&gt;</span><span class="n">Bid</span><span class="p">(),</span> <span class="n">gid</span> <span class="p">);</span>
+    <span class="k">for</span> <span class="p">(</span><span class="n">ncomp_t</span> <span class="n">c</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">c</span><span class="o">&lt;</span><span class="n">m_grad</span><span class="p">.</span><span class="n">nprop</span><span class="p">();</span> <span class="o">++</span><span class="n">c</span><span class="p">)</span> <span class="n">m_grad</span><span class="p">(</span><span class="n">bid</span><span class="p">,</span><span class="n">c</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span> <span class="o">+=</span> <span class="n">g</span><span class="p">[</span><span class="n">c</span><span class="p">];</span>
+  <span class="p">}</span>
+
+  <span class="c1">// clear gradients receive buffer</span>
+  <span class="n">tk</span><span class="o">::</span><span class="n">destroy</span><span class="p">(</span><span class="n">m_gradc</span><span class="p">);</span>
+
+  <span class="c1">// Compute own portion of right-hand side for all equations</span>
+  <span class="k">for</span> <span class="p">(</span><span class="k">const</span> <span class="k">auto</span><span class="o">&amp;</span> <span class="nl">eq</span> <span class="p">:</span> <span class="n">g_cgpde</span><span class="p">)</span>
+    <span class="n">eq</span><span class="p">.</span><span class="n">rhs</span><span class="p">(</span> <span class="n">d</span><span class="o">-&gt;</span><span class="n">T</span><span class="p">(),</span> <span class="n">rkcoef</span><span class="p">[</span><span class="n">m_stage</span><span class="p">]</span> <span class="o">*</span> <span class="n">d</span><span class="o">-&gt;</span><span class="n">Dt</span><span class="p">(),</span> <span class="n">d</span><span class="o">-&gt;</span><span class="n">Coord</span><span class="p">(),</span> <span class="n">d</span><span class="o">-&gt;</span><span class="n">Inpoel</span><span class="p">(),</span>
+            <span class="n">m_triinpoel</span><span class="p">,</span> <span class="n">d</span><span class="o">-&gt;</span><span class="n">Gid</span><span class="p">(),</span> <span class="n">d</span><span class="o">-&gt;</span><span class="n">Bid</span><span class="p">(),</span> <span class="n">d</span><span class="o">-&gt;</span><span class="n">Lid</span><span class="p">(),</span> <span class="n">m_dfnorm</span><span class="p">,</span> <span class="n">m_dfnormc</span><span class="p">,</span>
+            <span class="n">m_bnorm</span><span class="p">,</span> <span class="n">d</span><span class="o">-&gt;</span><span class="n">Vol</span><span class="p">(),</span> <span class="n">m_grad</span><span class="p">,</span> <span class="n">m_u</span><span class="p">,</span> <span class="n">m_rhs</span> <span class="p">);</span>
+
+  <span class="c1">// Query and match user-specified boundary conditions to side sets</span>
+  <span class="n">m_bcdir</span> <span class="o">=</span> <span class="n">match</span><span class="p">(</span> <span class="n">m_u</span><span class="p">.</span><span class="n">nprop</span><span class="p">(),</span> <span class="n">d</span><span class="o">-&gt;</span><span class="n">T</span><span class="p">(),</span> <span class="n">rkcoef</span><span class="p">[</span><span class="n">m_stage</span><span class="p">]</span> <span class="o">*</span> <span class="n">d</span><span class="o">-&gt;</span><span class="n">Dt</span><span class="p">(),</span>
+                   <span class="n">d</span><span class="o">-&gt;</span><span class="n">Coord</span><span class="p">(),</span> <span class="n">d</span><span class="o">-&gt;</span><span class="n">Lid</span><span class="p">(),</span> <span class="n">m_bnode</span> <span class="p">);</span>
 
   <span class="c1">// Communicate rhs to other chares on chare-boundary</span>
-  <span class="k">if</span> <span class="p">(</span><span class="n">d</span><span class="o">-&gt;</span><span class="n">Msum</span><span class="p">().</span><span class="n">empty</span><span class="p">())</span>        <span class="c1">// in serial we are done</span>
+  <span class="k">if</span> <span class="p">(</span><span class="n">d</span><span class="o">-&gt;</span><span class="n">NodeCommMap</span><span class="p">().</span><span class="n">empty</span><span class="p">())</span>        <span class="c1">// in serial we are done</span>
     <span class="n">comrhs_complete</span><span class="p">();</span>
   <span class="k">else</span> <span class="c1">// send contributions of rhs to chare-boundary nodes to fellow chares</span>
-    <span class="k">for</span> <span class="p">(</span><span class="k">const</span> <span class="k">auto</span><span class="o">&amp;</span> <span class="nl">n</span> <span class="p">:</span> <span class="n">d</span><span class="o">-&gt;</span><span class="n">Msum</span><span class="p">())</span> <span class="p">{</span>
-      <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span> <span class="n">tk</span><span class="o">::</span><span class="n">real</span> <span class="o">&gt;</span> <span class="o">&gt;</span> <span class="n">r</span><span class="p">(</span> <span class="n">n</span><span class="p">.</span><span class="n">second</span><span class="p">.</span><span class="n">size</span><span class="p">()</span> <span class="p">);</span>
+    <span class="k">for</span> <span class="p">(</span><span class="k">const</span> <span class="k">auto</span><span class="o">&amp;</span> <span class="p">[</span><span class="n">c</span><span class="p">,</span><span class="n">n</span><span class="p">]</span> <span class="o">:</span> <span class="n">d</span><span class="o">-&gt;</span><span class="n">NodeCommMap</span><span class="p">())</span> <span class="p">{</span>
+      <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span> <span class="n">tk</span><span class="o">::</span><span class="n">real</span> <span class="o">&gt;</span> <span class="o">&gt;</span> <span class="n">r</span><span class="p">(</span> <span class="n">n</span><span class="p">.</span><span class="n">size</span><span class="p">()</span> <span class="p">);</span>
       <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="n">j</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
-      <span class="k">for</span> <span class="p">(</span><span class="k">auto</span> <span class="nl">i</span> <span class="p">:</span> <span class="n">n</span><span class="p">.</span><span class="n">second</span><span class="p">)</span> <span class="n">r</span><span class="p">[</span> <span class="n">j</span><span class="o">++</span> <span class="p">]</span> <span class="o">=</span> <span class="n">m_rhs</span><span class="p">[</span> <span class="n">tk</span><span class="o">::</span><span class="n">cref_find</span><span class="p">(</span><span class="n">d</span><span class="o">-&gt;</span><span class="n">Lid</span><span class="p">(),</span><span class="n">i</span><span class="p">)</span> <span class="p">];</span>
-      <span class="n">thisProxy</span><span class="p">[</span> <span class="n">n</span><span class="p">.</span><span class="n">first</span> <span class="p">].</span><span class="n">comrhs</span><span class="p">(</span> <span class="n">n</span><span class="p">.</span><span class="n">second</span><span class="p">,</span> <span class="n">r</span> <span class="p">);</span>
+      <span class="k">for</span> <span class="p">(</span><span class="k">auto</span> <span class="nl">i</span> <span class="p">:</span> <span class="n">n</span><span class="p">)</span> <span class="n">r</span><span class="p">[</span> <span class="n">j</span><span class="o">++</span> <span class="p">]</span> <span class="o">=</span> <span class="n">m_rhs</span><span class="p">[</span> <span class="n">tk</span><span class="o">::</span><span class="n">cref_find</span><span class="p">(</span><span class="n">d</span><span class="o">-&gt;</span><span class="n">Lid</span><span class="p">(),</span><span class="n">i</span><span class="p">)</span> <span class="p">];</span>
+      <span class="n">thisProxy</span><span class="p">[</span><span class="n">c</span><span class="p">].</span><span class="n">comrhs</span><span class="p">(</span> <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="o">&gt;</span><span class="p">(</span><span class="n">begin</span><span class="p">(</span><span class="n">n</span><span class="p">),</span><span class="n">end</span><span class="p">(</span><span class="n">n</span><span class="p">)),</span> <span class="n">r</span> <span class="p">);</span>
     <span class="p">}</span>
 
   <span class="n">ownrhs_complete</span><span class="p">();</span>
@@ -413,12 +783,10 @@
 
   <span class="k">using</span> <span class="n">tk</span><span class="o">::</span><span class="k">operator</span><span class="o">+=</span><span class="p">;</span>
 
-  <span class="k">for</span> <span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">i</span><span class="o">&lt;</span><span class="n">gid</span><span class="p">.</span><span class="n">size</span><span class="p">();</span> <span class="o">++</span><span class="n">i</span><span class="p">)</span> <span class="p">{</span>
-    <span class="n">m_rhsc</span><span class="p">[</span> <span class="n">gid</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="p">]</span> <span class="o">+=</span> <span class="n">R</span><span class="p">[</span><span class="n">i</span><span class="p">];</span>
-  <span class="p">}</span>
+  <span class="k">for</span> <span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">i</span><span class="o">&lt;</span><span class="n">gid</span><span class="p">.</span><span class="n">size</span><span class="p">();</span> <span class="o">++</span><span class="n">i</span><span class="p">)</span> <span class="n">m_rhsc</span><span class="p">[</span> <span class="n">gid</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="p">]</span> <span class="o">+=</span> <span class="n">R</span><span class="p">[</span><span class="n">i</span><span class="p">];</span>
 
   <span class="c1">// When we have heard from all chares we communicate with, this chare is done</span>
-  <span class="k">if</span> <span class="p">(</span><span class="o">++</span><span class="n">m_nrhs</span> <span class="o">==</span> <span class="n">Disc</span><span class="p">()</span><span class="o">-&gt;</span><span class="n">Msum</span><span class="p">().</span><span class="n">size</span><span class="p">())</span> <span class="p">{</span>
+  <span class="k">if</span> <span class="p">(</span><span class="o">++</span><span class="n">m_nrhs</span> <span class="o">==</span> <span class="n">Disc</span><span class="p">()</span><span class="o">-&gt;</span><span class="n">NodeCommMap</span><span class="p">().</span><span class="n">size</span><span class="p">())</span> <span class="p">{</span>
     <span class="n">m_nrhs</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
     <span class="n">comrhs_complete</span><span class="p">();</span>
   <span class="p">}</span>
@@ -443,16 +811,41 @@
   <span class="c1">// clear receive buffer</span>
   <span class="n">tk</span><span class="o">::</span><span class="n">destroy</span><span class="p">(</span><span class="n">m_rhsc</span><span class="p">);</span>  
 
+  <span class="c1">// Set Dirichlet BCs for lhs and rhs</span>
+  <span class="k">for</span> <span class="p">(</span><span class="k">const</span> <span class="k">auto</span><span class="o">&amp;</span> <span class="p">[</span><span class="n">b</span><span class="p">,</span><span class="n">bc</span><span class="p">]</span> <span class="o">:</span> <span class="n">m_bcdir</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">for</span> <span class="p">(</span><span class="n">ncomp_t</span> <span class="n">c</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">c</span><span class="o">&lt;</span><span class="n">ncomp</span><span class="p">;</span> <span class="o">++</span><span class="n">c</span><span class="p">)</span> <span class="p">{</span>
+      <span class="k">if</span> <span class="p">(</span><span class="n">bc</span><span class="p">[</span><span class="n">c</span><span class="p">].</span><span class="n">first</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">m_lhs</span><span class="p">(</span> <span class="n">b</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="mi">0</span> <span class="p">)</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">;</span>
+        <span class="n">m_rhs</span><span class="p">(</span> <span class="n">b</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="mi">0</span> <span class="p">)</span> <span class="o">=</span> <span class="n">bc</span><span class="p">[</span><span class="n">c</span><span class="p">].</span><span class="n">second</span> <span class="o">/</span> <span class="n">d</span><span class="o">-&gt;</span><span class="n">Dt</span><span class="p">()</span> <span class="o">/</span> <span class="n">rkcoef</span><span class="p">[</span><span class="n">m_stage</span><span class="p">];</span>
+      <span class="p">}</span>
+    <span class="p">}</span>
+  <span class="p">}</span>
+
+  <span class="c1">// Update Un</span>
+  <span class="k">if</span> <span class="p">(</span><span class="n">m_stage</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span> <span class="n">m_un</span> <span class="o">=</span> <span class="n">m_u</span><span class="p">;</span>
+
   <span class="c1">// Solve sytem</span>
-  <span class="c1">// m_du = m_rhs / m_lhs;</span>
+  <span class="n">m_u</span> <span class="o">=</span> <span class="n">m_un</span> <span class="o">+</span> <span class="n">rkcoef</span><span class="p">[</span><span class="n">m_stage</span><span class="p">]</span> <span class="o">*</span> <span class="n">d</span><span class="o">-&gt;</span><span class="n">Dt</span><span class="p">()</span> <span class="o">*</span> <span class="n">m_rhs</span> <span class="o">/</span> <span class="n">m_lhs</span><span class="p">;</span>
 
   <span class="c1">//! [Continue after solve]</span>
-  <span class="c1">// Compute diagnostics, e.g., residuals</span>
-  <span class="k">auto</span> <span class="n">diag_computed</span> <span class="o">=</span> <span class="n">m_diag</span><span class="p">.</span><span class="n">compute</span><span class="p">(</span> <span class="o">*</span><span class="n">d</span><span class="p">,</span> <span class="n">m_u</span> <span class="p">);</span>
-  <span class="c1">// Increase number of iterations and physical time</span>
-  <span class="n">d</span><span class="o">-&gt;</span><span class="n">next</span><span class="p">();</span>
-  <span class="c1">// Continue to mesh refinement (if configured)</span>
-  <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">diag_computed</span><span class="p">)</span> <span class="n">refine</span><span class="p">();</span>
+  <span class="k">if</span> <span class="p">(</span><span class="n">m_stage</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">)</span> <span class="p">{</span>
+
+    <span class="c1">// Activate SDAG wait for next time step stage</span>
+    <span class="n">thisProxy</span><span class="p">[</span> <span class="n">thisIndex</span> <span class="p">].</span><span class="n">wait4grad</span><span class="p">();</span>
+    <span class="n">thisProxy</span><span class="p">[</span> <span class="n">thisIndex</span> <span class="p">].</span><span class="n">wait4rhs</span><span class="p">();</span>
+
+    <span class="c1">// continue with next time step stage</span>
+    <span class="n">stage</span><span class="p">();</span>
+
+  <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+
+    <span class="c1">// Compute diagnostics, e.g., residuals</span>
+    <span class="k">auto</span> <span class="n">diag_computed</span> <span class="o">=</span> <span class="n">m_diag</span><span class="p">.</span><span class="n">compute</span><span class="p">(</span> <span class="o">*</span><span class="n">d</span><span class="p">,</span> <span class="n">m_u</span> <span class="p">);</span>
+    <span class="c1">// Increase number of iterations and physical time</span>
+    <span class="n">d</span><span class="o">-&gt;</span><span class="n">next</span><span class="p">();</span>
+    <span class="c1">// Continue to mesh refinement (if configured)</span>
+    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">diag_computed</span><span class="p">)</span> <span class="n">refine</span><span class="p">();</span>
+  <span class="p">}</span>
   <span class="c1">//! [Continue after solve]</span>
 <span class="p">}</span>
 
@@ -496,10 +889,10 @@
   <span class="k">const</span> <span class="n">tk</span><span class="o">::</span><span class="n">UnsMesh</span><span class="o">::</span><span class="n">Coords</span><span class="o">&amp;</span> <span class="n">coord</span><span class="p">,</span>
   <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">unordered_map</span><span class="o">&lt;</span> <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="p">,</span> <span class="n">tk</span><span class="o">::</span><span class="n">UnsMesh</span><span class="o">::</span><span class="n">Edge</span> <span class="o">&gt;&amp;</span> <span class="n">addedNodes</span><span class="p">,</span>
   <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">unordered_map</span><span class="o">&lt;</span> <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="p">,</span> <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="o">&gt;&amp;</span> <span class="cm">/*addedTets*/</span><span class="p">,</span>
-  <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">unordered_map</span><span class="o">&lt;</span> <span class="kt">int</span><span class="p">,</span> <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span> <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="o">&gt;</span> <span class="o">&gt;&amp;</span> <span class="n">msum</span><span class="p">,</span>
-  <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">map</span><span class="o">&lt;</span> <span class="kt">int</span><span class="p">,</span> <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span> <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="o">&gt;</span> <span class="o">&gt;&amp;</span> <span class="cm">/*bface*/</span><span class="p">,</span>
+  <span class="k">const</span> <span class="n">tk</span><span class="o">::</span><span class="n">NodeCommMap</span><span class="o">&amp;</span> <span class="n">nodeCommMap</span><span class="p">,</span>
+  <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">map</span><span class="o">&lt;</span> <span class="kt">int</span><span class="p">,</span> <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span> <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="o">&gt;</span> <span class="o">&gt;&amp;</span> <span class="n">bface</span><span class="p">,</span>
   <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">map</span><span class="o">&lt;</span> <span class="kt">int</span><span class="p">,</span> <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span> <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="o">&gt;</span> <span class="o">&gt;&amp;</span> <span class="n">bnode</span><span class="p">,</span>
-  <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span> <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="o">&gt;&amp;</span> <span class="cm">/*triinpoel*/</span> <span class="p">)</span>
+  <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span> <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="o">&gt;&amp;</span> <span class="n">triinpoel</span> <span class="p">)</span>
 <span class="c1">// *****************************************************************************</span>
 <span class="c1">//  Receive new mesh from Refiner</span>
 <span class="c1">//! \param[in] ginpoel Mesh connectivity with global node ids</span>
@@ -507,8 +900,10 @@
 <span class="c1">//! \param[in] coord New mesh node coordinates</span>
 <span class="c1">//! \param[in] addedNodes Newly added mesh nodes and their parents (local ids)</span>
 <span class="c1">//! \param[in] addedTets Newly added mesh cells and their parents (local ids)</span>
-<span class="c1">//! \param[in] msum New node communication map</span>
+<span class="c1">//! \param[in] nodeCommMap New node communication map</span>
+<span class="c1">//! \param[in] bface Boundary-faces mapped to side set ids</span>
 <span class="c1">//! \param[in] bnode Boundary-node lists mapped to side set ids</span>
+<span class="c1">//! \param[in] triinpoel Boundary-face connectivity</span>
 <span class="c1">// *****************************************************************************</span>
 <span class="p">{</span>
   <span class="k">auto</span> <span class="n">d</span> <span class="o">=</span> <span class="n">Disc</span><span class="p">();</span>
@@ -523,23 +918,28 @@
   <span class="o">++</span><span class="n">d</span><span class="o">-&gt;</span><span class="n">Itr</span><span class="p">();</span>
 
   <span class="c1">// Resize mesh data structures</span>
-  <span class="n">d</span><span class="o">-&gt;</span><span class="n">resizePostAMR</span><span class="p">(</span> <span class="n">chunk</span><span class="p">,</span> <span class="n">coord</span><span class="p">,</span> <span class="n">msum</span> <span class="p">);</span>
+  <span class="n">d</span><span class="o">-&gt;</span><span class="n">resizePostAMR</span><span class="p">(</span> <span class="n">chunk</span><span class="p">,</span> <span class="n">coord</span><span class="p">,</span> <span class="n">nodeCommMap</span> <span class="p">);</span>
 
   <span class="c1">// Resize auxiliary solution vectors</span>
   <span class="k">auto</span> <span class="n">npoin</span> <span class="o">=</span> <span class="n">coord</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="n">size</span><span class="p">();</span>
   <span class="k">auto</span> <span class="n">nprop</span> <span class="o">=</span> <span class="n">m_u</span><span class="p">.</span><span class="n">nprop</span><span class="p">();</span>
   <span class="n">m_u</span><span class="p">.</span><span class="n">resize</span><span class="p">(</span> <span class="n">npoin</span><span class="p">,</span> <span class="n">nprop</span> <span class="p">);</span>
-  <span class="n">m_du</span><span class="p">.</span><span class="n">resize</span><span class="p">(</span> <span class="n">npoin</span><span class="p">,</span> <span class="n">nprop</span> <span class="p">);</span>
+  <span class="n">m_un</span><span class="p">.</span><span class="n">resize</span><span class="p">(</span> <span class="n">npoin</span><span class="p">,</span> <span class="n">nprop</span> <span class="p">);</span>
   <span class="n">m_lhs</span><span class="p">.</span><span class="n">resize</span><span class="p">(</span> <span class="n">npoin</span><span class="p">,</span> <span class="n">nprop</span> <span class="p">);</span>
   <span class="n">m_rhs</span><span class="p">.</span><span class="n">resize</span><span class="p">(</span> <span class="n">npoin</span><span class="p">,</span> <span class="n">nprop</span> <span class="p">);</span>
+  <span class="n">m_grad</span><span class="p">.</span><span class="n">resize</span><span class="p">(</span> <span class="n">d</span><span class="o">-&gt;</span><span class="n">Bid</span><span class="p">().</span><span class="n">size</span><span class="p">(),</span> <span class="n">nprop</span><span class="o">*</span><span class="mi">3</span> <span class="p">);</span>
 
   <span class="c1">// Update solution on new mesh</span>
   <span class="k">for</span> <span class="p">(</span><span class="k">const</span> <span class="k">auto</span><span class="o">&amp;</span> <span class="nl">n</span> <span class="p">:</span> <span class="n">addedNodes</span><span class="p">)</span>
     <span class="k">for</span> <span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="n">c</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">c</span><span class="o">&lt;</span><span class="n">nprop</span><span class="p">;</span> <span class="o">++</span><span class="n">c</span><span class="p">)</span>
       <span class="n">m_u</span><span class="p">(</span><span class="n">n</span><span class="p">.</span><span class="n">first</span><span class="p">,</span><span class="n">c</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span> <span class="o">=</span> <span class="p">(</span><span class="n">m_u</span><span class="p">(</span><span class="n">n</span><span class="p">.</span><span class="n">second</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">c</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span> <span class="o">+</span> <span class="n">m_u</span><span class="p">(</span><span class="n">n</span><span class="p">.</span><span class="n">second</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span><span class="n">c</span><span class="p">,</span><span class="mi">0</span><span class="p">))</span><span class="o">/</span><span class="mf">2.0</span><span class="p">;</span>
 
-  <span class="c1">// Update physical-boundary node lists</span>
+  <span class="c1">// Update physical-boundary node-, face-, and element lists</span>
   <span class="n">m_bnode</span> <span class="o">=</span> <span class="n">bnode</span><span class="p">;</span>
+  <span class="n">m_bface</span> <span class="o">=</span> <span class="n">bface</span><span class="p">;</span>
+  <span class="n">m_triinpoel</span> <span class="o">=</span> <span class="n">triinpoel</span><span class="p">;</span>
+
+  <span class="n">tk</span><span class="o">::</span><span class="n">destroy</span><span class="p">(</span> <span class="n">m_dfnormc</span> <span class="p">);</span>
 
   <span class="n">contribute</span><span class="p">(</span> <span class="n">CkCallback</span><span class="p">(</span><span class="n">CkReductionTarget</span><span class="p">(</span><span class="n">Transporter</span><span class="p">,</span><span class="n">resized</span><span class="p">),</span> <span class="n">d</span><span class="o">-&gt;</span><span class="n">Tr</span><span class="p">())</span> <span class="p">);</span>
 <span class="p">}</span>
@@ -552,6 +952,20 @@
 <span class="c1">// *****************************************************************************</span>
 <span class="p">{</span>
   <span class="n">resize_complete</span><span class="p">();</span>
+<span class="p">}</span>
+
+<span class="kt">void</span>
+<span class="n">ALECG</span><span class="o">::</span><span class="n">stage</span><span class="p">()</span>
+<span class="c1">// *****************************************************************************</span>
+<span class="c1">// Evaluate whether to continue with next time step stage</span>
+<span class="c1">// *****************************************************************************</span>
+<span class="p">{</span>
+  <span class="c1">// Increment Runge-Kutta stage counter</span>
+  <span class="o">++</span><span class="n">m_stage</span><span class="p">;</span>
+
+  <span class="c1">// if not all Runge-Kutta stages complete, continue to next time stage,</span>
+  <span class="c1">// otherwise output field data to file(s)</span>
+  <span class="k">if</span> <span class="p">(</span><span class="n">m_stage</span> <span class="o">&lt;</span> <span class="mi">3</span><span class="p">)</span> <span class="n">grad</span><span class="p">();</span> <span class="k">else</span> <span class="nf">out</span><span class="p">();</span>
 <span class="p">}</span>
 
 <span class="kt">void</span>
@@ -589,22 +1003,6 @@
               <span class="n">nodefieldnames</span><span class="p">,</span> <span class="p">{},</span> <span class="n">nodefields</span><span class="p">,</span> <span class="n">c</span> <span class="p">);</span>
 
   <span class="p">}</span>
-<span class="p">}</span>
-
-<span class="kt">void</span>
-<span class="n">ALECG</span><span class="o">::</span><span class="n">advance</span><span class="p">(</span> <span class="n">tk</span><span class="o">::</span><span class="n">real</span> <span class="n">newdt</span> <span class="p">)</span>
-<span class="c1">// *****************************************************************************</span>
-<span class="c1">// Advance equations to next time step</span>
-<span class="c1">//! \param[in] newdt Size of this new time step</span>
-<span class="c1">// *****************************************************************************</span>
-<span class="p">{</span>
-  <span class="k">auto</span> <span class="n">d</span> <span class="o">=</span> <span class="n">Disc</span><span class="p">();</span>
-
-  <span class="c1">// Set new time step size</span>
-  <span class="n">d</span><span class="o">-&gt;</span><span class="n">setdt</span><span class="p">(</span> <span class="n">newdt</span> <span class="p">);</span>
-
-  <span class="c1">// Compute rhs for next time step</span>
-  <span class="n">rhs</span><span class="p">();</span>
 <span class="p">}</span>
 
 <span class="kt">void</span>
@@ -687,6 +1085,8 @@
 
   <span class="c1">// Output one-liner status report to screen</span>
   <span class="n">d</span><span class="o">-&gt;</span><span class="n">status</span><span class="p">();</span>
+  <span class="c1">// Reset Runge-Kutta stage counter</span>
+  <span class="n">m_stage</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
 
   <span class="k">const</span> <span class="k">auto</span> <span class="n">term</span> <span class="o">=</span> <span class="n">g_inputdeck</span><span class="p">.</span><span class="n">get</span><span class="o">&lt;</span> <span class="n">tag</span><span class="o">::</span><span class="n">discr</span><span class="p">,</span> <span class="n">tag</span><span class="o">::</span><span class="n">term</span> <span class="o">&gt;</span><span class="p">();</span>
   <span class="k">const</span> <span class="k">auto</span> <span class="n">nstep</span> <span class="o">=</span> <span class="n">g_inputdeck</span><span class="p">.</span><span class="n">get</span><span class="o">&lt;</span> <span class="n">tag</span><span class="o">::</span><span class="n">discr</span><span class="p">,</span> <span class="n">tag</span><span class="o">::</span><span class="n">nstep</span> <span class="o">&gt;</span><span class="p">();</span>
@@ -744,7 +1144,7 @@
   <div class="m-container">
     <div class="m-row">
       <div class="m-col-l-10 m-push-l-1">
-        <p>Quinoa docs, part of the <a href="http://quinoacomputing.org/">Quinoa project</a>. Copyright © J. Bakosi 2012&ndash;2015, Los Alamos National Security, LLC, 2016&ndash;2018, <a href="https://www.triadns.org/">Triad National Security, LLC,</a> 2019-2020. Generated on Monday, Feb 10, 2020 based on <a href="https://github.com/quinoacomputing/quinoa/commit/7d3b464">7d3b464</a> by <a href="http://doxygen.org/">Doxygen</a> and <a href="http://mcss.mosra.cz/">m.css</a>. Contact us via <a href="https://github.com/quinoacomputing/quinoa/">GitHub</a>, <a href="https://groups.io/g/quinoa">Email</a> or <a href="https://quinoa.zulipchat.com">Chat</a>.</p>
+        <p>Quinoa docs, part of the <a href="http://quinoacomputing.org/">Quinoa project</a>. Copyright © J. Bakosi 2012&ndash;2015, Los Alamos National Security, LLC, 2016&ndash;2018, <a href="https://www.triadns.org/">Triad National Security, LLC,</a> 2019-2020. Generated on Thursday, Feb 13, 2020 based on <a href="https://github.com/quinoacomputing/quinoa/commit/18b0a61">18b0a61</a> by <a href="http://doxygen.org/">Doxygen</a> and <a href="http://mcss.mosra.cz/">m.css</a>. Contact us via <a href="https://github.com/quinoacomputing/quinoa/">GitHub</a>, <a href="https://groups.io/g/quinoa">Email</a> or <a href="https://quinoa.zulipchat.com">Chat</a>.</p>
       </div>
     </div>
   </div>

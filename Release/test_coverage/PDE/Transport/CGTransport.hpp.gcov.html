@@ -24,21 +24,21 @@
           </tr>
           <tr>
             <td class="headerItem">Commit:</td>
-            <td class="headerValue"><a href="https://github.com/quinoacomputing/quinoa/commit/7d3b464">Quinoa_v0.2-3786-g7d3b464</a></td>
+            <td class="headerValue"><a href="https://github.com/quinoacomputing/quinoa/commit/18b0a61">Quinoa_v0.2-3903-g18b0a61</a></td>
             <td></td>
             <td class="headerItem">Lines:</td>
-            <td class="headerCovTableEntry">136</td>
-            <td class="headerCovTableEntry">136</td>
+            <td class="headerCovTableEntry">216</td>
+            <td class="headerCovTableEntry">216</td>
             <td class="headerCovTableEntryHi">100.0 %</td>
           </tr>
           <tr>
             <td class="headerItem">Date:</td>
-            <td class="headerValue">2020-02-10 14:02:37</td>
+            <td class="headerValue">2020-02-13 09:17:49</td>
             <td></td>
             <td class="headerItem">Functions:</td>
-            <td class="headerCovTableEntry">17</td>
-            <td class="headerCovTableEntry">72</td>
-            <td class="headerCovTableEntryLo">23.6 %</td>
+            <td class="headerCovTableEntry">33</td>
+            <td class="headerCovTableEntry">104</td>
+            <td class="headerCovTableEntryLo">31.7 %</td>
           </tr>
           <tr>
             <td class="headerItem">Legend:</td>
@@ -52,9 +52,9 @@
 </td>
             <td></td>
             <td class="headerItem">Branches:</td>
-            <td class="headerCovTableEntry">137</td>
-            <td class="headerCovTableEntry">218</td>
-            <td class="headerCovTableEntryLo">62.8 %</td>
+            <td class="headerCovTableEntry">216</td>
+            <td class="headerCovTableEntry">334</td>
+            <td class="headerCovTableEntryLo">64.7 %</td>
           </tr>
           <tr><td><img src="../../glass.png" width=3 height=3 alt=""></td></tr>
         </table>
@@ -94,427 +94,657 @@
 <span class="lineNum">      20 </span>                :            : #include &lt;unordered_set&gt;
 <span class="lineNum">      21 </span>                :            : #include &lt;unordered_map&gt;
 <span class="lineNum">      22 </span>                :            : 
-<span class="lineNum">      23 </span>                :            : #include &quot;Macro.hpp&quot;
-<span class="lineNum">      24 </span>                :            : #include &quot;Exception.hpp&quot;
-<span class="lineNum">      25 </span>                :            : #include &quot;Vector.hpp&quot;
-<span class="lineNum">      26 </span>                :            : #include &quot;Inciter/InputDeck/InputDeck.hpp&quot;
-<span class="lineNum">      27 </span>                :            : #include &quot;ProblemCommon.hpp&quot;
-<span class="lineNum">      28 </span>                :            : 
-<span class="lineNum">      29 </span>                :            : namespace inciter {
-<span class="lineNum">      30 </span>                :            : 
-<span class="lineNum">      31 </span>                :            : extern ctr::InputDeck g_inputdeck;
-<span class="lineNum">      32 </span>                :            : 
-<span class="lineNum">      33 </span>                :            : namespace cg {
-<span class="lineNum">      34 </span>                :            : 
-<span class="lineNum">      35 </span>                :            : //! \brief Transport equation used polymorphically with tk::CGPDE
-<span class="lineNum">      36 </span>                :            : //! \details The template argument(s) specify policies and are used to configure
-<span class="lineNum">      37 </span>                :            : //!   the behavior of the class. The policies are:
-<span class="lineNum">      38 </span>                :            : //!   - Physics - physics configuration, see PDE/Transport/Physics/CG.h
-<span class="lineNum">      39 </span>                :            : //!   - Problem - problem configuration, see PDE/Transport/Problem.h
-<span class="lineNum">      40 </span>                :            : //! \note The default physics is CGAdvection, set in
-<span class="lineNum">      41 </span>                :            : //!    inciter::deck::check_transport()
-<span class="lineNum">      42 </span>                :            : template&lt; class Physics, class Problem &gt;
-<span class="lineNum">      43 </span>                :            : class Transport {
-<span class="lineNum">      44 </span>                :            : 
-<span class="lineNum">      45 </span>                :            :   private:
-<span class="lineNum">      46 </span>                :            :     using ncomp_t = kw::ncomp::info::expect::type;
+<span class="lineNum">      23 </span>                :            : #include &quot;Exception.hpp&quot;
+<span class="lineNum">      24 </span>                :            : #include &quot;Vector.hpp&quot;
+<span class="lineNum">      25 </span>                :            : #include &quot;DerivedData.hpp&quot;
+<span class="lineNum">      26 </span>                :            : #include &quot;Around.hpp&quot;
+<span class="lineNum">      27 </span>                :            : #include &quot;Reconstruction.hpp&quot;
+<span class="lineNum">      28 </span>                :            : #include &quot;Inciter/InputDeck/InputDeck.hpp&quot;
+<span class="lineNum">      29 </span>                :            : #include &quot;CGPDE.hpp&quot;
+<span class="lineNum">      30 </span>                :            : #include &quot;ProblemCommon.hpp&quot;
+<span class="lineNum">      31 </span>                :            : 
+<span class="lineNum">      32 </span>                :            : namespace inciter {
+<span class="lineNum">      33 </span>                :            : 
+<span class="lineNum">      34 </span>                :            : extern ctr::InputDeck g_inputdeck;
+<span class="lineNum">      35 </span>                :            : 
+<span class="lineNum">      36 </span>                :            : namespace cg {
+<span class="lineNum">      37 </span>                :            : 
+<span class="lineNum">      38 </span>                :            : //! \brief Transport equation used polymorphically with tk::CGPDE
+<span class="lineNum">      39 </span>                :            : //! \details The template argument(s) specify policies and are used to configure
+<span class="lineNum">      40 </span>                :            : //!   the behavior of the class. The policies are:
+<span class="lineNum">      41 </span>                :            : //!   - Physics - physics configuration, see PDE/Transport/Physics/CG.h
+<span class="lineNum">      42 </span>                :            : //!   - Problem - problem configuration, see PDE/Transport/Problem.h
+<span class="lineNum">      43 </span>                :            : //! \note The default physics is CGAdvection, set in
+<span class="lineNum">      44 </span>                :            : //!    inciter::deck::check_transport()
+<span class="lineNum">      45 </span>                :            : template&lt; class Physics, class Problem &gt;
+<span class="lineNum">      46 </span>                :            : class Transport {
 <span class="lineNum">      47 </span>                :            : 
-<span class="lineNum">      48 </span>                :            :   public:
-<a name="49"><span class="lineNum">      49 </span>                :            :     //! Constructor</a>
-<span class="lineNum">      50 </span>                :            :     //! \param[in] c Equation system index (among multiple systems configured)
-<span class="lineNum">      51 </span>                :<span class="lineCov">        261 :     explicit Transport( ncomp_t c ) :</span>
-<span class="lineNum">      52 </span>                :            :       m_physics( Physics() ),
-<span class="lineNum">      53 </span>                :            :       m_problem( Problem() ),
-<span class="lineNum">      54 </span>                :            :       m_system( c ),
-<span class="lineNum">      55 </span>                :            :       m_ncomp(
-<span class="lineNum">      56 </span>                :            :         g_inputdeck.get&lt; tag::component &gt;().get&lt; tag::transport &gt;().at(c) ),
-<span class="lineNum">      57 </span>                :            :       m_offset(
-<span class="lineNum">      58 </span>        [<span class="branchNoCov" title="Branch 0 was not taken"> - </span><span class="branchCov" title="Branch 1 was taken 261 times"> + </span>]:<span class="lineCov">        261 :         g_inputdeck.get&lt; tag::component &gt;().offset&lt; tag::transport &gt;(c) )</span>
-<span class="lineNum">      59 </span>                :            :     {
-<span class="lineNum">      60 </span>                :<span class="lineCov">         20 :       m_problem.errchk( m_system, m_ncomp );</span>
-<span class="lineNum">      61 </span>                :<span class="lineCov">        261 :     }</span>
-<span class="lineNum">      62 </span>                :            : 
-<span class="lineNum">      63 </span>                :            :     //! Initalize the transport equations using problem policy
-<span class="lineNum">      64 </span>                :            :     //! \param[in] coord Mesh node coordinates
-<a name="65"><span class="lineNum">      65 </span>                :            :     //! \param[in,out] unk Array of unknowns</a>
-<span class="lineNum">      66 </span>                :            :     //! \param[in] t Physical time
-<span class="lineNum">      67 </span>                :<span class="lineCov">       1721 :     void initialize( const std::array&lt; std::vector&lt; tk::real &gt;, 3 &gt;&amp; coord,</span>
-<span class="lineNum">      68 </span>                :            :                      tk::Fields&amp; unk,
-<span class="lineNum">      69 </span>                :            :                      tk::real t ) const
-<span class="lineNum">      70 </span>                :            :     {
-<span class="lineNum">      71 </span>                :            :       Assert( coord[0].size() == unk.nunk(), &quot;Size mismatch&quot; );
-<span class="lineNum">      72 </span>                :            :       const auto&amp; x = coord[0];
-<span class="lineNum">      73 </span>                :            :       const auto&amp; y = coord[1];
-<span class="lineNum">      74 </span>                :            :       const auto&amp; z = coord[2];
-<span class="lineNum">      75 </span>        [<span class="branchCov" title="Branch 0 was taken 895291 times"> + </span><span class="branchCov" title="Branch 1 was taken 1721 times"> + </span>]:<span class="lineCov">     897012 :       for (ncomp_t i=0; i&lt;x.size(); ++i) {</span>
-<span class="lineNum">      76 </span>                :<span class="lineCov">     895291 :         const auto s =</span>
-<span class="lineNum">      77 </span>                :<span class="lineCov">     895291 :           Problem::solution( m_system, m_ncomp, x[i], y[i], z[i], t );</span>
-<span class="lineNum">      78 </span>        [<span class="branchCov" title="Branch 0 was taken 907003 times"> + </span><span class="branchCov" title="Branch 1 was taken 895291 times"> + </span>]:<span class="lineCov">    1802294 :         for (ncomp_t c=0; c&lt;m_ncomp; ++c)</span>
-<span class="lineNum">      79 </span>                :<span class="lineCov">     907003 :           unk( i, c, m_offset ) = s[c];</span>
-<span class="lineNum">      80 </span>                :            :       }
-<span class="lineNum">      81 </span>                :<span class="lineCov">       1721 :     }</span>
-<span class="lineNum">      82 </span>                :            : 
-<span class="lineNum">      83 </span>                :            :     //! Return analytic solution (if defined by Problem) at xi, yi, zi, t
-<span class="lineNum">      84 </span>                :            :     //! \param[in] xi X-coordinate
-<span class="lineNum">      85 </span>                :            :     //! \param[in] yi Y-coordinate
-<span class="lineNum">      86 </span>                :            :     //! \param[in] zi Z-coordinate
-<span class="lineNum">      87 </span>                :            :     //! \param[in] t Physical time
-<a name="88"><span class="lineNum">      88 </span>                :            :     //! \return Vector of analytic solution at given location and time</a>
-<span class="lineNum">      89 </span>                :            :     std::vector&lt; tk::real &gt;
-<span class="lineNum">      90 </span>                :<span class="lineCov">    2971794 :     analyticSolution( tk::real xi, tk::real yi, tk::real zi, tk::real t ) const</span>
-<span class="lineNum">      91 </span>                :            :     {
-<span class="lineNum">      92 </span>                :<span class="lineCov">    2971794 :       auto s = Problem::solution( m_system, m_ncomp, xi, yi, zi, t );</span>
-<span class="lineNum">      93 </span>[<span class="branchCov" title="Branch 0 was taken 2971794 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>][<span class="branchCov" title="Branch 2 was taken 2971794 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineCov">    5943588 :       return std::vector&lt; tk::real &gt;( begin(s), end(s) );</span>
+<span class="lineNum">      48 </span>                :            :   private:
+<span class="lineNum">      49 </span>                :            :     using ncomp_t = kw::ncomp::info::expect::type;
+<span class="lineNum">      50 </span>                :            : 
+<span class="lineNum">      51 </span>                :            :   public:
+<a name="52"><span class="lineNum">      52 </span>                :            :     //! Constructor</a>
+<span class="lineNum">      53 </span>                :            :     //! \param[in] c Equation system index (among multiple systems configured)
+<span class="lineNum">      54 </span>                :<span class="lineCov">        278 :     explicit Transport( ncomp_t c ) :</span>
+<span class="lineNum">      55 </span>                :            :       m_physics( Physics() ),
+<span class="lineNum">      56 </span>                :            :       m_problem( Problem() ),
+<span class="lineNum">      57 </span>                :            :       m_system( c ),
+<span class="lineNum">      58 </span>                :            :       m_ncomp(
+<span class="lineNum">      59 </span>                :            :         g_inputdeck.get&lt; tag::component &gt;().get&lt; tag::transport &gt;().at(c) ),
+<span class="lineNum">      60 </span>                :            :       m_offset(
+<span class="lineNum">      61 </span>        [<span class="branchNoCov" title="Branch 0 was not taken"> - </span><span class="branchCov" title="Branch 1 was taken 278 times"> + </span>]:<span class="lineCov">        278 :         g_inputdeck.get&lt; tag::component &gt;().offset&lt; tag::transport &gt;(c) )</span>
+<span class="lineNum">      62 </span>                :            :     {
+<span class="lineNum">      63 </span>                :<span class="lineCov">         20 :       m_problem.errchk( m_system, m_ncomp );</span>
+<span class="lineNum">      64 </span>                :<span class="lineCov">        278 :     }</span>
+<span class="lineNum">      65 </span>                :            : 
+<span class="lineNum">      66 </span>                :            :     //! Initalize the transport equations using problem policy
+<span class="lineNum">      67 </span>                :            :     //! \param[in] coord Mesh node coordinates
+<a name="68"><span class="lineNum">      68 </span>                :            :     //! \param[in,out] unk Array of unknowns</a>
+<span class="lineNum">      69 </span>                :            :     //! \param[in] t Physical time
+<span class="lineNum">      70 </span>                :<span class="lineCov">       2316 :     void initialize( const std::array&lt; std::vector&lt; tk::real &gt;, 3 &gt;&amp; coord,</span>
+<span class="lineNum">      71 </span>                :            :                      tk::Fields&amp; unk,
+<span class="lineNum">      72 </span>                :            :                      tk::real t ) const
+<span class="lineNum">      73 </span>                :            :     {
+<span class="lineNum">      74 </span>                :            :       Assert( coord[0].size() == unk.nunk(), &quot;Size mismatch&quot; );
+<span class="lineNum">      75 </span>                :            :       const auto&amp; x = coord[0];
+<span class="lineNum">      76 </span>                :            :       const auto&amp; y = coord[1];
+<span class="lineNum">      77 </span>                :            :       const auto&amp; z = coord[2];
+<span class="lineNum">      78 </span>        [<span class="branchCov" title="Branch 0 was taken 962785 times"> + </span><span class="branchCov" title="Branch 1 was taken 2316 times"> + </span>]:<span class="lineCov">     965101 :       for (ncomp_t i=0; i&lt;x.size(); ++i) {</span>
+<span class="lineNum">      79 </span>                :<span class="lineCov">     962785 :         const auto s =</span>
+<span class="lineNum">      80 </span>                :<span class="lineCov">     962785 :           Problem::solution( m_system, m_ncomp, x[i], y[i], z[i], t );</span>
+<span class="lineNum">      81 </span>        [<span class="branchCov" title="Branch 0 was taken 974497 times"> + </span><span class="branchCov" title="Branch 1 was taken 962785 times"> + </span>]:<span class="lineCov">    1937282 :         for (ncomp_t c=0; c&lt;m_ncomp; ++c)</span>
+<span class="lineNum">      82 </span>                :<span class="lineCov">     974497 :           unk( i, c, m_offset ) = s[c];</span>
+<span class="lineNum">      83 </span>                :            :       }
+<span class="lineNum">      84 </span>                :<span class="lineCov">       2316 :     }</span>
+<span class="lineNum">      85 </span>                :            : 
+<span class="lineNum">      86 </span>                :            :     //! Return analytic solution (if defined by Problem) at xi, yi, zi, t
+<span class="lineNum">      87 </span>                :            :     //! \param[in] xi X-coordinate
+<span class="lineNum">      88 </span>                :            :     //! \param[in] yi Y-coordinate
+<span class="lineNum">      89 </span>                :            :     //! \param[in] zi Z-coordinate
+<span class="lineNum">      90 </span>                :            :     //! \param[in] t Physical time
+<a name="91"><span class="lineNum">      91 </span>                :            :     //! \return Vector of analytic solution at given location and time</a>
+<span class="lineNum">      92 </span>                :            :     std::vector&lt; tk::real &gt;
+<span class="lineNum">      93 </span>                :<span class="lineCov">    3211994 :     analyticSolution( tk::real xi, tk::real yi, tk::real zi, tk::real t ) const</span>
+<span class="lineNum">      94 </span>                :            :     {
+<span class="lineNum">      95 </span>                :<span class="lineCov">    3211994 :       auto s = Problem::solution( m_system, m_ncomp, xi, yi, zi, t );</span>
+<span class="lineNum">      96 </span>[<span class="branchCov" title="Branch 0 was taken 3211994 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>][<span class="branchCov" title="Branch 2 was taken 3211994 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineCov">    6423988 :       return std::vector&lt; tk::real &gt;( begin(s), end(s) );</span>
 <span class="lineNum">         </span>        [<span class="branchNoCov" title="Branch 4 was not taken"> - </span><span class="branchNoCov" title="Branch 5 was not taken"> - </span>]
-<span class="lineNum">      94 </span>                :            :     }
-<span class="lineNum">      95 </span>                :            : 
-<span class="lineNum">      96 </span>                :            :     //! Compute right hand side
-<span class="lineNum">      97 </span>                :            :     //! \param[in] deltat Size of time step
-<span class="lineNum">      98 </span>                :            :     //! \param[in] coord Mesh node coordinates
-<span class="lineNum">      99 </span>                :            :     //! \param[in] inpoel Mesh element connectivity
-<span class="lineNum">     100 </span>                :            :     //! \param[in] U Solution vector at recent time step
-<span class="lineNum">     101 </span>                :            :     //! \param[in,out] Ue Element-centered solution vector at intermediate step
-<a name="102"><span class="lineNum">     102 </span>                :            :     //!    (used here internally as a scratch array)</a>
-<span class="lineNum">     103 </span>                :            :     //! \param[in,out] R Right-hand side vector computed
-<span class="lineNum">     104 </span>                :<span class="lineCov">       6341 :     void rhs( tk::real,</span>
-<span class="lineNum">     105 </span>                :            :               tk::real deltat,
-<span class="lineNum">     106 </span>                :            :               const std::array&lt; std::vector&lt; tk::real &gt;, 3 &gt;&amp; coord,
-<span class="lineNum">     107 </span>                :            :               const std::vector&lt; std::size_t &gt;&amp; inpoel,
-<span class="lineNum">     108 </span>                :            :               const tk::Fields&amp; U,
-<span class="lineNum">     109 </span>                :            :               tk::Fields&amp; Ue,
-<span class="lineNum">     110 </span>                :            :               tk::Fields&amp; R ) const
-<span class="lineNum">     111 </span>                :            :     {
-<span class="lineNum">     112 </span>                :            :       using tag::transport;
-<span class="lineNum">     113 </span>                :            :       Assert( U.nunk() == coord[0].size(), &quot;Number of unknowns in solution &quot;
-<span class="lineNum">     114 </span>                :            :               &quot;vector at recent time step incorrect&quot; );
-<span class="lineNum">     115 </span>                :            :       Assert( R.nunk() == coord[0].size(),
-<span class="lineNum">     116 </span>                :            :               &quot;Number of unknowns in right-hand side vector incorrect&quot; );
-<span class="lineNum">     117 </span>                :            : 
-<span class="lineNum">     118 </span>                :            :       const auto&amp; x = coord[0];
-<span class="lineNum">     119 </span>                :            :       const auto&amp; y = coord[1];
-<span class="lineNum">     120 </span>                :            :       const auto&amp; z = coord[2];
-<span class="lineNum">     121 </span>                :            : 
-<span class="lineNum">     122 </span>                :            :       // 1st stage: update element values from node values (gather-add)
-<span class="lineNum">     123 </span>        [<span class="branchCov" title="Branch 0 was taken 8345570 times"> + </span><span class="branchCov" title="Branch 1 was taken 6341 times"> + </span>]:<span class="lineCov">    8351910 :       for (std::size_t e=0; e&lt;inpoel.size()/4; ++e) {</span>
-<span class="lineNum">     124 </span>                :            : 
-<span class="lineNum">     125 </span>                :            :         // access node IDs
-<span class="lineNum">     126 </span>                :<span class="lineCov">    8345570 :         const std::array&lt; std::size_t, 4 &gt; N{{ inpoel[e*4+0], inpoel[e*4+1],</span>
-<span class="lineNum">     127 </span>                :            :                                                inpoel[e*4+2], inpoel[e*4+3] }};
-<span class="lineNum">     128 </span>                :            :         // compute element Jacobi determinant
-<span class="lineNum">     129 </span>                :            :         const std::array&lt; tk::real, 3 &gt;
-<span class="lineNum">     130 </span>                :<span class="lineCov">    8345570 :           ba{{ x[N[1]]-x[N[0]], y[N[1]]-y[N[0]], z[N[1]]-z[N[0]] }},</span>
-<span class="lineNum">     131 </span>                :<span class="lineCov">    8345570 :           ca{{ x[N[2]]-x[N[0]], y[N[2]]-y[N[0]], z[N[2]]-z[N[0]] }},</span>
-<span class="lineNum">     132 </span>                :<span class="lineCov">    8345570 :           da{{ x[N[3]]-x[N[0]], y[N[3]]-y[N[0]], z[N[3]]-z[N[0]] }};</span>
-<span class="lineNum">     133 </span>                :<span class="lineCov">    8345570 :         const auto J = tk::triple( ba, ca, da );        // J = 6V</span>
-<span class="lineNum">     134 </span>                :            :         Assert( J &gt; 0, &quot;Element Jacobian non-positive&quot; );
-<span class="lineNum">     135 </span>                :            : 
-<span class="lineNum">     136 </span>                :            :         // shape function derivatives, nnode*ndim [4][3]
-<span class="lineNum">     137 </span>                :            :         std::array&lt; std::array&lt; tk::real, 3 &gt;, 4 &gt; grad;
-<span class="lineNum">     138 </span>                :<span class="lineCov">    8345570 :         grad[1] = tk::crossdiv( ca, da, J );</span>
-<span class="lineNum">     139 </span>                :<span class="lineCov">    8345570 :         grad[2] = tk::crossdiv( da, ba, J );</span>
-<span class="lineNum">     140 </span>                :<span class="lineCov">    8345570 :         grad[3] = tk::crossdiv( ba, ca, J );</span>
-<span class="lineNum">     141 </span>        [<span class="branchCov" title="Branch 0 was taken 25036660 times"> + </span><span class="branchCov" title="Branch 1 was taken 8345570 times"> + </span>]:<span class="lineCov">   33382280 :         for (std::size_t i=0; i&lt;3; ++i)</span>
-<span class="lineNum">     142 </span>                :<span class="lineCov">   25036660 :           grad[0][i] = -grad[1][i]-grad[2][i]-grad[3][i];</span>
-<span class="lineNum">     143 </span>                :            : 
-<span class="lineNum">     144 </span>                :            :         // access solution at element nodes
-<span class="lineNum">     145 </span>                :<span class="lineCov">    8345570 :         std::vector&lt; std::array&lt; tk::real, 4 &gt; &gt; u( m_ncomp );</span>
-<span class="lineNum">     146 </span>        [<span class="branchCov" title="Branch 0 was taken 8470630 times"> + </span><span class="branchCov" title="Branch 1 was taken 8345570 times"> + </span>]:<span class="lineCov">   16816200 :         for (ncomp_t c=0; c&lt;m_ncomp; ++c) u[c] = U.extract( c, m_offset, N );</span>
-<span class="lineNum">     147 </span>                :            :         // access solution at elements
-<span class="lineNum">     148 </span>[<span class="branchCov" title="Branch 0 was taken 8345570 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>][<span class="branchNoCov" title="Branch 2 was not taken"> - </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineCov">    8345570 :         std::vector&lt; const tk::real* &gt; ue( m_ncomp );</span>
-<span class="lineNum">     149 </span>        [<span class="branchCov" title="Branch 0 was taken 8345570 times"> + </span><span class="branchCov" title="Branch 1 was taken 8470630 times"> + </span>]:<span class="lineCov">   16816200 :         for (ncomp_t c=0; c&lt;m_ncomp; ++c) ue[c] = Ue.cptr( c, m_offset );</span>
-<span class="lineNum">     150 </span>                :            : 
-<span class="lineNum">     151 </span>                :            :         // sum nodal averages to element
-<span class="lineNum">     152 </span>        [<span class="branchCov" title="Branch 0 was taken 8470630 times"> + </span><span class="branchCov" title="Branch 1 was taken 8345570 times"> + </span>]:<span class="lineCov">   16816200 :         for (ncomp_t c=0; c&lt;m_ncomp; ++c) {</span>
-<span class="lineNum">     153 </span>                :<span class="lineCov">    8470630 :           Ue.var(ue[c],e) = 0.0;</span>
-<span class="lineNum">     154 </span>        [<span class="branchCov" title="Branch 0 was taken 33882520 times"> + </span><span class="branchCov" title="Branch 1 was taken 8470630 times"> + </span>]:<span class="lineCov">   42353100 :           for (std::size_t a=0; a&lt;4; ++a)</span>
-<span class="lineNum">     155 </span>                :<span class="lineCov">   33882520 :             Ue.var(ue[c],e) += u[c][a]/4.0;</span>
-<span class="lineNum">     156 </span>                :            :         }
-<span class="lineNum">     157 </span>                :            : 
-<span class="lineNum">     158 </span>                :            :         // get prescribed velocity
-<span class="lineNum">     159 </span>[<span class="branchCov" title="Branch 0 was taken 8345570 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>][<span class="branchCov" title="Branch 2 was taken 8345570 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineCov">    8345570 :         const std::array&lt; std::vector&lt;std::array&lt;tk::real,3&gt;&gt;, 4 &gt; vel{{</span>
-<span class="lineNum">         </span>[<span class="branchCov" title="Branch 4 was taken 8345570 times"> + </span><span class="branchNoCov" title="Branch 5 was not taken"> - </span>][<span class="branchCov" title="Branch 6 was taken 8345570 times"> + </span><span class="branchNoCov" title="Branch 7 was not taken"> - </span>]
-<span class="lineNum">     160 </span>        [<span class="branchCov" title="Branch 0 was taken 8345570 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">    8345570 :           Problem::prescribedVelocity( m_system, m_ncomp,</span>
-<span class="lineNum">     161 </span>                :            :                                        x[N[0]], y[N[0]], z[N[0]] ),
-<span class="lineNum">     162 </span>        [<span class="branchCov" title="Branch 0 was taken 8345570 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">    8345570 :           Problem::prescribedVelocity( m_system, m_ncomp,</span>
-<span class="lineNum">     163 </span>                :            :                                        x[N[1]], y[N[1]], z[N[1]] ),
-<span class="lineNum">     164 </span>        [<span class="branchCov" title="Branch 0 was taken 8345570 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">    8345570 :           Problem::prescribedVelocity( m_system, m_ncomp,</span>
-<span class="lineNum">     165 </span>                :            :                                        x[N[2]], y[N[2]], z[N[2]] ),
-<span class="lineNum">     166 </span>        [<span class="branchCov" title="Branch 0 was taken 8345570 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">    8345570 :           Problem::prescribedVelocity( m_system, m_ncomp,</span>
-<span class="lineNum">     167 </span>                :            :                                        x[N[3]], y[N[3]], z[N[3]] ) }};
+<span class="lineNum">      97 </span>                :            :     }
+<span class="lineNum">      98 </span>                :            : 
+<span class="lineNum">      99 </span>                :            :     //! Compute nodal gradients of primitive variables for ALECG
+<span class="lineNum">     100 </span>                :            :     //! \param[in] coord Mesh node coordinates
+<span class="lineNum">     101 </span>                :            :     //! \param[in] inpoel Mesh element connectivity
+<span class="lineNum">     102 </span>                :            :     //! \param[in] bndel List of elements contributing to chare-boundary nodes
+<span class="lineNum">     103 </span>                :            :     //! \param[in] gid Local-&gt;global node id map
+<span class="lineNum">     104 </span>                :            :     //! \param[in] bid Local chare-boundary node ids (value) associated to
+<span class="lineNum">     105 </span>                :            :     //!    global node ids (key)
+<a name="106"><span class="lineNum">     106 </span>                :            :     //! \param[in] U Solution vector at recent time step</a>
+<span class="lineNum">     107 </span>                :            :     //! \param[in,out] G Nodal gradients of primitive variables
+<span class="lineNum">     108 </span>        [<span class="branchCov" title="Branch 0 was taken 21870 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">      21870 :     void grad( const std::array&lt; std::vector&lt; tk::real &gt;, 3 &gt;&amp; coord,</span>
+<span class="lineNum">     109 </span>                :            :                const std::vector&lt; std::size_t &gt;&amp; inpoel,
+<span class="lineNum">     110 </span>                :            :                const std::vector&lt; std::size_t &gt;&amp; bndel,
+<span class="lineNum">     111 </span>                :            :                const std::vector&lt; std::size_t &gt;&amp; gid,
+<span class="lineNum">     112 </span>                :            :                const std::unordered_map&lt; std::size_t, std::size_t &gt;&amp; bid,
+<span class="lineNum">     113 </span>                :            :                const tk::Fields&amp; U,
+<span class="lineNum">     114 </span>                :            :                tk::Fields&amp; G ) const
+<span class="lineNum">     115 </span>                :            :     {
+<span class="lineNum">     116 </span>        [<span class="branchCov" title="Branch 0 was taken 21870 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">      21870 :       chbgrad( m_ncomp, m_offset, coord, inpoel, bndel, gid, bid, U, egrad, G );</span>
+<span class="lineNum">     117 </span>                :<span class="lineCov">      21870 :     }</span>
+<span class="lineNum">     118 </span>                :            : 
+<span class="lineNum">     119 </span>                :            :     //! Compute right hand side for ALECG
+<span class="lineNum">     120 </span>                :            :     //! \param[in] coord Mesh node coordinates
+<span class="lineNum">     121 </span>                :            :     //! \param[in] inpoel Mesh element connectivity
+<span class="lineNum">     122 </span>                :            :     //! \param[in] triinpoel Boundary triangle face connecitivity
+<span class="lineNum">     123 </span>                :            :     //! \param[in] gid Local-&gt;global node id map
+<span class="lineNum">     124 </span>                :            :     //! \param[in] bid Local chare-boundary node ids (value) associated to
+<span class="lineNum">     125 </span>                :            :     //!    global node ids (key)
+<span class="lineNum">     126 </span>                :            :     //! \param[in] lid Global-&gt;local node ids
+<span class="lineNum">     127 </span>                :            :     //! \param[in] dfn Dual-face normals along chare-boundary edges
+<span class="lineNum">     128 </span>                :            :     //! \param[in] bnorm Face normals in boundary points
+<span class="lineNum">     129 </span>                :            :     //! \param[in] vol Nodal volumes
+<span class="lineNum">     130 </span>                :            :     //! \param[in] G Nodal gradients in chare-boundary nodes
+<a name="131"><span class="lineNum">     131 </span>                :            :     //! \param[in] U Solution vector at recent time step</a>
+<span class="lineNum">     132 </span>                :            :     //! \param[in,out] R Right-hand side vector computed
+<span class="lineNum">     133 </span>                :<span class="lineCov">      21870 :     void rhs( tk::real,</span>
+<span class="lineNum">     134 </span>                :            :               tk::real,
+<span class="lineNum">     135 </span>                :            :               const std::array&lt; std::vector&lt; tk::real &gt;, 3 &gt;&amp;  coord,
+<span class="lineNum">     136 </span>                :            :               const std::vector&lt; std::size_t &gt;&amp; inpoel,
+<span class="lineNum">     137 </span>                :            :               const std::vector&lt; std::size_t &gt;&amp; triinpoel,
+<span class="lineNum">     138 </span>                :            :               const std::vector&lt; std::size_t &gt;&amp; gid,
+<span class="lineNum">     139 </span>                :            :               const std::unordered_map&lt; std::size_t, std::size_t &gt;&amp; bid,
+<span class="lineNum">     140 </span>                :            :               const std::unordered_map&lt; std::size_t, std::size_t &gt;&amp; lid,
+<span class="lineNum">     141 </span>                :            :               const std::unordered_map&lt; tk::UnsMesh::Edge,
+<span class="lineNum">     142 </span>                :            :                         std::array&lt; tk::real, 3 &gt;,
+<span class="lineNum">     143 </span>                :            :                         tk::UnsMesh::Hash&lt;2&gt;, tk::UnsMesh::Eq&lt;2&gt; &gt;&amp; dfn,
+<span class="lineNum">     144 </span>                :            :               const std::unordered_map&lt; tk::UnsMesh::Edge,
+<span class="lineNum">     145 </span>                :            :                         std::array&lt; tk::real, 3 &gt;,
+<span class="lineNum">     146 </span>                :            :                         tk::UnsMesh::Hash&lt;2&gt;, tk::UnsMesh::Eq&lt;2&gt; &gt;&amp; /*dfnc*/,
+<span class="lineNum">     147 </span>                :            :               const std::unordered_map&lt; std::size_t,
+<span class="lineNum">     148 </span>                :            :                       std::array&lt; tk::real, 4 &gt; &gt;&amp; bnorm,
+<span class="lineNum">     149 </span>                :            :               const std::vector&lt; tk::real &gt;&amp; vol,
+<span class="lineNum">     150 </span>                :            :               const tk::Fields&amp; G,
+<span class="lineNum">     151 </span>                :            :               const tk::Fields&amp; U,
+<span class="lineNum">     152 </span>                :            :               tk::Fields&amp; R) const
+<span class="lineNum">     153 </span>                :            :     {
+<span class="lineNum">     154 </span>                :            :       Assert( G.nprop() == m_ncomp*3,
+<span class="lineNum">     155 </span>                :            :               &quot;Number of components in gradient vector incorrect&quot; );
+<span class="lineNum">     156 </span>                :            :       Assert( U.nunk() == coord[0].size(), &quot;Number of unknowns in solution &quot;
+<span class="lineNum">     157 </span>                :            :               &quot;vector at recent time step incorrect&quot; );
+<span class="lineNum">     158 </span>                :            :       Assert( R.nunk() == coord[0].size(),
+<span class="lineNum">     159 </span>                :            :               &quot;Number of unknowns and/or number of components in right-hand &quot;
+<span class="lineNum">     160 </span>                :            :               &quot;side vector incorrect&quot; );
+<span class="lineNum">     161 </span>                :            : 
+<span class="lineNum">     162 </span>                :            :       const auto&amp; x = coord[0];
+<span class="lineNum">     163 </span>                :            :       const auto&amp; y = coord[1];
+<span class="lineNum">     164 </span>                :            :       const auto&amp; z = coord[2];
+<span class="lineNum">     165 </span>                :            : 
+<span class="lineNum">     166 </span>                :            :       // zero right hand side for all components
+<span class="lineNum">     167 </span>        [<span class="branchCov" title="Branch 0 was taken 21870 times"> + </span><span class="branchCov" title="Branch 1 was taken 21870 times"> + </span>]:<span class="lineCov">      43740 :       for (ncomp_t c=0; c&lt;m_ncomp; ++c) R.fill( c, m_offset, 0.0 );</span>
 <span class="lineNum">     168 </span>                :            : 
-<span class="lineNum">     169 </span>                :            :         // sum flux (advection) contributions to element
-<span class="lineNum">     170 </span>                :<span class="lineCov">    8345570 :         tk::real d = deltat/2.0;</span>
-<span class="lineNum">     171 </span>        [<span class="branchCov" title="Branch 0 was taken 8470630 times"> + </span><span class="branchCov" title="Branch 1 was taken 8345570 times"> + </span>]:<span class="lineCov">   16816200 :         for (std::size_t c=0; c&lt;m_ncomp; ++c)</span>
-<span class="lineNum">     172 </span>        [<span class="branchCov" title="Branch 0 was taken 25411840 times"> + </span><span class="branchCov" title="Branch 1 was taken 8470630 times"> + </span>]:<span class="lineCov">   33882520 :           for (std::size_t j=0; j&lt;3; ++j)</span>
-<span class="lineNum">     173 </span>        [<span class="branchCov" title="Branch 0 was taken 101647600 times"> + </span><span class="branchCov" title="Branch 1 was taken 25411840 times"> + </span>]:<span class="lineCov">  127059200 :             for (std::size_t a=0; a&lt;4; ++a)</span>
-<span class="lineNum">     174 </span>                :<span class="lineCov">  101647600 :               Ue.var(ue[c],e) -= d * grad[a][j] * vel[a][c][j]*u[c][a];</span>
-<span class="lineNum">     175 </span>                :            : 
-<span class="lineNum">     176 </span>                :            :       }
-<span class="lineNum">     177 </span>                :            : 
-<span class="lineNum">     178 </span>                :            : 
-<span class="lineNum">     179 </span>                :            :       // zero right hand side for all components
-<span class="lineNum">     180 </span>        [<span class="branchCov" title="Branch 0 was taken 6351 times"> + </span><span class="branchCov" title="Branch 1 was taken 6341 times"> + </span>]:<span class="lineCov">      12692 :       for (ncomp_t c=0; c&lt;m_ncomp; ++c) R.fill( c, m_offset, 0.0 );</span>
+<span class="lineNum">     169 </span>                :            :       // access pointer to right hand side at component and offset
+<span class="lineNum">     170 </span>                :<span class="lineCov">      21870 :       std::vector&lt; const tk::real* &gt; r( m_ncomp );</span>
+<span class="lineNum">     171 </span>        [<span class="branchCov" title="Branch 0 was taken 21870 times"> + </span><span class="branchCov" title="Branch 1 was taken 21870 times"> + </span>]:<span class="lineCov">      43740 :       for (ncomp_t c=0; c&lt;m_ncomp; ++c) r[c] = R.cptr( c, m_offset );</span>
+<span class="lineNum">     172 </span>                :            : 
+<span class="lineNum">     173 </span>                :            :       // compute/assemble gradients in points
+<span class="lineNum">     174 </span>[<span class="branchCov" title="Branch 0 was taken 21870 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>][<span class="branchNoCov" title="Branch 2 was not taken"> - </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineCov">      21870 :       auto Grad = nodegrad( m_ncomp, m_offset, coord, inpoel, gid, lid, bid,</span>
+<span class="lineNum">     175 </span>                :            :                             vol, U, G, egrad );
+<span class="lineNum">     176 </span>                :            : 
+<span class="lineNum">     177 </span>                :            :       // compute derived data structures
+<span class="lineNum">     178 </span>        [<span class="branchCov" title="Branch 0 was taken 21870 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">      43740 :       auto esup = tk::genEsup( inpoel, 4 );</span>
+<span class="lineNum">     179 </span>        [<span class="branchCov" title="Branch 0 was taken 21870 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">      43740 :       auto psup = tk::genPsup( inpoel, 4, esup );</span>
+<span class="lineNum">     180 </span>        [<span class="branchCov" title="Branch 0 was taken 21870 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">      21870 :       auto esued = tk::genEsued( inpoel, 4, esup );</span>
 <span class="lineNum">     181 </span>                :            : 
-<span class="lineNum">     182 </span>                :            :       // 2nd stage: form rhs from element values (scatter-add)
-<span class="lineNum">     183 </span>        [<span class="branchCov" title="Branch 0 was taken 8345570 times"> + </span><span class="branchCov" title="Branch 1 was taken 6341 times"> + </span>]:<span class="lineCov">    8351910 :       for (std::size_t e=0; e&lt;inpoel.size()/4; ++e) {</span>
-<span class="lineNum">     184 </span>                :            : 
-<span class="lineNum">     185 </span>                :            :         // access node IDs
-<span class="lineNum">     186 </span>                :<span class="lineCov">    8345570 :         const std::array&lt; std::size_t, 4 &gt; N{{ inpoel[e*4+0], inpoel[e*4+1],</span>
-<span class="lineNum">     187 </span>                :            :                                                inpoel[e*4+2], inpoel[e*4+3] }};
-<span class="lineNum">     188 </span>                :            :         // compute element Jacobi determinant
-<span class="lineNum">     189 </span>                :            :         const std::array&lt; tk::real, 3 &gt;
-<span class="lineNum">     190 </span>                :<span class="lineCov">    8345570 :           ba{{ x[N[1]]-x[N[0]], y[N[1]]-y[N[0]], z[N[1]]-z[N[0]] }},</span>
-<span class="lineNum">     191 </span>                :<span class="lineCov">    8345570 :           ca{{ x[N[2]]-x[N[0]], y[N[2]]-y[N[0]], z[N[2]]-z[N[0]] }},</span>
-<span class="lineNum">     192 </span>                :<span class="lineCov">    8345570 :           da{{ x[N[3]]-x[N[0]], y[N[3]]-y[N[0]], z[N[3]]-z[N[0]] }};</span>
-<span class="lineNum">     193 </span>                :<span class="lineCov">    8345570 :         const auto J = tk::triple( ba, ca, da );        // J = 6V</span>
-<span class="lineNum">     194 </span>                :            :         Assert( J &gt; 0, &quot;Element Jacobian non-positive&quot; );
-<span class="lineNum">     195 </span>                :            : 
-<span class="lineNum">     196 </span>                :            :         // shape function derivatives, nnode*ndim [4][3]
-<span class="lineNum">     197 </span>                :            :         std::array&lt; std::array&lt; tk::real, 3 &gt;, 4 &gt; grad;
-<span class="lineNum">     198 </span>                :<span class="lineCov">    8345570 :         grad[1] = tk::crossdiv( ca, da, J );</span>
-<span class="lineNum">     199 </span>                :<span class="lineCov">    8345570 :         grad[2] = tk::crossdiv( da, ba, J );</span>
-<span class="lineNum">     200 </span>                :<span class="lineCov">    8345570 :         grad[3] = tk::crossdiv( ba, ca, J );</span>
-<span class="lineNum">     201 </span>        [<span class="branchCov" title="Branch 0 was taken 25036660 times"> + </span><span class="branchCov" title="Branch 1 was taken 8345570 times"> + </span>]:<span class="lineCov">   33382280 :         for (std::size_t i=0; i&lt;3; ++i)</span>
-<span class="lineNum">     202 </span>                :<span class="lineCov">   25036660 :           grad[0][i] = -grad[1][i]-grad[2][i]-grad[3][i];</span>
-<span class="lineNum">     203 </span>                :            : 
-<span class="lineNum">     204 </span>                :            :         // access solution at elements
-<span class="lineNum">     205 </span>                :<span class="lineCov">    8345570 :         std::vector&lt; tk::real &gt; ue( m_ncomp );</span>
-<span class="lineNum">     206 </span>        [<span class="branchCov" title="Branch 0 was taken 8470630 times"> + </span><span class="branchCov" title="Branch 1 was taken 8345570 times"> + </span>]:<span class="lineCov">   16816200 :         for (ncomp_t c=0; c&lt;m_ncomp; ++c) ue[c] = Ue( e, c, m_offset );</span>
-<span class="lineNum">     207 </span>                :            :         // access pointer to right hand side at component and offset
-<span class="lineNum">     208 </span>[<span class="branchCov" title="Branch 0 was taken 8345570 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>][<span class="branchNoCov" title="Branch 2 was not taken"> - </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineCov">    8345570 :         std::vector&lt; const tk::real* &gt; r( m_ncomp );</span>
-<span class="lineNum">     209 </span>        [<span class="branchCov" title="Branch 0 was taken 8470630 times"> + </span><span class="branchCov" title="Branch 1 was taken 8345570 times"> + </span>]:<span class="lineCov">   16816200 :         for (ncomp_t c=0; c&lt;m_ncomp; ++c) r[c] = R.cptr( c, m_offset );</span>
-<span class="lineNum">     210 </span>                :            :         // access solution at nodes of element
-<span class="lineNum">     211 </span>[<span class="branchCov" title="Branch 0 was taken 8345570 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>][<span class="branchNoCov" title="Branch 2 was not taken"> - </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineCov">    8345570 :         std::vector&lt; std::array&lt; tk::real, 4 &gt; &gt; u( m_ncomp );</span>
-<span class="lineNum">     212 </span>        [<span class="branchCov" title="Branch 0 was taken 8470630 times"> + </span><span class="branchCov" title="Branch 1 was taken 8345570 times"> + </span>]:<span class="lineCov">   16816200 :         for (ncomp_t c=0; c&lt;m_ncomp; ++c) u[c] = U.extract( c, m_offset, N );</span>
-<span class="lineNum">     213 </span>                :            : 
-<span class="lineNum">     214 </span>                :            :         // get prescribed velocity
-<span class="lineNum">     215 </span>        [<span class="branchCov" title="Branch 0 was taken 8345570 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">    8345570 :         auto xc = (x[N[0]] + x[N[1]] + x[N[2]] + x[N[3]]) / 4.0;</span>
-<span class="lineNum">     216 </span>                :<span class="lineCov">    8345570 :         auto yc = (y[N[0]] + y[N[1]] + y[N[2]] + y[N[3]]) / 4.0;</span>
-<span class="lineNum">     217 </span>                :<span class="lineCov">    8345570 :         auto zc = (z[N[0]] + z[N[1]] + z[N[2]] + z[N[3]]) / 4.0;</span>
-<span class="lineNum">     218 </span>                :<span class="lineCov">    8345570 :         const auto vel =</span>
-<span class="lineNum">     219 </span>        [<span class="branchCov" title="Branch 0 was taken 8345570 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">    8345570 :           Problem::prescribedVelocity( m_system, m_ncomp, xc, yc, zc );</span>
-<span class="lineNum">     220 </span>                :            : 
-<span class="lineNum">     221 </span>                :            :         // scatter-add flux contributions to rhs at nodes
-<span class="lineNum">     222 </span>                :<span class="lineCov">    8345570 :         tk::real d = deltat * J/6.0;</span>
-<span class="lineNum">     223 </span>        [<span class="branchCov" title="Branch 0 was taken 8470630 times"> + </span><span class="branchCov" title="Branch 1 was taken 8345570 times"> + </span>]:<span class="lineCov">   16816200 :         for (std::size_t c=0; c&lt;m_ncomp; ++c)</span>
-<span class="lineNum">     224 </span>        [<span class="branchCov" title="Branch 0 was taken 25411840 times"> + </span><span class="branchCov" title="Branch 1 was taken 8470630 times"> + </span>]:<span class="lineCov">   33882520 :           for (std::size_t j=0; j&lt;3; ++j)</span>
-<span class="lineNum">     225 </span>        [<span class="branchCov" title="Branch 0 was taken 101647600 times"> + </span><span class="branchCov" title="Branch 1 was taken 25411840 times"> + </span>]:<span class="lineCov">  127059200 :             for (std::size_t a=0; a&lt;4; ++a)</span>
-<span class="lineNum">     226 </span>                :<span class="lineCov">  101647600 :               R.var(r[c],N[a]) += d * grad[a][j] * vel[c][j]*ue[c];</span>
-<span class="lineNum">     227 </span>                :            : 
-<span class="lineNum">     228 </span>                :            :         // add (optional) diffusion contribution to right hand side
-<span class="lineNum">     229 </span>        [<span class="branchCov" title="Branch 0 was taken 875420 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">     875420 :         m_physics.diffusionRhs( m_system, m_ncomp, deltat, J, grad,</span>
-<span class="lineNum">     230 </span>                :            :                                 N, u, r, R );
-<span class="lineNum">     231 </span>                :            : 
-<span class="lineNum">     232 </span>                :            :       }
-<span class="lineNum">     233 </span>                :<span class="lineCov">       6341 :     }</span>
-<span class="lineNum">     234 </span>                :            : 
-<span class="lineNum">     235 </span>                :            :     //! Compute the minimum time step size
-<span class="lineNum">     236 </span>                :            :     //! \param[in] U Solution vector at recent time step
-<span class="lineNum">     237 </span>                :            :     //! \param[in] coord Mesh node coordinates
-<a name="238"><span class="lineNum">     238 </span>                :            :     //! \param[in] inpoel Mesh element connectivity</a>
-<span class="lineNum">     239 </span>                :            :     //! \return Minimum time step size
-<span class="lineNum">     240 </span>                :<span class="lineCov">       3221 :     tk::real dt( const std::array&lt; std::vector&lt; tk::real &gt;, 3 &gt;&amp; coord,</span>
-<span class="lineNum">     241 </span>                :            :                  const std::vector&lt; std::size_t &gt;&amp; inpoel,
-<span class="lineNum">     242 </span>                :            :                  const tk::Fields&amp; U ) const
-<span class="lineNum">     243 </span>                :            :     {
-<span class="lineNum">     244 </span>                :            :       using tag::transport;
-<span class="lineNum">     245 </span>                :            :       Assert( U.nunk() == coord[0].size(), &quot;Number of unknowns in solution &quot;
-<span class="lineNum">     246 </span>                :            :               &quot;vector at recent time step incorrect&quot; );
-<span class="lineNum">     247 </span>                :            :       const auto&amp; x = coord[0];
-<span class="lineNum">     248 </span>                :            :       const auto&amp; y = coord[1];
-<span class="lineNum">     249 </span>                :            :       const auto&amp; z = coord[2];
-<span class="lineNum">     250 </span>                :            :       // compute the minimum dt across all elements we own
-<span class="lineNum">     251 </span>                :            :       tk::real mindt = std::numeric_limits&lt; tk::real &gt;::max();
-<span class="lineNum">     252 </span>        [<span class="branchCov" title="Branch 0 was taken 2084770 times"> + </span><span class="branchCov" title="Branch 1 was taken 3221 times"> + </span>]:<span class="lineCov">    2087990 :       for (std::size_t e=0; e&lt;inpoel.size()/4; ++e) {</span>
-<span class="lineNum">     253 </span>                :<span class="lineCov">    2084770 :         const std::array&lt; std::size_t, 4 &gt; N{{ inpoel[e*4+0], inpoel[e*4+1],</span>
-<span class="lineNum">     254 </span>                :            :                                                inpoel[e*4+2], inpoel[e*4+3] }};
-<span class="lineNum">     255 </span>                :            :         // compute cubic root of element volume as the characteristic length
-<span class="lineNum">     256 </span>                :            :         const std::array&lt; tk::real, 3 &gt;
-<span class="lineNum">     257 </span>                :<span class="lineCov">    2084770 :           ba{{ x[N[1]]-x[N[0]], y[N[1]]-y[N[0]], z[N[1]]-z[N[0]] }},</span>
-<span class="lineNum">     258 </span>                :<span class="lineCov">    2084770 :           ca{{ x[N[2]]-x[N[0]], y[N[2]]-y[N[0]], z[N[2]]-z[N[0]] }},</span>
-<span class="lineNum">     259 </span>                :<span class="lineCov">    2084770 :           da{{ x[N[3]]-x[N[0]], y[N[3]]-y[N[0]], z[N[3]]-z[N[0]] }};</span>
-<span class="lineNum">     260 </span>                :<span class="lineCov">    2084770 :         const auto L = std::cbrt( tk::triple( ba, ca, da ) / 6.0 );</span>
-<span class="lineNum">     261 </span>                :            :         // access solution at element nodes at recent time step
-<span class="lineNum">     262 </span>                :<span class="lineCov">    2084770 :         std::vector&lt; std::array&lt; tk::real, 4 &gt; &gt; u( m_ncomp );</span>
-<span class="lineNum">     263 </span>        [<span class="branchCov" title="Branch 0 was taken 2209830 times"> + </span><span class="branchCov" title="Branch 1 was taken 2084770 times"> + </span>]:<span class="lineCov">    4294600 :         for (ncomp_t c=0; c&lt;m_ncomp; ++c) u[c] = U.extract( c, m_offset, N );</span>
-<span class="lineNum">     264 </span>                :            :         // get velocity for problem
-<span class="lineNum">     265 </span>[<span class="branchCov" title="Branch 0 was taken 2084770 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>][<span class="branchCov" title="Branch 2 was taken 2084770 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineCov">    2084770 :         const std::array&lt; std::vector&lt;std::array&lt;tk::real,3&gt;&gt;, 4 &gt; vel{{</span>
-<span class="lineNum">         </span>[<span class="branchCov" title="Branch 4 was taken 2084770 times"> + </span><span class="branchNoCov" title="Branch 5 was not taken"> - </span>][<span class="branchCov" title="Branch 6 was taken 2084770 times"> + </span><span class="branchNoCov" title="Branch 7 was not taken"> - </span>]
-<span class="lineNum">     266 </span>        [<span class="branchCov" title="Branch 0 was taken 2084770 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">    2084770 :           Problem::prescribedVelocity( m_system, m_ncomp,</span>
-<span class="lineNum">     267 </span>                :            :                                        x[N[0]], y[N[0]], z[N[0]] ),
-<span class="lineNum">     268 </span>        [<span class="branchCov" title="Branch 0 was taken 2084770 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">    2084770 :           Problem::prescribedVelocity( m_system, m_ncomp,</span>
-<span class="lineNum">     269 </span>                :            :                                        x[N[1]], y[N[1]], z[N[1]] ),
-<span class="lineNum">     270 </span>        [<span class="branchCov" title="Branch 0 was taken 2084770 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">    2084770 :           Problem::prescribedVelocity( m_system, m_ncomp,</span>
-<span class="lineNum">     271 </span>                :            :                                        x[N[2]], y[N[2]], z[N[2]] ),
-<span class="lineNum">     272 </span>        [<span class="branchCov" title="Branch 0 was taken 2084770 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">    2084770 :           Problem::prescribedVelocity( m_system, m_ncomp,</span>
-<span class="lineNum">     273 </span>                :            :                                        x[N[3]], y[N[3]], z[N[3]] ) }};
-<span class="lineNum">     274 </span>                :            :         // compute the maximum length of the characteristic velocity (advection
-<span class="lineNum">     275 </span>                :            :         // velocity) across the four element nodes
-<span class="lineNum">     276 </span>                :            :         tk::real maxvel = 0.0;
-<span class="lineNum">     277 </span>        [<span class="branchCov" title="Branch 0 was taken 2209830 times"> + </span><span class="branchCov" title="Branch 1 was taken 2084770 times"> + </span>]:<span class="lineCov">    4294600 :         for (ncomp_t c=0; c&lt;m_ncomp; ++c)</span>
-<span class="lineNum">     278 </span>        [<span class="branchCov" title="Branch 0 was taken 8839310 times"> + </span><span class="branchCov" title="Branch 1 was taken 2209830 times"> + </span>]:<span class="lineCov">   11049140 :           for (std::size_t i=0; i&lt;4; ++i) {</span>
-<span class="lineNum">     279 </span>        [<span class="branchCov" title="Branch 0 was taken 3876240 times"> + </span><span class="branchCov" title="Branch 1 was taken 4963070 times"> + </span>]:<span class="lineCov">    8839310 :             auto v = std::sqrt( vel[i][c][0]*vel[i][c][0] + </span>
-<span class="lineNum">     280 </span>                :<span class="lineCov">    8839310 :                                 vel[i][c][1]*vel[i][c][1] +</span>
-<span class="lineNum">     281 </span>                :<span class="lineCov">    8839310 :                                 vel[i][c][2]*vel[i][c][2] );</span>
-<span class="lineNum">     282 </span>        [<span class="branchCov" title="Branch 0 was taken 3876240 times"> + </span><span class="branchCov" title="Branch 1 was taken 4963070 times"> + </span>]:<span class="lineCov">    8839310 :             if (v &gt; maxvel) maxvel = v;</span>
-<span class="lineNum">     283 </span>                :            :           }
-<span class="lineNum">     284 </span>                :            :         // compute element dt for the advection
-<span class="lineNum">     285 </span>                :<span class="lineCov">    2084770 :         auto advection_dt = L / maxvel;</span>
-<span class="lineNum">     286 </span>                :            :         // compute element dt based on diffusion
-<span class="lineNum">     287 </span>[<span class="branchNoCov" title="Branch 0 was not taken"> - </span><span class="branchCov" title="Branch 1 was taken 2084770 times"> + </span>][<span class="branchCov" title="Branch 2 was taken 870730 times"> + </span><span class="branchCov" title="Branch 3 was taken 4690 times"> + </span>]:<span class="lineCov">    2084770 :         auto diffusion_dt = m_physics.diffusion_dt( m_system, m_ncomp, L, u );</span>
-<span class="lineNum">     288 </span>                :            :         // compute minimum element dt
-<span class="lineNum">     289 </span>                :<span class="lineCov">    2084770 :         auto elemdt = std::min( advection_dt, diffusion_dt );</span>
-<span class="lineNum">     290 </span>                :            :         // find minimum dt across all elements
-<span class="lineNum">     291 </span>        [<span class="branchCov" title="Branch 0 was taken 19416 times"> + </span><span class="branchCov" title="Branch 1 was taken 2065350 times"> + </span>]:<span class="lineCov">    2084770 :         if (elemdt &lt; mindt) mindt = elemdt;</span>
-<span class="lineNum">     292 </span>                :            :       }
-<span class="lineNum">     293 </span>                :<span class="lineCov">       3221 :       return mindt;</span>
-<span class="lineNum">     294 </span>                :            :     }
-<span class="lineNum">     295 </span>                :            : 
-<span class="lineNum">     296 </span>                :            :     //! \brief Query Dirichlet boundary condition value on a given side set for
-<span class="lineNum">     297 </span>                :            :     //!    all components in this PDE system
-<span class="lineNum">     298 </span>                :            :     //! \param[in] t Physical time
-<span class="lineNum">     299 </span>                :            :     //! \param[in] deltat Time step size
-<span class="lineNum">     300 </span>                :            :     //! \param[in] ss Pair of side set ID and list of node IDs on the side set
-<span class="lineNum">     301 </span>                :            :     //! \param[in] coord Mesh node coordinates
-<span class="lineNum">     302 </span>                :            :     //! \return Vector of pairs of bool and boundary condition value associated
-<span class="lineNum">     303 </span>                :            :     //!   to mesh node IDs at which Dirichlet boundary conditions are set. Note
-<span class="lineNum">     304 </span>                :            :     //!   that instead of the actual boundary condition value, we return the
-<span class="lineNum">     305 </span>                :            :     //!   increment between t+dt and t, since that is what the solution requires
-<a name="306"><span class="lineNum">     306 </span>                :            :     //!   as we solve for the soution increments and not the solution itself.</a>
-<span class="lineNum">     307 </span>                :            :     std::map&lt; std::size_t, std::vector&lt; std::pair&lt;bool,tk::real&gt; &gt; &gt;
-<span class="lineNum">     308 </span>        [<span class="branchCov" title="Branch 0 was taken 760 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">        760 :     dirbc( tk::real t,</span>
-<span class="lineNum">     309 </span>                :            :            tk::real deltat,
-<span class="lineNum">     310 </span>                :            :            const std::pair&lt; const int, std::vector&lt; std::size_t &gt; &gt;&amp; ss,
-<span class="lineNum">     311 </span>                :            :            const std::array&lt; std::vector&lt; tk::real &gt;, 3 &gt;&amp; coord ) const
-<span class="lineNum">     312 </span>                :            :     {
-<span class="lineNum">     313 </span>                :            :       using tag::param; using tag::transport; using tag::bcdir;
-<span class="lineNum">     314 </span>                :            :       using NodeBC = std::vector&lt; std::pair&lt; bool, tk::real &gt; &gt;;
-<span class="lineNum">     315 </span>                :            :       std::map&lt; std::size_t, NodeBC &gt; bc;
-<span class="lineNum">     316 </span>                :            :       const auto&amp; ubc = g_inputdeck.get&lt; param, transport, tag::bc, bcdir &gt;();
-<span class="lineNum">     317 </span>        [<span class="branchCov" title="Branch 0 was taken 760 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">        760 :       if (!ubc.empty()) {</span>
-<span class="lineNum">     318 </span>                :            :         Assert( ubc.size() &gt; m_system, &quot;Indexing out of Dirichlet BC eq-vector&quot; );
-<span class="lineNum">     319 </span>                :            :         const auto&amp; x = coord[0];
-<span class="lineNum">     320 </span>                :            :         const auto&amp; y = coord[1];
-<span class="lineNum">     321 </span>                :            :         const auto&amp; z = coord[2];
-<span class="lineNum">     322 </span>        [<span class="branchCov" title="Branch 0 was taken 4560 times"> + </span><span class="branchCov" title="Branch 1 was taken 760 times"> + </span>]:<span class="lineCov">       5320 :         for (const auto&amp; b : ubc[m_system])</span>
-<span class="lineNum">     323 </span>        [<span class="branchCov" title="Branch 0 was taken 760 times"> + </span><span class="branchCov" title="Branch 1 was taken 3800 times"> + </span>]:<span class="lineCov">       4560 :           if (std::stoi(b) == ss.first)</span>
-<span class="lineNum">     324 </span>[<span class="branchCov" title="Branch 0 was taken 212310 times"> + </span><span class="branchCov" title="Branch 1 was taken 760 times"> + </span>][<span class="branchCov" title="Branch 2 was taken 212310 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineCov">     213070 :             for (auto n : ss.second) {</span>
-<span class="lineNum">     325 </span>                :            :               Assert( x.size() &gt; n, &quot;Indexing out of coordinate array&quot; );
-<span class="lineNum">     326 </span>        [<span class="branchCov" title="Branch 0 was taken 212310 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">     212310 :               const auto s = solinc( m_system, m_ncomp, x[n], y[n], z[n],</span>
-<span class="lineNum">     327 </span>                :            :                                      t, deltat, Problem::solution );
-<span class="lineNum">     328 </span>[<span class="branchCov" title="Branch 0 was taken 212310 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>][<span class="branchCov" title="Branch 2 was taken 212310 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineCov">     424620 :               auto&amp; nbc = bc[n] = NodeBC( m_ncomp );</span>
-<span class="lineNum">     329 </span>        [<span class="branchCov" title="Branch 0 was taken 232210 times"> + </span><span class="branchCov" title="Branch 1 was taken 212310 times"> + </span>]:<span class="lineCov">     444520 :               for (ncomp_t c=0; c&lt;m_ncomp; ++c)</span>
-<span class="lineNum">     330 </span>                :<span class="lineCov">     232210 :                 nbc[c] = { true, s[c] };</span>
-<span class="lineNum">     331 </span>                :            :             }
-<span class="lineNum">     332 </span>                :            :       }
-<span class="lineNum">     333 </span>                :<span class="lineCov">        760 :       return bc;</span>
-<span class="lineNum">     334 </span>                :            :     }
-<span class="lineNum">     335 </span>                :            : 
-<span class="lineNum">     336 </span>                :            :     //! Set symmetry boundary conditions at nodes
-<span class="lineNum">     337 </span>                :            :     void
-<span class="lineNum">     338 </span>                :            :     symbc( tk::Fields&amp;,
-<span class="lineNum">     339 </span>                :            :            const std::unordered_map&lt;std::size_t,std::array&lt;tk::real,4&gt;&gt;&amp; )
-<span class="lineNum">     340 </span>                :            :     const {}
-<span class="lineNum">     341 </span>                :            : 
-<span class="lineNum">     342 </span>                :            :     //! Query nodes at which symmetry boundary conditions are set
-<span class="lineNum">     343 </span>                :            :     void
-<span class="lineNum">     344 </span>                :            :     symbcnodes( const std::map&lt; int, std::vector&lt; std::size_t &gt; &gt;&amp;,
-<span class="lineNum">     345 </span>                :            :                 const std::vector&lt; std::size_t &gt;&amp;,
-<span class="lineNum">     346 </span>                :            :                 std::unordered_set&lt; std::size_t &gt;&amp; ) const {}
-<span class="lineNum">     347 </span>                :            : 
-<span class="lineNum">     348 </span>                :            :     //! Return field names to be output to file
-<span class="lineNum">     349 </span>                :            :     //! \return Vector of strings labelling fields output in file
-<a name="350"><span class="lineNum">     350 </span>                :            :     //! \details This functions should be written in conjunction with</a>
-<span class="lineNum">     351 </span>                :            :     //!   fieldOutput(), which provides the vector of fields to be output
-<span class="lineNum">     352 </span>        [<span class="branchNoCov" title="Branch 0 was not taken"> - </span><span class="branchCov" title="Branch 1 was taken 728 times"> + </span>]:<span class="lineCov">        728 :     std::vector&lt; std::string &gt; fieldNames() const {</span>
-<span class="lineNum">     353 </span>                :            :       std::vector&lt; std::string &gt; n;
-<span class="lineNum">     354 </span>                :            :       const auto&amp; depvar =
-<span class="lineNum">     355 </span>                :            :         g_inputdeck.get&lt; tag::param, tag::transport, tag::depvar &gt;().
-<span class="lineNum">     356 </span>        [<span class="branchNoCov" title="Branch 0 was not taken"> - </span><span class="branchCov" title="Branch 1 was taken 728 times"> + </span>]:<span class="lineCov">        728 :         at(m_system);</span>
-<span class="lineNum">     357 </span>                :            :       // will output numerical solution for all components
-<span class="lineNum">     358 </span>        [<span class="branchCov" title="Branch 0 was taken 728 times"> + </span><span class="branchCov" title="Branch 1 was taken 731 times"> + </span>]:<span class="lineCov">       1459 :       for (ncomp_t c=0; c&lt;m_ncomp; ++c)</span>
-<span class="lineNum">     359 </span>[<span class="branchCov" title="Branch 0 was taken 731 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>][<span class="branchCov" title="Branch 2 was taken 731 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineCov">       1462 :         n.push_back( depvar + std::to_string(c) + &quot;_numerical&quot; );</span>
-<span class="lineNum">         </span>[<span class="branchNoCov" title="Branch 4 was not taken"> - </span><span class="branchCov" title="Branch 5 was taken 731 times"> + </span>][<span class="branchNoCov" title="Branch 6 was not taken"> - </span><span class="branchCov" title="Branch 7 was taken 731 times"> + </span>]
-<span class="lineNum">         </span>[<span class="branchNoCov" title="Branch 8 was not taken"> - </span><span class="branchNoCov" title="Branch 9 was not taken"> - </span>][<span class="branchNoCov" title="Branch 10 was not taken"> - </span><span class="branchNoCov" title="Branch 11 was not taken"> - </span>]
-<span class="lineNum">     360 </span>                :            :       // will output analytic solution for all components
-<span class="lineNum">     361 </span>        [<span class="branchCov" title="Branch 0 was taken 728 times"> + </span><span class="branchCov" title="Branch 1 was taken 731 times"> + </span>]:<span class="lineCov">       1459 :       for (ncomp_t c=0; c&lt;m_ncomp; ++c)</span>
-<span class="lineNum">     362 </span>[<span class="branchCov" title="Branch 0 was taken 731 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>][<span class="branchCov" title="Branch 2 was taken 731 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineCov">       1462 :         n.push_back( depvar + std::to_string(c) + &quot;_analytic&quot; );</span>
-<span class="lineNum">         </span>[<span class="branchNoCov" title="Branch 4 was not taken"> - </span><span class="branchCov" title="Branch 5 was taken 731 times"> + </span>][<span class="branchNoCov" title="Branch 6 was not taken"> - </span><span class="branchCov" title="Branch 7 was taken 731 times"> + </span>]
-<span class="lineNum">         </span>[<span class="branchNoCov" title="Branch 8 was not taken"> - </span><span class="branchNoCov" title="Branch 9 was not taken"> - </span>][<span class="branchNoCov" title="Branch 10 was not taken"> - </span><span class="branchNoCov" title="Branch 11 was not taken"> - </span>]
-<span class="lineNum">     363 </span>                :            :       // will output error for all components
-<span class="lineNum">     364 </span>        [<span class="branchCov" title="Branch 0 was taken 731 times"> + </span><span class="branchCov" title="Branch 1 was taken 728 times"> + </span>]:<span class="lineCov">       1459 :       for (ncomp_t c=0; c&lt;m_ncomp; ++c)</span>
-<span class="lineNum">     365 </span>[<span class="branchCov" title="Branch 0 was taken 731 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>][<span class="branchCov" title="Branch 2 was taken 731 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineCov">       1462 :         n.push_back( depvar + std::to_string(c) + &quot;_error&quot; );</span>
-<span class="lineNum">         </span>[<span class="branchNoCov" title="Branch 4 was not taken"> - </span><span class="branchCov" title="Branch 5 was taken 731 times"> + </span>][<span class="branchNoCov" title="Branch 6 was not taken"> - </span><span class="branchCov" title="Branch 7 was taken 731 times"> + </span>]
-<span class="lineNum">         </span>[<span class="branchNoCov" title="Branch 8 was not taken"> - </span><span class="branchNoCov" title="Branch 9 was not taken"> - </span>][<span class="branchNoCov" title="Branch 10 was not taken"> - </span><span class="branchNoCov" title="Branch 11 was not taken"> - </span>]
-<span class="lineNum">     366 </span>                :<span class="lineCov">        728 :       return n;</span>
-<span class="lineNum">     367 </span>                :            :     }
-<span class="lineNum">     368 </span>                :            : 
-<span class="lineNum">     369 </span>                :            :     //! Return field output going to file
-<span class="lineNum">     370 </span>                :            :     //! \param[in] t Physical time
-<span class="lineNum">     371 </span>                :            :     //! \param[in] V Total mesh volume
-<span class="lineNum">     372 </span>                :            :     //! \param[in] coord Mesh node coordinates
-<span class="lineNum">     373 </span>                :            :     //! \param[in] v Nodal volumes
-<span class="lineNum">     374 </span>                :            :     //! \param[in,out] U Solution vector at recent time step
-<span class="lineNum">     375 </span>                :            :     //! \return Vector of vectors to be output to file
-<span class="lineNum">     376 </span>                :            :     //! \details This functions should be written in conjunction with names(),
-<span class="lineNum">     377 </span>                :            :     //!   which provides the vector of field names
-<a name="378"><span class="lineNum">     378 </span>                :            :     //! \note U is overwritten</a>
-<span class="lineNum">     379 </span>                :            :     std::vector&lt; std::vector&lt; tk::real &gt; &gt;
-<span class="lineNum">     380 </span>        [<span class="branchCov" title="Branch 0 was taken 728 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">        728 :     fieldOutput( tk::real t,</span>
-<span class="lineNum">     381 </span>                :            :                  tk::real V,
-<span class="lineNum">     382 </span>                :            :                  const std::array&lt; std::vector&lt; tk::real &gt;, 3 &gt;&amp; coord,
-<span class="lineNum">     383 </span>                :            :                  const std::vector&lt; tk::real &gt;&amp; v,
-<span class="lineNum">     384 </span>                :            :                  tk::Fields&amp; U ) const
-<span class="lineNum">     385 </span>                :            :     {
-<span class="lineNum">     386 </span>                :            :       std::vector&lt; std::vector&lt; tk::real &gt; &gt; out;
-<span class="lineNum">     387 </span>                :            :       // will output numerical solution for all components
-<span class="lineNum">     388 </span>                :            :       auto E = U;
-<span class="lineNum">     389 </span>        [<span class="branchCov" title="Branch 0 was taken 731 times"> + </span><span class="branchCov" title="Branch 1 was taken 728 times"> + </span>]:<span class="lineCov">       1459 :       for (ncomp_t c=0; c&lt;m_ncomp; ++c)</span>
-<span class="lineNum">     390 </span>        [<span class="branchCov" title="Branch 0 was taken 731 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">       1462 :         out.push_back( U.extract( c, m_offset ) );</span>
-<span class="lineNum">     391 </span>                :            :       // evaluate analytic solution at time t
-<span class="lineNum">     392 </span>        [<span class="branchCov" title="Branch 0 was taken 728 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">        728 :       initialize( coord, U, t );</span>
-<span class="lineNum">     393 </span>                :            :       // will output analytic solution for all components
-<span class="lineNum">     394 </span>        [<span class="branchCov" title="Branch 0 was taken 728 times"> + </span><span class="branchCov" title="Branch 1 was taken 731 times"> + </span>]:<span class="lineCov">       1459 :       for (ncomp_t c=0; c&lt;m_ncomp; ++c)</span>
-<span class="lineNum">     395 </span>[<span class="branchCov" title="Branch 0 was taken 731 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>][<span class="branchNoCov" title="Branch 2 was not taken"> - </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineCov">       1462 :         out.push_back( U.extract( c, m_offset ) );</span>
-<span class="lineNum">     396 </span>                :            :       // will output error for all components
-<span class="lineNum">     397 </span>        [<span class="branchCov" title="Branch 0 was taken 731 times"> + </span><span class="branchCov" title="Branch 1 was taken 728 times"> + </span>]:<span class="lineCov">       1459 :       for (ncomp_t c=0; c&lt;m_ncomp; ++c) {</span>
-<span class="lineNum">     398 </span>        [<span class="branchCov" title="Branch 0 was taken 731 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">        731 :         auto u = U.extract( c, m_offset );</span>
-<span class="lineNum">     399 </span>        [<span class="branchCov" title="Branch 0 was taken 731 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">        731 :         auto e = E.extract( c, m_offset );</span>
-<span class="lineNum">     400 </span>                :            :         Assert( u.size() == e.size(), &quot;Size mismatch&quot; );
-<span class="lineNum">     401 </span>                :            :         Assert( u.size() == v.size(), &quot;Size mismatch&quot; );
-<span class="lineNum">     402 </span>        [<span class="branchCov" title="Branch 0 was taken 478204 times"> + </span><span class="branchCov" title="Branch 1 was taken 731 times"> + </span>]:<span class="lineCov">     478935 :         for (std::size_t i=0; i&lt;u.size(); ++i)</span>
-<span class="lineNum">     403 </span>                :<span class="lineCov">     478204 :           e[i] = std::pow( e[i] - u[i], 2.0 ) * v[i] / V;</span>
-<span class="lineNum">     404 </span>        [<span class="branchCov" title="Branch 0 was taken 731 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">        731 :         out.push_back( e );</span>
-<span class="lineNum">     405 </span>                :            :       }
-<span class="lineNum">     406 </span>                :<span class="lineCov">        728 :       return out;</span>
-<span class="lineNum">     407 </span>                :            :     }
-<span class="lineNum">     408 </span>                :            : 
-<a name="409"><span class="lineNum">     409 </span>                :            :     //! Return names of integral variables to be output to diagnostics file</a>
-<span class="lineNum">     410 </span>                :            :     //! \return Vector of strings labelling integral variables output
-<span class="lineNum">     411 </span>        [<span class="branchNoCov" title="Branch 0 was not taken"> - </span><span class="branchCov" title="Branch 1 was taken 69 times"> + </span>]:<span class="lineCov">         69 :     std::vector&lt; std::string &gt; names() const {</span>
-<span class="lineNum">     412 </span>                :            :       std::vector&lt; std::string &gt; n;
-<span class="lineNum">     413 </span>                :            :       const auto&amp; depvar =
-<span class="lineNum">     414 </span>                :            :         g_inputdeck.get&lt; tag::param, tag::transport, tag::depvar &gt;().
-<span class="lineNum">     415 </span>        [<span class="branchNoCov" title="Branch 0 was not taken"> - </span><span class="branchCov" title="Branch 1 was taken 69 times"> + </span>]:<span class="lineCov">         69 :         at(m_system);</span>
-<span class="lineNum">     416 </span>                :            :       // construct the name of the numerical solution for all components
-<span class="lineNum">     417 </span>        [<span class="branchCov" title="Branch 0 was taken 70 times"> + </span><span class="branchCov" title="Branch 1 was taken 69 times"> + </span>]:<span class="lineCov">        139 :       for (ncomp_t c=0; c&lt;m_ncomp; ++c)</span>
-<span class="lineNum">     418 </span>[<span class="branchCov" title="Branch 0 was taken 70 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>][<span class="branchNoCov" title="Branch 2 was not taken"> - </span><span class="branchCov" title="Branch 3 was taken 70 times"> + </span>]:<span class="lineCov">        140 :         n.push_back( depvar + std::to_string(c) );</span>
+<span class="lineNum">     182 </span>                :            :       // domain-edge integral
+<span class="lineNum">     183 </span>        [<span class="branchCov" title="Branch 0 was taken 5909940 times"> + </span><span class="branchCov" title="Branch 1 was taken 21870 times"> + </span>]:<span class="lineCov">    5931810 :       for (std::size_t p=0; p&lt;U.nunk(); ++p) {  // for each point p</span>
+<span class="lineNum">     184 </span>        [<span class="branchCov" title="Branch 0 was taken 5909940 times"> + </span><span class="branchCov" title="Branch 1 was taken 59805400 times"> + </span>]:<span class="lineCov">   65715400 :         for (auto q : tk::Around(psup,p)) {     // for each edge p-q</span>
+<span class="lineNum">     185 </span>                :            :           // access and orient dual-face normals for edge p-q
+<span class="lineNum">     186 </span>        [<span class="branchCov" title="Branch 0 was taken 59805400 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">   59805400 :           auto n = tk::cref_find( dfn, {gid[p],gid[q]} );</span>
+<span class="lineNum">     187 </span>        [<span class="branchCov" title="Branch 0 was taken 29902750 times"> + </span><span class="branchCov" title="Branch 1 was taken 29902750 times"> + </span>]:<span class="lineCov">   59805400 :           if (gid[p] &gt; gid[q]) { n[0] = -n[0]; n[1] = -n[1]; n[2] = -n[2]; }</span>
+<span class="lineNum">     188 </span>                :            :           // compute primitive variables at edge-end points (for Transport,
+<span class="lineNum">     189 </span>                :            :           // these are the same as the conserved variables)
+<span class="lineNum">     190 </span>                :            :           std::array&lt; std::vector&lt; tk::real &gt;, 2 &gt;
+<span class="lineNum">     191 </span>        [<span class="branchCov" title="Branch 0 was taken 59805400 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">   59805400 :             ru{ std::vector&lt;tk::real&gt;(m_ncomp,0.0),</span>
+<span class="lineNum">     192 </span>        [<span class="branchCov" title="Branch 0 was taken 59805400 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">   59805400 :                 std::vector&lt;tk::real&gt;(m_ncomp,0.0) };</span>
+<span class="lineNum">     193 </span>        [<span class="branchCov" title="Branch 0 was taken 59805400 times"> + </span><span class="branchCov" title="Branch 1 was taken 59805400 times"> + </span>]:<span class="lineCov">  119610800 :           for (std::size_t c=0; c&lt;m_ncomp; ++c) {</span>
+<span class="lineNum">     194 </span>                :<span class="lineCov">   59805400 :             ru[0][c] = U(p,c,m_offset);</span>
+<span class="lineNum">     195 </span>                :<span class="lineCov">   59805400 :             ru[1][c] = U(q,c,m_offset);</span>
+<span class="lineNum">     196 </span>                :            :           }
+<span class="lineNum">     197 </span>                :            :           // compute MUSCL reconstruction in edge-end points
+<span class="lineNum">     198 </span>[<span class="branchCov" title="Branch 0 was taken 59805400 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>][<span class="branchNoCov" title="Branch 2 was not taken"> - </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineCov">   59805400 :           tk::muscl( {p,q}, coord, Grad, ru );</span>
+<span class="lineNum">     199 </span>                :            :           // evaluate prescribed velocity
+<span class="lineNum">     200 </span>        [<span class="branchCov" title="Branch 0 was taken 59805400 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">   59805400 :           auto v =</span>
+<span class="lineNum">     201 </span>        [<span class="branchCov" title="Branch 0 was taken 59805400 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">   59805400 :             Problem::prescribedVelocity( m_system, m_ncomp, x[p], y[p], z[p] );</span>
+<span class="lineNum">     202 </span>                :            :           // sum donain-edge contributions
+<span class="lineNum">     203 </span>[<span class="branchCov" title="Branch 0 was taken 59805400 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>][<span class="branchCov" title="Branch 2 was taken 229079600 times"> + </span><span class="branchCov" title="Branch 3 was taken 59805400 times"> + </span>]:<span class="lineCov">  288884900 :           for (auto e : tk::cref_find(esued,{p,q})) {</span>
 <span class="lineNum">         </span>        [<span class="branchNoCov" title="Branch 4 was not taken"> - </span><span class="branchNoCov" title="Branch 5 was not taken"> - </span>]
-<span class="lineNum">     419 </span>                :<span class="lineCov">         69 :       return n;</span>
-<span class="lineNum">     420 </span>                :            :     }
-<span class="lineNum">     421 </span>                :            : 
-<span class="lineNum">     422 </span>                :            :   private:
-<span class="lineNum">     423 </span>                :            :     const Physics m_physics;            //!&lt; Physics policy
-<span class="lineNum">     424 </span>                :            :     const Problem m_problem;            //!&lt; Problem policy
-<span class="lineNum">     425 </span>                :            :     const ncomp_t m_system;             //!&lt; Equation system index
-<span class="lineNum">     426 </span>                :            :     const ncomp_t m_ncomp;              //!&lt; Number of components in this PDE
-<span class="lineNum">     427 </span>                :            :     const ncomp_t m_offset;             //!&lt; Offset this PDE operates from
-<span class="lineNum">     428 </span>                :            : };
-<span class="lineNum">     429 </span>                :            : 
-<span class="lineNum">     430 </span>                :            : } // cg::
-<span class="lineNum">     431 </span>                :            : } // inciter::
-<span class="lineNum">     432 </span>                :            : 
-<span class="lineNum">     433 </span>                :            : #endif // Transport_h
+<span class="lineNum">     204 </span>                :<span class="lineCov">  229079600 :             const auto [ N, grad, u, J ] =</span>
+<span class="lineNum">     205 </span>        [<span class="branchCov" title="Branch 0 was taken 229079600 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">  229079600 :               egrad( m_ncomp, m_offset, e, coord, inpoel, U );</span>
+<span class="lineNum">     206 </span>                :<span class="lineCov">  229079600 :             auto J48 = J/48.0;</span>
+<span class="lineNum">     207 </span>        [<span class="branchCov" title="Branch 0 was taken 1374478000 times"> + </span><span class="branchCov" title="Branch 1 was taken 229079600 times"> + </span>]:<span class="lineCov"> 1603557000 :             for (const auto&amp; [a,b] : tk::lpoed) {</span>
+<span class="lineNum">     208 </span>[<span class="branchCov" title="Branch 0 was taken 1374478000 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>][<span class="branchNoCov" title="Branch 2 was not taken"> - </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineCov"> 1374478000 :               auto s = tk::orient( {N[a],N[b]}, {p,q} );</span>
+<span class="lineNum">     209 </span>        [<span class="branchCov" title="Branch 0 was taken 4123433000 times"> + </span><span class="branchCov" title="Branch 1 was taken 1374478000 times"> + </span>]:<span class="lineCov"> 5497910000 :               for (std::size_t j=0; j&lt;3; ++j) {</span>
+<span class="lineNum">     210 </span>        [<span class="branchCov" title="Branch 0 was taken 4123433000 times"> + </span><span class="branchCov" title="Branch 1 was taken 4123433000 times"> + </span>]:<span class="lineCov"> 8246866000 :                 for (std::size_t c=0; c&lt;m_ncomp; ++c) {</span>
+<span class="lineNum">     211 </span>        [<span class="branchCov" title="Branch 0 was taken 4123433000 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov"> 4123433000 :                   R.var(r[c],p) -= J48 * s * (grad[a][j] - grad[b][j])</span>
+<span class="lineNum">     212 </span>        [<span class="branchCov" title="Branch 0 was taken 4123433000 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov"> 4123433000 :                                    * v[c][j]*(ru[0][c] + ru[1][c])</span>
+<span class="lineNum">     213 </span>        [<span class="branchCov" title="Branch 0 was taken 4123433000 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov"> 4123433000 :                     - J48 * std::abs(s * (grad[a][j] - grad[b][j]))</span>
+<span class="lineNum">     214 </span>        [<span class="branchCov" title="Branch 0 was taken 4123433000 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov"> 4123433000 :                           * std::abs(tk::dot(v[c],n))</span>
+<span class="lineNum">     215 </span>                :<span class="lineCov"> 4123433000 :                           * (ru[1][c] - ru[0][c]);</span>
+<span class="lineNum">     216 </span>                :            :                 }
+<span class="lineNum">     217 </span>                :            :               }
+<span class="lineNum">     218 </span>                :            :             }
+<span class="lineNum">     219 </span>                :            :           }
+<span class="lineNum">     220 </span>                :            :         }
+<span class="lineNum">     221 </span>                :            :       }
+<span class="lineNum">     222 </span>                :            : 
+<span class="lineNum">     223 </span>                :            :       // boundary-edge integrals
+<span class="lineNum">     224 </span>        [<span class="branchCov" title="Branch 0 was taken 1438800 times"> + </span><span class="branchCov" title="Branch 1 was taken 21870 times"> + </span>]:<span class="lineCov">    1460670 :       for (std::size_t e=0; e&lt;triinpoel.size()/3; ++e) {</span>
+<span class="lineNum">     225 </span>                :            :         // access node IDs
+<span class="lineNum">     226 </span>                :            :         const std::array&lt; std::size_t, 3 &gt;
+<span class="lineNum">     227 </span>        [<span class="branchCov" title="Branch 0 was taken 1438800 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">    2877600 :           N{ tk::cref_find( lid, triinpoel[e*3+0] ),</span>
+<span class="lineNum">     228 </span>        [<span class="branchCov" title="Branch 0 was taken 1438800 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">    1438800 :              tk::cref_find( lid, triinpoel[e*3+1] ),</span>
+<span class="lineNum">     229 </span>        [<span class="branchCov" title="Branch 0 was taken 1438800 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">    1438800 :              tk::cref_find( lid, triinpoel[e*3+2] ) };</span>
+<span class="lineNum">     230 </span>                :            :         // apply symmetry BCs
+<span class="lineNum">     231 </span>        [<span class="branchCov" title="Branch 0 was taken 1347300 times"> + </span><span class="branchCov" title="Branch 1 was taken 91500 times"> + </span>]:<span class="lineCov">    1438800 :         if (bnorm.find(N[0]) != end(bnorm)) continue;</span>
+<span class="lineNum">     232 </span>                :            :         // node coordinates
+<span class="lineNum">     233 </span>        [<span class="branchCov" title="Branch 0 was taken 91500 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">      91500 :         std::array&lt; tk::real, 3 &gt; xp{ x[N[0]], x[N[1]], x[N[2]] },</span>
+<span class="lineNum">     234 </span>                :<span class="lineCov">      91500 :                                   yp{ y[N[0]], y[N[1]], y[N[2]] },</span>
+<span class="lineNum">     235 </span>                :<span class="lineCov">      91500 :                                   zp{ z[N[0]], z[N[1]], z[N[2]] };</span>
+<span class="lineNum">     236 </span>                :            :         // compute face area
+<span class="lineNum">     237 </span>        [<span class="branchCov" title="Branch 0 was taken 91500 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">      91500 :         auto A = tk::area( xp, yp, zp );</span>
+<span class="lineNum">     238 </span>                :<span class="lineCov">      91500 :         auto A24 = A / 24.0;</span>
+<span class="lineNum">     239 </span>                :<span class="lineCov">      91500 :         auto A6 = A / 6.0;</span>
+<span class="lineNum">     240 </span>                :            :         // compute face normal
+<span class="lineNum">     241 </span>        [<span class="branchCov" title="Branch 0 was taken 91500 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">      91500 :         auto n = tk::normal( xp, yp, zp );</span>
+<span class="lineNum">     242 </span>                :            :         // access solution at element nodes
+<span class="lineNum">     243 </span>        [<span class="branchCov" title="Branch 0 was taken 91500 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">      91500 :         std::vector&lt; std::array&lt; tk::real, 3 &gt; &gt; u( m_ncomp );</span>
+<span class="lineNum">     244 </span>        [<span class="branchCov" title="Branch 0 was taken 91500 times"> + </span><span class="branchCov" title="Branch 1 was taken 91500 times"> + </span>]:<span class="lineCov">     183000 :         for (ncomp_t c=0; c&lt;m_ncomp; ++c) u[c] = U.extract( c, m_offset, N );</span>
+<span class="lineNum">     245 </span>                :            :         // evaluate prescribed velocity
+<span class="lineNum">     246 </span>                :<span class="lineCov">      91500 :         auto v =</span>
+<span class="lineNum">     247 </span>        [<span class="branchCov" title="Branch 0 was taken 91500 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">      91500 :           Problem::prescribedVelocity( m_system, m_ncomp, xp[0], yp[0], zp[0] );</span>
+<span class="lineNum">     248 </span>                :            :         // sum boundary integral contributions
+<span class="lineNum">     249 </span>        [<span class="branchCov" title="Branch 0 was taken 91500 times"> + </span><span class="branchCov" title="Branch 1 was taken 91500 times"> + </span>]:<span class="lineCov">     183000 :         for (std::size_t c=0; c&lt;m_ncomp; ++c) {</span>
+<span class="lineNum">     250 </span>        [<span class="branchCov" title="Branch 0 was taken 91500 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">      91500 :           auto vdotn = tk::dot( v[c], n );</span>
+<span class="lineNum">     251 </span>        [<span class="branchCov" title="Branch 0 was taken 274500 times"> + </span><span class="branchCov" title="Branch 1 was taken 91500 times"> + </span>]:<span class="lineCov">     366000 :           for (const auto&amp; [a,b] : tk::lpoet) {</span>
+<span class="lineNum">     252 </span>                :<span class="lineCov">     274500 :             auto Bab = A24 * vdotn * (u[c][a] + u[c][b]);</span>
+<span class="lineNum">     253 </span>                :<span class="lineCov">     274500 :             R.var(r[c],N[a]) -= Bab + A6 * vdotn * u[c][a];</span>
+<span class="lineNum">     254 </span>                :<span class="lineCov">     274500 :             R.var(r[c],N[b]) -= Bab;</span>
+<span class="lineNum">     255 </span>                :            :           }
+<span class="lineNum">     256 </span>                :            :         }
+<span class="lineNum">     257 </span>                :            :       }
+<span class="lineNum">     258 </span>                :<span class="lineCov">      21870 :     }</span>
+<span class="lineNum">     259 </span>                :            : 
+<span class="lineNum">     260 </span>                :            :     //! Compute right hand side for DiagCG (CG-FCT)
+<span class="lineNum">     261 </span>                :            :     //! \param[in] deltat Size of time step
+<span class="lineNum">     262 </span>                :            :     //! \param[in] coord Mesh node coordinates
+<span class="lineNum">     263 </span>                :            :     //! \param[in] inpoel Mesh element connectivity
+<span class="lineNum">     264 </span>                :            :     //! \param[in] U Solution vector at recent time step
+<span class="lineNum">     265 </span>                :            :     //! \param[in,out] Ue Element-centered solution vector at intermediate step
+<a name="266"><span class="lineNum">     266 </span>                :            :     //!    (used here internally as a scratch array)</a>
+<span class="lineNum">     267 </span>                :            :     //! \param[in,out] R Right-hand side vector computed
+<span class="lineNum">     268 </span>                :<span class="lineCov">       6341 :     void rhs( tk::real,</span>
+<span class="lineNum">     269 </span>                :            :               tk::real deltat,
+<span class="lineNum">     270 </span>                :            :               const std::array&lt; std::vector&lt; tk::real &gt;, 3 &gt;&amp; coord,
+<span class="lineNum">     271 </span>                :            :               const std::vector&lt; std::size_t &gt;&amp; inpoel,
+<span class="lineNum">     272 </span>                :            :               const tk::Fields&amp; U,
+<span class="lineNum">     273 </span>                :            :               tk::Fields&amp; Ue,
+<span class="lineNum">     274 </span>                :            :               tk::Fields&amp; R ) const
+<span class="lineNum">     275 </span>                :            :     {
+<span class="lineNum">     276 </span>                :            :       using tag::transport;
+<span class="lineNum">     277 </span>                :            :       Assert( U.nunk() == coord[0].size(), &quot;Number of unknowns in solution &quot;
+<span class="lineNum">     278 </span>                :            :               &quot;vector at recent time step incorrect&quot; );
+<span class="lineNum">     279 </span>                :            :       Assert( R.nunk() == coord[0].size(),
+<span class="lineNum">     280 </span>                :            :               &quot;Number of unknowns in right-hand side vector incorrect&quot; );
+<span class="lineNum">     281 </span>                :            : 
+<span class="lineNum">     282 </span>                :            :       const auto&amp; x = coord[0];
+<span class="lineNum">     283 </span>                :            :       const auto&amp; y = coord[1];
+<span class="lineNum">     284 </span>                :            :       const auto&amp; z = coord[2];
+<span class="lineNum">     285 </span>                :            : 
+<span class="lineNum">     286 </span>                :            :       // 1st stage: update element values from node values (gather-add)
+<span class="lineNum">     287 </span>        [<span class="branchCov" title="Branch 0 was taken 8345570 times"> + </span><span class="branchCov" title="Branch 1 was taken 6341 times"> + </span>]:<span class="lineCov">    8351910 :       for (std::size_t e=0; e&lt;inpoel.size()/4; ++e) {</span>
+<span class="lineNum">     288 </span>                :            : 
+<span class="lineNum">     289 </span>                :            :         // access node IDs
+<span class="lineNum">     290 </span>                :<span class="lineCov">    8345570 :         const std::array&lt; std::size_t, 4 &gt; N{{ inpoel[e*4+0], inpoel[e*4+1],</span>
+<span class="lineNum">     291 </span>                :            :                                                inpoel[e*4+2], inpoel[e*4+3] }};
+<span class="lineNum">     292 </span>                :            :         // compute element Jacobi determinant
+<span class="lineNum">     293 </span>                :            :         const std::array&lt; tk::real, 3 &gt;
+<span class="lineNum">     294 </span>                :<span class="lineCov">    8345570 :           ba{{ x[N[1]]-x[N[0]], y[N[1]]-y[N[0]], z[N[1]]-z[N[0]] }},</span>
+<span class="lineNum">     295 </span>                :<span class="lineCov">    8345570 :           ca{{ x[N[2]]-x[N[0]], y[N[2]]-y[N[0]], z[N[2]]-z[N[0]] }},</span>
+<span class="lineNum">     296 </span>                :<span class="lineCov">    8345570 :           da{{ x[N[3]]-x[N[0]], y[N[3]]-y[N[0]], z[N[3]]-z[N[0]] }};</span>
+<span class="lineNum">     297 </span>                :<span class="lineCov">    8345570 :         const auto J = tk::triple( ba, ca, da );        // J = 6V</span>
+<span class="lineNum">     298 </span>                :            :         Assert( J &gt; 0, &quot;Element Jacobian non-positive&quot; );
+<span class="lineNum">     299 </span>                :            : 
+<span class="lineNum">     300 </span>                :            :         // shape function derivatives, nnode*ndim [4][3]
+<span class="lineNum">     301 </span>                :            :         std::array&lt; std::array&lt; tk::real, 3 &gt;, 4 &gt; grad;
+<span class="lineNum">     302 </span>                :<span class="lineCov">    8345570 :         grad[1] = tk::crossdiv( ca, da, J );</span>
+<span class="lineNum">     303 </span>                :<span class="lineCov">    8345570 :         grad[2] = tk::crossdiv( da, ba, J );</span>
+<span class="lineNum">     304 </span>                :<span class="lineCov">    8345570 :         grad[3] = tk::crossdiv( ba, ca, J );</span>
+<span class="lineNum">     305 </span>        [<span class="branchCov" title="Branch 0 was taken 25036660 times"> + </span><span class="branchCov" title="Branch 1 was taken 8345570 times"> + </span>]:<span class="lineCov">   33382280 :         for (std::size_t i=0; i&lt;3; ++i)</span>
+<span class="lineNum">     306 </span>                :<span class="lineCov">   25036660 :           grad[0][i] = -grad[1][i]-grad[2][i]-grad[3][i];</span>
+<span class="lineNum">     307 </span>                :            : 
+<span class="lineNum">     308 </span>                :            :         // access solution at element nodes
+<span class="lineNum">     309 </span>                :<span class="lineCov">    8345570 :         std::vector&lt; std::array&lt; tk::real, 4 &gt; &gt; u( m_ncomp );</span>
+<span class="lineNum">     310 </span>        [<span class="branchCov" title="Branch 0 was taken 8470630 times"> + </span><span class="branchCov" title="Branch 1 was taken 8345570 times"> + </span>]:<span class="lineCov">   16816200 :         for (ncomp_t c=0; c&lt;m_ncomp; ++c) u[c] = U.extract( c, m_offset, N );</span>
+<span class="lineNum">     311 </span>                :            :         // access solution at elements
+<span class="lineNum">     312 </span>[<span class="branchCov" title="Branch 0 was taken 8345570 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>][<span class="branchNoCov" title="Branch 2 was not taken"> - </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineCov">    8345570 :         std::vector&lt; const tk::real* &gt; ue( m_ncomp );</span>
+<span class="lineNum">     313 </span>        [<span class="branchCov" title="Branch 0 was taken 8345570 times"> + </span><span class="branchCov" title="Branch 1 was taken 8470630 times"> + </span>]:<span class="lineCov">   16816200 :         for (ncomp_t c=0; c&lt;m_ncomp; ++c) ue[c] = Ue.cptr( c, m_offset );</span>
+<span class="lineNum">     314 </span>                :            : 
+<span class="lineNum">     315 </span>                :            :         // sum nodal averages to element
+<span class="lineNum">     316 </span>        [<span class="branchCov" title="Branch 0 was taken 8470630 times"> + </span><span class="branchCov" title="Branch 1 was taken 8345570 times"> + </span>]:<span class="lineCov">   16816200 :         for (ncomp_t c=0; c&lt;m_ncomp; ++c) {</span>
+<span class="lineNum">     317 </span>                :<span class="lineCov">    8470630 :           Ue.var(ue[c],e) = 0.0;</span>
+<span class="lineNum">     318 </span>        [<span class="branchCov" title="Branch 0 was taken 33882520 times"> + </span><span class="branchCov" title="Branch 1 was taken 8470630 times"> + </span>]:<span class="lineCov">   42353100 :           for (std::size_t a=0; a&lt;4; ++a)</span>
+<span class="lineNum">     319 </span>                :<span class="lineCov">   33882520 :             Ue.var(ue[c],e) += u[c][a]/4.0;</span>
+<span class="lineNum">     320 </span>                :            :         }
+<span class="lineNum">     321 </span>                :            : 
+<span class="lineNum">     322 </span>                :            :         // get prescribed velocity
+<span class="lineNum">     323 </span>[<span class="branchCov" title="Branch 0 was taken 8345570 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>][<span class="branchCov" title="Branch 2 was taken 8345570 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineCov">    8345570 :         const std::array&lt; std::vector&lt;std::array&lt;tk::real,3&gt;&gt;, 4 &gt; vel{{</span>
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 4 was taken 8345570 times"> + </span><span class="branchNoCov" title="Branch 5 was not taken"> - </span>][<span class="branchCov" title="Branch 6 was taken 8345570 times"> + </span><span class="branchNoCov" title="Branch 7 was not taken"> - </span>]
+<span class="lineNum">     324 </span>        [<span class="branchCov" title="Branch 0 was taken 8345570 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">    8345570 :           Problem::prescribedVelocity( m_system, m_ncomp,</span>
+<span class="lineNum">     325 </span>                :            :                                        x[N[0]], y[N[0]], z[N[0]] ),
+<span class="lineNum">     326 </span>        [<span class="branchCov" title="Branch 0 was taken 8345570 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">    8345570 :           Problem::prescribedVelocity( m_system, m_ncomp,</span>
+<span class="lineNum">     327 </span>                :            :                                        x[N[1]], y[N[1]], z[N[1]] ),
+<span class="lineNum">     328 </span>        [<span class="branchCov" title="Branch 0 was taken 8345570 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">    8345570 :           Problem::prescribedVelocity( m_system, m_ncomp,</span>
+<span class="lineNum">     329 </span>                :            :                                        x[N[2]], y[N[2]], z[N[2]] ),
+<span class="lineNum">     330 </span>        [<span class="branchCov" title="Branch 0 was taken 8345570 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">    8345570 :           Problem::prescribedVelocity( m_system, m_ncomp,</span>
+<span class="lineNum">     331 </span>                :            :                                        x[N[3]], y[N[3]], z[N[3]] ) }};
+<span class="lineNum">     332 </span>                :            : 
+<span class="lineNum">     333 </span>                :            :         // sum flux (advection) contributions to element
+<span class="lineNum">     334 </span>                :<span class="lineCov">    8345570 :         tk::real d = deltat/2.0;</span>
+<span class="lineNum">     335 </span>        [<span class="branchCov" title="Branch 0 was taken 8470630 times"> + </span><span class="branchCov" title="Branch 1 was taken 8345570 times"> + </span>]:<span class="lineCov">   16816200 :         for (std::size_t c=0; c&lt;m_ncomp; ++c)</span>
+<span class="lineNum">     336 </span>        [<span class="branchCov" title="Branch 0 was taken 25411840 times"> + </span><span class="branchCov" title="Branch 1 was taken 8470630 times"> + </span>]:<span class="lineCov">   33882520 :           for (std::size_t j=0; j&lt;3; ++j)</span>
+<span class="lineNum">     337 </span>        [<span class="branchCov" title="Branch 0 was taken 101647600 times"> + </span><span class="branchCov" title="Branch 1 was taken 25411840 times"> + </span>]:<span class="lineCov">  127059200 :             for (std::size_t a=0; a&lt;4; ++a)</span>
+<span class="lineNum">     338 </span>                :<span class="lineCov">  101647600 :               Ue.var(ue[c],e) -= d * grad[a][j] * vel[a][c][j]*u[c][a];</span>
+<span class="lineNum">     339 </span>                :            : 
+<span class="lineNum">     340 </span>                :            :       }
+<span class="lineNum">     341 </span>                :            : 
+<span class="lineNum">     342 </span>                :            : 
+<span class="lineNum">     343 </span>                :            :       // zero right hand side for all components
+<span class="lineNum">     344 </span>        [<span class="branchCov" title="Branch 0 was taken 6351 times"> + </span><span class="branchCov" title="Branch 1 was taken 6341 times"> + </span>]:<span class="lineCov">      12692 :       for (ncomp_t c=0; c&lt;m_ncomp; ++c) R.fill( c, m_offset, 0.0 );</span>
+<span class="lineNum">     345 </span>                :            : 
+<span class="lineNum">     346 </span>                :            :       // 2nd stage: form rhs from element values (scatter-add)
+<span class="lineNum">     347 </span>        [<span class="branchCov" title="Branch 0 was taken 8345570 times"> + </span><span class="branchCov" title="Branch 1 was taken 6341 times"> + </span>]:<span class="lineCov">    8351910 :       for (std::size_t e=0; e&lt;inpoel.size()/4; ++e) {</span>
+<span class="lineNum">     348 </span>                :            : 
+<span class="lineNum">     349 </span>                :            :         // access node IDs
+<span class="lineNum">     350 </span>                :<span class="lineCov">    8345570 :         const std::array&lt; std::size_t, 4 &gt; N{{ inpoel[e*4+0], inpoel[e*4+1],</span>
+<span class="lineNum">     351 </span>                :            :                                                inpoel[e*4+2], inpoel[e*4+3] }};
+<span class="lineNum">     352 </span>                :            :         // compute element Jacobi determinant
+<span class="lineNum">     353 </span>                :            :         const std::array&lt; tk::real, 3 &gt;
+<span class="lineNum">     354 </span>                :<span class="lineCov">    8345570 :           ba{{ x[N[1]]-x[N[0]], y[N[1]]-y[N[0]], z[N[1]]-z[N[0]] }},</span>
+<span class="lineNum">     355 </span>                :<span class="lineCov">    8345570 :           ca{{ x[N[2]]-x[N[0]], y[N[2]]-y[N[0]], z[N[2]]-z[N[0]] }},</span>
+<span class="lineNum">     356 </span>                :<span class="lineCov">    8345570 :           da{{ x[N[3]]-x[N[0]], y[N[3]]-y[N[0]], z[N[3]]-z[N[0]] }};</span>
+<span class="lineNum">     357 </span>                :<span class="lineCov">    8345570 :         const auto J = tk::triple( ba, ca, da );        // J = 6V</span>
+<span class="lineNum">     358 </span>                :            :         Assert( J &gt; 0, &quot;Element Jacobian non-positive&quot; );
+<span class="lineNum">     359 </span>                :            : 
+<span class="lineNum">     360 </span>                :            :         // shape function derivatives, nnode*ndim [4][3]
+<span class="lineNum">     361 </span>                :            :         std::array&lt; std::array&lt; tk::real, 3 &gt;, 4 &gt; grad;
+<span class="lineNum">     362 </span>                :<span class="lineCov">    8345570 :         grad[1] = tk::crossdiv( ca, da, J );</span>
+<span class="lineNum">     363 </span>                :<span class="lineCov">    8345570 :         grad[2] = tk::crossdiv( da, ba, J );</span>
+<span class="lineNum">     364 </span>                :<span class="lineCov">    8345570 :         grad[3] = tk::crossdiv( ba, ca, J );</span>
+<span class="lineNum">     365 </span>        [<span class="branchCov" title="Branch 0 was taken 25036660 times"> + </span><span class="branchCov" title="Branch 1 was taken 8345570 times"> + </span>]:<span class="lineCov">   33382280 :         for (std::size_t i=0; i&lt;3; ++i)</span>
+<span class="lineNum">     366 </span>                :<span class="lineCov">   25036660 :           grad[0][i] = -grad[1][i]-grad[2][i]-grad[3][i];</span>
+<span class="lineNum">     367 </span>                :            : 
+<span class="lineNum">     368 </span>                :            :         // access solution at elements
+<span class="lineNum">     369 </span>                :<span class="lineCov">    8345570 :         std::vector&lt; tk::real &gt; ue( m_ncomp );</span>
+<span class="lineNum">     370 </span>        [<span class="branchCov" title="Branch 0 was taken 8470630 times"> + </span><span class="branchCov" title="Branch 1 was taken 8345570 times"> + </span>]:<span class="lineCov">   16816200 :         for (ncomp_t c=0; c&lt;m_ncomp; ++c) ue[c] = Ue( e, c, m_offset );</span>
+<span class="lineNum">     371 </span>                :            :         // access pointer to right hand side at component and offset
+<span class="lineNum">     372 </span>[<span class="branchCov" title="Branch 0 was taken 8345570 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>][<span class="branchNoCov" title="Branch 2 was not taken"> - </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineCov">    8345570 :         std::vector&lt; const tk::real* &gt; r( m_ncomp );</span>
+<span class="lineNum">     373 </span>        [<span class="branchCov" title="Branch 0 was taken 8470630 times"> + </span><span class="branchCov" title="Branch 1 was taken 8345570 times"> + </span>]:<span class="lineCov">   16816200 :         for (ncomp_t c=0; c&lt;m_ncomp; ++c) r[c] = R.cptr( c, m_offset );</span>
+<span class="lineNum">     374 </span>                :            :         // access solution at nodes of element
+<span class="lineNum">     375 </span>[<span class="branchCov" title="Branch 0 was taken 8345570 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>][<span class="branchNoCov" title="Branch 2 was not taken"> - </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineCov">    8345570 :         std::vector&lt; std::array&lt; tk::real, 4 &gt; &gt; u( m_ncomp );</span>
+<span class="lineNum">     376 </span>        [<span class="branchCov" title="Branch 0 was taken 8470630 times"> + </span><span class="branchCov" title="Branch 1 was taken 8345570 times"> + </span>]:<span class="lineCov">   16816200 :         for (ncomp_t c=0; c&lt;m_ncomp; ++c) u[c] = U.extract( c, m_offset, N );</span>
+<span class="lineNum">     377 </span>                :            : 
+<span class="lineNum">     378 </span>                :            :         // get prescribed velocity
+<span class="lineNum">     379 </span>        [<span class="branchCov" title="Branch 0 was taken 8345570 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">    8345570 :         auto xc = (x[N[0]] + x[N[1]] + x[N[2]] + x[N[3]]) / 4.0;</span>
+<span class="lineNum">     380 </span>                :<span class="lineCov">    8345570 :         auto yc = (y[N[0]] + y[N[1]] + y[N[2]] + y[N[3]]) / 4.0;</span>
+<span class="lineNum">     381 </span>                :<span class="lineCov">    8345570 :         auto zc = (z[N[0]] + z[N[1]] + z[N[2]] + z[N[3]]) / 4.0;</span>
+<span class="lineNum">     382 </span>                :<span class="lineCov">    8345570 :         const auto vel =</span>
+<span class="lineNum">     383 </span>        [<span class="branchCov" title="Branch 0 was taken 8345570 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">    8345570 :           Problem::prescribedVelocity( m_system, m_ncomp, xc, yc, zc );</span>
+<span class="lineNum">     384 </span>                :            : 
+<span class="lineNum">     385 </span>                :            :         // scatter-add flux contributions to rhs at nodes
+<span class="lineNum">     386 </span>                :<span class="lineCov">    8345570 :         tk::real d = deltat * J/6.0;</span>
+<span class="lineNum">     387 </span>        [<span class="branchCov" title="Branch 0 was taken 8470630 times"> + </span><span class="branchCov" title="Branch 1 was taken 8345570 times"> + </span>]:<span class="lineCov">   16816200 :         for (std::size_t c=0; c&lt;m_ncomp; ++c)</span>
+<span class="lineNum">     388 </span>        [<span class="branchCov" title="Branch 0 was taken 25411840 times"> + </span><span class="branchCov" title="Branch 1 was taken 8470630 times"> + </span>]:<span class="lineCov">   33882520 :           for (std::size_t j=0; j&lt;3; ++j)</span>
+<span class="lineNum">     389 </span>        [<span class="branchCov" title="Branch 0 was taken 101647600 times"> + </span><span class="branchCov" title="Branch 1 was taken 25411840 times"> + </span>]:<span class="lineCov">  127059200 :             for (std::size_t a=0; a&lt;4; ++a)</span>
+<span class="lineNum">     390 </span>                :<span class="lineCov">  101647600 :               R.var(r[c],N[a]) += d * grad[a][j] * vel[c][j]*ue[c];</span>
+<span class="lineNum">     391 </span>                :            : 
+<span class="lineNum">     392 </span>                :            :         // add (optional) diffusion contribution to right hand side
+<span class="lineNum">     393 </span>        [<span class="branchCov" title="Branch 0 was taken 875420 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">     875420 :         m_physics.diffusionRhs( m_system, m_ncomp, deltat, J, grad,</span>
+<span class="lineNum">     394 </span>                :            :                                 N, u, r, R );
+<span class="lineNum">     395 </span>                :            : 
+<span class="lineNum">     396 </span>                :            :       }
+<span class="lineNum">     397 </span>                :<span class="lineCov">       6341 :     }</span>
+<span class="lineNum">     398 </span>                :            : 
+<span class="lineNum">     399 </span>                :            :     //! Compute the minimum time step size
+<span class="lineNum">     400 </span>                :            :     //! \param[in] U Solution vector at recent time step
+<span class="lineNum">     401 </span>                :            :     //! \param[in] coord Mesh node coordinates
+<a name="402"><span class="lineNum">     402 </span>                :            :     //! \param[in] inpoel Mesh element connectivity</a>
+<span class="lineNum">     403 </span>                :            :     //! \return Minimum time step size
+<span class="lineNum">     404 </span>                :<span class="lineCov">       3221 :     tk::real dt( const std::array&lt; std::vector&lt; tk::real &gt;, 3 &gt;&amp; coord,</span>
+<span class="lineNum">     405 </span>                :            :                  const std::vector&lt; std::size_t &gt;&amp; inpoel,
+<span class="lineNum">     406 </span>                :            :                  const tk::Fields&amp; U ) const
+<span class="lineNum">     407 </span>                :            :     {
+<span class="lineNum">     408 </span>                :            :       using tag::transport;
+<span class="lineNum">     409 </span>                :            :       Assert( U.nunk() == coord[0].size(), &quot;Number of unknowns in solution &quot;
+<span class="lineNum">     410 </span>                :            :               &quot;vector at recent time step incorrect&quot; );
+<span class="lineNum">     411 </span>                :            :       const auto&amp; x = coord[0];
+<span class="lineNum">     412 </span>                :            :       const auto&amp; y = coord[1];
+<span class="lineNum">     413 </span>                :            :       const auto&amp; z = coord[2];
+<span class="lineNum">     414 </span>                :            :       // compute the minimum dt across all elements we own
+<span class="lineNum">     415 </span>                :            :       tk::real mindt = std::numeric_limits&lt; tk::real &gt;::max();
+<span class="lineNum">     416 </span>        [<span class="branchCov" title="Branch 0 was taken 2084770 times"> + </span><span class="branchCov" title="Branch 1 was taken 3221 times"> + </span>]:<span class="lineCov">    2087990 :       for (std::size_t e=0; e&lt;inpoel.size()/4; ++e) {</span>
+<span class="lineNum">     417 </span>                :<span class="lineCov">    2084770 :         const std::array&lt; std::size_t, 4 &gt; N{{ inpoel[e*4+0], inpoel[e*4+1],</span>
+<span class="lineNum">     418 </span>                :            :                                                inpoel[e*4+2], inpoel[e*4+3] }};
+<span class="lineNum">     419 </span>                :            :         // compute cubic root of element volume as the characteristic length
+<span class="lineNum">     420 </span>                :            :         const std::array&lt; tk::real, 3 &gt;
+<span class="lineNum">     421 </span>                :<span class="lineCov">    2084770 :           ba{{ x[N[1]]-x[N[0]], y[N[1]]-y[N[0]], z[N[1]]-z[N[0]] }},</span>
+<span class="lineNum">     422 </span>                :<span class="lineCov">    2084770 :           ca{{ x[N[2]]-x[N[0]], y[N[2]]-y[N[0]], z[N[2]]-z[N[0]] }},</span>
+<span class="lineNum">     423 </span>                :<span class="lineCov">    2084770 :           da{{ x[N[3]]-x[N[0]], y[N[3]]-y[N[0]], z[N[3]]-z[N[0]] }};</span>
+<span class="lineNum">     424 </span>                :<span class="lineCov">    2084770 :         const auto L = std::cbrt( tk::triple( ba, ca, da ) / 6.0 );</span>
+<span class="lineNum">     425 </span>                :            :         // access solution at element nodes at recent time step
+<span class="lineNum">     426 </span>                :<span class="lineCov">    2084770 :         std::vector&lt; std::array&lt; tk::real, 4 &gt; &gt; u( m_ncomp );</span>
+<span class="lineNum">     427 </span>        [<span class="branchCov" title="Branch 0 was taken 2209830 times"> + </span><span class="branchCov" title="Branch 1 was taken 2084770 times"> + </span>]:<span class="lineCov">    4294600 :         for (ncomp_t c=0; c&lt;m_ncomp; ++c) u[c] = U.extract( c, m_offset, N );</span>
+<span class="lineNum">     428 </span>                :            :         // get velocity for problem
+<span class="lineNum">     429 </span>[<span class="branchCov" title="Branch 0 was taken 2084770 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>][<span class="branchCov" title="Branch 2 was taken 2084770 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineCov">    2084770 :         const std::array&lt; std::vector&lt;std::array&lt;tk::real,3&gt;&gt;, 4 &gt; vel{{</span>
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 4 was taken 2084770 times"> + </span><span class="branchNoCov" title="Branch 5 was not taken"> - </span>][<span class="branchCov" title="Branch 6 was taken 2084770 times"> + </span><span class="branchNoCov" title="Branch 7 was not taken"> - </span>]
+<span class="lineNum">     430 </span>        [<span class="branchCov" title="Branch 0 was taken 2084770 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">    2084770 :           Problem::prescribedVelocity( m_system, m_ncomp,</span>
+<span class="lineNum">     431 </span>                :            :                                        x[N[0]], y[N[0]], z[N[0]] ),
+<span class="lineNum">     432 </span>        [<span class="branchCov" title="Branch 0 was taken 2084770 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">    2084770 :           Problem::prescribedVelocity( m_system, m_ncomp,</span>
+<span class="lineNum">     433 </span>                :            :                                        x[N[1]], y[N[1]], z[N[1]] ),
+<span class="lineNum">     434 </span>        [<span class="branchCov" title="Branch 0 was taken 2084770 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">    2084770 :           Problem::prescribedVelocity( m_system, m_ncomp,</span>
+<span class="lineNum">     435 </span>                :            :                                        x[N[2]], y[N[2]], z[N[2]] ),
+<span class="lineNum">     436 </span>        [<span class="branchCov" title="Branch 0 was taken 2084770 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">    2084770 :           Problem::prescribedVelocity( m_system, m_ncomp,</span>
+<span class="lineNum">     437 </span>                :            :                                        x[N[3]], y[N[3]], z[N[3]] ) }};
+<span class="lineNum">     438 </span>                :            :         // compute the maximum length of the characteristic velocity (advection
+<span class="lineNum">     439 </span>                :            :         // velocity) across the four element nodes
+<span class="lineNum">     440 </span>                :            :         tk::real maxvel = 0.0;
+<span class="lineNum">     441 </span>        [<span class="branchCov" title="Branch 0 was taken 2209830 times"> + </span><span class="branchCov" title="Branch 1 was taken 2084770 times"> + </span>]:<span class="lineCov">    4294600 :         for (ncomp_t c=0; c&lt;m_ncomp; ++c)</span>
+<span class="lineNum">     442 </span>        [<span class="branchCov" title="Branch 0 was taken 8839310 times"> + </span><span class="branchCov" title="Branch 1 was taken 2209830 times"> + </span>]:<span class="lineCov">   11049140 :           for (std::size_t i=0; i&lt;4; ++i) {</span>
+<span class="lineNum">     443 </span>        [<span class="branchCov" title="Branch 0 was taken 4001920 times"> + </span><span class="branchCov" title="Branch 1 was taken 4837390 times"> + </span>]:<span class="lineCov">    8839310 :             auto v = tk::length( vel[i][c] );</span>
+<span class="lineNum">     444 </span>        [<span class="branchCov" title="Branch 0 was taken 3876240 times"> + </span><span class="branchCov" title="Branch 1 was taken 4963070 times"> + </span>]:<span class="lineCov">    8839310 :             if (v &gt; maxvel) maxvel = v;</span>
+<span class="lineNum">     445 </span>                :            :           }
+<span class="lineNum">     446 </span>                :            :         // compute element dt for the advection
+<span class="lineNum">     447 </span>                :<span class="lineCov">    2084770 :         auto advection_dt = L / maxvel;</span>
+<span class="lineNum">     448 </span>                :            :         // compute element dt based on diffusion
+<span class="lineNum">     449 </span>[<span class="branchCov" title="Branch 0 was taken 875420 times"> + </span><span class="branchCov" title="Branch 1 was taken 1209350 times"> + </span>][<span class="branchCov" title="Branch 2 was taken 870730 times"> + </span><span class="branchCov" title="Branch 3 was taken 4690 times"> + </span>]:<span class="lineCov">    2084770 :         auto diffusion_dt = m_physics.diffusion_dt( m_system, m_ncomp, L, u );</span>
+<span class="lineNum">     450 </span>                :            :         // compute minimum element dt
+<span class="lineNum">     451 </span>                :<span class="lineCov">    2084770 :         auto elemdt = std::min( advection_dt, diffusion_dt );</span>
+<span class="lineNum">     452 </span>                :            :         // find minimum dt across all elements
+<span class="lineNum">     453 </span>        [<span class="branchCov" title="Branch 0 was taken 18852 times"> + </span><span class="branchCov" title="Branch 1 was taken 2065920 times"> + </span>]:<span class="lineCov">    2084770 :         if (elemdt &lt; mindt) mindt = elemdt;</span>
+<span class="lineNum">     454 </span>                :            :       }
+<span class="lineNum">     455 </span>                :<span class="lineCov">       3221 :       return mindt;</span>
+<span class="lineNum">     456 </span>                :            :     }
+<span class="lineNum">     457 </span>                :            : 
+<span class="lineNum">     458 </span>                :            :     //! \brief Query Dirichlet boundary condition value on a given side set for
+<span class="lineNum">     459 </span>                :            :     //!    all components in this PDE system
+<span class="lineNum">     460 </span>                :            :     //! \param[in] t Physical time
+<span class="lineNum">     461 </span>                :            :     //! \param[in] deltat Time step size
+<span class="lineNum">     462 </span>                :            :     //! \param[in] ss Pair of side set ID and list of node IDs on the side set
+<span class="lineNum">     463 </span>                :            :     //! \param[in] coord Mesh node coordinates
+<span class="lineNum">     464 </span>                :            :     //! \return Vector of pairs of bool and boundary condition value associated
+<span class="lineNum">     465 </span>                :            :     //!   to mesh node IDs at which Dirichlet boundary conditions are set. Note
+<span class="lineNum">     466 </span>                :            :     //!   that instead of the actual boundary condition value, we return the
+<span class="lineNum">     467 </span>                :            :     //!   increment between t+dt and t, since that is what the solution requires
+<a name="468"><span class="lineNum">     468 </span>                :            :     //!   as we solve for the soution increments and not the solution itself.</a>
+<span class="lineNum">     469 </span>                :            :     std::map&lt; std::size_t, std::vector&lt; std::pair&lt;bool,tk::real&gt; &gt; &gt;
+<span class="lineNum">     470 </span>        [<span class="branchCov" title="Branch 0 was taken 760 times"> + </span><span class="branchCov" title="Branch 1 was taken 12750 times"> + </span>]:<span class="lineCov">      13510 :     dirbc( tk::real t,</span>
+<span class="lineNum">     471 </span>                :            :            tk::real deltat,
+<span class="lineNum">     472 </span>                :            :            const std::pair&lt; const int, std::vector&lt; std::size_t &gt; &gt;&amp; ss,
+<span class="lineNum">     473 </span>                :            :            const std::array&lt; std::vector&lt; tk::real &gt;, 3 &gt;&amp; coord ) const
+<span class="lineNum">     474 </span>                :            :     {
+<span class="lineNum">     475 </span>                :            :       using tag::param; using tag::transport; using tag::bcdir;
+<span class="lineNum">     476 </span>                :            :       using NodeBC = std::vector&lt; std::pair&lt; bool, tk::real &gt; &gt;;
+<span class="lineNum">     477 </span>                :            :       std::map&lt; std::size_t, NodeBC &gt; bc;
+<span class="lineNum">     478 </span>                :            :       const auto&amp; ubc = g_inputdeck.get&lt; param, transport, tag::bc, bcdir &gt;();
+<span class="lineNum">     479 </span>        [<span class="branchCov" title="Branch 0 was taken 760 times"> + </span><span class="branchCov" title="Branch 1 was taken 12750 times"> + </span>]:<span class="lineCov">      13510 :       if (!ubc.empty()) {</span>
+<span class="lineNum">     480 </span>                :            :         Assert( ubc.size() &gt; m_system, &quot;Indexing out of Dirichlet BC eq-vector&quot; );
+<span class="lineNum">     481 </span>                :            :         const auto&amp; x = coord[0];
+<span class="lineNum">     482 </span>                :            :         const auto&amp; y = coord[1];
+<span class="lineNum">     483 </span>                :            :         const auto&amp; z = coord[2];
+<span class="lineNum">     484 </span>        [<span class="branchCov" title="Branch 0 was taken 4560 times"> + </span><span class="branchCov" title="Branch 1 was taken 760 times"> + </span>]:<span class="lineCov">       5320 :         for (const auto&amp; b : ubc[m_system])</span>
+<span class="lineNum">     485 </span>        [<span class="branchCov" title="Branch 0 was taken 760 times"> + </span><span class="branchCov" title="Branch 1 was taken 3800 times"> + </span>]:<span class="lineCov">       4560 :           if (std::stoi(b) == ss.first)</span>
+<span class="lineNum">     486 </span>[<span class="branchCov" title="Branch 0 was taken 212310 times"> + </span><span class="branchCov" title="Branch 1 was taken 760 times"> + </span>][<span class="branchCov" title="Branch 2 was taken 212310 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineCov">     213070 :             for (auto n : ss.second) {</span>
+<span class="lineNum">     487 </span>                :            :               Assert( x.size() &gt; n, &quot;Indexing out of coordinate array&quot; );
+<span class="lineNum">     488 </span>        [<span class="branchCov" title="Branch 0 was taken 212310 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">     212310 :               const auto s = solinc( m_system, m_ncomp, x[n], y[n], z[n],</span>
+<span class="lineNum">     489 </span>                :            :                                      t, deltat, Problem::solution );
+<span class="lineNum">     490 </span>[<span class="branchCov" title="Branch 0 was taken 212310 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>][<span class="branchCov" title="Branch 2 was taken 212310 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineCov">     424620 :               auto&amp; nbc = bc[n] = NodeBC( m_ncomp );</span>
+<span class="lineNum">     491 </span>        [<span class="branchCov" title="Branch 0 was taken 232210 times"> + </span><span class="branchCov" title="Branch 1 was taken 212310 times"> + </span>]:<span class="lineCov">     444520 :               for (ncomp_t c=0; c&lt;m_ncomp; ++c)</span>
+<span class="lineNum">     492 </span>                :<span class="lineCov">     232210 :                 nbc[c] = { true, s[c] };</span>
+<span class="lineNum">     493 </span>                :            :             }
+<span class="lineNum">     494 </span>                :            :       }
+<span class="lineNum">     495 </span>                :<span class="lineCov">      13510 :       return bc;</span>
+<span class="lineNum">     496 </span>                :            :     }
+<span class="lineNum">     497 </span>                :            : 
+<span class="lineNum">     498 </span>                :            :     //! Set symmetry boundary conditions at nodes
+<span class="lineNum">     499 </span>                :            :     void
+<span class="lineNum">     500 </span>                :            :     symbc( tk::Fields&amp;,
+<span class="lineNum">     501 </span>                :            :            const std::unordered_map&lt;std::size_t,std::array&lt;tk::real,4&gt;&gt;&amp; )
+<span class="lineNum">     502 </span>                :            :     const {}
+<span class="lineNum">     503 </span>                :            : 
+<span class="lineNum">     504 </span>                :            :     //! Query nodes at which symmetry boundary conditions are set
+<span class="lineNum">     505 </span>                :            :     //! \param[in] bface Boundary-faces mapped to side set ids
+<span class="lineNum">     506 </span>                :            :     //! \param[in] triinpoel Boundary-face connectivity
+<a name="507"><span class="lineNum">     507 </span>                :            :     //! \param[in,out] nodes Node ids at which symmetry BCs are set</a>
+<span class="lineNum">     508 </span>                :            :     void
+<span class="lineNum">     509 </span>        [<span class="branchCov" title="Branch 0 was taken 85 times"> + </span><span class="branchCov" title="Branch 1 was taken 769 times"> + </span>]:<span class="lineCov">        854 :     symbcnodes( const std::map&lt; int, std::vector&lt; std::size_t &gt; &gt;&amp; bface,</span>
+<span class="lineNum">     510 </span>                :            :                 const std::vector&lt; std::size_t &gt;&amp; triinpoel,
+<span class="lineNum">     511 </span>                :            :                 std::unordered_set&lt; std::size_t &gt;&amp; nodes ) const
+<span class="lineNum">     512 </span>                :            :     {
+<span class="lineNum">     513 </span>                :            :       using tag::param; using tag::transport; using tag::bcsym;
+<span class="lineNum">     514 </span>                :            :       const auto&amp; bc = g_inputdeck.get&lt; param, transport, tag::bc, bcsym &gt;();
+<span class="lineNum">     515 </span>[<span class="branchCov" title="Branch 0 was taken 85 times"> + </span><span class="branchCov" title="Branch 1 was taken 769 times"> + </span>][<span class="branchCov" title="Branch 2 was taken 85 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineCov">        854 :       if (!bc.empty() &amp;&amp; bc.size() &gt; m_system) {</span>
+<span class="lineNum">     516 </span>                :            :         const auto&amp; ss = bc[ m_system ];// side sets with sym bcs specified
+<span class="lineNum">     517 </span>        [<span class="branchCov" title="Branch 0 was taken 85 times"> + </span><span class="branchCov" title="Branch 1 was taken 85 times"> + </span>]:<span class="lineCov">        170 :         for (const auto&amp; s : ss) {</span>
+<span class="lineNum">     518 </span>                :            :           auto k = bface.find( std::stoi(s) );
+<span class="lineNum">     519 </span>        [<span class="branchCov" title="Branch 0 was taken 69 times"> + </span><span class="branchCov" title="Branch 1 was taken 16 times"> + </span>]:<span class="lineCov">         85 :           if (k != end(bface)) {</span>
+<span class="lineNum">     520 </span>        [<span class="branchCov" title="Branch 0 was taken 8312 times"> + </span><span class="branchCov" title="Branch 1 was taken 69 times"> + </span>]:<span class="lineCov">       8381 :             for (auto f : k-&gt;second) {  // face ids on symbc side set</span>
+<span class="lineNum">     521 </span>        [<span class="branchCov" title="Branch 0 was taken 8312 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">       8312 :               nodes.insert( triinpoel[f*3+0] );</span>
+<span class="lineNum">     522 </span>        [<span class="branchCov" title="Branch 0 was taken 8312 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">       8312 :               nodes.insert( triinpoel[f*3+1] );</span>
+<span class="lineNum">     523 </span>        [<span class="branchCov" title="Branch 0 was taken 8312 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">       8312 :               nodes.insert( triinpoel[f*3+2] );</span>
+<span class="lineNum">     524 </span>                :            :             }
+<span class="lineNum">     525 </span>                :            :           }
+<span class="lineNum">     526 </span>                :            :         }
+<span class="lineNum">     527 </span>                :            :       }
+<span class="lineNum">     528 </span>                :<span class="lineCov">        854 :     }</span>
+<span class="lineNum">     529 </span>                :            : 
+<span class="lineNum">     530 </span>                :            :     //! Return field names to be output to file
+<span class="lineNum">     531 </span>                :            :     //! \return Vector of strings labelling fields output in file
+<a name="532"><span class="lineNum">     532 </span>                :            :     //! \details This functions should be written in conjunction with</a>
+<span class="lineNum">     533 </span>                :            :     //!   fieldOutput(), which provides the vector of fields to be output
+<span class="lineNum">     534 </span>        [<span class="branchNoCov" title="Branch 0 was not taken"> - </span><span class="branchCov" title="Branch 1 was taken 1238 times"> + </span>]:<span class="lineCov">       1238 :     std::vector&lt; std::string &gt; fieldNames() const {</span>
+<span class="lineNum">     535 </span>                :            :       std::vector&lt; std::string &gt; n;
+<span class="lineNum">     536 </span>                :            :       const auto&amp; depvar =
+<span class="lineNum">     537 </span>                :            :         g_inputdeck.get&lt; tag::param, tag::transport, tag::depvar &gt;().
+<span class="lineNum">     538 </span>        [<span class="branchNoCov" title="Branch 0 was not taken"> - </span><span class="branchCov" title="Branch 1 was taken 1238 times"> + </span>]:<span class="lineCov">       1238 :         at(m_system);</span>
+<span class="lineNum">     539 </span>                :            :       // will output numerical solution for all components
+<span class="lineNum">     540 </span>        [<span class="branchCov" title="Branch 0 was taken 1238 times"> + </span><span class="branchCov" title="Branch 1 was taken 1241 times"> + </span>]:<span class="lineCov">       2479 :       for (ncomp_t c=0; c&lt;m_ncomp; ++c)</span>
+<span class="lineNum">     541 </span>[<span class="branchCov" title="Branch 0 was taken 1241 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>][<span class="branchCov" title="Branch 2 was taken 1241 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineCov">       2482 :         n.push_back( depvar + std::to_string(c) + &quot;_numerical&quot; );</span>
+<span class="lineNum">         </span>[<span class="branchNoCov" title="Branch 4 was not taken"> - </span><span class="branchCov" title="Branch 5 was taken 1241 times"> + </span>][<span class="branchNoCov" title="Branch 6 was not taken"> - </span><span class="branchCov" title="Branch 7 was taken 1241 times"> + </span>]
+<span class="lineNum">         </span>[<span class="branchNoCov" title="Branch 8 was not taken"> - </span><span class="branchNoCov" title="Branch 9 was not taken"> - </span>][<span class="branchNoCov" title="Branch 10 was not taken"> - </span><span class="branchNoCov" title="Branch 11 was not taken"> - </span>]
+<span class="lineNum">     542 </span>                :            :       // will output analytic solution for all components
+<span class="lineNum">     543 </span>        [<span class="branchCov" title="Branch 0 was taken 1238 times"> + </span><span class="branchCov" title="Branch 1 was taken 1241 times"> + </span>]:<span class="lineCov">       2479 :       for (ncomp_t c=0; c&lt;m_ncomp; ++c)</span>
+<span class="lineNum">     544 </span>[<span class="branchCov" title="Branch 0 was taken 1241 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>][<span class="branchCov" title="Branch 2 was taken 1241 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineCov">       2482 :         n.push_back( depvar + std::to_string(c) + &quot;_analytic&quot; );</span>
+<span class="lineNum">         </span>[<span class="branchNoCov" title="Branch 4 was not taken"> - </span><span class="branchCov" title="Branch 5 was taken 1241 times"> + </span>][<span class="branchNoCov" title="Branch 6 was not taken"> - </span><span class="branchCov" title="Branch 7 was taken 1241 times"> + </span>]
+<span class="lineNum">         </span>[<span class="branchNoCov" title="Branch 8 was not taken"> - </span><span class="branchNoCov" title="Branch 9 was not taken"> - </span>][<span class="branchNoCov" title="Branch 10 was not taken"> - </span><span class="branchNoCov" title="Branch 11 was not taken"> - </span>]
+<span class="lineNum">     545 </span>                :            :       // will output error for all components
+<span class="lineNum">     546 </span>        [<span class="branchCov" title="Branch 0 was taken 1241 times"> + </span><span class="branchCov" title="Branch 1 was taken 1238 times"> + </span>]:<span class="lineCov">       2479 :       for (ncomp_t c=0; c&lt;m_ncomp; ++c)</span>
+<span class="lineNum">     547 </span>[<span class="branchCov" title="Branch 0 was taken 1241 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>][<span class="branchCov" title="Branch 2 was taken 1241 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineCov">       2482 :         n.push_back( depvar + std::to_string(c) + &quot;_error&quot; );</span>
+<span class="lineNum">         </span>[<span class="branchNoCov" title="Branch 4 was not taken"> - </span><span class="branchCov" title="Branch 5 was taken 1241 times"> + </span>][<span class="branchNoCov" title="Branch 6 was not taken"> - </span><span class="branchCov" title="Branch 7 was taken 1241 times"> + </span>]
+<span class="lineNum">         </span>[<span class="branchNoCov" title="Branch 8 was not taken"> - </span><span class="branchNoCov" title="Branch 9 was not taken"> - </span>][<span class="branchNoCov" title="Branch 10 was not taken"> - </span><span class="branchNoCov" title="Branch 11 was not taken"> - </span>]
+<span class="lineNum">     548 </span>                :<span class="lineCov">       1238 :       return n;</span>
+<span class="lineNum">     549 </span>                :            :     }
+<span class="lineNum">     550 </span>                :            : 
+<span class="lineNum">     551 </span>                :            :     //! Return field output going to file
+<span class="lineNum">     552 </span>                :            :     //! \param[in] t Physical time
+<span class="lineNum">     553 </span>                :            :     //! \param[in] V Total mesh volume
+<span class="lineNum">     554 </span>                :            :     //! \param[in] coord Mesh node coordinates
+<span class="lineNum">     555 </span>                :            :     //! \param[in] v Nodal volumes
+<span class="lineNum">     556 </span>                :            :     //! \param[in,out] U Solution vector at recent time step
+<span class="lineNum">     557 </span>                :            :     //! \return Vector of vectors to be output to file
+<span class="lineNum">     558 </span>                :            :     //! \details This functions should be written in conjunction with names(),
+<span class="lineNum">     559 </span>                :            :     //!   which provides the vector of field names
+<a name="560"><span class="lineNum">     560 </span>                :            :     //! \note U is overwritten</a>
+<span class="lineNum">     561 </span>                :            :     std::vector&lt; std::vector&lt; tk::real &gt; &gt;
+<span class="lineNum">     562 </span>        [<span class="branchCov" title="Branch 0 was taken 1238 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">       1238 :     fieldOutput( tk::real t,</span>
+<span class="lineNum">     563 </span>                :            :                  tk::real V,
+<span class="lineNum">     564 </span>                :            :                  const std::array&lt; std::vector&lt; tk::real &gt;, 3 &gt;&amp; coord,
+<span class="lineNum">     565 </span>                :            :                  const std::vector&lt; tk::real &gt;&amp; v,
+<span class="lineNum">     566 </span>                :            :                  tk::Fields&amp; U ) const
+<span class="lineNum">     567 </span>                :            :     {
+<span class="lineNum">     568 </span>                :            :       std::vector&lt; std::vector&lt; tk::real &gt; &gt; out;
+<span class="lineNum">     569 </span>                :            :       // will output numerical solution for all components
+<span class="lineNum">     570 </span>                :            :       auto E = U;
+<span class="lineNum">     571 </span>        [<span class="branchCov" title="Branch 0 was taken 1241 times"> + </span><span class="branchCov" title="Branch 1 was taken 1238 times"> + </span>]:<span class="lineCov">       2479 :       for (ncomp_t c=0; c&lt;m_ncomp; ++c)</span>
+<span class="lineNum">     572 </span>        [<span class="branchCov" title="Branch 0 was taken 1241 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">       2482 :         out.push_back( U.extract( c, m_offset ) );</span>
+<span class="lineNum">     573 </span>                :            :       // evaluate analytic solution at time t
+<span class="lineNum">     574 </span>        [<span class="branchCov" title="Branch 0 was taken 1238 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">       1238 :       initialize( coord, U, t );</span>
+<span class="lineNum">     575 </span>                :            :       // will output analytic solution for all components
+<span class="lineNum">     576 </span>        [<span class="branchCov" title="Branch 0 was taken 1238 times"> + </span><span class="branchCov" title="Branch 1 was taken 1241 times"> + </span>]:<span class="lineCov">       2479 :       for (ncomp_t c=0; c&lt;m_ncomp; ++c)</span>
+<span class="lineNum">     577 </span>[<span class="branchCov" title="Branch 0 was taken 1241 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>][<span class="branchNoCov" title="Branch 2 was not taken"> - </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineCov">       2482 :         out.push_back( U.extract( c, m_offset ) );</span>
+<span class="lineNum">     578 </span>                :            :       // will output error for all components
+<span class="lineNum">     579 </span>        [<span class="branchCov" title="Branch 0 was taken 1241 times"> + </span><span class="branchCov" title="Branch 1 was taken 1238 times"> + </span>]:<span class="lineCov">       2479 :       for (ncomp_t c=0; c&lt;m_ncomp; ++c) {</span>
+<span class="lineNum">     580 </span>        [<span class="branchCov" title="Branch 0 was taken 1241 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">       1241 :         auto u = U.extract( c, m_offset );</span>
+<span class="lineNum">     581 </span>        [<span class="branchCov" title="Branch 0 was taken 1241 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">       1241 :         auto e = E.extract( c, m_offset );</span>
+<span class="lineNum">     582 </span>                :            :         Assert( u.size() == e.size(), &quot;Size mismatch&quot; );
+<span class="lineNum">     583 </span>                :            :         Assert( u.size() == v.size(), &quot;Size mismatch&quot; );
+<span class="lineNum">     584 </span>        [<span class="branchCov" title="Branch 0 was taken 536056 times"> + </span><span class="branchCov" title="Branch 1 was taken 1241 times"> + </span>]:<span class="lineCov">     537297 :         for (std::size_t i=0; i&lt;u.size(); ++i)</span>
+<span class="lineNum">     585 </span>                :<span class="lineCov">     536056 :           e[i] = std::pow( e[i] - u[i], 2.0 ) * v[i] / V;</span>
+<span class="lineNum">     586 </span>        [<span class="branchCov" title="Branch 0 was taken 1241 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">       1241 :         out.push_back( e );</span>
+<span class="lineNum">     587 </span>                :            :       }
+<span class="lineNum">     588 </span>                :<span class="lineCov">       1238 :       return out;</span>
+<span class="lineNum">     589 </span>                :            :     }
+<span class="lineNum">     590 </span>                :            : 
+<a name="591"><span class="lineNum">     591 </span>                :            :     //! Return names of integral variables to be output to diagnostics file</a>
+<span class="lineNum">     592 </span>                :            :     //! \return Vector of strings labelling integral variables output
+<span class="lineNum">     593 </span>        [<span class="branchNoCov" title="Branch 0 was not taken"> - </span><span class="branchCov" title="Branch 1 was taken 73 times"> + </span>]:<span class="lineCov">         73 :     std::vector&lt; std::string &gt; names() const {</span>
+<span class="lineNum">     594 </span>                :            :       std::vector&lt; std::string &gt; n;
+<span class="lineNum">     595 </span>                :            :       const auto&amp; depvar =
+<span class="lineNum">     596 </span>                :            :         g_inputdeck.get&lt; tag::param, tag::transport, tag::depvar &gt;().
+<span class="lineNum">     597 </span>        [<span class="branchNoCov" title="Branch 0 was not taken"> - </span><span class="branchCov" title="Branch 1 was taken 73 times"> + </span>]:<span class="lineCov">         73 :         at(m_system);</span>
+<span class="lineNum">     598 </span>                :            :       // construct the name of the numerical solution for all components
+<span class="lineNum">     599 </span>        [<span class="branchCov" title="Branch 0 was taken 74 times"> + </span><span class="branchCov" title="Branch 1 was taken 73 times"> + </span>]:<span class="lineCov">        147 :       for (ncomp_t c=0; c&lt;m_ncomp; ++c)</span>
+<span class="lineNum">     600 </span>[<span class="branchCov" title="Branch 0 was taken 74 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>][<span class="branchNoCov" title="Branch 2 was not taken"> - </span><span class="branchCov" title="Branch 3 was taken 74 times"> + </span>]:<span class="lineCov">        148 :         n.push_back( depvar + std::to_string(c) );</span>
+<span class="lineNum">         </span>        [<span class="branchNoCov" title="Branch 4 was not taken"> - </span><span class="branchNoCov" title="Branch 5 was not taken"> - </span>]
+<span class="lineNum">     601 </span>                :<span class="lineCov">         73 :       return n;</span>
+<span class="lineNum">     602 </span>                :            :     }
+<span class="lineNum">     603 </span>                :            : 
+<span class="lineNum">     604 </span>                :            :   private:
+<span class="lineNum">     605 </span>                :            :     const Physics m_physics;            //!&lt; Physics policy
+<span class="lineNum">     606 </span>                :            :     const Problem m_problem;            //!&lt; Problem policy
+<span class="lineNum">     607 </span>                :            :     const ncomp_t m_system;             //!&lt; Equation system index
+<span class="lineNum">     608 </span>                :            :     const ncomp_t m_ncomp;              //!&lt; Number of components in this PDE
+<span class="lineNum">     609 </span>                :            :     const ncomp_t m_offset;             //!&lt; Offset this PDE operates from
+<span class="lineNum">     610 </span>                :            : 
+<span class="lineNum">     611 </span>                :            :     //! Compute element contribution to nodal gradient
+<span class="lineNum">     612 </span>                :            :     //! \param[in] e Element whose contribution to compute
+<span class="lineNum">     613 </span>                :            :     //! \param[in] coord Mesh node coordinates
+<span class="lineNum">     614 </span>                :            :     //! \param[in] inpoel Mesh element connectivity
+<span class="lineNum">     615 </span>                :            :     //! \param[in] U Solution vector at recent time step
+<span class="lineNum">     616 </span>                :            :     //! \return Tuple of element contribution
+<a name="617"><span class="lineNum">     617 </span>                :            :     //! \note The function signature must follow tk::ElemGradFn</a>
+<span class="lineNum">     618 </span>                :            :     static tk::ElemGradFn::result_type
+<span class="lineNum">     619 </span>                :<span class="lineCov">  255951800 :     egrad( ncomp_t ncomp,</span>
+<span class="lineNum">     620 </span>                :            :            ncomp_t offset,
+<span class="lineNum">     621 </span>                :            :            std::size_t e,
+<span class="lineNum">     622 </span>                :            :            const std::array&lt; std::vector&lt; tk::real &gt;, 3 &gt;&amp; coord,
+<span class="lineNum">     623 </span>                :            :            const std::vector&lt; std::size_t &gt;&amp; inpoel,
+<span class="lineNum">     624 </span>                :            :            const tk::Fields&amp; U )
+<span class="lineNum">     625 </span>                :            :     {
+<span class="lineNum">     626 </span>                :            :       // access node cooordinates
+<span class="lineNum">     627 </span>                :            :       const auto&amp; x = coord[0];
+<span class="lineNum">     628 </span>                :            :       const auto&amp; y = coord[1];
+<span class="lineNum">     629 </span>                :            :       const auto&amp; z = coord[2];
+<span class="lineNum">     630 </span>                :            :       // access node IDs
+<span class="lineNum">     631 </span>                :            :       const std::array&lt; std::size_t, 4 &gt;
+<span class="lineNum">     632 </span>                :<span class="lineCov">  255951800 :         N{{ inpoel[e*4+0], inpoel[e*4+1], inpoel[e*4+2], inpoel[e*4+3] }};</span>
+<span class="lineNum">     633 </span>                :            :       // compute element Jacobi determinant
+<span class="lineNum">     634 </span>                :            :       const std::array&lt; tk::real, 3 &gt;
+<span class="lineNum">     635 </span>                :<span class="lineCov">  255951800 :         ba{{ x[N[1]]-x[N[0]], y[N[1]]-y[N[0]], z[N[1]]-z[N[0]] }},</span>
+<span class="lineNum">     636 </span>                :<span class="lineCov">  255951800 :         ca{{ x[N[2]]-x[N[0]], y[N[2]]-y[N[0]], z[N[2]]-z[N[0]] }},</span>
+<span class="lineNum">     637 </span>                :<span class="lineCov">  255951800 :         da{{ x[N[3]]-x[N[0]], y[N[3]]-y[N[0]], z[N[3]]-z[N[0]] }};</span>
+<span class="lineNum">     638 </span>                :<span class="lineCov">  255951800 :       const auto J = tk::triple( ba, ca, da );        // J = 6V</span>
+<span class="lineNum">     639 </span>                :            :       Assert( J &gt; 0, &quot;Element Jacobian non-positive&quot; );
+<span class="lineNum">     640 </span>                :            :       // shape function derivatives, nnode*ndim [4][3]
+<span class="lineNum">     641 </span>                :            :       std::array&lt; std::array&lt; tk::real, 3 &gt;, 4 &gt; grad;
+<span class="lineNum">     642 </span>                :<span class="lineCov">  255951800 :       grad[1] = tk::crossdiv( ca, da, J );</span>
+<span class="lineNum">     643 </span>                :<span class="lineCov">  255951800 :       grad[2] = tk::crossdiv( da, ba, J );</span>
+<span class="lineNum">     644 </span>                :<span class="lineCov">  255951800 :       grad[3] = tk::crossdiv( ba, ca, J );</span>
+<span class="lineNum">     645 </span>        [<span class="branchCov" title="Branch 0 was taken 767855400 times"> + </span><span class="branchCov" title="Branch 1 was taken 255951800 times"> + </span>]:<span class="lineCov"> 1023807000 :       for (std::size_t i=0; i&lt;3; ++i)</span>
+<span class="lineNum">     646 </span>                :<span class="lineCov">  767855400 :         grad[0][i] = -grad[1][i]-grad[2][i]-grad[3][i];</span>
+<span class="lineNum">     647 </span>                :            :       // access solution at element nodes
+<span class="lineNum">     648 </span>                :<span class="lineCov">  255951800 :       std::vector&lt; std::array&lt; tk::real, 4 &gt; &gt; u( ncomp );</span>
+<span class="lineNum">     649 </span>        [<span class="branchCov" title="Branch 0 was taken 255951800 times"> + </span><span class="branchCov" title="Branch 1 was taken 255951800 times"> + </span>]:<span class="lineCov">  511903600 :       for (ncomp_t c=0; c&lt;ncomp; ++c) u[c] = U.extract( c, offset, N );</span>
+<span class="lineNum">     650 </span>                :            :       // return data needed to scatter add element contribution to gradient
+<span class="lineNum">     651 </span>                :            :       return std::tuple&lt; std::array&lt; std::size_t, 4 &gt;,
+<span class="lineNum">     652 </span>                :            :                          std::array&lt; std::array&lt; tk::real, 3 &gt;, 4 &gt;,
+<span class="lineNum">     653 </span>                :            :                          std::vector&lt; std::array&lt; tk::real, 4 &gt; &gt;,
+<span class="lineNum">     654 </span>                :            :                          tk::real &gt;
+<span class="lineNum">     655 </span>                :<span class="lineCov">  255951800 :                { std::move(N), std::move(grad), std::move(u), std::move(J) };</span>
+<span class="lineNum">     656 </span>                :            :     }
+<span class="lineNum">     657 </span>                :            : };
+<span class="lineNum">     658 </span>                :            : 
+<span class="lineNum">     659 </span>                :            : } // cg::
+<span class="lineNum">     660 </span>                :            : } // inciter::
+<span class="lineNum">     661 </span>                :            : 
+<span class="lineNum">     662 </span>                :            : #endif // Transport_h
 </pre>
       </td>
     </tr>
