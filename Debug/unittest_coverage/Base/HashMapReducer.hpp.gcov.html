@@ -24,20 +24,20 @@
           </tr>
           <tr>
             <td class="headerItem">Commit:</td>
-            <td class="headerValue"><a href="https://github.com/quinoacomputing/quinoa/commit/18b0a61">Quinoa_v0.2-3903-g18b0a61</a></td>
+            <td class="headerValue"><a href="https://github.com/quinoacomputing/quinoa/commit/bfd3874">Quinoa_v0.2-3945-gbfd3874</a></td>
             <td></td>
             <td class="headerItem">Lines:</td>
             <td class="headerCovTableEntry">0</td>
-            <td class="headerCovTableEntry">25</td>
+            <td class="headerCovTableEntry">18</td>
             <td class="headerCovTableEntryLo">0.0 %</td>
           </tr>
           <tr>
             <td class="headerItem">Date:</td>
-            <td class="headerValue">2020-02-13 07:25:36</td>
+            <td class="headerValue">2020-02-15 17:53:05</td>
             <td></td>
             <td class="headerItem">Functions:</td>
             <td class="headerCovTableEntry">0</td>
-            <td class="headerCovTableEntry">3</td>
+            <td class="headerCovTableEntry">2</td>
             <td class="headerCovTableEntryLo">0.0 %</td>
           </tr>
           <tr>
@@ -53,7 +53,7 @@
             <td></td>
             <td class="headerItem">Branches:</td>
             <td class="headerCovTableEntry">0</td>
-            <td class="headerCovTableEntry">24</td>
+            <td class="headerCovTableEntry">22</td>
             <td class="headerCovTableEntryLo">0.0 %</td>
           </tr>
           <tr><td><img src="../glass.png" width=3 height=3 alt=""></td></tr>
@@ -125,104 +125,56 @@
 <span class="lineNum">      51 </span>                :<span class="lineNoCov">          0 :   return { sizer.size(), std::move(flatData) };</span>
 <span class="lineNum">      52 </span>                :            : }
 <span class="lineNum">      53 </span>                :            : 
-<span class="lineNum">      54 </span>                :            : //! Concatenate vectors of T
-<span class="lineNum">      55 </span>                :            : //! \tparam T Vector value type
-<span class="lineNum">      56 </span>                :            : //! \param[in,out] src Source vector (moved from)
-<a name="57"><span class="lineNum">      57 </span>                :            : //! \param[in,out] dst Destination vector</a>
-<span class="lineNum">      58 </span>                :            : template&lt; class T &gt;
-<span class="lineNum">      59 </span>                :<span class="lineNoCov">          0 : void concat( std::vector&lt; T &gt;&amp;&amp; src, std::vector&lt; T &gt;&amp; dst )</span>
-<span class="lineNum">      60 </span>                :            : {
-<span class="lineNum">      61 </span>        [<span class="branchNoCov" title="Branch 0 was not taken"> - </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineNoCov">          0 :   if (dst.empty())</span>
-<span class="lineNum">      62 </span>                :<span class="lineNoCov">          0 :     dst = std::move(src);</span>
-<span class="lineNum">      63 </span>                :            :   else {
-<span class="lineNum">      64 </span>                :<span class="lineNoCov">          0 :     dst.reserve( dst.size() + src.size() );</span>
-<span class="lineNum">      65 </span>                :<span class="lineNoCov">          0 :     std::move( std::begin(src), std::end(src), std::back_inserter(dst) );</span>
-<span class="lineNum">      66 </span>                :<span class="lineNoCov">          0 :     src.clear();</span>
-<span class="lineNum">      67 </span>                :            :   }
-<span class="lineNum">      68 </span>                :<span class="lineNoCov">          0 : }</span>
-<span class="lineNum">      69 </span>                :            : 
-<span class="lineNum">      70 </span>                :            : //! Overwrite vectors of pair&lt; bool, tk::real &gt;
-<span class="lineNum">      71 </span>                :            : //! \tparam T Vector value type
-<span class="lineNum">      72 </span>                :            : //! \param[in,out] src Source vector (moved from)
-<span class="lineNum">      73 </span>                :            : //! \param[in,out] dst Destination vector
-<span class="lineNum">      74 </span>                :            : template&lt; class T &gt;
-<span class="lineNum">      75 </span>                :            : void concat( std::vector&lt; std::pair&lt; bool, T &gt; &gt;&amp;&amp; src,
-<span class="lineNum">      76 </span>                :            :              std::vector&lt; std::pair&lt; bool, T &gt; &gt;&amp; dst )
-<span class="lineNum">      77 </span>                :            : {
-<span class="lineNum">      78 </span>                :            :   dst = std::move(src);
-<span class="lineNum">      79 </span>                :            : }
+<span class="lineNum">      54 </span>                :            : //! \brief Charm++ custom reducer for merging std::unordered_maps during
+<span class="lineNum">      55 </span>                :            : //!   reduction across PEs
+<span class="lineNum">      56 </span>                :            : //! \tparam Key Map key
+<span class="lineNum">      57 </span>                :            : //! \tparam T Map value
+<span class="lineNum">      58 </span>                :            : //! \tparam Hash Map hasher
+<span class="lineNum">      59 </span>                :            : //! \tparam Eq Map equality operator
+<span class="lineNum">      60 </span>                :            : //! \param[in] nmsg Number of messages in msgs
+<span class="lineNum">      61 </span>                :            : //! \param[in] msgs Charm++ reduction message containing the serialized maps
+<span class="lineNum">      62 </span>                :            : //! \return Aggregated std::unordered_maps built for further aggregation if
+<span class="lineNum">      63 </span>                :            : //!    needed
+<span class="lineNum">      64 </span>                :            : //! \details During aggregation the map keys are inserted, i.e., the keys remain
+<span class="lineNum">      65 </span>                :            : //!   unique and the mapped values, assuming containers defining begin() and
+<span class="lineNum">      66 </span>                :            : //!   end() iterators() are concatenated.
+<span class="lineNum">      67 </span>                :            : //! \note The mapped type must be a container, i.e., must provide iterators
+<span class="lineNum">      68 </span>                :            : //!   begin() and end().
+<span class="lineNum">      69 </span>                :            : template&lt; class Key,
+<span class="lineNum">      70 </span>                :            :           class T,
+<span class="lineNum">      71 </span>                :            :           class Hash = std::hash&lt; Key &gt;,
+<a name="72"><span class="lineNum">      72 </span>                :            :           class Eq = std::equal_to&lt; Key &gt; &gt;</a>
+<span class="lineNum">      73 </span>                :            : CkReductionMsg*
+<span class="lineNum">      74 </span>                :<span class="lineNoCov">          0 : mergeHashMap( int nmsg, CkReductionMsg **msgs ) {</span>
+<span class="lineNum">      75 </span>                :            :   // Will store deserialized map
+<span class="lineNum">      76 </span>                :<span class="lineNoCov">          0 :   std::unordered_map&lt; Key, T, Hash, Eq &gt; p;</span>
+<span class="lineNum">      77 </span>                :            : 
+<span class="lineNum">      78 </span>                :            :   // Create PUP deserializer based on message passed in
+<span class="lineNum">      79 </span>                :<span class="lineNoCov">          0 :   PUP::fromMem creator( msgs[0]-&gt;getData() );</span>
 <span class="lineNum">      80 </span>                :            : 
-<span class="lineNum">      81 </span>                :            : //! Concatenate unordered sets
-<span class="lineNum">      82 </span>                :            : //! \tparam Key Set key
-<span class="lineNum">      83 </span>                :            : //! \tparam Hash Set hasher
-<span class="lineNum">      84 </span>                :            : //! \tparam Eq Set equality operator
-<span class="lineNum">      85 </span>                :            : //! \param[in,out] src Source set (moved from)
-<span class="lineNum">      86 </span>                :            : //! \param[in,out] dst Destination set
-<span class="lineNum">      87 </span>                :            : template&lt; class Key,
-<span class="lineNum">      88 </span>                :            :           class Hash = std::hash&lt; Key &gt;,
-<span class="lineNum">      89 </span>                :            :           class Eq = std::equal_to&lt; Key &gt; &gt;
-<span class="lineNum">      90 </span>                :            : void concat( std::unordered_set&lt; Key, Hash,Eq &gt;&amp;&amp; src,
-<span class="lineNum">      91 </span>                :            :              std::unordered_set&lt; Key, Hash, Eq &gt;&amp; dst )
-<span class="lineNum">      92 </span>                :            : {
-<span class="lineNum">      93 </span>                :            :   if (dst.empty())
-<span class="lineNum">      94 </span>                :            :     dst = std::move(src);
-<span class="lineNum">      95 </span>                :            :   else {
-<span class="lineNum">      96 </span>                :            :     dst.reserve( dst.size() + src.size() );
-<span class="lineNum">      97 </span>                :            :     std::move( std::begin(src), std::end(src), std::inserter(dst,end(dst)) );
-<span class="lineNum">      98 </span>                :            :     src.clear();
-<span class="lineNum">      99 </span>                :            :   }
-<span class="lineNum">     100 </span>                :            : }
-<span class="lineNum">     101 </span>                :            : 
-<span class="lineNum">     102 </span>                :            : //! \brief Charm++ custom reducer for merging std::unordered_maps during
-<span class="lineNum">     103 </span>                :            : //!   reduction across PEs
-<span class="lineNum">     104 </span>                :            : //! \tparam Key Map key
-<span class="lineNum">     105 </span>                :            : //! \tparam T Map value
-<span class="lineNum">     106 </span>                :            : //! \tparam Hash Map hasher
-<span class="lineNum">     107 </span>                :            : //! \tparam Eq Map equality operator
-<span class="lineNum">     108 </span>                :            : //! \param[in] nmsg Number of messages in msgs
-<span class="lineNum">     109 </span>                :            : //! \param[in] msgs Charm++ reduction message containing the serialized maps
-<span class="lineNum">     110 </span>                :            : //! \return Aggregated std::unordered_maps built for further aggregation if
-<span class="lineNum">     111 </span>                :            : //!    needed
-<span class="lineNum">     112 </span>                :            : //! \details During aggregation the map keys are inserted, i.e., the keys remain
-<span class="lineNum">     113 </span>                :            : //!   unique and the mapped values, assuming containers defining begin() and
-<span class="lineNum">     114 </span>                :            : //!   end() iterators() are concatenated.
-<span class="lineNum">     115 </span>                :            : //! \note The mapped type must be a container, i.e., must provide iterators
-<span class="lineNum">     116 </span>                :            : //!   begin() and end().
-<span class="lineNum">     117 </span>                :            : template&lt; class Key,
-<span class="lineNum">     118 </span>                :            :           class T,
-<span class="lineNum">     119 </span>                :            :           class Hash = std::hash&lt; Key &gt;,
-<a name="120"><span class="lineNum">     120 </span>                :            :           class Eq = std::equal_to&lt; Key &gt; &gt;</a>
-<span class="lineNum">     121 </span>                :            : CkReductionMsg*
-<span class="lineNum">     122 </span>                :<span class="lineNoCov">          0 : mergeHashMap( int nmsg, CkReductionMsg **msgs ) {</span>
-<span class="lineNum">     123 </span>                :            :   // Will store deserialized map
-<span class="lineNum">     124 </span>                :<span class="lineNoCov">          0 :   std::unordered_map&lt; Key, T, Hash, Eq &gt; p;</span>
-<span class="lineNum">     125 </span>                :            : 
-<span class="lineNum">     126 </span>                :            :   // Create PUP deserializer based on message passed in
-<span class="lineNum">     127 </span>                :<span class="lineNoCov">          0 :   PUP::fromMem creator( msgs[0]-&gt;getData() );</span>
-<span class="lineNum">     128 </span>                :            : 
-<span class="lineNum">     129 </span>                :            :   // Deserialize map from raw stream
-<span class="lineNum">     130 </span>        [<span class="branchNoCov" title="Branch 0 was not taken"> - </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineNoCov">          0 :   creator | p;</span>
-<span class="lineNum">     131 </span>                :            : 
-<span class="lineNum">     132 </span>        [<span class="branchNoCov" title="Branch 0 was not taken"> - </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineNoCov">          0 :   for (int m=1; m&lt;nmsg; ++m) {</span>
-<span class="lineNum">     133 </span>                :            :     // Unpack map
-<span class="lineNum">     134 </span>                :<span class="lineNoCov">          0 :     std::unordered_map&lt; Key, T, Hash, Eq &gt; u;</span>
-<span class="lineNum">     135 </span>                :<span class="lineNoCov">          0 :     PUP::fromMem curCreator( msgs[m]-&gt;getData() );</span>
-<span class="lineNum">     136 </span>        [<span class="branchNoCov" title="Branch 0 was not taken"> - </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineNoCov">          0 :     curCreator | u;</span>
-<span class="lineNum">     137 </span>                :            :     // Concatenate maps
-<span class="lineNum">     138 </span>[<span class="branchNoCov" title="Branch 0 was not taken"> - </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>][<span class="branchNoCov" title="Branch 2 was not taken"> - </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineNoCov">          0 :     for (auto&amp;&amp; c : u) concat( std::move(c.second), p[c.first] );</span>
+<span class="lineNum">      81 </span>                :            :   // Deserialize map from raw stream
+<span class="lineNum">      82 </span>        [<span class="branchNoCov" title="Branch 0 was not taken"> - </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineNoCov">          0 :   creator | p;</span>
+<span class="lineNum">      83 </span>                :            : 
+<span class="lineNum">      84 </span>        [<span class="branchNoCov" title="Branch 0 was not taken"> - </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineNoCov">          0 :   for (int m=1; m&lt;nmsg; ++m) {</span>
+<span class="lineNum">      85 </span>                :            :     // Unpack map
+<span class="lineNum">      86 </span>                :<span class="lineNoCov">          0 :     std::unordered_map&lt; Key, T, Hash, Eq &gt; u;</span>
+<span class="lineNum">      87 </span>                :<span class="lineNoCov">          0 :     PUP::fromMem curCreator( msgs[m]-&gt;getData() );</span>
+<span class="lineNum">      88 </span>        [<span class="branchNoCov" title="Branch 0 was not taken"> - </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineNoCov">          0 :     curCreator | u;</span>
+<span class="lineNum">      89 </span>                :            :     // Concatenate maps
+<span class="lineNum">      90 </span>[<span class="branchNoCov" title="Branch 0 was not taken"> - </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>][<span class="branchNoCov" title="Branch 2 was not taken"> - </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineNoCov">          0 :     for (auto&amp;&amp; c : u) concat( std::move(c.second), p[c.first] );</span>
 <span class="lineNum">         </span>        [<span class="branchNoCov" title="Branch 4 was not taken"> - </span><span class="branchNoCov" title="Branch 5 was not taken"> - </span>]
-<span class="lineNum">     139 </span>                :            :   }
-<span class="lineNum">     140 </span>                :            : 
-<span class="lineNum">     141 </span>                :            :   // Serialize concatenated maps to raw stream
-<span class="lineNum">     142 </span>        [<span class="branchNoCov" title="Branch 0 was not taken"> - </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineNoCov">          0 :   auto stream = tk::serialize( p );</span>
-<span class="lineNum">     143 </span>                :            : 
-<span class="lineNum">     144 </span>                :            :   // Forward serialized hash map
-<span class="lineNum">     145 </span>        [<span class="branchNoCov" title="Branch 0 was not taken"> - </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineNoCov">          0 :   return CkReductionMsg::buildNew( stream.first, stream.second.get() );</span>
-<span class="lineNum">     146 </span>                :            : }
-<span class="lineNum">     147 </span>                :            : 
-<span class="lineNum">     148 </span>                :            : } // tk::
-<span class="lineNum">     149 </span>                :            : 
-<span class="lineNum">     150 </span>                :            : #endif // HashMapReducer_h
+<span class="lineNum">      91 </span>                :            :   }
+<span class="lineNum">      92 </span>                :            : 
+<span class="lineNum">      93 </span>                :            :   // Serialize concatenated maps to raw stream
+<span class="lineNum">      94 </span>        [<span class="branchNoCov" title="Branch 0 was not taken"> - </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineNoCov">          0 :   auto stream = tk::serialize( p );</span>
+<span class="lineNum">      95 </span>                :            : 
+<span class="lineNum">      96 </span>                :            :   // Forward serialized hash map
+<span class="lineNum">      97 </span>        [<span class="branchNoCov" title="Branch 0 was not taken"> - </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineNoCov">          0 :   return CkReductionMsg::buildNew( stream.first, stream.second.get() );</span>
+<span class="lineNum">      98 </span>                :            : }
+<span class="lineNum">      99 </span>                :            : 
+<span class="lineNum">     100 </span>                :            : } // tk::
+<span class="lineNum">     101 </span>                :            : 
+<span class="lineNum">     102 </span>                :            : #endif // HashMapReducer_h
 </pre>
       </td>
     </tr>
