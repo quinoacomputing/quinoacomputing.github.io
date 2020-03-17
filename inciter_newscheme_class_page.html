@@ -171,8 +171,8 @@
 <span class="c1">// *****************************************************************************</span>
 <span class="c1">//  Constructor</span>
 <span class="c1">//! \param[in] disc Discretization proxy</span>
-<span class="c1">//! \param[in] bface Boundary-faces mapped to side set ids where BCs set</span>
-<span class="c1">//! \param[in] bnode Boundary-node lists mapped to side set ids where BCs set</span>
+<span class="c1">//! \param[in] bface Boundary-faces mapped to side sets used in the input file</span>
+<span class="c1">//! \param[in] bnode Boundary-node lists mapped to side sets used in input file</span>
 <span class="c1">//! \param[in] triinpoel Boundary-face connectivity where BCs set (global ids)</span>
 <span class="c1">// *****************************************************************************</span>
 <span class="c1">//! [Constructor]</span>
@@ -984,24 +984,45 @@
 
     <span class="k">auto</span> <span class="n">d</span> <span class="o">=</span> <span class="n">Disc</span><span class="p">();</span>
 
-    <span class="c1">// Query and collect field names from PDEs integrated</span>
+    <span class="c1">// Query and collect block and surface field names from PDEs integrated</span>
     <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="o">&gt;</span> <span class="n">nodefieldnames</span><span class="p">;</span>
+    <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="o">&gt;</span> <span class="n">nodesurfnames</span><span class="p">;</span>
     <span class="k">for</span> <span class="p">(</span><span class="k">const</span> <span class="k">auto</span><span class="o">&amp;</span> <span class="nl">eq</span> <span class="p">:</span> <span class="n">g_cgpde</span><span class="p">)</span> <span class="p">{</span>
       <span class="k">auto</span> <span class="n">n</span> <span class="o">=</span> <span class="n">eq</span><span class="p">.</span><span class="n">fieldNames</span><span class="p">();</span>
       <span class="n">nodefieldnames</span><span class="p">.</span><span class="n">insert</span><span class="p">(</span> <span class="n">end</span><span class="p">(</span><span class="n">nodefieldnames</span><span class="p">),</span> <span class="n">begin</span><span class="p">(</span><span class="n">n</span><span class="p">),</span> <span class="n">end</span><span class="p">(</span><span class="n">n</span><span class="p">)</span> <span class="p">);</span>
+      <span class="k">auto</span> <span class="n">s</span> <span class="o">=</span> <span class="n">eq</span><span class="p">.</span><span class="n">surfNames</span><span class="p">();</span>
+      <span class="n">nodesurfnames</span><span class="p">.</span><span class="n">insert</span><span class="p">(</span> <span class="n">end</span><span class="p">(</span><span class="n">nodesurfnames</span><span class="p">),</span> <span class="n">begin</span><span class="p">(</span><span class="n">s</span><span class="p">),</span> <span class="n">end</span><span class="p">(</span><span class="n">s</span><span class="p">)</span> <span class="p">);</span>
     <span class="p">}</span>
 
-    <span class="c1">// Collect node field solution</span>
+    <span class="c1">// Generate side set triangle connectivity with local node ids</span>
+    <span class="k">auto</span> <span class="n">ltriinp</span> <span class="o">=</span> <span class="n">tk</span><span class="o">::</span><span class="n">remap</span><span class="p">(</span> <span class="n">m_triinpoel</span><span class="p">,</span> <span class="n">d</span><span class="o">-&gt;</span><span class="n">Lid</span><span class="p">()</span> <span class="p">);</span>
+
+    <span class="c1">// Collect node block and surface field solution</span>
     <span class="k">auto</span> <span class="n">u</span> <span class="o">=</span> <span class="n">m_u</span><span class="p">;</span>
     <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span> <span class="n">tk</span><span class="o">::</span><span class="n">real</span> <span class="o">&gt;</span> <span class="o">&gt;</span> <span class="n">nodefields</span><span class="p">;</span>
+    <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span> <span class="n">tk</span><span class="o">::</span><span class="n">real</span> <span class="o">&gt;</span> <span class="o">&gt;</span> <span class="n">nodesurfs</span><span class="p">;</span>
     <span class="k">for</span> <span class="p">(</span><span class="k">const</span> <span class="k">auto</span><span class="o">&amp;</span> <span class="nl">eq</span> <span class="p">:</span> <span class="n">g_cgpde</span><span class="p">)</span> <span class="p">{</span>
       <span class="k">auto</span> <span class="n">o</span> <span class="o">=</span> <span class="n">eq</span><span class="p">.</span><span class="n">fieldOutput</span><span class="p">(</span> <span class="n">d</span><span class="o">-&gt;</span><span class="n">T</span><span class="p">(),</span> <span class="n">d</span><span class="o">-&gt;</span><span class="n">meshvol</span><span class="p">(),</span> <span class="n">d</span><span class="o">-&gt;</span><span class="n">Coord</span><span class="p">(),</span> <span class="n">d</span><span class="o">-&gt;</span><span class="n">V</span><span class="p">(),</span> <span class="n">u</span> <span class="p">);</span>
       <span class="n">nodefields</span><span class="p">.</span><span class="n">insert</span><span class="p">(</span> <span class="n">end</span><span class="p">(</span><span class="n">nodefields</span><span class="p">),</span> <span class="n">begin</span><span class="p">(</span><span class="n">o</span><span class="p">),</span> <span class="n">end</span><span class="p">(</span><span class="n">o</span><span class="p">)</span> <span class="p">);</span>
+      <span class="k">auto</span> <span class="n">s</span> <span class="o">=</span> <span class="n">eq</span><span class="p">.</span><span class="n">surfOutput</span><span class="p">(</span> <span class="n">tk</span><span class="o">::</span><span class="n">bfacenodes</span><span class="p">(</span><span class="n">m_bface</span><span class="p">,</span><span class="n">ltriinp</span><span class="p">),</span> <span class="n">u</span> <span class="p">);</span>
+      <span class="n">nodesurfs</span><span class="p">.</span><span class="n">insert</span><span class="p">(</span> <span class="n">end</span><span class="p">(</span><span class="n">nodesurfs</span><span class="p">),</span> <span class="n">begin</span><span class="p">(</span><span class="n">s</span><span class="p">),</span> <span class="n">end</span><span class="p">(</span><span class="n">s</span><span class="p">)</span> <span class="p">);</span>
     <span class="p">}</span>
 
+    <span class="c1">// Create volume node field assigning 1 where symmetry BC is set</span>
+    <span class="c1">// std::unordered_set&lt; std::size_t &gt; symbcnodes;</span>
+    <span class="c1">// for (const auto&amp; eq : g_cgpde)</span>
+    <span class="c1">//   eq.symbcnodes( m_bface, m_triinpoel, symbcnodes );</span>
+    <span class="c1">// nodefieldnames.push_back( &quot;bc_type&quot; );</span>
+    <span class="c1">// nodefields.push_back( std::vector&lt;tk::real&gt;(d-&gt;Coord()[0].size(),0.0) );</span>
+    <span class="c1">// for (auto i : symbcnodes)</span>
+    <span class="c1">//   nodefields.back()[ tk::cref_find(d-&gt;Lid(),i) ] = 1.0;</span>
+
+    <span class="n">Assert</span><span class="p">(</span> <span class="n">nodefieldnames</span><span class="p">.</span><span class="n">size</span><span class="p">()</span> <span class="o">==</span> <span class="n">nodefields</span><span class="p">.</span><span class="n">size</span><span class="p">(),</span> <span class="s">&quot;Size mismatch&quot;</span> <span class="p">);</span>
+
     <span class="c1">// Send mesh and fields data (solution dump) for output to file</span>
-    <span class="n">d</span><span class="o">-&gt;</span><span class="n">write</span><span class="p">(</span> <span class="n">d</span><span class="o">-&gt;</span><span class="n">Inpoel</span><span class="p">(),</span> <span class="n">d</span><span class="o">-&gt;</span><span class="n">Coord</span><span class="p">(),</span> <span class="p">{},</span> <span class="n">tk</span><span class="o">::</span><span class="n">remap</span><span class="p">(</span><span class="n">m_bnode</span><span class="p">,</span><span class="n">d</span><span class="o">-&gt;</span><span class="n">Lid</span><span class="p">()),</span> <span class="p">{},</span> <span class="p">{},</span>
-              <span class="n">nodefieldnames</span><span class="p">,</span> <span class="p">{},</span> <span class="n">nodefields</span><span class="p">,</span> <span class="n">c</span> <span class="p">);</span>
+    <span class="n">d</span><span class="o">-&gt;</span><span class="n">write</span><span class="p">(</span> <span class="n">d</span><span class="o">-&gt;</span><span class="n">Inpoel</span><span class="p">(),</span> <span class="n">d</span><span class="o">-&gt;</span><span class="n">Coord</span><span class="p">(),</span> <span class="n">m_bface</span><span class="p">,</span> <span class="n">tk</span><span class="o">::</span><span class="n">remap</span><span class="p">(</span><span class="n">m_bnode</span><span class="p">,</span><span class="n">d</span><span class="o">-&gt;</span><span class="n">Lid</span><span class="p">()),</span>
+              <span class="n">ltriinp</span><span class="p">,</span> <span class="p">{},</span> <span class="n">nodefieldnames</span><span class="p">,</span> <span class="n">nodesurfnames</span><span class="p">,</span> <span class="p">{},</span> <span class="n">nodefields</span><span class="p">,</span>
+              <span class="n">nodesurfs</span><span class="p">,</span> <span class="n">c</span> <span class="p">);</span>
 
   <span class="p">}</span>
 <span class="p">}</span>
@@ -1145,7 +1166,7 @@
   <div class="m-container">
     <div class="m-row">
       <div class="m-col-l-10 m-push-l-1">
-        <p>Quinoa docs, part of the <a href="http://quinoacomputing.org/">Quinoa project</a>. Copyright © J. Bakosi 2012&ndash;2015, Los Alamos National Security, LLC, 2016&ndash;2018, <a href="https://www.triadns.org/">Triad National Security, LLC,</a> 2019-2020. Generated on Tuesday, Feb 25, 2020 based on <a href="https://github.com/quinoacomputing/quinoa/commit/e67acfe">e67acfe</a> by <a href="http://doxygen.org/">Doxygen</a> and <a href="http://mcss.mosra.cz/">m.css</a>. Contact us via <a href="https://github.com/quinoacomputing/quinoa/">GitHub</a>, <a href="https://groups.io/g/quinoa">Email</a> or <a href="https://quinoa.zulipchat.com">Chat</a>.</p>
+        <p>Quinoa docs, part of the <a href="http://quinoacomputing.org/">Quinoa project</a>. Copyright © J. Bakosi 2012&ndash;2015, Los Alamos National Security, LLC, 2016&ndash;2018, <a href="https://www.triadns.org/">Triad National Security, LLC,</a> 2019-2020. Generated on Monday, Mar 16, 2020 based on <a href="https://github.com/quinoacomputing/quinoa/commit/27c1fd3">27c1fd3</a> by <a href="http://doxygen.org/">Doxygen</a> and <a href="http://mcss.mosra.cz/">m.css</a>. Contact us via <a href="https://github.com/quinoacomputing/quinoa/">GitHub</a>, <a href="https://groups.io/g/quinoa">Email</a> or <a href="https://quinoa.zulipchat.com">Chat</a>.</p>
       </div>
     </div>
   </div>
