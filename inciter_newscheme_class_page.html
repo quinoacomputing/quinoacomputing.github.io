@@ -442,20 +442,6 @@
 <span class="p">}</span>
 <span class="c1">//! [init and lhs]</span>
 
-
-<span class="kt">void</span>
-<span class="n">ALECG</span><span class="o">::</span><span class="n">start</span><span class="p">()</span>
-<span class="c1">// *****************************************************************************</span>
-<span class="c1">//  Start time stepping</span>
-<span class="c1">// *****************************************************************************</span>
-<span class="p">{</span>
-  <span class="c1">// Start timer measuring time stepping wall clock time</span>
-  <span class="n">Disc</span><span class="p">()</span><span class="o">-&gt;</span><span class="n">Timer</span><span class="p">().</span><span class="n">zero</span><span class="p">();</span>
-
-  <span class="c1">// Start time stepping by computing the size of the next time step)</span>
-  <span class="n">next</span><span class="p">();</span>
-<span class="p">}</span>
-
 <span class="c1">//! [Compute own and send lhs on chare-boundary]</span>
 <span class="kt">void</span>
 <span class="n">ALECG</span><span class="o">::</span><span class="n">lhs</span><span class="p">()</span>
@@ -543,7 +529,16 @@
   <span class="n">normfinal</span><span class="p">();</span>
 
   <span class="c1">// Continue after lhs is complete</span>
-  <span class="k">if</span> <span class="p">(</span><span class="n">m_initial</span><span class="p">)</span> <span class="n">start</span><span class="p">();</span> <span class="k">else</span> <span class="nf">lhs_complete</span><span class="p">();</span>
+  <span class="k">if</span> <span class="p">(</span><span class="n">m_initial</span><span class="p">)</span> <span class="p">{</span>
+    <span class="c1">// Start timer measuring time stepping wall clock time</span>
+    <span class="n">Disc</span><span class="p">()</span><span class="o">-&gt;</span><span class="n">Timer</span><span class="p">().</span><span class="n">zero</span><span class="p">();</span>
+    <span class="c1">// Zero grind-timer</span>
+    <span class="n">Disc</span><span class="p">()</span><span class="o">-&gt;</span><span class="n">grindZero</span><span class="p">();</span>
+    <span class="c1">// Continue to next time step</span>
+    <span class="n">next</span><span class="p">();</span>
+  <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+    <span class="n">lhs_complete</span><span class="p">();</span>
+  <span class="p">}</span>
 <span class="p">}</span>
 <span class="c1">//! [Merge lhs and continue]</span>
 
@@ -1050,12 +1045,16 @@
 <span class="p">}</span>
 
 <span class="kt">void</span>
-<span class="n">ALECG</span><span class="o">::</span><span class="n">evalLB</span><span class="p">()</span>
+<span class="n">ALECG</span><span class="o">::</span><span class="n">evalLB</span><span class="p">(</span> <span class="kt">int</span> <span class="n">nrestart</span> <span class="p">)</span>
 <span class="c1">// *****************************************************************************</span>
 <span class="c1">// Evaluate whether to do load balancing</span>
+<span class="c1">//! \param[in] nrestart Number of times restarted</span>
 <span class="c1">// *****************************************************************************</span>
 <span class="p">{</span>
   <span class="k">auto</span> <span class="n">d</span> <span class="o">=</span> <span class="n">Disc</span><span class="p">();</span>
+
+  <span class="c1">// Detect if just returned from a checkpoint and if so, zero timers</span>
+  <span class="n">d</span><span class="o">-&gt;</span><span class="n">restarted</span><span class="p">(</span> <span class="n">nrestart</span> <span class="p">);</span>
 
   <span class="k">const</span> <span class="k">auto</span> <span class="n">lbfreq</span> <span class="o">=</span> <span class="n">g_inputdeck</span><span class="p">.</span><span class="n">get</span><span class="o">&lt;</span> <span class="n">tag</span><span class="o">::</span><span class="n">cmd</span><span class="p">,</span> <span class="n">tag</span><span class="o">::</span><span class="n">lbfreq</span> <span class="o">&gt;</span><span class="p">();</span>
   <span class="k">const</span> <span class="k">auto</span> <span class="n">nonblocking</span> <span class="o">=</span> <span class="n">g_inputdeck</span><span class="p">.</span><span class="n">get</span><span class="o">&lt;</span> <span class="n">tag</span><span class="o">::</span><span class="n">cmd</span><span class="p">,</span> <span class="n">tag</span><span class="o">::</span><span class="n">nonblocking</span> <span class="o">&gt;</span><span class="p">();</span>
@@ -1092,7 +1091,7 @@
 
   <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
 
-    <span class="n">evalLB</span><span class="p">();</span>
+    <span class="n">evalLB</span><span class="p">(</span> <span class="cm">/* nrestart = */</span> <span class="o">-</span><span class="mi">1</span> <span class="p">);</span>
 
   <span class="p">}</span>
 <span class="p">}</span>
@@ -1166,7 +1165,7 @@
   <div class="m-container">
     <div class="m-row">
       <div class="m-col-l-10 m-push-l-1">
-        <p>Quinoa docs, part of the <a href="http://quinoacomputing.org/">Quinoa project</a>. Copyright © J. Bakosi 2012&ndash;2015, Los Alamos National Security, LLC, 2016&ndash;2018, <a href="https://www.triadns.org/">Triad National Security, LLC,</a> 2019-2020. Generated on Monday, Mar 23, 2020 based on <a href="https://github.com/quinoacomputing/quinoa/commit/ed7ec55">ed7ec55</a> by <a href="http://doxygen.org/">Doxygen</a> and <a href="http://mcss.mosra.cz/">m.css</a>. Contact us via <a href="https://github.com/quinoacomputing/quinoa/">GitHub</a>, <a href="https://groups.io/g/quinoa">Email</a> or <a href="https://quinoa.zulipchat.com">Chat</a>.</p>
+        <p>Quinoa docs, part of the <a href="http://quinoacomputing.org/">Quinoa project</a>. Copyright © J. Bakosi 2012&ndash;2015, Los Alamos National Security, LLC, 2016&ndash;2018, <a href="https://www.triadns.org/">Triad National Security, LLC,</a> 2019-2020. Generated on Saturday, Mar 28, 2020 based on <a href="https://github.com/quinoacomputing/quinoa/commit/41a044a">41a044a</a> by <a href="http://doxygen.org/">Doxygen</a> and <a href="http://mcss.mosra.cz/">m.css</a>. Contact us via <a href="https://github.com/quinoacomputing/quinoa/">GitHub</a>, <a href="https://groups.io/g/quinoa">Email</a> or <a href="https://quinoa.zulipchat.com">Chat</a>.</p>
       </div>
     </div>
   </div>
