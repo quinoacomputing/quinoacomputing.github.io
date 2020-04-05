@@ -167,7 +167,8 @@
   <span class="n">m_bnorm</span><span class="p">(),</span>
   <span class="n">m_bnormc</span><span class="p">(),</span>
   <span class="n">m_dfnormc</span><span class="p">(),</span>
-  <span class="n">m_stage</span><span class="p">(</span> <span class="mi">0</span> <span class="p">)</span>
+  <span class="n">m_stage</span><span class="p">(</span> <span class="mi">0</span> <span class="p">),</span>
+  <span class="n">m_boxnodes</span><span class="p">()</span>
 <span class="c1">// *****************************************************************************</span>
 <span class="c1">//  Constructor</span>
 <span class="c1">//! \param[in] disc Discretization proxy</span>
@@ -421,10 +422,30 @@
   <span class="k">auto</span> <span class="n">d</span> <span class="o">=</span> <span class="n">Disc</span><span class="p">();</span>
 
   <span class="c1">// Set initial conditions for all PDEs</span>
-  <span class="k">for</span> <span class="p">(</span><span class="k">const</span> <span class="k">auto</span><span class="o">&amp;</span> <span class="nl">eq</span> <span class="p">:</span> <span class="n">g_cgpde</span><span class="p">)</span> <span class="n">eq</span><span class="p">.</span><span class="n">initialize</span><span class="p">(</span> <span class="n">d</span><span class="o">-&gt;</span><span class="n">Coord</span><span class="p">(),</span> <span class="n">m_u</span><span class="p">,</span> <span class="n">d</span><span class="o">-&gt;</span><span class="n">T</span><span class="p">()</span> <span class="p">);</span>
+  <span class="k">for</span> <span class="p">(</span><span class="k">const</span> <span class="k">auto</span><span class="o">&amp;</span> <span class="nl">eq</span> <span class="p">:</span> <span class="n">g_cgpde</span><span class="p">)</span>
+    <span class="n">eq</span><span class="p">.</span><span class="n">initialize</span><span class="p">(</span> <span class="n">d</span><span class="o">-&gt;</span><span class="n">Coord</span><span class="p">(),</span> <span class="n">m_u</span><span class="p">,</span> <span class="n">d</span><span class="o">-&gt;</span><span class="n">T</span><span class="p">(),</span> <span class="n">m_boxnodes</span> <span class="p">);</span>
+
+  <span class="c1">// Compute volume of user-defined box IC</span>
+  <span class="n">d</span><span class="o">-&gt;</span><span class="n">boxvol</span><span class="p">(</span> <span class="n">m_boxnodes</span> <span class="p">);</span>
 
   <span class="c1">// Apply symmetry boundary conditions on initial conditions</span>
   <span class="k">for</span> <span class="p">(</span><span class="k">const</span> <span class="k">auto</span><span class="o">&amp;</span> <span class="nl">eq</span> <span class="p">:</span> <span class="n">g_cgpde</span><span class="p">)</span> <span class="n">eq</span><span class="p">.</span><span class="n">symbc</span><span class="p">(</span> <span class="n">m_u</span><span class="p">,</span> <span class="n">m_bnorm</span> <span class="p">);</span>
+<span class="p">}</span>
+
+<span class="kt">void</span>
+<span class="n">ALECG</span><span class="o">::</span><span class="n">boxvol</span><span class="p">(</span> <span class="n">tk</span><span class="o">::</span><span class="n">real</span> <span class="n">v</span> <span class="p">)</span>
+<span class="c1">// *****************************************************************************</span>
+<span class="c1">// Receive total box IC volume</span>
+<span class="c1">//! \param[in] v Total volume within user-specified box</span>
+<span class="c1">// *****************************************************************************</span>
+<span class="p">{</span>
+  <span class="k">auto</span> <span class="n">d</span> <span class="o">=</span> <span class="n">Disc</span><span class="p">();</span>
+
+  <span class="c1">// Store user-defined box IC volume</span>
+  <span class="n">d</span><span class="o">-&gt;</span><span class="n">Boxvol</span><span class="p">()</span> <span class="o">=</span> <span class="n">v</span><span class="p">;</span>
+
+  <span class="c1">// Update density in user-defined IC box based on box volume</span>
+  <span class="k">for</span> <span class="p">(</span><span class="k">const</span> <span class="k">auto</span><span class="o">&amp;</span> <span class="nl">eq</span> <span class="p">:</span> <span class="n">g_cgpde</span><span class="p">)</span> <span class="n">eq</span><span class="p">.</span><span class="n">box</span><span class="p">(</span> <span class="n">d</span><span class="o">-&gt;</span><span class="n">Boxvol</span><span class="p">(),</span> <span class="n">m_boxnodes</span><span class="p">,</span> <span class="n">m_u</span> <span class="p">);</span>
 
   <span class="c1">// Output initial conditions to file (regardless of whether it was requested)</span>
   <span class="n">writeFields</span><span class="p">(</span> <span class="n">CkCallback</span><span class="p">(</span><span class="n">CkIndex_ALECG</span><span class="o">::</span><span class="n">init</span><span class="p">(),</span> <span class="n">thisProxy</span><span class="p">[</span><span class="n">thisIndex</span><span class="p">])</span> <span class="p">);</span>
@@ -1165,7 +1186,7 @@
   <div class="m-container">
     <div class="m-row">
       <div class="m-col-l-10 m-push-l-1">
-        <p>Quinoa docs, part of the <a href="http://quinoacomputing.org/">Quinoa project</a>. Copyright © J. Bakosi 2012&ndash;2015, Los Alamos National Security, LLC, 2016&ndash;2018, <a href="https://www.triadns.org/">Triad National Security, LLC,</a> 2019-2020. Generated on Saturday, Mar 28, 2020 based on <a href="https://github.com/quinoacomputing/quinoa/commit/41a044a">41a044a</a> by <a href="http://doxygen.org/">Doxygen</a> and <a href="http://mcss.mosra.cz/">m.css</a>. Contact us via <a href="https://github.com/quinoacomputing/quinoa/">GitHub</a>, <a href="https://groups.io/g/quinoa">Email</a> or <a href="https://quinoa.zulipchat.com">Chat</a>.</p>
+        <p>Quinoa docs, part of the <a href="http://quinoacomputing.org/">Quinoa project</a>. Copyright © J. Bakosi 2012&ndash;2015, Los Alamos National Security, LLC, 2016&ndash;2018, <a href="https://www.triadns.org/">Triad National Security, LLC,</a> 2019-2020. Generated on Friday, Apr 03, 2020 based on <a href="https://github.com/quinoacomputing/quinoa/commit/4e93a1a">4e93a1a</a> by <a href="http://doxygen.org/">Doxygen</a> and <a href="http://mcss.mosra.cz/">m.css</a>. Contact us via <a href="https://github.com/quinoacomputing/quinoa/">GitHub</a>, <a href="https://groups.io/g/quinoa">Email</a> or <a href="https://quinoa.zulipchat.com">Chat</a>.</p>
       </div>
     </div>
   </div>
