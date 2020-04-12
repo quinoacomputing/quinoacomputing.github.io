@@ -430,6 +430,17 @@
 
   <span class="c1">// Apply symmetry boundary conditions on initial conditions</span>
   <span class="k">for</span> <span class="p">(</span><span class="k">const</span> <span class="k">auto</span><span class="o">&amp;</span> <span class="nl">eq</span> <span class="p">:</span> <span class="n">g_cgpde</span><span class="p">)</span> <span class="n">eq</span><span class="p">.</span><span class="n">symbc</span><span class="p">(</span> <span class="n">m_u</span><span class="p">,</span> <span class="n">m_bnorm</span> <span class="p">);</span>
+
+  <span class="c1">// Query time history field output labels from all PDEs integrated</span>
+  <span class="k">const</span> <span class="k">auto</span><span class="o">&amp;</span> <span class="n">hist_points</span> <span class="o">=</span> <span class="n">g_inputdeck</span><span class="p">.</span><span class="n">get</span><span class="o">&lt;</span> <span class="n">tag</span><span class="o">::</span><span class="n">history</span><span class="p">,</span> <span class="n">tag</span><span class="o">::</span><span class="n">point</span> <span class="o">&gt;</span><span class="p">();</span>
+  <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">hist_points</span><span class="p">.</span><span class="n">empty</span><span class="p">())</span> <span class="p">{</span>
+    <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="o">&gt;</span> <span class="n">histnames</span><span class="p">;</span>
+    <span class="k">for</span> <span class="p">(</span><span class="k">const</span> <span class="k">auto</span><span class="o">&amp;</span> <span class="nl">eq</span> <span class="p">:</span> <span class="n">g_cgpde</span><span class="p">)</span> <span class="p">{</span>
+      <span class="k">auto</span> <span class="n">n</span> <span class="o">=</span> <span class="n">eq</span><span class="p">.</span><span class="n">histNames</span><span class="p">();</span>
+      <span class="n">histnames</span><span class="p">.</span><span class="n">insert</span><span class="p">(</span> <span class="n">end</span><span class="p">(</span><span class="n">histnames</span><span class="p">),</span> <span class="n">begin</span><span class="p">(</span><span class="n">n</span><span class="p">),</span> <span class="n">end</span><span class="p">(</span><span class="n">n</span><span class="p">)</span> <span class="p">);</span>
+    <span class="p">}</span>
+    <span class="n">d</span><span class="o">-&gt;</span><span class="n">histheader</span><span class="p">(</span> <span class="n">std</span><span class="o">::</span><span class="n">move</span><span class="p">(</span><span class="n">histnames</span><span class="p">)</span> <span class="p">);</span>
+  <span class="p">}</span>
 <span class="p">}</span>
 
 <span class="kt">void</span>
@@ -1051,6 +1062,17 @@
 <span class="p">{</span>
   <span class="k">auto</span> <span class="n">d</span> <span class="o">=</span> <span class="n">Disc</span><span class="p">();</span>
 
+  <span class="c1">// Output time history if we hit its output frequency</span>
+  <span class="k">const</span> <span class="k">auto</span> <span class="n">histfreq</span> <span class="o">=</span> <span class="n">g_inputdeck</span><span class="p">.</span><span class="n">get</span><span class="o">&lt;</span> <span class="n">tag</span><span class="o">::</span><span class="n">interval</span><span class="p">,</span> <span class="n">tag</span><span class="o">::</span><span class="n">history</span> <span class="o">&gt;</span><span class="p">();</span>
+  <span class="k">if</span> <span class="p">(</span> <span class="o">!</span><span class="p">((</span><span class="n">d</span><span class="o">-&gt;</span><span class="n">It</span><span class="p">())</span> <span class="o">%</span> <span class="n">histfreq</span><span class="p">)</span> <span class="p">)</span> <span class="p">{</span>
+    <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span> <span class="n">tk</span><span class="o">::</span><span class="n">real</span> <span class="o">&gt;</span> <span class="o">&gt;</span> <span class="n">hist</span><span class="p">;</span>
+    <span class="k">for</span> <span class="p">(</span><span class="k">const</span> <span class="k">auto</span><span class="o">&amp;</span> <span class="nl">eq</span> <span class="p">:</span> <span class="n">g_cgpde</span><span class="p">)</span> <span class="p">{</span>
+      <span class="k">auto</span> <span class="n">h</span> <span class="o">=</span> <span class="n">eq</span><span class="p">.</span><span class="n">histOutput</span><span class="p">(</span> <span class="n">d</span><span class="o">-&gt;</span><span class="n">Hist</span><span class="p">(),</span> <span class="n">d</span><span class="o">-&gt;</span><span class="n">Inpoel</span><span class="p">(),</span> <span class="n">m_u</span> <span class="p">);</span>
+      <span class="n">hist</span><span class="p">.</span><span class="n">insert</span><span class="p">(</span> <span class="n">end</span><span class="p">(</span><span class="n">hist</span><span class="p">),</span> <span class="n">begin</span><span class="p">(</span><span class="n">h</span><span class="p">),</span> <span class="n">end</span><span class="p">(</span><span class="n">h</span><span class="p">)</span> <span class="p">);</span>
+    <span class="p">}</span>
+    <span class="n">d</span><span class="o">-&gt;</span><span class="n">history</span><span class="p">(</span> <span class="n">std</span><span class="o">::</span><span class="n">move</span><span class="p">(</span><span class="n">hist</span><span class="p">)</span> <span class="p">);</span>
+  <span class="p">}</span>
+
   <span class="k">const</span> <span class="k">auto</span> <span class="n">term</span> <span class="o">=</span> <span class="n">g_inputdeck</span><span class="p">.</span><span class="n">get</span><span class="o">&lt;</span> <span class="n">tag</span><span class="o">::</span><span class="n">discr</span><span class="p">,</span> <span class="n">tag</span><span class="o">::</span><span class="n">term</span> <span class="o">&gt;</span><span class="p">();</span>
   <span class="k">const</span> <span class="k">auto</span> <span class="n">nstep</span> <span class="o">=</span> <span class="n">g_inputdeck</span><span class="p">.</span><span class="n">get</span><span class="o">&lt;</span> <span class="n">tag</span><span class="o">::</span><span class="n">discr</span><span class="p">,</span> <span class="n">tag</span><span class="o">::</span><span class="n">nstep</span> <span class="o">&gt;</span><span class="p">();</span>
   <span class="k">const</span> <span class="k">auto</span> <span class="n">eps</span> <span class="o">=</span> <span class="n">std</span><span class="o">::</span><span class="n">numeric_limits</span><span class="o">&lt;</span> <span class="n">tk</span><span class="o">::</span><span class="n">real</span> <span class="o">&gt;::</span><span class="n">epsilon</span><span class="p">();</span>
@@ -1186,7 +1208,7 @@
   <div class="m-container">
     <div class="m-row">
       <div class="m-col-l-10 m-push-l-1">
-        <p>Quinoa docs, part of the <a href="http://quinoacomputing.org/">Quinoa project</a>. Copyright © J. Bakosi 2012&ndash;2015, Los Alamos National Security, LLC, 2016&ndash;2018, <a href="https://www.triadns.org/">Triad National Security, LLC,</a> 2019-2020. Generated on Saturday, Apr 04, 2020 based on <a href="https://github.com/quinoacomputing/quinoa/commit/86fd538">86fd538</a> by <a href="http://doxygen.org/">Doxygen</a> and <a href="http://mcss.mosra.cz/">m.css</a>. Contact us via <a href="https://github.com/quinoacomputing/quinoa/">GitHub</a>, <a href="https://groups.io/g/quinoa">Email</a> or <a href="https://quinoa.zulipchat.com">Chat</a>.</p>
+        <p>Quinoa docs, part of the <a href="http://quinoacomputing.org/">Quinoa project</a>. Copyright © J. Bakosi 2012&ndash;2015, Los Alamos National Security, LLC, 2016&ndash;2018, <a href="https://www.triadns.org/">Triad National Security, LLC,</a> 2019-2020. Generated on Thursday, Apr 09, 2020 based on <a href="https://github.com/quinoacomputing/quinoa/commit/8e067f4">8e067f4</a> by <a href="http://doxygen.org/">Doxygen</a> and <a href="http://mcss.mosra.cz/">m.css</a>. Contact us via <a href="https://github.com/quinoacomputing/quinoa/">GitHub</a>, <a href="https://groups.io/g/quinoa">Email</a> or <a href="https://quinoa.zulipchat.com">Chat</a>.</p>
       </div>
     </div>
   </div>
