@@ -179,6 +179,9 @@
     <span class="c1">//! Size communication buffers (no-op)</span>
     <span class="kt">void</span> <span class="nf">resizeComm</span><span class="p">()</span> <span class="p">{}</span>
 
+    <span class="c1">//! Setup node-neighborhood (no-op)</span>
+    <span class="kt">void</span> <span class="nf">nodeNeighSetup</span><span class="p">()</span> <span class="p">{}</span>
+
     <span class="c1">//! Setup: query boundary conditions, output mesh, etc.</span>
     <span class="kt">void</span> <span class="nf">setup</span><span class="p">();</span>
 
@@ -267,7 +270,8 @@
       <span class="n">p</span> <span class="o">|</span> <span class="n">m_bface</span><span class="p">;</span>
       <span class="n">p</span> <span class="o">|</span> <span class="n">m_triinpoel</span><span class="p">;</span>
       <span class="n">p</span> <span class="o">|</span> <span class="n">m_bndel</span><span class="p">;</span>
-      <span class="n">p</span> <span class="o">|</span> <span class="n">m_dfnorm</span><span class="p">;</span>
+      <span class="n">p</span> <span class="o">|</span> <span class="n">m_dfn</span><span class="p">;</span>
+      <span class="n">p</span> <span class="o">|</span> <span class="n">m_psup</span><span class="p">;</span>
       <span class="n">p</span> <span class="o">|</span> <span class="n">m_u</span><span class="p">;</span>
       <span class="n">p</span> <span class="o">|</span> <span class="n">m_un</span><span class="p">;</span>
       <span class="n">p</span> <span class="o">|</span> <span class="n">m_lhs</span><span class="p">;</span>
@@ -280,7 +284,6 @@
       <span class="n">p</span> <span class="o">|</span> <span class="n">m_diag</span><span class="p">;</span>
       <span class="n">p</span> <span class="o">|</span> <span class="n">m_bnorm</span><span class="p">;</span>
       <span class="n">p</span> <span class="o">|</span> <span class="n">m_bnormc</span><span class="p">;</span>
-      <span class="n">p</span> <span class="o">|</span> <span class="n">m_dfnormc</span><span class="p">;</span>
       <span class="n">p</span> <span class="o">|</span> <span class="n">m_stage</span><span class="p">;</span>
       <span class="n">p</span> <span class="o">|</span> <span class="n">m_boxnodes</span><span class="p">;</span>
     <span class="p">}</span>
@@ -320,6 +323,13 @@
     <span class="c1">//! Dual-face normals along edges</span>
     <span class="n">std</span><span class="o">::</span><span class="n">unordered_map</span><span class="o">&lt;</span> <span class="n">tk</span><span class="o">::</span><span class="n">UnsMesh</span><span class="o">::</span><span class="n">Edge</span><span class="p">,</span> <span class="n">std</span><span class="o">::</span><span class="n">array</span><span class="o">&lt;</span> <span class="n">tk</span><span class="o">::</span><span class="n">real</span><span class="p">,</span> <span class="mi">3</span> <span class="o">&gt;</span><span class="p">,</span>
                         <span class="n">tk</span><span class="o">::</span><span class="n">UnsMesh</span><span class="o">::</span><span class="n">Hash</span><span class="o">&lt;</span><span class="mi">2</span><span class="o">&gt;</span><span class="p">,</span> <span class="n">tk</span><span class="o">::</span><span class="n">UnsMesh</span><span class="o">::</span><span class="n">Eq</span><span class="o">&lt;</span><span class="mi">2</span><span class="o">&gt;</span> <span class="o">&gt;</span> <span class="n">m_dfnorm</span><span class="p">;</span>
+    <span class="c1">//! Receive buffer for dual-face normals along chare-boundary edges</span>
+    <span class="n">std</span><span class="o">::</span><span class="n">unordered_map</span><span class="o">&lt;</span> <span class="n">tk</span><span class="o">::</span><span class="n">UnsMesh</span><span class="o">::</span><span class="n">Edge</span><span class="p">,</span> <span class="n">std</span><span class="o">::</span><span class="n">array</span><span class="o">&lt;</span> <span class="n">tk</span><span class="o">::</span><span class="n">real</span><span class="p">,</span> <span class="mi">3</span> <span class="o">&gt;</span><span class="p">,</span>
+                     <span class="n">tk</span><span class="o">::</span><span class="n">UnsMesh</span><span class="o">::</span><span class="n">Hash</span><span class="o">&lt;</span><span class="mi">2</span><span class="o">&gt;</span><span class="p">,</span> <span class="n">tk</span><span class="o">::</span><span class="n">UnsMesh</span><span class="o">::</span><span class="n">Eq</span><span class="o">&lt;</span><span class="mi">2</span><span class="o">&gt;</span> <span class="o">&gt;</span> <span class="n">m_dfnormc</span><span class="p">;</span>
+    <span class="c1">//! Streamable dual-face normals</span>
+    <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span> <span class="n">tk</span><span class="o">::</span><span class="n">real</span> <span class="o">&gt;</span> <span class="n">m_dfn</span><span class="p">;</span>
+    <span class="c1">//! Points surrounding points</span>
+    <span class="n">std</span><span class="o">::</span><span class="n">pair</span><span class="o">&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span> <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="o">&gt;</span><span class="p">,</span> <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span> <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="o">&gt;</span> <span class="o">&gt;</span> <span class="n">m_psup</span><span class="p">;</span>
     <span class="c1">//! Unknown/solution vector at mesh nodes</span>
     <span class="n">tk</span><span class="o">::</span><span class="n">Fields</span> <span class="n">m_u</span><span class="p">;</span>
     <span class="c1">//! Unknown/solution vector at mesh nodes at previous time</span>
@@ -358,9 +368,6 @@
     <span class="c1">//! \details Key: global node id, value: normals (first 3 components),</span>
     <span class="c1">//!   inverse distance squared (4th component)</span>
     <span class="n">std</span><span class="o">::</span><span class="n">unordered_map</span><span class="o">&lt;</span> <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="p">,</span> <span class="n">std</span><span class="o">::</span><span class="n">array</span><span class="o">&lt;</span> <span class="n">tk</span><span class="o">::</span><span class="n">real</span><span class="p">,</span> <span class="mi">4</span> <span class="o">&gt;</span> <span class="o">&gt;</span> <span class="n">m_bnormc</span><span class="p">;</span>
-    <span class="c1">//! Receive buffer for dual-face normals along chare-boundary edges</span>
-    <span class="n">std</span><span class="o">::</span><span class="n">unordered_map</span><span class="o">&lt;</span> <span class="n">tk</span><span class="o">::</span><span class="n">UnsMesh</span><span class="o">::</span><span class="n">Edge</span><span class="p">,</span> <span class="n">std</span><span class="o">::</span><span class="n">array</span><span class="o">&lt;</span> <span class="n">tk</span><span class="o">::</span><span class="n">real</span><span class="p">,</span> <span class="mi">3</span> <span class="o">&gt;</span><span class="p">,</span>
-                     <span class="n">tk</span><span class="o">::</span><span class="n">UnsMesh</span><span class="o">::</span><span class="n">Hash</span><span class="o">&lt;</span><span class="mi">2</span><span class="o">&gt;</span><span class="p">,</span> <span class="n">tk</span><span class="o">::</span><span class="n">UnsMesh</span><span class="o">::</span><span class="n">Eq</span><span class="o">&lt;</span><span class="mi">2</span><span class="o">&gt;</span> <span class="o">&gt;</span> <span class="n">m_dfnormc</span><span class="p">;</span>
     <span class="c1">//! Runge-Kutta stage counter</span>
     <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="n">m_stage</span><span class="p">;</span>
     <span class="c1">//! Mesh node ids at which user-defined box ICs are defined</span>
@@ -459,7 +466,7 @@
   <div class="m-container">
     <div class="m-row">
       <div class="m-col-l-10 m-push-l-1">
-        <p>Quinoa docs, part of the <a href="http://quinoacomputing.org/">Quinoa project</a>. Copyright © J. Bakosi 2012&ndash;2015, Los Alamos National Security, LLC, 2016&ndash;2018, <a href="https://www.triadns.org/">Triad National Security, LLC,</a> 2019-2020. Generated on Thursday, Apr 09, 2020 based on <a href="https://github.com/quinoacomputing/quinoa/commit/8e067f4">8e067f4</a> by <a href="http://doxygen.org/">Doxygen</a> and <a href="http://mcss.mosra.cz/">m.css</a>. Contact us via <a href="https://github.com/quinoacomputing/quinoa/">GitHub</a>, <a href="https://groups.io/g/quinoa">Email</a> or <a href="https://quinoa.zulipchat.com">Chat</a>.</p>
+        <p>Quinoa docs, part of the <a href="http://quinoacomputing.org/">Quinoa project</a>. Copyright © J. Bakosi 2012&ndash;2015, Los Alamos National Security, LLC, 2016&ndash;2018, <a href="https://www.triadns.org/">Triad National Security, LLC,</a> 2019-2020. Generated on Friday, Apr 17, 2020 based on <a href="https://github.com/quinoacomputing/quinoa/commit/bbea21b">bbea21b</a> by <a href="http://doxygen.org/">Doxygen</a> and <a href="http://mcss.mosra.cz/">m.css</a>. Contact us via <a href="https://github.com/quinoacomputing/quinoa/">GitHub</a>, <a href="https://groups.io/g/quinoa">Email</a> or <a href="https://quinoa.zulipchat.com">Chat</a>.</p>
       </div>
     </div>
   </div>
