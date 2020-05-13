@@ -24,16 +24,16 @@
           </tr>
           <tr>
             <td class="headerItem">Commit:</td>
-            <td class="headerValue"><a href="https://github.com/quinoacomputing/quinoa/commit/bbea21b">Quinoa_v0.2-4080-gbbea21b</a></td>
+            <td class="headerValue"><a href="https://github.com/quinoacomputing/quinoa/commit/d669bc5">Quinoa_v0.2-4118-gd669bc5</a></td>
             <td></td>
             <td class="headerItem">Lines:</td>
-            <td class="headerCovTableEntry">40</td>
-            <td class="headerCovTableEntry">40</td>
+            <td class="headerCovTableEntry">46</td>
+            <td class="headerCovTableEntry">46</td>
             <td class="headerCovTableEntryHi">100.0 %</td>
           </tr>
           <tr>
             <td class="headerItem">Date:</td>
-            <td class="headerValue">2020-04-17 18:51:41</td>
+            <td class="headerValue">2020-05-12 11:57:55</td>
             <td></td>
             <td class="headerItem">Functions:</td>
             <td class="headerCovTableEntry">8</td>
@@ -127,171 +127,184 @@
 <span class="lineNum">      53 </span>                :            : 
 <span class="lineNum">      54 </span>                :            : #include &lt;vector&gt;
 <span class="lineNum">      55 </span>                :            : #include &lt;cmath&gt;
-<span class="lineNum">      56 </span>                :            : 
-<span class="lineNum">      57 </span>                :            : #include &quot;InitPolicy.hpp&quot;
-<span class="lineNum">      58 </span>                :            : #include &quot;MixDirichletCoeffPolicy.hpp&quot;
-<span class="lineNum">      59 </span>                :            : #include &quot;RNG.hpp&quot;
-<span class="lineNum">      60 </span>                :            : #include &quot;Particles.hpp&quot;
-<span class="lineNum">      61 </span>                :            : 
-<span class="lineNum">      62 </span>                :            : namespace walker {
-<span class="lineNum">      63 </span>                :            : 
-<span class="lineNum">      64 </span>                :            : extern ctr::InputDeck g_inputdeck;
-<span class="lineNum">      65 </span>                :            : extern std::map&lt; tk::ctr::RawRNGType, tk::RNG &gt; g_rng;
-<span class="lineNum">      66 </span>                :            : 
-<span class="lineNum">      67 </span>                :            : //! \brief MixDirichlet SDE used polymorphically with DiffEq
-<span class="lineNum">      68 </span>                :            : //! \details The template arguments specify policies and are used to configure
-<span class="lineNum">      69 </span>                :            : //!   the behavior of the class. The policies are:
-<span class="lineNum">      70 </span>                :            : //!   - Init - initialization policy, see DiffEq/InitPolicy.h
-<span class="lineNum">      71 </span>                :            : //!   - Coefficients - coefficients policy, see DiffEq/DirCoeffPolicy.h
-<span class="lineNum">      72 </span>                :            : template&lt; class Init, class Coefficients &gt;
-<span class="lineNum">      73 </span>                :            : class MixDirichlet {
-<span class="lineNum">      74 </span>                :            : 
-<span class="lineNum">      75 </span>                :            :   private:
-<span class="lineNum">      76 </span>                :            :     using ncomp_t = tk::ctr::ncomp_t;
-<span class="lineNum">      77 </span>                :            :     using eq = tag::mixdirichlet;
-<span class="lineNum">      78 </span>                :            : 
-<span class="lineNum">      79 </span>                :            :   public:
-<span class="lineNum">      80 </span>                :            :     //! Number of derived variables computed by the MixDirichlet SDE
-<span class="lineNum">      81 </span>                :            :     //! \details Derived variables: Nth scalar, density, specific volume.
-<span class="lineNum">      82 </span>                :            :     static const std::size_t NUMDERIVED = 3;
-<span class="lineNum">      83 </span>                :            : 
-<span class="lineNum">      84 </span>                :            :     //! \brief Constructor
-<span class="lineNum">      85 </span>                :            :     //! \param[in] c Index specifying which MixDirichlet SDE to construct. There
-<span class="lineNum">      86 </span>                :            :     //!   can be multiple dirichlet ... end blocks in a control file. This index
-<span class="lineNum">      87 </span>                :            :     //!   specifies which MixDirichlet SDE to instantiate. The index corresponds
-<a name="88"><span class="lineNum">      88 </span>                :            :     //!   to the order in which the dirichlet ... end blocks are given the</a>
-<span class="lineNum">      89 </span>                :            :     //!   control file.
-<span class="lineNum">      90 </span>                :<span class="lineCov">         32 :     explicit MixDirichlet( ncomp_t c ) :</span>
-<span class="lineNum">      91 </span>                :            :       m_c( c ),
-<span class="lineNum">      92 </span>                :            :       m_depvar( g_inputdeck.get&lt; tag::param, eq, tag::depvar &gt;().at(c) ),
-<span class="lineNum">      93 </span>                :            :       // subtract the number of derived variables computed, see advance()
-<span class="lineNum">      94 </span>                :<span class="lineCov">         32 :       m_ncomp( g_inputdeck.get&lt; tag::component &gt;().get&lt; eq &gt;().at(c) -</span>
-<span class="lineNum">      95 </span>                :            :                NUMDERIVED ),
-<span class="lineNum">      96 </span>                :            :       m_offset(
-<span class="lineNum">      97 </span>                :            :         g_inputdeck.get&lt; tag::component &gt;().offset&lt; eq &gt;(c) ),
-<span class="lineNum">      98 </span>                :<span class="lineCov">         32 :       m_rng( g_rng.at( tk::ctr::raw(</span>
-<span class="lineNum">      99 </span>                :            :         g_inputdeck.get&lt; tag::param, eq, tag::rng &gt;().at(c) ) ) ),
-<span class="lineNum">     100 </span>                :            :       m_norm( g_inputdeck.get&lt; tag::param, eq, tag::normalization &gt;().at(c) ),
-<span class="lineNum">     101 </span>                :            :       m_b(),
-<span class="lineNum">     102 </span>                :            :       m_S(),
-<span class="lineNum">     103 </span>                :            :       m_kprime(),
-<span class="lineNum">     104 </span>                :            :       m_k(),
-<span class="lineNum">     105 </span>                :            :       m_rho(),
-<span class="lineNum">     106 </span>                :            :       m_r(),
-<span class="lineNum">     107 </span>                :<span class="lineCov">         32 :       coeff( m_ncomp,</span>
-<span class="lineNum">     108 </span>                :            :              m_norm,
-<span class="lineNum">     109 </span>                :            :              g_inputdeck.get&lt; tag::param, eq, tag::b &gt;().at(c),
-<span class="lineNum">     110 </span>                :            :              g_inputdeck.get&lt; tag::param, eq, tag::S &gt;().at(c),
-<span class="lineNum">     111 </span>                :            :              g_inputdeck.get&lt; tag::param, eq, tag::kappaprime &gt;().at(c),
-<span class="lineNum">     112 </span>                :            :              g_inputdeck.get&lt; tag::param, eq, tag::rho &gt;().at(c),
-<span class="lineNum">     113 </span>[<span class="branchNoCov" title="Branch 0 was not taken"> - </span><span class="branchCov" title="Branch 1 was taken 32 times"> + </span>][<span class="branchNoCov" title="Branch 2 was not taken"> - </span><span class="branchCov" title="Branch 3 was taken 32 times"> + </span>]:<span class="lineCov">        128 :              m_b, m_S, m_kprime, m_rho, m_r, m_k ) {}</span>
+<span class="lineNum">      56 </span>                :            : #include &lt;cfenv&gt;
+<span class="lineNum">      57 </span>                :            : 
+<span class="lineNum">      58 </span>                :            : #include &quot;InitPolicy.hpp&quot;
+<span class="lineNum">      59 </span>                :            : #include &quot;MixDirichletCoeffPolicy.hpp&quot;
+<span class="lineNum">      60 </span>                :            : #include &quot;RNG.hpp&quot;
+<span class="lineNum">      61 </span>                :            : #include &quot;Particles.hpp&quot;
+<span class="lineNum">      62 </span>                :            : 
+<span class="lineNum">      63 </span>                :            : namespace walker {
+<span class="lineNum">      64 </span>                :            : 
+<span class="lineNum">      65 </span>                :            : extern ctr::InputDeck g_inputdeck;
+<span class="lineNum">      66 </span>                :            : extern std::map&lt; tk::ctr::RawRNGType, tk::RNG &gt; g_rng;
+<span class="lineNum">      67 </span>                :            : 
+<span class="lineNum">      68 </span>                :            : //! \brief MixDirichlet SDE used polymorphically with DiffEq
+<span class="lineNum">      69 </span>                :            : //! \details The template arguments specify policies and are used to configure
+<span class="lineNum">      70 </span>                :            : //!   the behavior of the class. The policies are:
+<span class="lineNum">      71 </span>                :            : //!   - Init - initialization policy, see DiffEq/InitPolicy.h
+<span class="lineNum">      72 </span>                :            : //!   - Coefficients - coefficients policy, see DiffEq/DirCoeffPolicy.h
+<span class="lineNum">      73 </span>                :            : template&lt; class Init, class Coefficients &gt;
+<span class="lineNum">      74 </span>                :            : class MixDirichlet {
+<span class="lineNum">      75 </span>                :            : 
+<span class="lineNum">      76 </span>                :            :   private:
+<span class="lineNum">      77 </span>                :            :     using ncomp_t = tk::ctr::ncomp_t;
+<span class="lineNum">      78 </span>                :            :     using eq = tag::mixdirichlet;
+<span class="lineNum">      79 </span>                :            : 
+<span class="lineNum">      80 </span>                :            :   public:
+<span class="lineNum">      81 </span>                :            :     //! Number of derived variables computed by the MixDirichlet SDE
+<span class="lineNum">      82 </span>                :            :     //! \details Derived variables: Nth scalar, density, specific volume.
+<span class="lineNum">      83 </span>                :            :     static const std::size_t NUMDERIVED = 3;
+<span class="lineNum">      84 </span>                :            : 
+<span class="lineNum">      85 </span>                :            :     //! \brief Constructor
+<span class="lineNum">      86 </span>                :            :     //! \param[in] c Index specifying which MixDirichlet SDE to construct. There
+<span class="lineNum">      87 </span>                :            :     //!   can be multiple dirichlet ... end blocks in a control file. This index
+<span class="lineNum">      88 </span>                :            :     //!   specifies which MixDirichlet SDE to instantiate. The index corresponds
+<a name="89"><span class="lineNum">      89 </span>                :            :     //!   to the order in which the dirichlet ... end blocks are given the</a>
+<span class="lineNum">      90 </span>                :            :     //!   control file.
+<span class="lineNum">      91 </span>                :<span class="lineCov">         32 :     explicit MixDirichlet( ncomp_t c ) :</span>
+<span class="lineNum">      92 </span>                :            :       m_c( c ),
+<span class="lineNum">      93 </span>                :            :       m_depvar( g_inputdeck.get&lt; tag::param, eq, tag::depvar &gt;().at(c) ),
+<span class="lineNum">      94 </span>                :            :       // subtract the number of derived variables computed, see advance()
+<span class="lineNum">      95 </span>                :<span class="lineCov">         32 :       m_ncomp( g_inputdeck.get&lt; tag::component &gt;().get&lt; eq &gt;().at(c) -</span>
+<span class="lineNum">      96 </span>                :            :                NUMDERIVED ),
+<span class="lineNum">      97 </span>                :            :       m_offset(
+<span class="lineNum">      98 </span>                :            :         g_inputdeck.get&lt; tag::component &gt;().offset&lt; eq &gt;(c) ),
+<span class="lineNum">      99 </span>                :<span class="lineCov">         32 :       m_rng( g_rng.at( tk::ctr::raw(</span>
+<span class="lineNum">     100 </span>                :            :         g_inputdeck.get&lt; tag::param, eq, tag::rng &gt;().at(c) ) ) ),
+<span class="lineNum">     101 </span>                :            :       m_norm( g_inputdeck.get&lt; tag::param, eq, tag::normalization &gt;().at(c) ),
+<span class="lineNum">     102 </span>                :            :       m_b(),
+<span class="lineNum">     103 </span>                :            :       m_S(),
+<span class="lineNum">     104 </span>                :            :       m_kprime(),
+<span class="lineNum">     105 </span>                :            :       m_k(),
+<span class="lineNum">     106 </span>                :            :       m_rho(),
+<span class="lineNum">     107 </span>                :            :       m_r(),
+<span class="lineNum">     108 </span>                :<span class="lineCov">         32 :       coeff( m_ncomp,</span>
+<span class="lineNum">     109 </span>                :            :              m_norm,
+<span class="lineNum">     110 </span>                :            :              g_inputdeck.get&lt; tag::param, eq, tag::b &gt;().at(c),
+<span class="lineNum">     111 </span>                :            :              g_inputdeck.get&lt; tag::param, eq, tag::S &gt;().at(c),
+<span class="lineNum">     112 </span>                :            :              g_inputdeck.get&lt; tag::param, eq, tag::kappaprime &gt;().at(c),
+<span class="lineNum">     113 </span>                :            :              g_inputdeck.get&lt; tag::param, eq, tag::rho &gt;().at(c),
+<span class="lineNum">     114 </span>[<span class="branchNoCov" title="Branch 0 was not taken"> - </span><span class="branchCov" title="Branch 1 was taken 32 times"> + </span>][<span class="branchNoCov" title="Branch 2 was not taken"> - </span><span class="branchCov" title="Branch 3 was taken 32 times"> + </span>]:<span class="lineCov">        128 :              m_b, m_S, m_kprime, m_rho, m_r, m_k ) {}</span>
 <span class="lineNum">         </span>[<span class="branchNoCov" title="Branch 4 was not taken"> - </span><span class="branchCov" title="Branch 5 was taken 32 times"> + </span>][<span class="branchNoCov" title="Branch 6 was not taken"> - </span><span class="branchCov" title="Branch 7 was taken 32 times"> + </span>]
 <span class="lineNum">         </span>[<span class="branchNoCov" title="Branch 8 was not taken"> - </span><span class="branchCov" title="Branch 9 was taken 32 times"> + </span>][<span class="branchCov" title="Branch 10 was taken 32 times"> + </span><span class="branchNoCov" title="Branch 11 was not taken"> - </span>]
-<span class="lineNum">     114 </span>                :            : 
-<span class="lineNum">     115 </span>                :            :     //! Initalize SDE, prepare for time integration
-<a name="116"><span class="lineNum">     116 </span>                :            :     //! \param[in] stream Thread (or more precisely stream) ID </a>
-<span class="lineNum">     117 </span>                :            :     //! \param[in,out] particles Array of particle properties 
-<span class="lineNum">     118 </span>                :<span class="lineCov">         32 :     void initialize( int stream, tk::Particles&amp; particles ) {</span>
-<span class="lineNum">     119 </span>                :            : 
-<span class="lineNum">     120 </span>                :            :       // Ensure the size of the parameter vector holding the pure-fluid
-<span class="lineNum">     121 </span>                :            :       // densities is N = K+1 = m_ncomp+1
-<span class="lineNum">     122 </span>                :            :       Assert( m_rho.size() == m_ncomp+1, &quot;Size mismatch&quot; );
-<span class="lineNum">     123 </span>                :            : 
-<span class="lineNum">     124 </span>                :            :       //! Set initial conditions using initialization policy
-<span class="lineNum">     125 </span>                :<span class="lineCov">         32 :       Init::template init&lt; eq &gt;( g_inputdeck, m_rng, stream, particles, m_c,</span>
-<span class="lineNum">     126 </span>                :<span class="lineCov">         32 :                                  m_ncomp, m_offset );</span>
-<span class="lineNum">     127 </span>                :            : 
-<span class="lineNum">     128 </span>                :<span class="lineCov">         32 :       const auto npar = particles.nunk();</span>
-<span class="lineNum">     129 </span>        [<span class="branchCov" title="Branch 0 was taken 400000 times"> + </span><span class="branchCov" title="Branch 1 was taken 32 times"> + </span>]:<span class="lineCov">     400032 :       for (auto p=decltype(npar){0}; p&lt;npar; ++p) {</span>
-<span class="lineNum">     130 </span>                :            :         // Violating boundedness here is a hard error as indicates a problem
-<span class="lineNum">     131 </span>                :            :         // with the initial conditions
-<span class="lineNum">     132 </span>        [<span class="branchCov" title="Branch 0 was taken 1200000 times"> + </span><span class="branchCov" title="Branch 1 was taken 400000 times"> + </span>]:<span class="lineCov">    1600000 :         for (ncomp_t i=0; i&lt;m_ncomp+1; ++i) {</span>
-<span class="lineNum">     133 </span>        [<span class="branchCov" title="Branch 0 was taken 1200000 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">    1200000 :           auto y = particles( p, i, m_offset );</span>
-<span class="lineNum">     134 </span>[<span class="branchCov" title="Branch 0 was taken 1200000 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>][<span class="branchNoCov" title="Branch 2 was not taken"> - </span><span class="branchCov" title="Branch 3 was taken 1200000 times"> + </span>]:<span class="lineCov">    1200000 :           if (y &lt; 0.0 || y &gt; 1.0) Throw( &quot;IC scalar out of bounds&quot; );</span>
+<span class="lineNum">     115 </span>                :            : 
+<span class="lineNum">     116 </span>                :            :     //! Initalize SDE, prepare for time integration
+<a name="117"><span class="lineNum">     117 </span>                :            :     //! \param[in] stream Thread (or more precisely stream) ID </a>
+<span class="lineNum">     118 </span>                :            :     //! \param[in,out] particles Array of particle properties 
+<span class="lineNum">     119 </span>                :<span class="lineCov">         32 :     void initialize( int stream, tk::Particles&amp; particles ) {</span>
+<span class="lineNum">     120 </span>                :            : 
+<span class="lineNum">     121 </span>                :            :       // Ensure the size of the parameter vector holding the pure-fluid
+<span class="lineNum">     122 </span>                :            :       // densities is N = K+1 = m_ncomp+1
+<span class="lineNum">     123 </span>                :            :       Assert( m_rho.size() == m_ncomp+1, &quot;Size mismatch&quot; );
+<span class="lineNum">     124 </span>                :            : 
+<span class="lineNum">     125 </span>                :            :       //! Set initial conditions using initialization policy
+<span class="lineNum">     126 </span>                :<span class="lineCov">         32 :       Init::template init&lt; eq &gt;( g_inputdeck, m_rng, stream, particles, m_c,</span>
+<span class="lineNum">     127 </span>                :<span class="lineCov">         32 :                                  m_ncomp, m_offset );</span>
+<span class="lineNum">     128 </span>                :            : 
+<span class="lineNum">     129 </span>                :            :       fenv_t fe;
+<span class="lineNum">     130 </span>                :<span class="lineCov">         32 :       feholdexcept( &amp;fe );</span>
+<span class="lineNum">     131 </span>                :            : 
+<span class="lineNum">     132 </span>                :<span class="lineCov">         32 :       const auto npar = particles.nunk();</span>
+<span class="lineNum">     133 </span>        [<span class="branchCov" title="Branch 0 was taken 400000 times"> + </span><span class="branchCov" title="Branch 1 was taken 32 times"> + </span>]:<span class="lineCov">     400032 :       for (auto p=decltype(npar){0}; p&lt;npar; ++p) {</span>
+<span class="lineNum">     134 </span>                :            :         // Violating boundedness here is a hard error as indicates a problem
+<span class="lineNum">     135 </span>                :            :         // with the initial conditions
+<span class="lineNum">     136 </span>        [<span class="branchCov" title="Branch 0 was taken 1200000 times"> + </span><span class="branchCov" title="Branch 1 was taken 400000 times"> + </span>]:<span class="lineCov">    1600000 :         for (ncomp_t i=0; i&lt;m_ncomp+1; ++i) {</span>
+<span class="lineNum">     137 </span>        [<span class="branchCov" title="Branch 0 was taken 1200000 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">    1200000 :           auto y = particles( p, i, m_offset );</span>
+<span class="lineNum">     138 </span>[<span class="branchCov" title="Branch 0 was taken 1200000 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>][<span class="branchNoCov" title="Branch 2 was not taken"> - </span><span class="branchCov" title="Branch 3 was taken 1200000 times"> + </span>]:<span class="lineCov">    1200000 :           if (y &lt; 0.0 || y &gt; 1.0) Throw( &quot;IC scalar out of bounds&quot; );</span>
 <span class="lineNum">         </span>[<span class="branchNoCov" title="Branch 4 was not taken"> - </span><span class="branchNoCov" title="Branch 5 was not taken"> - </span>][<span class="branchNoCov" title="Branch 6 was not taken"> - </span><span class="branchNoCov" title="Branch 7 was not taken"> - </span>]
 <span class="lineNum">         </span>[<span class="branchNoCov" title="Branch 8 was not taken"> - </span><span class="branchNoCov" title="Branch 9 was not taken"> - </span>][<span class="branchNoCov" title="Branch 10 was not taken"> - </span><span class="branchNoCov" title="Branch 11 was not taken"> - </span>]
 <span class="lineNum">         </span>[<span class="branchNoCov" title="Branch 12 was not taken"> - </span><span class="branchNoCov" title="Branch 13 was not taken"> - </span>][<span class="branchNoCov" title="Branch 14 was not taken"> - </span><span class="branchNoCov" title="Branch 15 was not taken"> - </span>]
-<span class="lineNum">     135 </span>                :            :         }
-<span class="lineNum">     136 </span>                :            :         // Initialize derived instantaneous variables
-<span class="lineNum">     137 </span>                :<span class="lineCov">     400000 :         derived( particles, p );</span>
-<span class="lineNum">     138 </span>                :            :       }
-<span class="lineNum">     139 </span>                :<span class="lineCov">         32 :     }</span>
-<span class="lineNum">     140 </span>                :            : 
-<span class="lineNum">     141 </span>                :            :     //! \brief Advance particles according to the MixDirichlet SDE
-<span class="lineNum">     142 </span>                :            :     //! \param[in,out] particles Array of particle properties
-<span class="lineNum">     143 </span>                :            :     //! \param[in] stream Thread (or more precisely stream) ID
-<a name="144"><span class="lineNum">     144 </span>                :            :     //! \param[in] dt Time step size</a>
-<span class="lineNum">     145 </span>                :            :     //! \param[in] moments Map of statistical moments
-<span class="lineNum">     146 </span>                :<span class="lineCov">       9568 :     void advance( tk::Particles&amp; particles,</span>
-<span class="lineNum">     147 </span>                :            :                   int stream,
-<span class="lineNum">     148 </span>                :            :                   tk::real dt,
-<span class="lineNum">     149 </span>                :            :                   tk::real,
-<span class="lineNum">     150 </span>                :            :                   const std::map&lt; tk::ctr::Product, tk::real &gt;&amp; moments )
-<span class="lineNum">     151 </span>                :            :     {
-<span class="lineNum">     152 </span>                :            :       // Update SDE coefficients
-<span class="lineNum">     153 </span>                :<span class="lineCov">       9568 :       coeff.update( m_depvar, m_ncomp, m_norm, DENSITY_OFFSET, VOLUME_OFFSET,</span>
-<span class="lineNum">     154 </span>                :<span class="lineCov">       9568 :                     moments, m_rho, m_r, m_kprime, m_b, m_k, m_S );</span>
-<span class="lineNum">     155 </span>                :            : 
-<span class="lineNum">     156 </span>                :            :       // Advance particles
-<span class="lineNum">     157 </span>                :<span class="lineCov">       9568 :       const auto npar = particles.nunk();</span>
-<span class="lineNum">     158 </span>        [<span class="branchCov" title="Branch 0 was taken 119600000 times"> + </span><span class="branchCov" title="Branch 1 was taken 9568 times"> + </span>]:<span class="lineCov">  119609600 :       for (auto p=decltype(npar){0}; p&lt;npar; ++p) {</span>
-<span class="lineNum">     159 </span>                :            :         // Generate Gaussian random numbers with zero mean and unit variance
-<span class="lineNum">     160 </span>                :<span class="lineCov">  119600000 :         std::vector&lt; tk::real &gt; dW( m_ncomp );</span>
-<span class="lineNum">     161 </span>        [<span class="branchCov" title="Branch 0 was taken 119600000 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">  119600000 :         m_rng.gaussian( stream, m_ncomp, dW.data() );</span>
+<span class="lineNum">     139 </span>                :            :         }
+<span class="lineNum">     140 </span>                :            :         // Initialize derived instantaneous variables
+<span class="lineNum">     141 </span>                :<span class="lineCov">     400000 :         derived( particles, p );</span>
+<span class="lineNum">     142 </span>                :            :       }
+<span class="lineNum">     143 </span>                :            : 
+<span class="lineNum">     144 </span>                :<span class="lineCov">         32 :       feclearexcept( FE_UNDERFLOW );</span>
+<span class="lineNum">     145 </span>                :<span class="lineCov">         32 :       feupdateenv( &amp;fe );</span>
+<span class="lineNum">     146 </span>                :<span class="lineCov">         32 :     }</span>
+<span class="lineNum">     147 </span>                :            : 
+<span class="lineNum">     148 </span>                :            :     //! \brief Advance particles according to the MixDirichlet SDE
+<span class="lineNum">     149 </span>                :            :     //! \param[in,out] particles Array of particle properties
+<span class="lineNum">     150 </span>                :            :     //! \param[in] stream Thread (or more precisely stream) ID
+<a name="151"><span class="lineNum">     151 </span>                :            :     //! \param[in] dt Time step size</a>
+<span class="lineNum">     152 </span>                :            :     //! \param[in] moments Map of statistical moments
+<span class="lineNum">     153 </span>                :<span class="lineCov">       9568 :     void advance( tk::Particles&amp; particles,</span>
+<span class="lineNum">     154 </span>                :            :                   int stream,
+<span class="lineNum">     155 </span>                :            :                   tk::real dt,
+<span class="lineNum">     156 </span>                :            :                   tk::real,
+<span class="lineNum">     157 </span>                :            :                   const std::map&lt; tk::ctr::Product, tk::real &gt;&amp; moments )
+<span class="lineNum">     158 </span>                :            :     {
+<span class="lineNum">     159 </span>                :            :       // Update SDE coefficients
+<span class="lineNum">     160 </span>                :<span class="lineCov">       9568 :       coeff.update( m_depvar, m_ncomp, m_norm, DENSITY_OFFSET, VOLUME_OFFSET,</span>
+<span class="lineNum">     161 </span>                :<span class="lineCov">       9568 :                     moments, m_rho, m_r, m_kprime, m_b, m_k, m_S );</span>
 <span class="lineNum">     162 </span>                :            : 
-<span class="lineNum">     163 </span>                :            :         // Advance all m_ncomp (=N=K+1) scalars
-<span class="lineNum">     164 </span>                :<span class="lineCov">  119600000 :         auto&amp; yn = particles( p, m_ncomp, m_offset );</span>
-<span class="lineNum">     165 </span>        [<span class="branchCov" title="Branch 0 was taken 239200000 times"> + </span><span class="branchCov" title="Branch 1 was taken 119600000 times"> + </span>]:<span class="lineCov">  358800000 :         for (ncomp_t i=0; i&lt;m_ncomp; ++i) {</span>
-<span class="lineNum">     166 </span>        [<span class="branchCov" title="Branch 0 was taken 68079000 times"> + </span><span class="branchCov" title="Branch 1 was taken 171121300 times"> + </span>]:<span class="lineCov">  239200000 :           auto&amp; y = particles( p, i, m_offset );</span>
-<span class="lineNum">     167 </span>        [<span class="branchCov" title="Branch 0 was taken 68079000 times"> + </span><span class="branchCov" title="Branch 1 was taken 171121300 times"> + </span>]:<span class="lineCov">  239200000 :           tk::real d = m_k[i] * y * yn * dt;</span>
-<span class="lineNum">     168 </span>        [<span class="branchCov" title="Branch 0 was taken 68079000 times"> + </span><span class="branchCov" title="Branch 1 was taken 171121300 times"> + </span>]:<span class="lineCov">  239200000 :           if (d &lt; 0.0) d = 0.0;</span>
-<span class="lineNum">     169 </span>                :<span class="lineCov">  239200000 :           d = std::sqrt( d );</span>
-<span class="lineNum">     170 </span>                :<span class="lineCov">  239200000 :           auto dy = 0.5*m_b[i]*( m_S[i]*yn - (1.0-m_S[i])*y )*dt + d*dW[i];</span>
-<span class="lineNum">     171 </span>                :<span class="lineCov">  239200000 :           y += dy;</span>
-<span class="lineNum">     172 </span>                :<span class="lineCov">  239200000 :           yn -= dy;</span>
-<span class="lineNum">     173 </span>                :            :         }
-<span class="lineNum">     174 </span>                :            :         // Compute derived instantaneous variables
-<span class="lineNum">     175 </span>                :<span class="lineCov">  119600000 :         derived( particles, p );</span>
-<span class="lineNum">     176 </span>                :            :       }
-<span class="lineNum">     177 </span>                :<span class="lineCov">       9568 :     }</span>
-<span class="lineNum">     178 </span>                :            : 
-<span class="lineNum">     179 </span>                :            :   private:
-<span class="lineNum">     180 </span>                :            :     //! Offset of particle density in solution array relative to YN
-<span class="lineNum">     181 </span>                :            :     static const std::size_t DENSITY_OFFSET = 1;
-<span class="lineNum">     182 </span>                :            :     //! Offset of particle specific volume in solution array relative to YN
-<span class="lineNum">     183 </span>                :            :     static const std::size_t VOLUME_OFFSET = 2;
-<span class="lineNum">     184 </span>                :            : 
-<span class="lineNum">     185 </span>                :            :     const ncomp_t m_c;                  //!&lt; Equation system index
-<span class="lineNum">     186 </span>                :            :     const char m_depvar;                //!&lt; Dependent variable
-<span class="lineNum">     187 </span>                :            :     const ncomp_t m_ncomp;              //!&lt; Number of components, K = N-1
-<span class="lineNum">     188 </span>                :            :     const ncomp_t m_offset;             //!&lt; Offset SDE operates from
-<span class="lineNum">     189 </span>                :            :     const tk::RNG&amp; m_rng;               //!&lt; Random number generator
-<span class="lineNum">     190 </span>                :            :     const ctr::NormalizationType m_norm;//!&lt; Normalization type
+<span class="lineNum">     163 </span>                :            :       fenv_t fe;
+<span class="lineNum">     164 </span>                :<span class="lineCov">       9568 :       feholdexcept( &amp;fe );</span>
+<span class="lineNum">     165 </span>                :            : 
+<span class="lineNum">     166 </span>                :            :       // Advance particles
+<span class="lineNum">     167 </span>                :<span class="lineCov">       9568 :       const auto npar = particles.nunk();</span>
+<span class="lineNum">     168 </span>        [<span class="branchCov" title="Branch 0 was taken 119600000 times"> + </span><span class="branchCov" title="Branch 1 was taken 9568 times"> + </span>]:<span class="lineCov">  119609600 :       for (auto p=decltype(npar){0}; p&lt;npar; ++p) {</span>
+<span class="lineNum">     169 </span>                :            :         // Generate Gaussian random numbers with zero mean and unit variance
+<span class="lineNum">     170 </span>                :<span class="lineCov">  119600000 :         std::vector&lt; tk::real &gt; dW( m_ncomp );</span>
+<span class="lineNum">     171 </span>        [<span class="branchCov" title="Branch 0 was taken 119600000 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">  119600000 :         m_rng.gaussian( stream, m_ncomp, dW.data() );</span>
+<span class="lineNum">     172 </span>                :            : 
+<span class="lineNum">     173 </span>                :            :         // Advance all m_ncomp (=N=K+1) scalars
+<span class="lineNum">     174 </span>                :<span class="lineCov">  119600000 :         auto&amp; yn = particles( p, m_ncomp, m_offset );</span>
+<span class="lineNum">     175 </span>        [<span class="branchCov" title="Branch 0 was taken 239200000 times"> + </span><span class="branchCov" title="Branch 1 was taken 119600000 times"> + </span>]:<span class="lineCov">  358800000 :         for (ncomp_t i=0; i&lt;m_ncomp; ++i) {</span>
+<span class="lineNum">     176 </span>        [<span class="branchCov" title="Branch 0 was taken 68084800 times"> + </span><span class="branchCov" title="Branch 1 was taken 171115300 times"> + </span>]:<span class="lineCov">  239200000 :           auto&amp; y = particles( p, i, m_offset );</span>
+<span class="lineNum">     177 </span>        [<span class="branchCov" title="Branch 0 was taken 68084800 times"> + </span><span class="branchCov" title="Branch 1 was taken 171115300 times"> + </span>]:<span class="lineCov">  239200000 :           tk::real d = m_k[i] * y * yn * dt;</span>
+<span class="lineNum">     178 </span>        [<span class="branchCov" title="Branch 0 was taken 68084800 times"> + </span><span class="branchCov" title="Branch 1 was taken 171115300 times"> + </span>]:<span class="lineCov">  239200000 :           if (d &lt; 0.0) d = 0.0;</span>
+<span class="lineNum">     179 </span>                :<span class="lineCov">  239200000 :           d = std::sqrt( d );</span>
+<span class="lineNum">     180 </span>                :<span class="lineCov">  239200000 :           auto dy = 0.5*m_b[i]*( m_S[i]*yn - (1.0-m_S[i])*y )*dt + d*dW[i];</span>
+<span class="lineNum">     181 </span>                :<span class="lineCov">  239200000 :           y += dy;</span>
+<span class="lineNum">     182 </span>                :<span class="lineCov">  239200000 :           yn -= dy;</span>
+<span class="lineNum">     183 </span>                :            :         }
+<span class="lineNum">     184 </span>                :            :         // Compute derived instantaneous variables
+<span class="lineNum">     185 </span>                :<span class="lineCov">  119600000 :         derived( particles, p );</span>
+<span class="lineNum">     186 </span>                :            :       }
+<span class="lineNum">     187 </span>                :            : 
+<span class="lineNum">     188 </span>                :<span class="lineCov">       9568 :       feclearexcept( FE_UNDERFLOW );</span>
+<span class="lineNum">     189 </span>                :<span class="lineCov">       9568 :       feupdateenv( &amp;fe );</span>
+<span class="lineNum">     190 </span>                :<span class="lineCov">       9568 :     }</span>
 <span class="lineNum">     191 </span>                :            : 
-<span class="lineNum">     192 </span>                :            :     //! Coefficients
-<span class="lineNum">     193 </span>                :            :     std::vector&lt; kw::sde_b::info::expect::type &gt; m_b;
-<span class="lineNum">     194 </span>                :            :     std::vector&lt; kw::sde_S::info::expect::type &gt; m_S;
-<span class="lineNum">     195 </span>                :            :     std::vector&lt; kw::sde_kappa::info::expect::type &gt; m_kprime;
-<span class="lineNum">     196 </span>                :            :     std::vector&lt; kw::sde_kappa::info::expect::type &gt; m_k;
-<span class="lineNum">     197 </span>                :            :     std::vector&lt; kw::sde_rho::info::expect::type &gt; m_rho;
-<span class="lineNum">     198 </span>                :            :     std::vector&lt; kw::sde_r::info::expect::type &gt; m_r;
-<span class="lineNum">     199 </span>                :            : 
-<span class="lineNum">     200 </span>                :            :     //! Coefficients policy
-<span class="lineNum">     201 </span>                :            :     Coefficients coeff;
-<span class="lineNum">     202 </span>                :            : 
-<span class="lineNum">     203 </span>                :            :     //! \brief Return density for mass fractions
-<span class="lineNum">     204 </span>                :            :     //! \details This function returns the instantaneous density, rho,
-<span class="lineNum">     205 </span>                :            :     //!   based on the multiple mass fractions, Y_c.
-<span class="lineNum">     206 </span>                :            :     //! \param[in] particles Array of particle properties
-<span class="lineNum">     207 </span>                :            :     //! \param[in] p Particle index
-<span class="lineNum">     208 </span>                :            :     //! \return Instantaneous value of the density, rho
-<span class="lineNum">     209 </span>                :            :     //! \details This is computed based 1/rho = sum_{i=1}^N Y_i/R_i, where R_i
-<span class="lineNum">     210 </span>                :            :     //!   are the constant pure-fluid densities and the Y_i are the mass
-<span class="lineNum">     211 </span>                :            :     //!   fractions, of the N materials.
-<span class="lineNum">     212 </span>                :            :     tk::real rho( const tk::Particles&amp; particles, ncomp_t p ) const {
-<span class="lineNum">     213 </span>                :            :       // start computing density
-<span class="lineNum">     214 </span>                :            :       tk::real d = 0.0;
-<span class="lineNum">     215 </span>[<span class="branchNoCov" title="Branch 0 was not taken"> - </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>][<span class="branchNoCov" title="Branch 2 was not taken"> - </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineCov">  480000000 :       for (ncomp_t i=0; i&lt;m_ncomp+1; ++i)</span>
+<span class="lineNum">     192 </span>                :            :   private:
+<span class="lineNum">     193 </span>                :            :     //! Offset of particle density in solution array relative to YN
+<span class="lineNum">     194 </span>                :            :     static const std::size_t DENSITY_OFFSET = 1;
+<span class="lineNum">     195 </span>                :            :     //! Offset of particle specific volume in solution array relative to YN
+<span class="lineNum">     196 </span>                :            :     static const std::size_t VOLUME_OFFSET = 2;
+<span class="lineNum">     197 </span>                :            : 
+<span class="lineNum">     198 </span>                :            :     const ncomp_t m_c;                  //!&lt; Equation system index
+<span class="lineNum">     199 </span>                :            :     const char m_depvar;                //!&lt; Dependent variable
+<span class="lineNum">     200 </span>                :            :     const ncomp_t m_ncomp;              //!&lt; Number of components, K = N-1
+<span class="lineNum">     201 </span>                :            :     const ncomp_t m_offset;             //!&lt; Offset SDE operates from
+<span class="lineNum">     202 </span>                :            :     const tk::RNG&amp; m_rng;               //!&lt; Random number generator
+<span class="lineNum">     203 </span>                :            :     const ctr::NormalizationType m_norm;//!&lt; Normalization type
+<span class="lineNum">     204 </span>                :            : 
+<span class="lineNum">     205 </span>                :            :     //! Coefficients
+<span class="lineNum">     206 </span>                :            :     std::vector&lt; kw::sde_b::info::expect::type &gt; m_b;
+<span class="lineNum">     207 </span>                :            :     std::vector&lt; kw::sde_S::info::expect::type &gt; m_S;
+<span class="lineNum">     208 </span>                :            :     std::vector&lt; kw::sde_kappa::info::expect::type &gt; m_kprime;
+<span class="lineNum">     209 </span>                :            :     std::vector&lt; kw::sde_kappa::info::expect::type &gt; m_k;
+<span class="lineNum">     210 </span>                :            :     std::vector&lt; kw::sde_rho::info::expect::type &gt; m_rho;
+<span class="lineNum">     211 </span>                :            :     std::vector&lt; kw::sde_r::info::expect::type &gt; m_r;
+<span class="lineNum">     212 </span>                :            : 
+<span class="lineNum">     213 </span>                :            :     //! Coefficients policy
+<span class="lineNum">     214 </span>                :            :     Coefficients coeff;
+<span class="lineNum">     215 </span>                :            : 
+<span class="lineNum">     216 </span>                :            :     //! \brief Return density for mass fractions
+<span class="lineNum">     217 </span>                :            :     //! \details This function returns the instantaneous density, rho,
+<span class="lineNum">     218 </span>                :            :     //!   based on the multiple mass fractions, Y_c.
+<span class="lineNum">     219 </span>                :            :     //! \param[in] particles Array of particle properties
+<span class="lineNum">     220 </span>                :            :     //! \param[in] p Particle index
+<span class="lineNum">     221 </span>                :            :     //! \return Instantaneous value of the density, rho
+<span class="lineNum">     222 </span>                :            :     //! \details This is computed based 1/rho = sum_{i=1}^N Y_i/R_i, where R_i
+<span class="lineNum">     223 </span>                :            :     //!   are the constant pure-fluid densities and the Y_i are the mass
+<span class="lineNum">     224 </span>                :            :     //!   fractions, of the N materials.
+<span class="lineNum">     225 </span>                :            :     tk::real rho( const tk::Particles&amp; particles, ncomp_t p ) const {
+<span class="lineNum">     226 </span>                :            :       // start computing density
+<span class="lineNum">     227 </span>                :            :       tk::real d = 0.0;
+<span class="lineNum">     228 </span>[<span class="branchNoCov" title="Branch 0 was not taken"> - </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>][<span class="branchNoCov" title="Branch 2 was not taken"> - </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineCov">  480000000 :       for (ncomp_t i=0; i&lt;m_ncomp+1; ++i)</span>
 <span class="lineNum">         </span>[<span class="branchNoCov" title="Branch 4 was not taken"> - </span><span class="branchNoCov" title="Branch 5 was not taken"> - </span>][<span class="branchNoCov" title="Branch 6 was not taken"> - </span><span class="branchNoCov" title="Branch 7 was not taken"> - </span>]
 <span class="lineNum">         </span>[<span class="branchNoCov" title="Branch 8 was not taken"> - </span><span class="branchNoCov" title="Branch 9 was not taken"> - </span>][<span class="branchNoCov" title="Branch 10 was not taken"> - </span><span class="branchNoCov" title="Branch 11 was not taken"> - </span>]
 <span class="lineNum">         </span>[<span class="branchNoCov" title="Branch 12 was not taken"> - </span><span class="branchNoCov" title="Branch 13 was not taken"> - </span>][<span class="branchNoCov" title="Branch 14 was not taken"> - </span><span class="branchNoCov" title="Branch 15 was not taken"> - </span>]
@@ -303,28 +316,28 @@
 <span class="lineNum">         </span>[<span class="branchNoCov" title="Branch 36 was not taken"> - </span><span class="branchNoCov" title="Branch 37 was not taken"> - </span>][<span class="branchNoCov" title="Branch 38 was not taken"> - </span><span class="branchNoCov" title="Branch 39 was not taken"> - </span>]
 <span class="lineNum">         </span>[<span class="branchNoCov" title="Branch 40 was not taken"> - </span><span class="branchNoCov" title="Branch 41 was not taken"> - </span>][<span class="branchCov" title="Branch 42 was taken 90000000 times"> + </span><span class="branchCov" title="Branch 43 was taken 30000000 times"> + </span>]
 <span class="lineNum">         </span>[<span class="branchCov" title="Branch 44 was taken 270000000 times"> + </span><span class="branchCov" title="Branch 45 was taken 90000000 times"> + </span>][<span class="branchNoCov" title="Branch 46 was not taken"> - </span><span class="branchNoCov" title="Branch 47 was not taken"> - </span>]
-<span class="lineNum">     216 </span>                :<span class="lineCov">  360000000 :         d += particles( p, i, m_offset ) / m_rho[i];</span>
-<span class="lineNum">     217 </span>                :            :       // return particle density
-<span class="lineNum">     218 </span>                :<span class="lineCov">  120000000 :       return 1.0/d;</span>
-<span class="lineNum">     219 </span>                :            :     }
-<span class="lineNum">     220 </span>                :            : 
-<span class="lineNum">     221 </span>                :            :     //! Compute instantaneous values derived from particle mass fractions
-<a name="222"><span class="lineNum">     222 </span>                :            :     //! \param[in,out] particles Particle properties array</a>
-<span class="lineNum">     223 </span>                :            :     //! \param[in] p Particle index
-<span class="lineNum">     224 </span>                :<span class="lineCov">  120000000 :     void derived( tk::Particles&amp; particles, ncomp_t p ) const {</span>
-<span class="lineNum">     225 </span>                :            :       // compute instantaneous fluid-density based on particle mass fractions
-<span class="lineNum">     226 </span>                :            :       auto density = rho( particles, p );
-<span class="lineNum">     227 </span>                :            :       //// Compute and store instantaneous density
-<span class="lineNum">     228 </span>                :<span class="lineCov">  120000000 :       particles( p, m_ncomp+DENSITY_OFFSET, m_offset ) = density;</span>
-<span class="lineNum">     229 </span>                :            :       // Store instantaneous specific volume
-<span class="lineNum">     230 </span>                :<span class="lineCov">  120000000 :       particles( p, m_ncomp+VOLUME_OFFSET, m_offset ) = 1.0/density;</span>
-<span class="lineNum">     231 </span>                :<span class="lineCov">  120000000 :     }</span>
-<span class="lineNum">     232 </span>                :            : 
-<span class="lineNum">     233 </span>                :            : };
-<span class="lineNum">     234 </span>                :            : 
-<span class="lineNum">     235 </span>                :            : } // walker::
-<span class="lineNum">     236 </span>                :            : 
-<span class="lineNum">     237 </span>                :            : #endif // MixDirichlet_h
+<span class="lineNum">     229 </span>                :<span class="lineCov">  360000000 :         d += particles( p, i, m_offset ) / m_rho[i];</span>
+<span class="lineNum">     230 </span>                :            :       // return particle density
+<span class="lineNum">     231 </span>                :<span class="lineCov">  120000000 :       return 1.0/d;</span>
+<span class="lineNum">     232 </span>                :            :     }
+<span class="lineNum">     233 </span>                :            : 
+<span class="lineNum">     234 </span>                :            :     //! Compute instantaneous values derived from particle mass fractions
+<a name="235"><span class="lineNum">     235 </span>                :            :     //! \param[in,out] particles Particle properties array</a>
+<span class="lineNum">     236 </span>                :            :     //! \param[in] p Particle index
+<span class="lineNum">     237 </span>                :<span class="lineCov">  120000000 :     void derived( tk::Particles&amp; particles, ncomp_t p ) const {</span>
+<span class="lineNum">     238 </span>                :            :       // compute instantaneous fluid-density based on particle mass fractions
+<span class="lineNum">     239 </span>                :            :       auto density = rho( particles, p );
+<span class="lineNum">     240 </span>                :            :       //// Compute and store instantaneous density
+<span class="lineNum">     241 </span>                :<span class="lineCov">  120000000 :       particles( p, m_ncomp+DENSITY_OFFSET, m_offset ) = density;</span>
+<span class="lineNum">     242 </span>                :            :       // Store instantaneous specific volume
+<span class="lineNum">     243 </span>                :<span class="lineCov">  120000000 :       particles( p, m_ncomp+VOLUME_OFFSET, m_offset ) = 1.0/density;</span>
+<span class="lineNum">     244 </span>                :<span class="lineCov">  120000000 :     }</span>
+<span class="lineNum">     245 </span>                :            : 
+<span class="lineNum">     246 </span>                :            : };
+<span class="lineNum">     247 </span>                :            : 
+<span class="lineNum">     248 </span>                :            : } // walker::
+<span class="lineNum">     249 </span>                :            : 
+<span class="lineNum">     250 </span>                :            : #endif // MixDirichlet_h
 </pre>
       </td>
     </tr>
