@@ -174,7 +174,10 @@
   <span class="n">m_stage</span><span class="p">(</span> <span class="mi">0</span> <span class="p">),</span>
   <span class="n">m_boxnodes</span><span class="p">(),</span>
   <span class="n">m_edgenode</span><span class="p">(),</span>
-  <span class="n">m_edgeid</span><span class="p">()</span>
+  <span class="n">m_edgeid</span><span class="p">(),</span>
+  <span class="n">m_dtp</span><span class="p">(</span> <span class="n">m_u</span><span class="p">.</span><span class="n">nunk</span><span class="p">(),</span> <span class="mf">0.0</span> <span class="p">),</span>
+  <span class="n">m_tp</span><span class="p">(</span> <span class="n">m_u</span><span class="p">.</span><span class="n">nunk</span><span class="p">(),</span> <span class="n">g_inputdeck</span><span class="p">.</span><span class="n">get</span><span class="o">&lt;</span> <span class="n">tag</span><span class="o">::</span><span class="n">discr</span><span class="p">,</span> <span class="n">tag</span><span class="o">::</span><span class="n">t0</span> <span class="o">&gt;</span><span class="p">()</span> <span class="p">),</span>
+  <span class="n">m_finished</span><span class="p">(</span> <span class="mi">0</span> <span class="p">)</span>
 <span class="c1">// *****************************************************************************</span>
 <span class="c1">//  Constructor</span>
 <span class="c1">//! \param[in] disc Discretization proxy</span>
@@ -748,7 +751,6 @@
     <span class="c1">// figure out if this is an edge on the parallel boundary</span>
     <span class="k">auto</span> <span class="n">nit</span> <span class="o">=</span> <span class="n">m_dfnormc</span><span class="p">.</span><span class="n">find</span><span class="p">(</span> <span class="n">g</span> <span class="p">);</span>
     <span class="k">auto</span> <span class="n">m</span> <span class="o">=</span> <span class="p">(</span> <span class="n">nit</span> <span class="o">!=</span> <span class="n">m_dfnormc</span><span class="p">.</span><span class="n">end</span><span class="p">()</span> <span class="p">)</span> <span class="o">?</span> <span class="n">nit</span><span class="o">-&gt;</span><span class="nl">second</span> <span class="p">:</span> <span class="n">n</span><span class="p">;</span>
-    <span class="c1">// orient normals</span>
     <span class="n">m_dfn</span><span class="p">[</span><span class="n">e</span><span class="o">*</span><span class="mi">6</span><span class="o">+</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">n</span><span class="p">[</span><span class="mi">0</span><span class="p">];</span>
     <span class="n">m_dfn</span><span class="p">[</span><span class="n">e</span><span class="o">*</span><span class="mi">6</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">n</span><span class="p">[</span><span class="mi">1</span><span class="p">];</span>
     <span class="n">m_dfn</span><span class="p">[</span><span class="n">e</span><span class="o">*</span><span class="mi">6</span><span class="o">+</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="n">n</span><span class="p">[</span><span class="mi">2</span><span class="p">];</span>
@@ -798,13 +800,24 @@
   <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>      <span class="c1">// compute dt based on CFL</span>
 
     <span class="c1">//! [Find the minimum dt across all PDEs integrated]</span>
-    <span class="k">for</span> <span class="p">(</span><span class="k">const</span> <span class="k">auto</span><span class="o">&amp;</span> <span class="nl">eq</span> <span class="p">:</span> <span class="n">g_cgpde</span><span class="p">)</span> <span class="p">{</span>
-      <span class="k">auto</span> <span class="n">eqdt</span> <span class="o">=</span> <span class="n">eq</span><span class="p">.</span><span class="n">dt</span><span class="p">(</span> <span class="n">d</span><span class="o">-&gt;</span><span class="n">Coord</span><span class="p">(),</span> <span class="n">d</span><span class="o">-&gt;</span><span class="n">Inpoel</span><span class="p">(),</span> <span class="n">m_u</span> <span class="p">);</span>
-      <span class="k">if</span> <span class="p">(</span><span class="n">eqdt</span> <span class="o">&lt;</span> <span class="n">mindt</span><span class="p">)</span> <span class="n">mindt</span> <span class="o">=</span> <span class="n">eqdt</span><span class="p">;</span>
-    <span class="p">}</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">g_inputdeck</span><span class="p">.</span><span class="n">get</span><span class="o">&lt;</span> <span class="n">tag</span><span class="o">::</span><span class="n">discr</span><span class="p">,</span> <span class="n">tag</span><span class="o">::</span><span class="n">steady_state</span> <span class="o">&gt;</span><span class="p">())</span> <span class="p">{</span>
 
-    <span class="c1">// Scale smallest dt with CFL coefficient</span>
-    <span class="n">mindt</span> <span class="o">*=</span> <span class="n">g_inputdeck</span><span class="p">.</span><span class="n">get</span><span class="o">&lt;</span> <span class="n">tag</span><span class="o">::</span><span class="n">discr</span><span class="p">,</span> <span class="n">tag</span><span class="o">::</span><span class="n">cfl</span> <span class="o">&gt;</span><span class="p">();</span>
+      <span class="c1">// compute new dt for each mesh point</span>
+      <span class="k">for</span> <span class="p">(</span><span class="k">const</span> <span class="k">auto</span><span class="o">&amp;</span> <span class="nl">eq</span> <span class="p">:</span> <span class="n">g_cgpde</span><span class="p">)</span>
+        <span class="n">eq</span><span class="p">.</span><span class="n">dt</span><span class="p">(</span> <span class="n">d</span><span class="o">-&gt;</span><span class="n">It</span><span class="p">(),</span> <span class="n">d</span><span class="o">-&gt;</span><span class="n">Vol</span><span class="p">(),</span> <span class="n">m_u</span><span class="p">,</span> <span class="n">m_dtp</span> <span class="p">);</span>
+
+      <span class="c1">// find the smallest dt of all nodes on this chare</span>
+      <span class="n">mindt</span> <span class="o">=</span> <span class="o">*</span><span class="n">std</span><span class="o">::</span><span class="n">min_element</span><span class="p">(</span> <span class="n">begin</span><span class="p">(</span><span class="n">m_dtp</span><span class="p">),</span> <span class="n">end</span><span class="p">(</span><span class="n">m_dtp</span><span class="p">)</span> <span class="p">);</span>
+
+    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>    <span class="c1">// compute new dt for this chare</span>
+
+      <span class="c1">// find the smallest dt of all equations on this chare</span>
+      <span class="k">for</span> <span class="p">(</span><span class="k">const</span> <span class="k">auto</span><span class="o">&amp;</span> <span class="nl">eq</span> <span class="p">:</span> <span class="n">g_cgpde</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">auto</span> <span class="n">eqdt</span> <span class="o">=</span> <span class="n">eq</span><span class="p">.</span><span class="n">dt</span><span class="p">(</span> <span class="n">d</span><span class="o">-&gt;</span><span class="n">Coord</span><span class="p">(),</span> <span class="n">d</span><span class="o">-&gt;</span><span class="n">Inpoel</span><span class="p">(),</span> <span class="n">m_u</span> <span class="p">);</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">eqdt</span> <span class="o">&lt;</span> <span class="n">mindt</span><span class="p">)</span> <span class="n">mindt</span> <span class="o">=</span> <span class="n">eqdt</span><span class="p">;</span>
+      <span class="p">}</span>
+
+    <span class="p">}</span>
     <span class="c1">//! [Find the minimum dt across all PDEs integrated]</span>
 
   <span class="p">}</span>
@@ -825,7 +838,7 @@
 <span class="n">ALECG</span><span class="o">::</span><span class="n">advance</span><span class="p">(</span> <span class="n">tk</span><span class="o">::</span><span class="n">real</span> <span class="n">newdt</span> <span class="p">)</span>
 <span class="c1">// *****************************************************************************</span>
 <span class="c1">// Advance equations to next time step</span>
-<span class="c1">//! \param[in] newdt Size of this new time step</span>
+<span class="c1">//! \param[in] newdt The smallest dt across the whole problem</span>
 <span class="c1">// *****************************************************************************</span>
 <span class="p">{</span>
   <span class="k">auto</span> <span class="n">d</span> <span class="o">=</span> <span class="n">Disc</span><span class="p">();</span>
@@ -906,16 +919,25 @@
   <span class="c1">// clear gradients receive buffer</span>
   <span class="n">tk</span><span class="o">::</span><span class="n">destroy</span><span class="p">(</span><span class="n">m_gradc</span><span class="p">);</span>
 
+  <span class="k">const</span> <span class="k">auto</span> <span class="n">steady</span> <span class="o">=</span> <span class="n">g_inputdeck</span><span class="p">.</span><span class="n">get</span><span class="o">&lt;</span> <span class="n">tag</span><span class="o">::</span><span class="n">discr</span><span class="p">,</span> <span class="n">tag</span><span class="o">::</span><span class="n">steady_state</span> <span class="o">&gt;</span><span class="p">();</span>
+
   <span class="c1">// Compute own portion of right-hand side for all equations</span>
   <span class="k">auto</span> <span class="n">prev_rkcoef</span> <span class="o">=</span> <span class="n">m_stage</span> <span class="o">==</span> <span class="mi">0</span> <span class="o">?</span> <span class="mf">0.0</span> <span class="o">:</span> <span class="n">rkcoef</span><span class="p">[</span><span class="n">m_stage</span><span class="o">-</span><span class="mi">1</span><span class="p">];</span>
+  <span class="k">if</span> <span class="p">(</span><span class="n">steady</span><span class="p">)</span>
+    <span class="k">for</span> <span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="n">p</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">p</span><span class="o">&lt;</span><span class="n">m_tp</span><span class="p">.</span><span class="n">size</span><span class="p">();</span> <span class="o">++</span><span class="n">p</span><span class="p">)</span> <span class="n">m_tp</span><span class="p">[</span><span class="n">p</span><span class="p">]</span> <span class="o">+=</span> <span class="n">prev_rkcoef</span> <span class="o">*</span> <span class="n">m_dtp</span><span class="p">[</span><span class="n">p</span><span class="p">];</span>
   <span class="k">for</span> <span class="p">(</span><span class="k">const</span> <span class="k">auto</span><span class="o">&amp;</span> <span class="nl">eq</span> <span class="p">:</span> <span class="n">g_cgpde</span><span class="p">)</span>
     <span class="n">eq</span><span class="p">.</span><span class="n">rhs</span><span class="p">(</span> <span class="n">d</span><span class="o">-&gt;</span><span class="n">T</span><span class="p">()</span> <span class="o">+</span> <span class="n">prev_rkcoef</span> <span class="o">*</span> <span class="n">d</span><span class="o">-&gt;</span><span class="n">Dt</span><span class="p">(),</span> <span class="n">d</span><span class="o">-&gt;</span><span class="n">Coord</span><span class="p">(),</span> <span class="n">d</span><span class="o">-&gt;</span><span class="n">Inpoel</span><span class="p">(),</span>
             <span class="n">m_triinpoel</span><span class="p">,</span> <span class="n">d</span><span class="o">-&gt;</span><span class="n">Gid</span><span class="p">(),</span> <span class="n">d</span><span class="o">-&gt;</span><span class="n">Bid</span><span class="p">(),</span> <span class="n">d</span><span class="o">-&gt;</span><span class="n">Lid</span><span class="p">(),</span> <span class="n">m_dfn</span><span class="p">,</span> <span class="n">m_psup</span><span class="p">,</span> <span class="n">m_esup</span><span class="p">,</span>
-            <span class="n">m_symbcnode</span><span class="p">,</span> <span class="n">d</span><span class="o">-&gt;</span><span class="n">Vol</span><span class="p">(),</span> <span class="n">m_edgenode</span><span class="p">,</span> <span class="n">m_edgeid</span><span class="p">,</span> <span class="n">m_grad</span><span class="p">,</span> <span class="n">m_u</span><span class="p">,</span> <span class="n">m_rhs</span> <span class="p">);</span>
+            <span class="n">m_symbcnode</span><span class="p">,</span> <span class="n">d</span><span class="o">-&gt;</span><span class="n">Vol</span><span class="p">(),</span> <span class="n">m_edgenode</span><span class="p">,</span> <span class="n">m_edgeid</span><span class="p">,</span> <span class="n">m_grad</span><span class="p">,</span> <span class="n">m_u</span><span class="p">,</span> <span class="n">m_tp</span><span class="p">,</span>
+            <span class="n">m_rhs</span> <span class="p">);</span>
+  <span class="k">if</span> <span class="p">(</span><span class="n">steady</span><span class="p">)</span>
+    <span class="k">for</span> <span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="n">p</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">p</span><span class="o">&lt;</span><span class="n">m_tp</span><span class="p">.</span><span class="n">size</span><span class="p">();</span> <span class="o">++</span><span class="n">p</span><span class="p">)</span> <span class="n">m_tp</span><span class="p">[</span><span class="n">p</span><span class="p">]</span> <span class="o">-=</span> <span class="n">prev_rkcoef</span> <span class="o">*</span> <span class="n">m_dtp</span><span class="p">[</span><span class="n">p</span><span class="p">];</span>
 
   <span class="c1">// Query and match user-specified boundary conditions to side sets</span>
+  <span class="k">if</span> <span class="p">(</span><span class="n">steady</span><span class="p">)</span> <span class="k">for</span> <span class="p">(</span><span class="k">auto</span><span class="o">&amp;</span> <span class="nl">deltat</span> <span class="p">:</span> <span class="n">m_dtp</span><span class="p">)</span> <span class="n">deltat</span> <span class="o">*=</span> <span class="n">rkcoef</span><span class="p">[</span><span class="n">m_stage</span><span class="p">];</span>
   <span class="n">m_bcdir</span> <span class="o">=</span> <span class="n">match</span><span class="p">(</span> <span class="n">m_u</span><span class="p">.</span><span class="n">nprop</span><span class="p">(),</span> <span class="n">d</span><span class="o">-&gt;</span><span class="n">T</span><span class="p">(),</span> <span class="n">rkcoef</span><span class="p">[</span><span class="n">m_stage</span><span class="p">]</span> <span class="o">*</span> <span class="n">d</span><span class="o">-&gt;</span><span class="n">Dt</span><span class="p">(),</span>
-                   <span class="n">d</span><span class="o">-&gt;</span><span class="n">Coord</span><span class="p">(),</span> <span class="n">d</span><span class="o">-&gt;</span><span class="n">Lid</span><span class="p">(),</span> <span class="n">m_bnode</span> <span class="p">);</span>
+                   <span class="n">m_tp</span><span class="p">,</span> <span class="n">m_dtp</span><span class="p">,</span> <span class="n">d</span><span class="o">-&gt;</span><span class="n">Coord</span><span class="p">(),</span> <span class="n">d</span><span class="o">-&gt;</span><span class="n">Lid</span><span class="p">(),</span> <span class="n">m_bnode</span> <span class="p">);</span>
+  <span class="k">if</span> <span class="p">(</span><span class="n">steady</span><span class="p">)</span> <span class="k">for</span> <span class="p">(</span><span class="k">auto</span><span class="o">&amp;</span> <span class="nl">deltat</span> <span class="p">:</span> <span class="n">m_dtp</span><span class="p">)</span> <span class="n">deltat</span> <span class="o">/=</span> <span class="n">rkcoef</span><span class="p">[</span><span class="n">m_stage</span><span class="p">];</span>
 
   <span class="c1">// Communicate rhs to other chares on chare-boundary</span>
   <span class="k">if</span> <span class="p">(</span><span class="n">d</span><span class="o">-&gt;</span><span class="n">NodeCommMap</span><span class="p">().</span><span class="n">empty</span><span class="p">())</span>        <span class="c1">// in serial we are done</span>
@@ -933,7 +955,7 @@
 
 <span class="kt">void</span>
 <span class="n">ALECG</span><span class="o">::</span><span class="n">comrhs</span><span class="p">(</span> <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span> <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="o">&gt;&amp;</span> <span class="n">gid</span><span class="p">,</span>
-                <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span> <span class="n">tk</span><span class="o">::</span><span class="n">real</span> <span class="o">&gt;</span> <span class="o">&gt;&amp;</span> <span class="n">R</span> <span class="p">)</span>
+               <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span> <span class="n">tk</span><span class="o">::</span><span class="n">real</span> <span class="o">&gt;</span> <span class="o">&gt;&amp;</span> <span class="n">R</span> <span class="p">)</span>
 <span class="c1">// *****************************************************************************</span>
 <span class="c1">//  Receive contributions to right-hand side vector on chare-boundaries</span>
 <span class="c1">//! \param[in] gid Global mesh node IDs at which we receive RHS contributions</span>
@@ -975,23 +997,35 @@
   <span class="p">}</span>
 
   <span class="c1">// clear receive buffer</span>
-  <span class="n">tk</span><span class="o">::</span><span class="n">destroy</span><span class="p">(</span><span class="n">m_rhsc</span><span class="p">);</span>  
+  <span class="n">tk</span><span class="o">::</span><span class="n">destroy</span><span class="p">(</span><span class="n">m_rhsc</span><span class="p">);</span>
+
+  <span class="k">const</span> <span class="k">auto</span> <span class="n">steady</span> <span class="o">=</span> <span class="n">g_inputdeck</span><span class="p">.</span><span class="n">get</span><span class="o">&lt;</span> <span class="n">tag</span><span class="o">::</span><span class="n">discr</span><span class="p">,</span> <span class="n">tag</span><span class="o">::</span><span class="n">steady_state</span> <span class="o">&gt;</span><span class="p">();</span>
 
   <span class="c1">// Set Dirichlet BCs for lhs and rhs</span>
-  <span class="k">for</span> <span class="p">(</span><span class="k">const</span> <span class="k">auto</span><span class="o">&amp;</span> <span class="p">[</span><span class="n">b</span><span class="p">,</span><span class="n">bc</span><span class="p">]</span> <span class="o">:</span> <span class="n">m_bcdir</span><span class="p">)</span> <span class="p">{</span>
-    <span class="k">for</span> <span class="p">(</span><span class="n">ncomp_t</span> <span class="n">c</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">c</span><span class="o">&lt;</span><span class="n">ncomp</span><span class="p">;</span> <span class="o">++</span><span class="n">c</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">for</span> <span class="p">(</span><span class="k">const</span> <span class="k">auto</span><span class="o">&amp;</span> <span class="p">[</span><span class="n">b</span><span class="p">,</span><span class="n">bc</span><span class="p">]</span> <span class="o">:</span> <span class="n">m_bcdir</span><span class="p">)</span>
+    <span class="k">for</span> <span class="p">(</span><span class="n">ncomp_t</span> <span class="n">c</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">c</span><span class="o">&lt;</span><span class="n">ncomp</span><span class="p">;</span> <span class="o">++</span><span class="n">c</span><span class="p">)</span>
       <span class="k">if</span> <span class="p">(</span><span class="n">bc</span><span class="p">[</span><span class="n">c</span><span class="p">].</span><span class="n">first</span><span class="p">)</span> <span class="p">{</span>
-        <span class="n">m_lhs</span><span class="p">(</span> <span class="n">b</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="mi">0</span> <span class="p">)</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">;</span>
-        <span class="n">m_rhs</span><span class="p">(</span> <span class="n">b</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="mi">0</span> <span class="p">)</span> <span class="o">=</span> <span class="n">bc</span><span class="p">[</span><span class="n">c</span><span class="p">].</span><span class="n">second</span> <span class="o">/</span> <span class="n">d</span><span class="o">-&gt;</span><span class="n">Dt</span><span class="p">()</span> <span class="o">/</span> <span class="n">rkcoef</span><span class="p">[</span><span class="n">m_stage</span><span class="p">];</span>
+        <span class="n">m_lhs</span><span class="p">(</span><span class="n">b</span><span class="p">,</span><span class="n">c</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">;</span>
+        <span class="k">auto</span> <span class="n">deltat</span> <span class="o">=</span> <span class="n">steady</span> <span class="o">?</span> <span class="n">m_dtp</span><span class="p">[</span><span class="n">b</span><span class="p">]</span> <span class="o">:</span> <span class="n">d</span><span class="o">-&gt;</span><span class="n">Dt</span><span class="p">();</span>
+        <span class="n">m_rhs</span><span class="p">(</span><span class="n">b</span><span class="p">,</span><span class="n">c</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span> <span class="o">=</span> <span class="n">bc</span><span class="p">[</span><span class="n">c</span><span class="p">].</span><span class="n">second</span> <span class="o">/</span> <span class="n">deltat</span> <span class="o">/</span> <span class="n">rkcoef</span><span class="p">[</span><span class="n">m_stage</span><span class="p">];</span>
       <span class="p">}</span>
-    <span class="p">}</span>
-  <span class="p">}</span>
 
   <span class="c1">// Update Un</span>
   <span class="k">if</span> <span class="p">(</span><span class="n">m_stage</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span> <span class="n">m_un</span> <span class="o">=</span> <span class="n">m_u</span><span class="p">;</span>
 
-  <span class="c1">// Solve sytem</span>
-  <span class="n">m_u</span> <span class="o">=</span> <span class="n">m_un</span> <span class="o">+</span> <span class="n">rkcoef</span><span class="p">[</span><span class="n">m_stage</span><span class="p">]</span> <span class="o">*</span> <span class="n">d</span><span class="o">-&gt;</span><span class="n">Dt</span><span class="p">()</span> <span class="o">*</span> <span class="n">m_rhs</span> <span class="o">/</span> <span class="n">m_lhs</span><span class="p">;</span>
+  <span class="c1">// Solve the sytem</span>
+  <span class="k">if</span> <span class="p">(</span><span class="n">steady</span><span class="p">)</span> <span class="p">{</span>
+
+    <span class="k">for</span> <span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">i</span><span class="o">&lt;</span><span class="n">m_u</span><span class="p">.</span><span class="n">nunk</span><span class="p">();</span> <span class="o">++</span><span class="n">i</span><span class="p">)</span>
+      <span class="k">for</span> <span class="p">(</span><span class="n">ncomp_t</span> <span class="n">c</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">c</span><span class="o">&lt;</span><span class="n">m_u</span><span class="p">.</span><span class="n">nprop</span><span class="p">();</span> <span class="o">++</span><span class="n">c</span><span class="p">)</span>
+        <span class="n">m_u</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="n">c</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span> <span class="o">=</span> <span class="n">m_un</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="n">c</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span>
+          <span class="o">+</span> <span class="n">rkcoef</span><span class="p">[</span><span class="n">m_stage</span><span class="p">]</span> <span class="o">*</span> <span class="n">m_dtp</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">*</span> <span class="n">m_rhs</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="n">c</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span> <span class="o">/</span> <span class="n">m_lhs</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="n">c</span><span class="p">,</span><span class="mi">0</span><span class="p">);</span>
+
+  <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+
+    <span class="n">m_u</span> <span class="o">=</span> <span class="n">m_un</span> <span class="o">+</span> <span class="n">rkcoef</span><span class="p">[</span><span class="n">m_stage</span><span class="p">]</span> <span class="o">*</span> <span class="n">d</span><span class="o">-&gt;</span><span class="n">Dt</span><span class="p">()</span> <span class="o">*</span> <span class="n">m_rhs</span> <span class="o">/</span> <span class="n">m_lhs</span><span class="p">;</span>
+
+  <span class="p">}</span>
 
   <span class="c1">//! [Continue after solve]</span>
   <span class="k">if</span> <span class="p">(</span><span class="n">m_stage</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">)</span> <span class="p">{</span>
@@ -1006,23 +1040,48 @@
   <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
 
     <span class="c1">// Compute diagnostics, e.g., residuals</span>
-    <span class="k">auto</span> <span class="n">diag_computed</span> <span class="o">=</span> <span class="n">m_diag</span><span class="p">.</span><span class="n">compute</span><span class="p">(</span> <span class="o">*</span><span class="n">d</span><span class="p">,</span> <span class="n">m_u</span> <span class="p">);</span>
+    <span class="k">auto</span> <span class="n">diag_computed</span> <span class="o">=</span> <span class="n">m_diag</span><span class="p">.</span><span class="n">compute</span><span class="p">(</span> <span class="o">*</span><span class="n">d</span><span class="p">,</span> <span class="n">m_u</span><span class="p">,</span> <span class="n">m_un</span> <span class="p">);</span>
     <span class="c1">// Increase number of iterations and physical time</span>
     <span class="n">d</span><span class="o">-&gt;</span><span class="n">next</span><span class="p">();</span>
+
+    <span class="c1">// Advance physical time for local time stepping</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">steady</span><span class="p">)</span> <span class="k">for</span> <span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">i</span><span class="o">&lt;</span><span class="n">m_u</span><span class="p">.</span><span class="n">nunk</span><span class="p">();</span> <span class="o">++</span><span class="n">i</span><span class="p">)</span> <span class="n">m_tp</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+=</span> <span class="n">m_dtp</span><span class="p">[</span><span class="n">i</span><span class="p">];</span>
+
     <span class="c1">// Continue to mesh refinement (if configured)</span>
-    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">diag_computed</span><span class="p">)</span> <span class="n">refine</span><span class="p">();</span>
+    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">diag_computed</span><span class="p">)</span> <span class="n">refine</span><span class="p">(</span> <span class="mf">1.0</span> <span class="p">);</span>
   <span class="p">}</span>
   <span class="c1">//! [Continue after solve]</span>
 <span class="p">}</span>
 
 <span class="kt">void</span>
-<span class="n">ALECG</span><span class="o">::</span><span class="n">refine</span><span class="p">()</span>
+<span class="n">ALECG</span><span class="o">::</span><span class="n">refine</span><span class="p">(</span> <span class="n">tk</span><span class="o">::</span><span class="n">real</span> <span class="n">l2res</span> <span class="p">)</span>
 <span class="c1">// *****************************************************************************</span>
 <span class="c1">// Optionally refine/derefine mesh</span>
+<span class="c1">//! \param[in] l2res L2-norm of the residual across the whole problem</span>
 <span class="c1">// *****************************************************************************</span>
 <span class="p">{</span>
   <span class="c1">//! [Refine]</span>
   <span class="k">auto</span> <span class="n">d</span> <span class="o">=</span> <span class="n">Disc</span><span class="p">();</span>
+
+  <span class="k">const</span> <span class="k">auto</span> <span class="n">nstep</span> <span class="o">=</span> <span class="n">g_inputdeck</span><span class="p">.</span><span class="n">get</span><span class="o">&lt;</span> <span class="n">tag</span><span class="o">::</span><span class="n">discr</span><span class="p">,</span> <span class="n">tag</span><span class="o">::</span><span class="n">nstep</span> <span class="o">&gt;</span><span class="p">();</span>
+  <span class="k">const</span> <span class="k">auto</span> <span class="n">term</span> <span class="o">=</span> <span class="n">g_inputdeck</span><span class="p">.</span><span class="n">get</span><span class="o">&lt;</span> <span class="n">tag</span><span class="o">::</span><span class="n">discr</span><span class="p">,</span> <span class="n">tag</span><span class="o">::</span><span class="n">term</span> <span class="o">&gt;</span><span class="p">();</span>
+  <span class="k">const</span> <span class="k">auto</span> <span class="n">steady</span> <span class="o">=</span> <span class="n">g_inputdeck</span><span class="p">.</span><span class="n">get</span><span class="o">&lt;</span> <span class="n">tag</span><span class="o">::</span><span class="n">discr</span><span class="p">,</span> <span class="n">tag</span><span class="o">::</span><span class="n">steady_state</span> <span class="o">&gt;</span><span class="p">();</span>
+  <span class="k">const</span> <span class="k">auto</span> <span class="n">residual</span> <span class="o">=</span> <span class="n">g_inputdeck</span><span class="p">.</span><span class="n">get</span><span class="o">&lt;</span> <span class="n">tag</span><span class="o">::</span><span class="n">discr</span><span class="p">,</span> <span class="n">tag</span><span class="o">::</span><span class="n">residual</span> <span class="o">&gt;</span><span class="p">();</span>
+  <span class="k">const</span> <span class="k">auto</span> <span class="n">eps</span> <span class="o">=</span> <span class="n">std</span><span class="o">::</span><span class="n">numeric_limits</span><span class="o">&lt;</span> <span class="n">tk</span><span class="o">::</span><span class="n">real</span> <span class="o">&gt;::</span><span class="n">epsilon</span><span class="p">();</span>
+
+  <span class="k">if</span> <span class="p">(</span><span class="n">steady</span><span class="p">)</span> <span class="p">{</span>
+
+    <span class="c1">// this is the last time step if max time of max number of time steps</span>
+    <span class="c1">// reached or the residual has reached its convergence criterion</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">abs</span><span class="p">(</span><span class="n">d</span><span class="o">-&gt;</span><span class="n">T</span><span class="p">()</span><span class="o">-</span><span class="n">term</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">eps</span> <span class="o">||</span> <span class="n">d</span><span class="o">-&gt;</span><span class="n">It</span><span class="p">()</span> <span class="o">&gt;=</span> <span class="n">nstep</span> <span class="o">||</span> <span class="n">l2res</span> <span class="o">&lt;</span> <span class="n">residual</span><span class="p">)</span>
+      <span class="n">m_finished</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+
+  <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+
+    <span class="c1">// this is the last time step if max time or max iterations reached</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">abs</span><span class="p">(</span><span class="n">d</span><span class="o">-&gt;</span><span class="n">T</span><span class="p">()</span><span class="o">-</span><span class="n">term</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">eps</span> <span class="o">||</span> <span class="n">d</span><span class="o">-&gt;</span><span class="n">It</span><span class="p">()</span> <span class="o">&gt;=</span> <span class="n">nstep</span><span class="p">)</span> <span class="n">m_finished</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+
+  <span class="p">}</span>
 
   <span class="k">auto</span> <span class="n">dtref</span> <span class="o">=</span> <span class="n">g_inputdeck</span><span class="p">.</span><span class="n">get</span><span class="o">&lt;</span> <span class="n">tag</span><span class="o">::</span><span class="n">amr</span><span class="p">,</span> <span class="n">tag</span><span class="o">::</span><span class="n">dtref</span> <span class="o">&gt;</span><span class="p">();</span>
   <span class="k">auto</span> <span class="n">dtfreq</span> <span class="o">=</span> <span class="n">g_inputdeck</span><span class="p">.</span><span class="n">get</span><span class="o">&lt;</span> <span class="n">tag</span><span class="o">::</span><span class="n">amr</span><span class="p">,</span> <span class="n">tag</span><span class="o">::</span><span class="n">dtfreq</span> <span class="o">&gt;</span><span class="p">();</span>
@@ -1177,6 +1236,11 @@
     <span class="c1">// nodefields.push_back( std::vector&lt;tk::real&gt;(d-&gt;Coord()[0].size(),0.0) );</span>
     <span class="c1">// for (auto i : symbcnodes) nodefields.back()[i] = 1.0;</span>
 
+    <span class="c1">// nodefieldnames.push_back( &quot;tp&quot; );</span>
+    <span class="c1">// nodefieldnames.push_back( &quot;dtp&quot; );</span>
+    <span class="c1">// nodefields.push_back( m_tp );</span>
+    <span class="c1">// nodefields.push_back( m_dtp );</span>
+
     <span class="n">Assert</span><span class="p">(</span> <span class="n">nodefieldnames</span><span class="p">.</span><span class="n">size</span><span class="p">()</span> <span class="o">==</span> <span class="n">nodefields</span><span class="p">.</span><span class="n">size</span><span class="p">(),</span> <span class="s">&quot;Size mismatch&quot;</span> <span class="p">);</span>
 
     <span class="c1">// Send mesh and fields data (solution dump) for output to file</span>
@@ -1206,15 +1270,11 @@
     <span class="n">d</span><span class="o">-&gt;</span><span class="n">history</span><span class="p">(</span> <span class="n">std</span><span class="o">::</span><span class="n">move</span><span class="p">(</span><span class="n">hist</span><span class="p">)</span> <span class="p">);</span>
   <span class="p">}</span>
 
-  <span class="k">const</span> <span class="k">auto</span> <span class="n">term</span> <span class="o">=</span> <span class="n">g_inputdeck</span><span class="p">.</span><span class="n">get</span><span class="o">&lt;</span> <span class="n">tag</span><span class="o">::</span><span class="n">discr</span><span class="p">,</span> <span class="n">tag</span><span class="o">::</span><span class="n">term</span> <span class="o">&gt;</span><span class="p">();</span>
-  <span class="k">const</span> <span class="k">auto</span> <span class="n">nstep</span> <span class="o">=</span> <span class="n">g_inputdeck</span><span class="p">.</span><span class="n">get</span><span class="o">&lt;</span> <span class="n">tag</span><span class="o">::</span><span class="n">discr</span><span class="p">,</span> <span class="n">tag</span><span class="o">::</span><span class="n">nstep</span> <span class="o">&gt;</span><span class="p">();</span>
-  <span class="k">const</span> <span class="k">auto</span> <span class="n">eps</span> <span class="o">=</span> <span class="n">std</span><span class="o">::</span><span class="n">numeric_limits</span><span class="o">&lt;</span> <span class="n">tk</span><span class="o">::</span><span class="n">real</span> <span class="o">&gt;::</span><span class="n">epsilon</span><span class="p">();</span>
   <span class="k">const</span> <span class="k">auto</span> <span class="n">fieldfreq</span> <span class="o">=</span> <span class="n">g_inputdeck</span><span class="p">.</span><span class="n">get</span><span class="o">&lt;</span> <span class="n">tag</span><span class="o">::</span><span class="n">interval</span><span class="p">,</span> <span class="n">tag</span><span class="o">::</span><span class="n">field</span> <span class="o">&gt;</span><span class="p">();</span>
 
   <span class="c1">// output field data if field iteration count is reached or in the last time</span>
   <span class="c1">// step</span>
-  <span class="k">if</span> <span class="p">(</span> <span class="o">!</span><span class="p">((</span><span class="n">d</span><span class="o">-&gt;</span><span class="n">It</span><span class="p">())</span> <span class="o">%</span> <span class="n">fieldfreq</span><span class="p">)</span> <span class="o">||</span>
-       <span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">fabs</span><span class="p">(</span><span class="n">d</span><span class="o">-&gt;</span><span class="n">T</span><span class="p">()</span><span class="o">-</span><span class="n">term</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">eps</span> <span class="o">||</span> <span class="n">d</span><span class="o">-&gt;</span><span class="n">It</span><span class="p">()</span> <span class="o">&gt;=</span> <span class="n">nstep</span><span class="p">)</span> <span class="p">)</span>
+  <span class="k">if</span> <span class="p">(</span> <span class="o">!</span><span class="p">((</span><span class="n">d</span><span class="o">-&gt;</span><span class="n">It</span><span class="p">())</span> <span class="o">%</span> <span class="n">fieldfreq</span><span class="p">)</span> <span class="o">||</span> <span class="n">m_finished</span> <span class="p">)</span>
     <span class="n">writeFields</span><span class="p">(</span> <span class="n">CkCallback</span><span class="p">(</span><span class="n">CkIndex_ALECG</span><span class="o">::</span><span class="n">step</span><span class="p">(),</span> <span class="n">thisProxy</span><span class="p">[</span><span class="n">thisIndex</span><span class="p">])</span> <span class="p">);</span>
   <span class="k">else</span>
     <span class="nf">step</span><span class="p">();</span>
@@ -1229,8 +1289,9 @@
 <span class="p">{</span>
   <span class="k">auto</span> <span class="n">d</span> <span class="o">=</span> <span class="n">Disc</span><span class="p">();</span>
 
-  <span class="c1">// Detect if just returned from a checkpoint and if so, zero timers</span>
-  <span class="n">d</span><span class="o">-&gt;</span><span class="n">restarted</span><span class="p">(</span> <span class="n">nrestart</span> <span class="p">);</span>
+  <span class="c1">// Detect if just returned from a checkpoint and if so, zero timers and</span>
+  <span class="c1">// finished flag</span>
+  <span class="k">if</span> <span class="p">(</span><span class="n">d</span><span class="o">-&gt;</span><span class="n">restarted</span><span class="p">(</span> <span class="n">nrestart</span> <span class="p">))</span> <span class="n">m_finished</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
 
   <span class="k">const</span> <span class="k">auto</span> <span class="n">lbfreq</span> <span class="o">=</span> <span class="n">g_inputdeck</span><span class="p">.</span><span class="n">get</span><span class="o">&lt;</span> <span class="n">tag</span><span class="o">::</span><span class="n">cmd</span><span class="p">,</span> <span class="n">tag</span><span class="o">::</span><span class="n">lbfreq</span> <span class="o">&gt;</span><span class="p">();</span>
   <span class="k">const</span> <span class="k">auto</span> <span class="n">nonblocking</span> <span class="o">=</span> <span class="n">g_inputdeck</span><span class="p">.</span><span class="n">get</span><span class="o">&lt;</span> <span class="n">tag</span><span class="o">::</span><span class="n">cmd</span><span class="p">,</span> <span class="n">tag</span><span class="o">::</span><span class="n">nonblocking</span> <span class="o">&gt;</span><span class="p">();</span>
@@ -1261,8 +1322,8 @@
 
   <span class="k">if</span> <span class="p">(</span> <span class="o">!</span><span class="n">benchmark</span> <span class="o">&amp;&amp;</span> <span class="p">(</span><span class="n">d</span><span class="o">-&gt;</span><span class="n">It</span><span class="p">())</span> <span class="o">%</span> <span class="n">rsfreq</span> <span class="o">==</span> <span class="mi">0</span> <span class="p">)</span> <span class="p">{</span>
 
-    <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span> <span class="n">tk</span><span class="o">::</span><span class="n">real</span> <span class="o">&gt;</span> <span class="n">t</span><span class="p">{{</span> <span class="k">static_cast</span><span class="o">&lt;</span><span class="n">tk</span><span class="o">::</span><span class="n">real</span><span class="o">&gt;</span><span class="p">(</span><span class="n">d</span><span class="o">-&gt;</span><span class="n">It</span><span class="p">()),</span> <span class="n">d</span><span class="o">-&gt;</span><span class="n">T</span><span class="p">()</span> <span class="p">}};</span>
-    <span class="n">d</span><span class="o">-&gt;</span><span class="n">contribute</span><span class="p">(</span> <span class="n">t</span><span class="p">,</span> <span class="n">CkReduction</span><span class="o">::</span><span class="n">nop</span><span class="p">,</span>
+    <span class="kt">int</span> <span class="n">finished</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+    <span class="n">d</span><span class="o">-&gt;</span><span class="n">contribute</span><span class="p">(</span> <span class="k">sizeof</span><span class="p">(</span><span class="kt">int</span><span class="p">),</span> <span class="o">&amp;</span><span class="n">finished</span><span class="p">,</span> <span class="n">CkReduction</span><span class="o">::</span><span class="n">nop</span><span class="p">,</span>
       <span class="n">CkCallback</span><span class="p">(</span><span class="n">CkReductionTarget</span><span class="p">(</span><span class="n">Transporter</span><span class="p">,</span><span class="n">checkpoint</span><span class="p">),</span> <span class="n">d</span><span class="o">-&gt;</span><span class="n">Tr</span><span class="p">())</span> <span class="p">);</span>
 
   <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
@@ -1285,20 +1346,13 @@
   <span class="c1">// Reset Runge-Kutta stage counter</span>
   <span class="n">m_stage</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
 
-  <span class="k">const</span> <span class="k">auto</span> <span class="n">term</span> <span class="o">=</span> <span class="n">g_inputdeck</span><span class="p">.</span><span class="n">get</span><span class="o">&lt;</span> <span class="n">tag</span><span class="o">::</span><span class="n">discr</span><span class="p">,</span> <span class="n">tag</span><span class="o">::</span><span class="n">term</span> <span class="o">&gt;</span><span class="p">();</span>
-  <span class="k">const</span> <span class="k">auto</span> <span class="n">nstep</span> <span class="o">=</span> <span class="n">g_inputdeck</span><span class="p">.</span><span class="n">get</span><span class="o">&lt;</span> <span class="n">tag</span><span class="o">::</span><span class="n">discr</span><span class="p">,</span> <span class="n">tag</span><span class="o">::</span><span class="n">nstep</span> <span class="o">&gt;</span><span class="p">();</span>
-  <span class="k">const</span> <span class="k">auto</span> <span class="n">eps</span> <span class="o">=</span> <span class="n">std</span><span class="o">::</span><span class="n">numeric_limits</span><span class="o">&lt;</span> <span class="n">tk</span><span class="o">::</span><span class="n">real</span> <span class="o">&gt;::</span><span class="n">epsilon</span><span class="p">();</span>
-
-  <span class="c1">// If neither max iterations nor max time reached, continue, otherwise finish</span>
-  <span class="k">if</span> <span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">fabs</span><span class="p">(</span><span class="n">d</span><span class="o">-&gt;</span><span class="n">T</span><span class="p">()</span><span class="o">-</span><span class="n">term</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">eps</span> <span class="o">&amp;&amp;</span> <span class="n">d</span><span class="o">-&gt;</span><span class="n">It</span><span class="p">()</span> <span class="o">&lt;</span> <span class="n">nstep</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">if</span> <span class="p">(</span><span class="n">not</span> <span class="n">m_finished</span><span class="p">)</span> <span class="p">{</span>
 
     <span class="n">evalRestart</span><span class="p">();</span>
 
   <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
 
-    <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span> <span class="n">tk</span><span class="o">::</span><span class="n">real</span> <span class="o">&gt;</span> <span class="n">t</span><span class="p">{{</span> <span class="k">static_cast</span><span class="o">&lt;</span><span class="n">tk</span><span class="o">::</span><span class="n">real</span><span class="o">&gt;</span><span class="p">(</span><span class="n">d</span><span class="o">-&gt;</span><span class="n">It</span><span class="p">()),</span> <span class="n">d</span><span class="o">-&gt;</span><span class="n">T</span><span class="p">()</span> <span class="p">}};</span>
-    <span class="n">d</span><span class="o">-&gt;</span><span class="n">contribute</span><span class="p">(</span> <span class="n">t</span><span class="p">,</span> <span class="n">CkReduction</span><span class="o">::</span><span class="n">nop</span><span class="p">,</span>
-      <span class="n">CkCallback</span><span class="p">(</span><span class="n">CkReductionTarget</span><span class="p">(</span><span class="n">Transporter</span><span class="p">,</span><span class="n">finish</span><span class="p">),</span> <span class="n">d</span><span class="o">-&gt;</span><span class="n">Tr</span><span class="p">())</span> <span class="p">);</span>
+    <span class="n">d</span><span class="o">-&gt;</span><span class="n">contribute</span><span class="p">(</span> <span class="n">CkCallback</span><span class="p">(</span><span class="n">CkReductionTarget</span><span class="p">(</span><span class="n">Transporter</span><span class="p">,</span><span class="n">finish</span><span class="p">),</span> <span class="n">d</span><span class="o">-&gt;</span><span class="n">Tr</span><span class="p">())</span> <span class="p">);</span>
 
   <span class="p">}</span>
 <span class="p">}</span>
@@ -1341,7 +1395,7 @@
   <div class="m-container">
     <div class="m-row">
       <div class="m-col-l-10 m-push-l-1">
-        <p>Quinoa docs, part of the <a href="http://quinoacomputing.org/">Quinoa project</a>. Copyright © J. Bakosi 2012&ndash;2015, Los Alamos National Security, LLC, 2016&ndash;2018, <a href="https://www.triadns.org/">Triad National Security, LLC,</a> 2019-2020. Generated on Wednesday, May 20, 2020 based on <a href="https://github.com/quinoacomputing/quinoa/commit/72842c7">72842c7</a> by <a href="http://doxygen.org/">Doxygen</a> and <a href="http://mcss.mosra.cz/">m.css</a>. Contact us via <a href="https://github.com/quinoacomputing/quinoa/">GitHub</a>, <a href="https://groups.io/g/quinoa">Email</a> or <a href="https://quinoa.zulipchat.com">Chat</a>.</p>
+        <p>Quinoa docs, part of the <a href="http://quinoacomputing.org/">Quinoa project</a>. Copyright © J. Bakosi 2012&ndash;2015, Los Alamos National Security, LLC, 2016&ndash;2018, <a href="https://www.triadns.org/">Triad National Security, LLC,</a> 2019-2020. Generated on Saturday, May 30, 2020 based on <a href="https://github.com/quinoacomputing/quinoa/commit/3e339fa">3e339fa</a> by <a href="http://doxygen.org/">Doxygen</a> and <a href="http://mcss.mosra.cz/">m.css</a>. Contact us via <a href="https://github.com/quinoacomputing/quinoa/">GitHub</a>, <a href="https://groups.io/g/quinoa">Email</a> or <a href="https://quinoa.zulipchat.com">Chat</a>.</p>
       </div>
     </div>
   </div>
