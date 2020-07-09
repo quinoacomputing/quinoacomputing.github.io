@@ -170,7 +170,9 @@
   <span class="n">m_diag</span><span class="p">(),</span>
   <span class="n">m_bnorm</span><span class="p">(),</span>
   <span class="n">m_bnormc</span><span class="p">(),</span>
-  <span class="n">m_symbcnode</span><span class="p">(),</span>
+  <span class="n">m_symbcnodes</span><span class="p">(),</span>
+  <span class="n">m_farfieldbcnodes</span><span class="p">(),</span>
+  <span class="n">m_symbctri</span><span class="p">(),</span>
   <span class="n">m_stage</span><span class="p">(</span> <span class="mi">0</span> <span class="p">),</span>
   <span class="n">m_boxnodes</span><span class="p">(),</span>
   <span class="n">m_edgenode</span><span class="p">(),</span>
@@ -232,13 +234,19 @@
 <span class="c1">// Start (re-)computing boundare point-, and dual-face normals</span>
 <span class="c1">// *****************************************************************************</span>
 <span class="p">{</span>
+  <span class="k">auto</span> <span class="n">d</span> <span class="o">=</span> <span class="n">Disc</span><span class="p">();</span>
+
   <span class="c1">// Query nodes at which symmetry BCs are specified</span>
-  <span class="n">std</span><span class="o">::</span><span class="n">unordered_set</span><span class="o">&lt;</span> <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="o">&gt;</span> <span class="n">symbcnodes</span><span class="p">;</span>
-  <span class="k">for</span> <span class="p">(</span><span class="k">const</span> <span class="k">auto</span><span class="o">&amp;</span> <span class="nl">eq</span> <span class="p">:</span> <span class="n">g_cgpde</span><span class="p">)</span>
-    <span class="n">eq</span><span class="p">.</span><span class="n">symbcnodes</span><span class="p">(</span> <span class="n">m_bface</span><span class="p">,</span> <span class="n">m_triinpoel</span><span class="p">,</span> <span class="n">symbcnodes</span> <span class="p">);</span>
+  <span class="k">auto</span> <span class="n">bcnodes</span> <span class="o">=</span> <span class="n">d</span><span class="o">-&gt;</span><span class="n">bcnodes</span><span class="o">&lt;</span> <span class="n">tag</span><span class="o">::</span><span class="n">bcsym</span> <span class="o">&gt;</span><span class="p">(</span> <span class="n">m_bface</span><span class="p">,</span> <span class="n">m_triinpoel</span> <span class="p">);</span>
+  <span class="c1">// Query nodes at which farfield BCs are specified</span>
+  <span class="k">auto</span> <span class="n">farfieldbcnodes</span> <span class="o">=</span> <span class="n">d</span><span class="o">-&gt;</span><span class="n">bcnodes</span><span class="o">&lt;</span> <span class="n">tag</span><span class="o">::</span><span class="n">bcfarfield</span> <span class="o">&gt;</span><span class="p">(</span> <span class="n">m_bface</span><span class="p">,</span> <span class="n">m_triinpoel</span> <span class="p">);</span>
+
+  <span class="c1">// Merge BC data where boundary-point normals are required</span>
+  <span class="k">for</span> <span class="p">(</span><span class="k">const</span> <span class="k">auto</span><span class="o">&amp;</span> <span class="p">[</span><span class="n">s</span><span class="p">,</span><span class="n">n</span><span class="p">]</span> <span class="o">:</span> <span class="n">farfieldbcnodes</span><span class="p">)</span>
+    <span class="n">bcnodes</span><span class="p">[</span><span class="n">s</span><span class="p">].</span><span class="n">insert</span><span class="p">(</span> <span class="n">begin</span><span class="p">(</span><span class="n">n</span><span class="p">),</span> <span class="n">end</span><span class="p">(</span><span class="n">n</span><span class="p">)</span> <span class="p">);</span>
 
   <span class="c1">// Compute boundary point normals</span>
-  <span class="n">bnorm</span><span class="p">(</span> <span class="n">std</span><span class="o">::</span><span class="n">move</span><span class="p">(</span><span class="n">symbcnodes</span><span class="p">)</span> <span class="p">);</span>
+  <span class="n">bnorm</span><span class="p">(</span> <span class="n">bcnodes</span> <span class="p">);</span>
 
   <span class="c1">// Compute dual-face normals associated to edges</span>
   <span class="n">dfnorm</span><span class="p">();</span>
@@ -380,63 +388,30 @@
 <span class="p">}</span>
 
 <span class="kt">void</span>
-<span class="n">ALECG</span><span class="o">::</span><span class="n">bnorm</span><span class="p">(</span> <span class="n">std</span><span class="o">::</span><span class="n">unordered_set</span><span class="o">&lt;</span> <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="o">&gt;&amp;&amp;</span> <span class="n">symbcnodes</span> <span class="p">)</span>
+<span class="n">ALECG</span><span class="o">::</span><span class="n">bnorm</span><span class="p">(</span> <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">unordered_map</span><span class="o">&lt;</span> <span class="kt">int</span><span class="p">,</span>
+                <span class="n">std</span><span class="o">::</span><span class="n">unordered_set</span><span class="o">&lt;</span> <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="o">&gt;</span> <span class="o">&gt;&amp;</span> <span class="n">bcnodes</span> <span class="p">)</span>
 <span class="c1">// *****************************************************************************</span>
 <span class="c1">//  Compute boundary point normals</span>
-<span class="c1">//! \param[in] Local node ids at which symmetry BCs are set</span>
-<span class="c1">// *****************************************************************************</span>
+<span class="c1">//! \param[in] bcnodes Local node ids associated to side set ids at which BCs</span>
+<span class="c1">//!    are set that require normals</span>
+<span class="c1">//*****************************************************************************</span>
 <span class="p">{</span>
   <span class="k">auto</span> <span class="n">d</span> <span class="o">=</span> <span class="n">Disc</span><span class="p">();</span>
 
-  <span class="k">const</span> <span class="k">auto</span><span class="o">&amp;</span> <span class="n">coord</span> <span class="o">=</span> <span class="n">d</span><span class="o">-&gt;</span><span class="n">Coord</span><span class="p">();</span>
-  <span class="k">const</span> <span class="k">auto</span><span class="o">&amp;</span> <span class="n">x</span> <span class="o">=</span> <span class="n">coord</span><span class="p">[</span><span class="mi">0</span><span class="p">];</span>
-  <span class="k">const</span> <span class="k">auto</span><span class="o">&amp;</span> <span class="n">y</span> <span class="o">=</span> <span class="n">coord</span><span class="p">[</span><span class="mi">1</span><span class="p">];</span>
-  <span class="k">const</span> <span class="k">auto</span><span class="o">&amp;</span> <span class="n">z</span> <span class="o">=</span> <span class="n">coord</span><span class="p">[</span><span class="mi">2</span><span class="p">];</span>
-
-  <span class="c1">// Lambda to compute the inverse distance squared between boundary face</span>
-  <span class="c1">// centroid and boundary point. Here p is the global node id and g is the</span>
-  <span class="c1">// geometry of the boundary face, see tk::geoFaceTri().</span>
-  <span class="k">auto</span> <span class="n">invdistsq</span> <span class="o">=</span> <span class="p">[</span><span class="o">&amp;</span><span class="p">](</span> <span class="k">const</span> <span class="n">tk</span><span class="o">::</span><span class="n">Fields</span><span class="o">&amp;</span> <span class="n">g</span><span class="p">,</span> <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="n">p</span> <span class="p">){</span>
-    <span class="k">return</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="p">(</span> <span class="p">(</span><span class="n">g</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span> <span class="o">-</span> <span class="n">x</span><span class="p">[</span><span class="n">p</span><span class="p">])</span><span class="o">*</span><span class="p">(</span><span class="n">g</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span> <span class="o">-</span> <span class="n">x</span><span class="p">[</span><span class="n">p</span><span class="p">])</span> <span class="o">+</span>
-                   <span class="p">(</span><span class="n">g</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span> <span class="o">-</span> <span class="n">y</span><span class="p">[</span><span class="n">p</span><span class="p">])</span><span class="o">*</span><span class="p">(</span><span class="n">g</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span> <span class="o">-</span> <span class="n">y</span><span class="p">[</span><span class="n">p</span><span class="p">])</span> <span class="o">+</span>
-                   <span class="p">(</span><span class="n">g</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">6</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span> <span class="o">-</span> <span class="n">z</span><span class="p">[</span><span class="n">p</span><span class="p">])</span><span class="o">*</span><span class="p">(</span><span class="n">g</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">6</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span> <span class="o">-</span> <span class="n">z</span><span class="p">[</span><span class="n">p</span><span class="p">])</span> <span class="p">);</span>
-  <span class="p">};</span>
-
-  <span class="c1">// Compute boundary point normals on all side sets summing inverse distance</span>
-  <span class="c1">// weighted face normals to points. This is only a partial sum at shared</span>
-  <span class="c1">// boundary points in parallel.</span>
-  <span class="k">const</span> <span class="k">auto</span><span class="o">&amp;</span> <span class="n">gid</span> <span class="o">=</span> <span class="n">d</span><span class="o">-&gt;</span><span class="n">Gid</span><span class="p">();</span>
-  <span class="k">for</span> <span class="p">(</span><span class="k">const</span> <span class="k">auto</span><span class="o">&amp;</span> <span class="p">[</span> <span class="n">setid</span><span class="p">,</span> <span class="n">faceids</span> <span class="p">]</span> <span class="o">:</span> <span class="n">m_bface</span><span class="p">)</span> <span class="p">{</span>
-    <span class="k">for</span> <span class="p">(</span><span class="k">auto</span> <span class="nl">f</span> <span class="p">:</span> <span class="n">faceids</span><span class="p">)</span> <span class="p">{</span>
-      <span class="n">tk</span><span class="o">::</span><span class="n">UnsMesh</span><span class="o">::</span><span class="n">Face</span>
-        <span class="n">face</span><span class="p">{</span> <span class="n">m_triinpoel</span><span class="p">[</span><span class="n">f</span><span class="o">*</span><span class="mi">3</span><span class="o">+</span><span class="mi">0</span><span class="p">],</span> <span class="n">m_triinpoel</span><span class="p">[</span><span class="n">f</span><span class="o">*</span><span class="mi">3</span><span class="o">+</span><span class="mi">1</span><span class="p">],</span> <span class="n">m_triinpoel</span><span class="p">[</span><span class="n">f</span><span class="o">*</span><span class="mi">3</span><span class="o">+</span><span class="mi">2</span><span class="p">]</span> <span class="p">};</span>
-      <span class="n">std</span><span class="o">::</span><span class="n">array</span><span class="o">&lt;</span> <span class="n">tk</span><span class="o">::</span><span class="n">real</span><span class="p">,</span> <span class="mi">3</span> <span class="o">&gt;</span> <span class="n">fx</span><span class="p">{</span> <span class="n">x</span><span class="p">[</span><span class="n">face</span><span class="p">[</span><span class="mi">0</span><span class="p">]],</span> <span class="n">x</span><span class="p">[</span><span class="n">face</span><span class="p">[</span><span class="mi">1</span><span class="p">]],</span> <span class="n">x</span><span class="p">[</span><span class="n">face</span><span class="p">[</span><span class="mi">2</span><span class="p">]]</span> <span class="p">};</span>
-      <span class="n">std</span><span class="o">::</span><span class="n">array</span><span class="o">&lt;</span> <span class="n">tk</span><span class="o">::</span><span class="n">real</span><span class="p">,</span> <span class="mi">3</span> <span class="o">&gt;</span> <span class="n">fy</span><span class="p">{</span> <span class="n">y</span><span class="p">[</span><span class="n">face</span><span class="p">[</span><span class="mi">0</span><span class="p">]],</span> <span class="n">y</span><span class="p">[</span><span class="n">face</span><span class="p">[</span><span class="mi">1</span><span class="p">]],</span> <span class="n">y</span><span class="p">[</span><span class="n">face</span><span class="p">[</span><span class="mi">2</span><span class="p">]]</span> <span class="p">};</span>
-      <span class="n">std</span><span class="o">::</span><span class="n">array</span><span class="o">&lt;</span> <span class="n">tk</span><span class="o">::</span><span class="n">real</span><span class="p">,</span> <span class="mi">3</span> <span class="o">&gt;</span> <span class="n">fz</span><span class="p">{</span> <span class="n">z</span><span class="p">[</span><span class="n">face</span><span class="p">[</span><span class="mi">0</span><span class="p">]],</span> <span class="n">z</span><span class="p">[</span><span class="n">face</span><span class="p">[</span><span class="mi">1</span><span class="p">]],</span> <span class="n">z</span><span class="p">[</span><span class="n">face</span><span class="p">[</span><span class="mi">2</span><span class="p">]]</span> <span class="p">};</span>
-      <span class="k">auto</span> <span class="n">g</span> <span class="o">=</span> <span class="n">tk</span><span class="o">::</span><span class="n">geoFaceTri</span><span class="p">(</span> <span class="n">fx</span><span class="p">,</span> <span class="n">fy</span><span class="p">,</span> <span class="n">fz</span> <span class="p">);</span>
-      <span class="k">for</span> <span class="p">(</span><span class="k">auto</span> <span class="nl">p</span> <span class="p">:</span> <span class="n">face</span><span class="p">)</span> <span class="p">{</span>
-        <span class="k">auto</span> <span class="n">i</span> <span class="o">=</span> <span class="n">symbcnodes</span><span class="p">.</span><span class="n">find</span><span class="p">(</span> <span class="n">p</span> <span class="p">);</span>
-        <span class="k">if</span> <span class="p">(</span><span class="n">i</span> <span class="o">!=</span> <span class="n">end</span><span class="p">(</span><span class="n">symbcnodes</span><span class="p">))</span> <span class="p">{</span>     <span class="c1">// only if user set symbc on node</span>
-          <span class="n">tk</span><span class="o">::</span><span class="n">real</span> <span class="n">r</span> <span class="o">=</span> <span class="n">invdistsq</span><span class="p">(</span> <span class="n">g</span><span class="p">,</span> <span class="n">p</span> <span class="p">);</span>
-          <span class="k">auto</span><span class="o">&amp;</span> <span class="n">n</span> <span class="o">=</span> <span class="n">m_bnorm</span><span class="p">[</span> <span class="n">gid</span><span class="p">[</span><span class="n">p</span><span class="p">]</span> <span class="p">];</span>  <span class="c1">// associate global node id</span>
-          <span class="n">n</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+=</span> <span class="n">r</span><span class="o">*</span><span class="n">g</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">);</span>
-          <span class="n">n</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+=</span> <span class="n">r</span><span class="o">*</span><span class="n">g</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">0</span><span class="p">);</span>
-          <span class="n">n</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">+=</span> <span class="n">r</span><span class="o">*</span><span class="n">g</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">0</span><span class="p">);</span>
-          <span class="n">n</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="o">+=</span> <span class="n">r</span><span class="p">;</span>
-        <span class="p">}</span>
-      <span class="p">}</span>
-    <span class="p">}</span>
-  <span class="p">}</span>
+  <span class="n">m_bnorm</span> <span class="o">=</span> <span class="n">cg</span><span class="o">::</span><span class="n">bnorm</span><span class="p">(</span> <span class="n">m_bface</span><span class="p">,</span> <span class="n">m_triinpoel</span><span class="p">,</span> <span class="n">d</span><span class="o">-&gt;</span><span class="n">Coord</span><span class="p">(),</span> <span class="n">d</span><span class="o">-&gt;</span><span class="n">Gid</span><span class="p">(),</span> <span class="n">bcnodes</span> <span class="p">);</span>
 
   <span class="c1">// Send our nodal normal contributions to neighbor chares</span>
   <span class="k">if</span> <span class="p">(</span><span class="n">d</span><span class="o">-&gt;</span><span class="n">NodeCommMap</span><span class="p">().</span><span class="n">empty</span><span class="p">())</span>
-   <span class="n">comnorm_complete</span><span class="p">();</span>
+    <span class="n">comnorm_complete</span><span class="p">();</span>
   <span class="k">else</span>
     <span class="nf">for</span> <span class="p">(</span><span class="k">const</span> <span class="k">auto</span><span class="o">&amp;</span> <span class="p">[</span> <span class="n">neighborchare</span><span class="p">,</span> <span class="n">sharednodes</span> <span class="p">]</span> <span class="o">:</span> <span class="n">d</span><span class="o">-&gt;</span><span class="n">NodeCommMap</span><span class="p">())</span> <span class="p">{</span>
-      <span class="n">std</span><span class="o">::</span><span class="n">unordered_map</span><span class="o">&lt;</span> <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="p">,</span> <span class="n">std</span><span class="o">::</span><span class="n">array</span><span class="o">&lt;</span> <span class="n">tk</span><span class="o">::</span><span class="n">real</span><span class="p">,</span> <span class="mi">4</span> <span class="o">&gt;</span> <span class="o">&gt;</span> <span class="n">exp</span><span class="p">;</span>
-      <span class="k">for</span> <span class="p">(</span><span class="k">auto</span> <span class="nl">i</span> <span class="p">:</span> <span class="n">sharednodes</span><span class="p">)</span> <span class="p">{</span>      <span class="c1">// symmetry BCs may be specified on only</span>
-        <span class="k">auto</span> <span class="n">j</span> <span class="o">=</span> <span class="n">m_bnorm</span><span class="p">.</span><span class="n">find</span><span class="p">(</span><span class="n">i</span><span class="p">);</span>       <span class="c1">// a subset of chare boundary nodes</span>
-        <span class="k">if</span> <span class="p">(</span><span class="n">j</span> <span class="o">!=</span> <span class="n">end</span><span class="p">(</span><span class="n">m_bnorm</span><span class="p">))</span> <span class="n">exp</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">j</span><span class="o">-&gt;</span><span class="n">second</span><span class="p">;</span>
+      <span class="n">std</span><span class="o">::</span><span class="n">unordered_map</span><span class="o">&lt;</span> <span class="kt">int</span><span class="p">,</span>
+        <span class="n">std</span><span class="o">::</span><span class="n">unordered_map</span><span class="o">&lt;</span> <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="p">,</span> <span class="n">std</span><span class="o">::</span><span class="n">array</span><span class="o">&lt;</span> <span class="n">tk</span><span class="o">::</span><span class="n">real</span><span class="p">,</span> <span class="mi">4</span> <span class="o">&gt;</span> <span class="o">&gt;</span> <span class="o">&gt;</span> <span class="n">exp</span><span class="p">;</span>
+      <span class="k">for</span> <span class="p">(</span><span class="k">auto</span> <span class="nl">i</span> <span class="p">:</span> <span class="n">sharednodes</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">for</span> <span class="p">(</span><span class="k">const</span> <span class="k">auto</span><span class="o">&amp;</span> <span class="p">[</span><span class="n">s</span><span class="p">,</span><span class="n">norms</span><span class="p">]</span> <span class="o">:</span> <span class="n">m_bnorm</span><span class="p">)</span> <span class="p">{</span>
+          <span class="k">auto</span> <span class="n">j</span> <span class="o">=</span> <span class="n">norms</span><span class="p">.</span><span class="n">find</span><span class="p">(</span><span class="n">i</span><span class="p">);</span>
+          <span class="k">if</span> <span class="p">(</span><span class="n">j</span> <span class="o">!=</span> <span class="n">end</span><span class="p">(</span><span class="n">norms</span><span class="p">))</span> <span class="n">exp</span><span class="p">[</span><span class="n">s</span><span class="p">][</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">j</span><span class="o">-&gt;</span><span class="n">second</span><span class="p">;</span>
+        <span class="p">}</span>
       <span class="p">}</span>
       <span class="n">thisProxy</span><span class="p">[</span> <span class="n">neighborchare</span> <span class="p">].</span><span class="n">comnorm</span><span class="p">(</span> <span class="n">exp</span> <span class="p">);</span>
     <span class="p">}</span>
@@ -445,22 +420,25 @@
 <span class="p">}</span>
 
 <span class="kt">void</span>
-<span class="n">ALECG</span><span class="o">::</span><span class="n">comnorm</span><span class="p">(</span>
-  <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">unordered_map</span><span class="o">&lt;</span> <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="p">,</span> <span class="n">std</span><span class="o">::</span><span class="n">array</span><span class="o">&lt;</span> <span class="n">tk</span><span class="o">::</span><span class="n">real</span><span class="p">,</span> <span class="mi">4</span> <span class="o">&gt;</span> <span class="o">&gt;&amp;</span> <span class="n">innorm</span> <span class="p">)</span>
+<span class="n">ALECG</span><span class="o">::</span><span class="n">comnorm</span><span class="p">(</span> <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">unordered_map</span><span class="o">&lt;</span> <span class="kt">int</span><span class="p">,</span>
+  <span class="n">std</span><span class="o">::</span><span class="n">unordered_map</span><span class="o">&lt;</span> <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="p">,</span> <span class="n">std</span><span class="o">::</span><span class="n">array</span><span class="o">&lt;</span> <span class="n">tk</span><span class="o">::</span><span class="n">real</span><span class="p">,</span> <span class="mi">4</span> <span class="o">&gt;</span> <span class="o">&gt;</span> <span class="o">&gt;&amp;</span> <span class="n">innorm</span> <span class="p">)</span>
 <span class="c1">// *****************************************************************************</span>
 <span class="c1">// Receive boundary point normals on chare-boundaries</span>
 <span class="c1">//! \param[in] innorm Incoming partial sums of boundary point normal</span>
 <span class="c1">//!   contributions to normals (first 3 components), inverse distance squared</span>
-<span class="c1">//!   (4th component)</span>
+<span class="c1">//!   (4th component), associated to side set ids</span>
 <span class="c1">// *****************************************************************************</span>
 <span class="p">{</span>
-  <span class="c1">// Buffer up inccoming contributions</span>
-  <span class="k">for</span> <span class="p">(</span><span class="k">const</span> <span class="k">auto</span><span class="o">&amp;</span> <span class="p">[</span> <span class="n">p</span><span class="p">,</span> <span class="n">n</span> <span class="p">]</span> <span class="o">:</span> <span class="n">innorm</span><span class="p">)</span> <span class="p">{</span>
-    <span class="k">auto</span><span class="o">&amp;</span> <span class="n">bnorm</span> <span class="o">=</span> <span class="n">m_bnormc</span><span class="p">[</span> <span class="n">p</span> <span class="p">];</span>
-    <span class="n">bnorm</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+=</span> <span class="n">n</span><span class="p">[</span><span class="mi">0</span><span class="p">];</span>
-    <span class="n">bnorm</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+=</span> <span class="n">n</span><span class="p">[</span><span class="mi">1</span><span class="p">];</span>
-    <span class="n">bnorm</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">+=</span> <span class="n">n</span><span class="p">[</span><span class="mi">2</span><span class="p">];</span>
-    <span class="n">bnorm</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="o">+=</span> <span class="n">n</span><span class="p">[</span><span class="mi">3</span><span class="p">];</span>
+  <span class="c1">// Buffer up incoming boundary-point normal vector contributions</span>
+  <span class="k">for</span> <span class="p">(</span><span class="k">const</span> <span class="k">auto</span><span class="o">&amp;</span> <span class="p">[</span><span class="n">s</span><span class="p">,</span><span class="n">norms</span><span class="p">]</span> <span class="o">:</span> <span class="n">innorm</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">auto</span><span class="o">&amp;</span> <span class="n">bnorms</span> <span class="o">=</span> <span class="n">m_bnormc</span><span class="p">[</span><span class="n">s</span><span class="p">];</span>
+    <span class="k">for</span> <span class="p">(</span><span class="k">const</span> <span class="k">auto</span><span class="o">&amp;</span> <span class="p">[</span><span class="n">p</span><span class="p">,</span><span class="n">n</span><span class="p">]</span> <span class="o">:</span> <span class="n">norms</span><span class="p">)</span> <span class="p">{</span>
+      <span class="k">auto</span><span class="o">&amp;</span> <span class="n">bnorm</span> <span class="o">=</span> <span class="n">bnorms</span><span class="p">[</span><span class="n">p</span><span class="p">];</span>
+      <span class="n">bnorm</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+=</span> <span class="n">n</span><span class="p">[</span><span class="mi">0</span><span class="p">];</span>
+      <span class="n">bnorm</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+=</span> <span class="n">n</span><span class="p">[</span><span class="mi">1</span><span class="p">];</span>
+      <span class="n">bnorm</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">+=</span> <span class="n">n</span><span class="p">[</span><span class="mi">2</span><span class="p">];</span>
+      <span class="n">bnorm</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="o">+=</span> <span class="n">n</span><span class="p">[</span><span class="mi">3</span><span class="p">];</span>
+    <span class="p">}</span>
   <span class="p">}</span>
 
   <span class="k">if</span> <span class="p">(</span><span class="o">++</span><span class="n">m_nbnorm</span> <span class="o">==</span> <span class="n">Disc</span><span class="p">()</span><span class="o">-&gt;</span><span class="n">NodeCommMap</span><span class="p">().</span><span class="n">size</span><span class="p">())</span> <span class="p">{</span>
@@ -640,7 +618,8 @@
   <span class="c1">// Clear receive buffer</span>
   <span class="n">tk</span><span class="o">::</span><span class="n">destroy</span><span class="p">(</span><span class="n">m_lhsc</span><span class="p">);</span>
 
-  <span class="c1">// Combine own and communicated contributions of normals</span>
+  <span class="c1">// Combine own and communicated contributions of normals and apply boundary</span>
+  <span class="c1">// conditions on the initial conditions</span>
   <span class="n">normfinal</span><span class="p">();</span>
 
   <span class="c1">// Continue after lhs is complete</span>
@@ -656,17 +635,18 @@
 <span class="kt">void</span>
 <span class="n">ALECG</span><span class="o">::</span><span class="n">normfinal</span><span class="p">()</span>
 <span class="c1">// *****************************************************************************</span>
-<span class="c1">//  Finish computing dual-face and boundary point normals</span>
+<span class="c1">//  Finish computing dual-face and boundary point normals and apply boundary</span>
+<span class="c1">//  conditions on the initial conditions</span>
 <span class="c1">// *****************************************************************************</span>
 <span class="p">{</span>
   <span class="k">auto</span> <span class="n">d</span> <span class="o">=</span> <span class="n">Disc</span><span class="p">();</span>
   <span class="k">const</span> <span class="k">auto</span><span class="o">&amp;</span> <span class="n">lid</span> <span class="o">=</span> <span class="n">d</span><span class="o">-&gt;</span><span class="n">Lid</span><span class="p">();</span>
 
   <span class="c1">// Combine own and communicated contributions to boundary point normals</span>
-  <span class="k">for</span> <span class="p">(</span><span class="k">auto</span><span class="o">&amp;</span> <span class="p">[</span> <span class="n">p</span><span class="p">,</span> <span class="n">n</span> <span class="p">]</span> <span class="o">:</span> <span class="n">m_bnormc</span><span class="p">)</span> <span class="p">{</span>
-    <span class="k">auto</span> <span class="n">j</span> <span class="o">=</span> <span class="n">m_bnorm</span><span class="p">.</span><span class="n">find</span><span class="p">(</span><span class="n">p</span><span class="p">);</span>
-    <span class="k">if</span> <span class="p">(</span><span class="n">j</span> <span class="o">!=</span> <span class="n">end</span><span class="p">(</span><span class="n">m_bnorm</span><span class="p">))</span> <span class="p">{</span>
-      <span class="k">auto</span><span class="o">&amp;</span> <span class="n">norm</span> <span class="o">=</span> <span class="n">j</span><span class="o">-&gt;</span><span class="n">second</span><span class="p">;</span>
+  <span class="k">for</span> <span class="p">(</span><span class="k">const</span> <span class="k">auto</span><span class="o">&amp;</span> <span class="p">[</span><span class="n">s</span><span class="p">,</span><span class="n">norms</span><span class="p">]</span> <span class="o">:</span> <span class="n">m_bnormc</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">auto</span><span class="o">&amp;</span> <span class="n">bnorms</span> <span class="o">=</span> <span class="n">m_bnorm</span><span class="p">[</span><span class="n">s</span><span class="p">];</span>
+    <span class="k">for</span> <span class="p">(</span><span class="k">const</span> <span class="k">auto</span><span class="o">&amp;</span> <span class="p">[</span><span class="n">p</span><span class="p">,</span><span class="n">n</span><span class="p">]</span> <span class="o">:</span> <span class="n">norms</span><span class="p">)</span> <span class="p">{</span>
+      <span class="k">auto</span><span class="o">&amp;</span> <span class="n">norm</span> <span class="o">=</span> <span class="n">bnorms</span><span class="p">[</span><span class="n">p</span><span class="p">];</span>
       <span class="n">norm</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+=</span> <span class="n">n</span><span class="p">[</span><span class="mi">0</span><span class="p">];</span>
       <span class="n">norm</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+=</span> <span class="n">n</span><span class="p">[</span><span class="mi">1</span><span class="p">];</span>
       <span class="n">norm</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">+=</span> <span class="n">n</span><span class="p">[</span><span class="mi">2</span><span class="p">];</span>
@@ -675,28 +655,48 @@
   <span class="p">}</span>
   <span class="n">tk</span><span class="o">::</span><span class="n">destroy</span><span class="p">(</span> <span class="n">m_bnormc</span> <span class="p">);</span>
 
-  <span class="c1">// Divie summed point normals by the sum of inverse distance squared</span>
-  <span class="k">for</span> <span class="p">(</span><span class="k">auto</span><span class="o">&amp;</span> <span class="p">[</span><span class="n">p</span><span class="p">,</span><span class="n">n</span><span class="p">]</span> <span class="o">:</span> <span class="n">m_bnorm</span><span class="p">)</span> <span class="p">{</span>
-    <span class="n">n</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">/=</span> <span class="n">n</span><span class="p">[</span><span class="mi">3</span><span class="p">];</span>
-    <span class="n">n</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">/=</span> <span class="n">n</span><span class="p">[</span><span class="mi">3</span><span class="p">];</span>
-    <span class="n">n</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">/=</span> <span class="n">n</span><span class="p">[</span><span class="mi">3</span><span class="p">];</span>
-    <span class="n">Assert</span><span class="p">(</span> <span class="p">(</span><span class="n">n</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="n">n</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">n</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">*</span><span class="n">n</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">n</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">*</span><span class="n">n</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">-</span> <span class="mf">1.0</span><span class="p">)</span> <span class="o">&lt;</span>
-            <span class="n">std</span><span class="o">::</span><span class="n">numeric_limits</span><span class="o">&lt;</span> <span class="n">tk</span><span class="o">::</span><span class="n">real</span> <span class="o">&gt;::</span><span class="n">epsilon</span><span class="p">(),</span> <span class="s">&quot;Non-unit normal&quot;</span> <span class="p">);</span>
-  <span class="p">}</span>
+  <span class="c1">// Divide summed point normals by the sum of inverse distance squared</span>
+  <span class="k">for</span> <span class="p">(</span><span class="k">auto</span><span class="o">&amp;</span> <span class="p">[</span><span class="n">s</span><span class="p">,</span><span class="n">norms</span><span class="p">]</span> <span class="o">:</span> <span class="n">m_bnorm</span><span class="p">)</span>
+    <span class="k">for</span> <span class="p">(</span><span class="k">auto</span><span class="o">&amp;</span> <span class="p">[</span><span class="n">p</span><span class="p">,</span><span class="n">n</span><span class="p">]</span> <span class="o">:</span> <span class="n">norms</span><span class="p">)</span> <span class="p">{</span>
+      <span class="n">n</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">/=</span> <span class="n">n</span><span class="p">[</span><span class="mi">3</span><span class="p">];</span>
+      <span class="n">n</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">/=</span> <span class="n">n</span><span class="p">[</span><span class="mi">3</span><span class="p">];</span>
+      <span class="n">n</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">/=</span> <span class="n">n</span><span class="p">[</span><span class="mi">3</span><span class="p">];</span>
+      <span class="n">Assert</span><span class="p">(</span> <span class="p">(</span><span class="n">n</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="n">n</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">n</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">*</span><span class="n">n</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">n</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">*</span><span class="n">n</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">-</span> <span class="mf">1.0</span><span class="p">)</span> <span class="o">&lt;</span>
+              <span class="n">std</span><span class="o">::</span><span class="n">numeric_limits</span><span class="o">&lt;</span> <span class="n">tk</span><span class="o">::</span><span class="n">real</span> <span class="o">&gt;::</span><span class="n">epsilon</span><span class="p">(),</span> <span class="s">&quot;Non-unit normal&quot;</span> <span class="p">);</span>
+    <span class="p">}</span>
 
-  <span class="c1">// Replace global-&gt;local ids associated to boundary normals of symbc nodes</span>
+  <span class="c1">// Replace global-&gt;local ids associated to boundary point normals</span>
   <span class="k">decltype</span><span class="p">(</span><span class="n">m_bnorm</span><span class="p">)</span> <span class="n">bnorm</span><span class="p">;</span>
-  <span class="k">for</span> <span class="p">(</span><span class="k">auto</span><span class="o">&amp;&amp;</span> <span class="p">[</span><span class="n">g</span><span class="p">,</span><span class="n">n</span><span class="p">]</span> <span class="o">:</span> <span class="n">m_bnorm</span><span class="p">)</span> <span class="n">bnorm</span><span class="p">[</span> <span class="n">tk</span><span class="o">::</span><span class="n">cref_find</span><span class="p">(</span><span class="n">lid</span><span class="p">,</span><span class="n">g</span><span class="p">)</span> <span class="p">]</span> <span class="o">=</span> <span class="n">std</span><span class="o">::</span><span class="n">move</span><span class="p">(</span><span class="n">n</span><span class="p">);</span>
+  <span class="k">for</span> <span class="p">(</span><span class="k">auto</span><span class="o">&amp;</span> <span class="p">[</span><span class="n">s</span><span class="p">,</span><span class="n">norms</span><span class="p">]</span> <span class="o">:</span> <span class="n">m_bnorm</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">auto</span><span class="o">&amp;</span> <span class="n">bnorms</span> <span class="o">=</span> <span class="n">bnorm</span><span class="p">[</span><span class="n">s</span><span class="p">];</span>
+    <span class="k">for</span> <span class="p">(</span><span class="k">auto</span><span class="o">&amp;&amp;</span> <span class="p">[</span><span class="n">g</span><span class="p">,</span><span class="n">n</span><span class="p">]</span> <span class="o">:</span> <span class="n">norms</span><span class="p">)</span>
+      <span class="n">bnorms</span><span class="p">[</span> <span class="n">tk</span><span class="o">::</span><span class="n">cref_find</span><span class="p">(</span><span class="n">lid</span><span class="p">,</span><span class="n">g</span><span class="p">)</span> <span class="p">]</span> <span class="o">=</span> <span class="n">std</span><span class="o">::</span><span class="n">move</span><span class="p">(</span><span class="n">n</span><span class="p">);</span>
+  <span class="p">}</span>
   <span class="n">m_bnorm</span> <span class="o">=</span> <span class="n">std</span><span class="o">::</span><span class="n">move</span><span class="p">(</span><span class="n">bnorm</span><span class="p">);</span>
 
-  <span class="c1">// Apply symmetry boundary conditions on initial conditions</span>
-  <span class="k">for</span> <span class="p">(</span><span class="k">const</span> <span class="k">auto</span><span class="o">&amp;</span> <span class="nl">eq</span> <span class="p">:</span> <span class="n">g_cgpde</span><span class="p">)</span> <span class="n">eq</span><span class="p">.</span><span class="n">symbc</span><span class="p">(</span> <span class="n">m_u</span><span class="p">,</span> <span class="n">m_bnorm</span> <span class="p">);</span>
+  <span class="c1">// Prepare unique set of symmetry BC nodes</span>
+  <span class="k">for</span> <span class="p">(</span><span class="k">const</span> <span class="k">auto</span><span class="o">&amp;</span> <span class="p">[</span><span class="n">s</span><span class="p">,</span><span class="n">nodes</span><span class="p">]</span> <span class="o">:</span> <span class="n">d</span><span class="o">-&gt;</span><span class="n">bcnodes</span><span class="o">&lt;</span><span class="n">tag</span><span class="o">::</span><span class="n">bcsym</span><span class="o">&gt;</span><span class="p">(</span><span class="n">m_bface</span><span class="p">,</span><span class="n">m_triinpoel</span><span class="p">))</span>
+    <span class="n">m_symbcnodes</span><span class="p">.</span><span class="n">insert</span><span class="p">(</span> <span class="n">begin</span><span class="p">(</span><span class="n">nodes</span><span class="p">),</span> <span class="n">end</span><span class="p">(</span><span class="n">nodes</span><span class="p">)</span> <span class="p">);</span>
 
-  <span class="c1">// Flatten boundary normal data structure</span>
-  <span class="n">m_symbcnode</span><span class="p">.</span><span class="n">resize</span><span class="p">(</span> <span class="n">m_triinpoel</span><span class="p">.</span><span class="n">size</span><span class="p">()</span><span class="o">/</span><span class="mi">3</span><span class="p">,</span> <span class="mi">0</span> <span class="p">);</span>
+  <span class="c1">// Prepare unique set of farfield BC nodes</span>
+  <span class="k">for</span> <span class="p">(</span><span class="k">const</span> <span class="k">auto</span><span class="o">&amp;</span> <span class="p">[</span><span class="n">s</span><span class="p">,</span><span class="n">nodes</span><span class="p">]</span> <span class="o">:</span> <span class="n">d</span><span class="o">-&gt;</span><span class="n">bcnodes</span><span class="o">&lt;</span><span class="n">tag</span><span class="o">::</span><span class="n">bcfarfield</span><span class="o">&gt;</span><span class="p">(</span><span class="n">m_bface</span><span class="p">,</span><span class="n">m_triinpoel</span><span class="p">))</span>
+    <span class="n">m_farfieldbcnodes</span><span class="p">.</span><span class="n">insert</span><span class="p">(</span> <span class="n">begin</span><span class="p">(</span><span class="n">nodes</span><span class="p">),</span> <span class="n">end</span><span class="p">(</span><span class="n">nodes</span><span class="p">)</span> <span class="p">);</span>
+
+  <span class="c1">// If farfield BC is set on a node, will not also set symmetry BC</span>
+  <span class="k">for</span> <span class="p">(</span><span class="k">auto</span> <span class="nl">fn</span> <span class="p">:</span> <span class="n">m_farfieldbcnodes</span><span class="p">)</span> <span class="n">m_symbcnodes</span><span class="p">.</span><span class="n">erase</span><span class="p">(</span><span class="n">fn</span><span class="p">);</span>
+
+  <span class="c1">// Apply symmetry BCs on initial conditions</span>
+  <span class="k">for</span> <span class="p">(</span><span class="k">const</span> <span class="k">auto</span><span class="o">&amp;</span> <span class="nl">eq</span> <span class="p">:</span> <span class="n">g_cgpde</span><span class="p">)</span>
+    <span class="n">eq</span><span class="p">.</span><span class="n">symbc</span><span class="p">(</span> <span class="n">m_u</span><span class="p">,</span> <span class="n">m_bnorm</span><span class="p">,</span> <span class="n">m_symbcnodes</span> <span class="p">);</span>
+  <span class="c1">// Apply farfield BCs on initial conditions</span>
+  <span class="k">for</span> <span class="p">(</span><span class="k">const</span> <span class="k">auto</span><span class="o">&amp;</span> <span class="nl">eq</span> <span class="p">:</span> <span class="n">g_cgpde</span><span class="p">)</span>
+    <span class="n">eq</span><span class="p">.</span><span class="n">farfieldbc</span><span class="p">(</span> <span class="n">m_u</span><span class="p">,</span> <span class="n">m_bnorm</span><span class="p">,</span> <span class="n">m_farfieldbcnodes</span> <span class="p">);</span>
+
+  <span class="c1">// Prepare boundary nodes contiguously accessible from a triangle-face loop</span>
+  <span class="n">m_symbctri</span><span class="p">.</span><span class="n">resize</span><span class="p">(</span> <span class="n">m_triinpoel</span><span class="p">.</span><span class="n">size</span><span class="p">()</span><span class="o">/</span><span class="mi">3</span><span class="p">,</span> <span class="mi">0</span> <span class="p">);</span>
   <span class="k">for</span> <span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="n">e</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">e</span><span class="o">&lt;</span><span class="n">m_triinpoel</span><span class="p">.</span><span class="n">size</span><span class="p">()</span><span class="o">/</span><span class="mi">3</span><span class="p">;</span> <span class="o">++</span><span class="n">e</span><span class="p">)</span>
-    <span class="k">if</span> <span class="p">(</span><span class="n">m_bnorm</span><span class="p">.</span><span class="n">find</span><span class="p">(</span><span class="n">m_triinpoel</span><span class="p">[</span><span class="n">e</span><span class="o">*</span><span class="mi">3</span><span class="o">+</span><span class="mi">0</span><span class="p">])</span> <span class="o">!=</span> <span class="n">end</span><span class="p">(</span><span class="n">m_bnorm</span><span class="p">))</span>
-      <span class="n">m_symbcnode</span><span class="p">[</span><span class="n">e</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">m_symbcnodes</span><span class="p">.</span><span class="n">find</span><span class="p">(</span><span class="n">m_triinpoel</span><span class="p">[</span><span class="n">e</span><span class="o">*</span><span class="mi">3</span><span class="o">+</span><span class="mi">0</span><span class="p">])</span> <span class="o">!=</span> <span class="n">end</span><span class="p">(</span><span class="n">m_symbcnodes</span><span class="p">))</span>
+      <span class="n">m_symbctri</span><span class="p">[</span><span class="n">e</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
 
   <span class="c1">// Count contributions to chare-boundary edges</span>
   <span class="n">std</span><span class="o">::</span><span class="n">unordered_map</span><span class="o">&lt;</span> <span class="n">tk</span><span class="o">::</span><span class="n">UnsMesh</span><span class="o">::</span><span class="n">Edge</span><span class="p">,</span> <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="p">,</span>
@@ -928,7 +928,7 @@
   <span class="k">for</span> <span class="p">(</span><span class="k">const</span> <span class="k">auto</span><span class="o">&amp;</span> <span class="nl">eq</span> <span class="p">:</span> <span class="n">g_cgpde</span><span class="p">)</span>
     <span class="n">eq</span><span class="p">.</span><span class="n">rhs</span><span class="p">(</span> <span class="n">d</span><span class="o">-&gt;</span><span class="n">T</span><span class="p">()</span> <span class="o">+</span> <span class="n">prev_rkcoef</span> <span class="o">*</span> <span class="n">d</span><span class="o">-&gt;</span><span class="n">Dt</span><span class="p">(),</span> <span class="n">d</span><span class="o">-&gt;</span><span class="n">Coord</span><span class="p">(),</span> <span class="n">d</span><span class="o">-&gt;</span><span class="n">Inpoel</span><span class="p">(),</span>
             <span class="n">m_triinpoel</span><span class="p">,</span> <span class="n">d</span><span class="o">-&gt;</span><span class="n">Gid</span><span class="p">(),</span> <span class="n">d</span><span class="o">-&gt;</span><span class="n">Bid</span><span class="p">(),</span> <span class="n">d</span><span class="o">-&gt;</span><span class="n">Lid</span><span class="p">(),</span> <span class="n">m_dfn</span><span class="p">,</span> <span class="n">m_psup</span><span class="p">,</span> <span class="n">m_esup</span><span class="p">,</span>
-            <span class="n">m_symbcnode</span><span class="p">,</span> <span class="n">d</span><span class="o">-&gt;</span><span class="n">Vol</span><span class="p">(),</span> <span class="n">m_edgenode</span><span class="p">,</span> <span class="n">m_edgeid</span><span class="p">,</span> <span class="n">m_grad</span><span class="p">,</span> <span class="n">m_u</span><span class="p">,</span> <span class="n">m_tp</span><span class="p">,</span>
+            <span class="n">m_symbctri</span><span class="p">,</span> <span class="n">d</span><span class="o">-&gt;</span><span class="n">Vol</span><span class="p">(),</span> <span class="n">m_edgenode</span><span class="p">,</span> <span class="n">m_edgeid</span><span class="p">,</span> <span class="n">m_grad</span><span class="p">,</span> <span class="n">m_u</span><span class="p">,</span> <span class="n">m_tp</span><span class="p">,</span>
             <span class="n">m_rhs</span> <span class="p">);</span>
   <span class="k">if</span> <span class="p">(</span><span class="n">steady</span><span class="p">)</span>
     <span class="k">for</span> <span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="n">p</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">p</span><span class="o">&lt;</span><span class="n">m_tp</span><span class="p">.</span><span class="n">size</span><span class="p">();</span> <span class="o">++</span><span class="n">p</span><span class="p">)</span> <span class="n">m_tp</span><span class="p">[</span><span class="n">p</span><span class="p">]</span> <span class="o">-=</span> <span class="n">prev_rkcoef</span> <span class="o">*</span> <span class="n">m_dtp</span><span class="p">[</span><span class="n">p</span><span class="p">];</span>
@@ -1027,6 +1027,13 @@
 
   <span class="p">}</span>
 
+  <span class="c1">// Apply symmetry BCs on initial conditions</span>
+  <span class="k">for</span> <span class="p">(</span><span class="k">const</span> <span class="k">auto</span><span class="o">&amp;</span> <span class="nl">eq</span> <span class="p">:</span> <span class="n">g_cgpde</span><span class="p">)</span>
+    <span class="n">eq</span><span class="p">.</span><span class="n">symbc</span><span class="p">(</span> <span class="n">m_u</span><span class="p">,</span> <span class="n">m_bnorm</span><span class="p">,</span> <span class="n">m_symbcnodes</span> <span class="p">);</span>
+  <span class="c1">// Apply farfield BCs on new solution</span>
+  <span class="k">for</span> <span class="p">(</span><span class="k">const</span> <span class="k">auto</span><span class="o">&amp;</span> <span class="nl">eq</span> <span class="p">:</span> <span class="n">g_cgpde</span><span class="p">)</span>
+    <span class="n">eq</span><span class="p">.</span><span class="n">farfieldbc</span><span class="p">(</span> <span class="n">m_u</span><span class="p">,</span> <span class="n">m_bnorm</span><span class="p">,</span> <span class="n">m_farfieldbcnodes</span> <span class="p">);</span>
+
   <span class="c1">//! [Continue after solve]</span>
   <span class="k">if</span> <span class="p">(</span><span class="n">m_stage</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">)</span> <span class="p">{</span>
 
@@ -1040,24 +1047,25 @@
   <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
 
     <span class="c1">// Compute diagnostics, e.g., residuals</span>
-    <span class="k">auto</span> <span class="n">diag_computed</span> <span class="o">=</span> <span class="n">m_diag</span><span class="p">.</span><span class="n">compute</span><span class="p">(</span> <span class="o">*</span><span class="n">d</span><span class="p">,</span> <span class="n">m_u</span><span class="p">,</span> <span class="n">m_un</span> <span class="p">);</span>
+    <span class="k">auto</span> <span class="n">diag_computed</span> <span class="o">=</span>
+      <span class="n">m_diag</span><span class="p">.</span><span class="n">compute</span><span class="p">(</span> <span class="o">*</span><span class="n">d</span><span class="p">,</span> <span class="n">m_u</span><span class="p">,</span> <span class="n">m_un</span><span class="p">,</span> <span class="n">m_bnorm</span><span class="p">,</span> <span class="n">m_symbcnodes</span><span class="p">,</span> <span class="n">m_farfieldbcnodes</span> <span class="p">);</span>
     <span class="c1">// Increase number of iterations and physical time</span>
     <span class="n">d</span><span class="o">-&gt;</span><span class="n">next</span><span class="p">();</span>
-
     <span class="c1">// Advance physical time for local time stepping</span>
     <span class="k">if</span> <span class="p">(</span><span class="n">steady</span><span class="p">)</span> <span class="k">for</span> <span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">i</span><span class="o">&lt;</span><span class="n">m_u</span><span class="p">.</span><span class="n">nunk</span><span class="p">();</span> <span class="o">++</span><span class="n">i</span><span class="p">)</span> <span class="n">m_tp</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+=</span> <span class="n">m_dtp</span><span class="p">[</span><span class="n">i</span><span class="p">];</span>
-
     <span class="c1">// Continue to mesh refinement (if configured)</span>
-    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">diag_computed</span><span class="p">)</span> <span class="n">refine</span><span class="p">(</span> <span class="mf">1.0</span> <span class="p">);</span>
+    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">diag_computed</span><span class="p">)</span> <span class="n">refine</span><span class="p">(</span> <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span> <span class="n">tk</span><span class="o">::</span><span class="n">real</span> <span class="o">&gt;</span><span class="p">(</span> <span class="n">m_u</span><span class="p">.</span><span class="n">nprop</span><span class="p">(),</span> <span class="mf">1.0</span> <span class="p">)</span> <span class="p">);</span>
+
   <span class="p">}</span>
   <span class="c1">//! [Continue after solve]</span>
 <span class="p">}</span>
 
 <span class="kt">void</span>
-<span class="n">ALECG</span><span class="o">::</span><span class="n">refine</span><span class="p">(</span> <span class="n">tk</span><span class="o">::</span><span class="n">real</span> <span class="n">l2res</span> <span class="p">)</span>
+<span class="n">ALECG</span><span class="o">::</span><span class="n">refine</span><span class="p">(</span> <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span> <span class="n">tk</span><span class="o">::</span><span class="n">real</span> <span class="o">&gt;&amp;</span> <span class="n">l2res</span> <span class="p">)</span>
 <span class="c1">// *****************************************************************************</span>
 <span class="c1">// Optionally refine/derefine mesh</span>
-<span class="c1">//! \param[in] l2res L2-norm of the residual across the whole problem</span>
+<span class="c1">//! \param[in] l2res L2-norms of the residual for each scalar component</span>
+<span class="c1">//!   computed across the whole problem</span>
 <span class="c1">// *****************************************************************************</span>
 <span class="p">{</span>
   <span class="c1">//! [Refine]</span>
@@ -1067,13 +1075,14 @@
   <span class="k">const</span> <span class="k">auto</span> <span class="n">term</span> <span class="o">=</span> <span class="n">g_inputdeck</span><span class="p">.</span><span class="n">get</span><span class="o">&lt;</span> <span class="n">tag</span><span class="o">::</span><span class="n">discr</span><span class="p">,</span> <span class="n">tag</span><span class="o">::</span><span class="n">term</span> <span class="o">&gt;</span><span class="p">();</span>
   <span class="k">const</span> <span class="k">auto</span> <span class="n">steady</span> <span class="o">=</span> <span class="n">g_inputdeck</span><span class="p">.</span><span class="n">get</span><span class="o">&lt;</span> <span class="n">tag</span><span class="o">::</span><span class="n">discr</span><span class="p">,</span> <span class="n">tag</span><span class="o">::</span><span class="n">steady_state</span> <span class="o">&gt;</span><span class="p">();</span>
   <span class="k">const</span> <span class="k">auto</span> <span class="n">residual</span> <span class="o">=</span> <span class="n">g_inputdeck</span><span class="p">.</span><span class="n">get</span><span class="o">&lt;</span> <span class="n">tag</span><span class="o">::</span><span class="n">discr</span><span class="p">,</span> <span class="n">tag</span><span class="o">::</span><span class="n">residual</span> <span class="o">&gt;</span><span class="p">();</span>
+  <span class="k">const</span> <span class="k">auto</span> <span class="n">rc</span> <span class="o">=</span> <span class="n">g_inputdeck</span><span class="p">.</span><span class="n">get</span><span class="o">&lt;</span> <span class="n">tag</span><span class="o">::</span><span class="n">discr</span><span class="p">,</span> <span class="n">tag</span><span class="o">::</span><span class="n">rescomp</span> <span class="o">&gt;</span><span class="p">()</span> <span class="o">-</span> <span class="mi">1</span><span class="p">;</span>
   <span class="k">const</span> <span class="k">auto</span> <span class="n">eps</span> <span class="o">=</span> <span class="n">std</span><span class="o">::</span><span class="n">numeric_limits</span><span class="o">&lt;</span> <span class="n">tk</span><span class="o">::</span><span class="n">real</span> <span class="o">&gt;::</span><span class="n">epsilon</span><span class="p">();</span>
 
   <span class="k">if</span> <span class="p">(</span><span class="n">steady</span><span class="p">)</span> <span class="p">{</span>
 
     <span class="c1">// this is the last time step if max time of max number of time steps</span>
     <span class="c1">// reached or the residual has reached its convergence criterion</span>
-    <span class="k">if</span> <span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">abs</span><span class="p">(</span><span class="n">d</span><span class="o">-&gt;</span><span class="n">T</span><span class="p">()</span><span class="o">-</span><span class="n">term</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">eps</span> <span class="o">||</span> <span class="n">d</span><span class="o">-&gt;</span><span class="n">It</span><span class="p">()</span> <span class="o">&gt;=</span> <span class="n">nstep</span> <span class="o">||</span> <span class="n">l2res</span> <span class="o">&lt;</span> <span class="n">residual</span><span class="p">)</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">abs</span><span class="p">(</span><span class="n">d</span><span class="o">-&gt;</span><span class="n">T</span><span class="p">()</span><span class="o">-</span><span class="n">term</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">eps</span> <span class="o">||</span> <span class="n">d</span><span class="o">-&gt;</span><span class="n">It</span><span class="p">()</span> <span class="o">&gt;=</span> <span class="n">nstep</span> <span class="o">||</span> <span class="n">l2res</span><span class="p">[</span><span class="n">rc</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">residual</span><span class="p">)</span>
       <span class="n">m_finished</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
 
   <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
@@ -1227,19 +1236,6 @@
       <span class="k">auto</span> <span class="n">s</span> <span class="o">=</span> <span class="n">eq</span><span class="p">.</span><span class="n">surfOutput</span><span class="p">(</span> <span class="n">tk</span><span class="o">::</span><span class="n">bfacenodes</span><span class="p">(</span><span class="n">m_bface</span><span class="p">,</span><span class="n">m_triinpoel</span><span class="p">),</span> <span class="n">u</span> <span class="p">);</span>
       <span class="n">nodesurfs</span><span class="p">.</span><span class="n">insert</span><span class="p">(</span> <span class="n">end</span><span class="p">(</span><span class="n">nodesurfs</span><span class="p">),</span> <span class="n">begin</span><span class="p">(</span><span class="n">s</span><span class="p">),</span> <span class="n">end</span><span class="p">(</span><span class="n">s</span><span class="p">)</span> <span class="p">);</span>
     <span class="p">}</span>
-
-    <span class="c1">// Create volume node field assigning 1 where symmetry BC is set</span>
-    <span class="c1">// std::unordered_set&lt; std::size_t &gt; symbcnodes;</span>
-    <span class="c1">// for (const auto&amp; eq : g_cgpde)</span>
-    <span class="c1">//   eq.symbcnodes( m_bface, m_triinpoel, symbcnodes );</span>
-    <span class="c1">// nodefieldnames.push_back( &quot;bc_type&quot; );</span>
-    <span class="c1">// nodefields.push_back( std::vector&lt;tk::real&gt;(d-&gt;Coord()[0].size(),0.0) );</span>
-    <span class="c1">// for (auto i : symbcnodes) nodefields.back()[i] = 1.0;</span>
-
-    <span class="c1">// nodefieldnames.push_back( &quot;tp&quot; );</span>
-    <span class="c1">// nodefieldnames.push_back( &quot;dtp&quot; );</span>
-    <span class="c1">// nodefields.push_back( m_tp );</span>
-    <span class="c1">// nodefields.push_back( m_dtp );</span>
 
     <span class="n">Assert</span><span class="p">(</span> <span class="n">nodefieldnames</span><span class="p">.</span><span class="n">size</span><span class="p">()</span> <span class="o">==</span> <span class="n">nodefields</span><span class="p">.</span><span class="n">size</span><span class="p">(),</span> <span class="s">&quot;Size mismatch&quot;</span> <span class="p">);</span>
 
@@ -1395,7 +1391,7 @@
   <div class="m-container">
     <div class="m-row">
       <div class="m-col-l-10 m-push-l-1">
-        <p>Quinoa docs, part of the <a href="http://quinoacomputing.org/">Quinoa project</a>. Copyright © J. Bakosi 2012&ndash;2015, Los Alamos National Security, LLC, 2016&ndash;2018, <a href="https://www.triadns.org/">Triad National Security, LLC,</a> 2019-2020. Generated on Wednesday, Jun 17, 2020 based on <a href="https://github.com/quinoacomputing/quinoa/commit/85c24ff">85c24ff</a> by <a href="http://doxygen.org/">Doxygen</a> and <a href="http://mcss.mosra.cz/">m.css</a>. Contact us via <a href="https://github.com/quinoacomputing/quinoa/">GitHub</a>, <a href="https://groups.io/g/quinoa">Email</a> or <a href="https://quinoa.zulipchat.com">Chat</a>.</p>
+        <p>Quinoa docs, part of the <a href="http://quinoacomputing.org/">Quinoa project</a>. Copyright © J. Bakosi 2012&ndash;2015, Los Alamos National Security, LLC, 2016&ndash;2018, <a href="https://www.triadns.org/">Triad National Security, LLC,</a> 2019-2020. Generated on Tuesday, Jul 07, 2020 based on <a href="https://github.com/quinoacomputing/quinoa/commit/f785b31">f785b31</a> by <a href="http://doxygen.org/">Doxygen</a> and <a href="http://mcss.mosra.cz/">m.css</a>. Contact us via <a href="https://github.com/quinoacomputing/quinoa/">GitHub</a>, <a href="https://groups.io/g/quinoa">Email</a> or <a href="https://quinoa.zulipchat.com">Chat</a>.</p>
       </div>
     </div>
   </div>

@@ -24,21 +24,21 @@
           </tr>
           <tr>
             <td class="headerItem">Commit:</td>
-            <td class="headerValue"><a href="https://github.com/quinoacomputing/quinoa/commit/85c24ff">Quinoa_v0.2-4210-g85c24ff</a></td>
+            <td class="headerValue"><a href="https://github.com/quinoacomputing/quinoa/commit/f785b31">Quinoa_v0.2-4251-gf785b31</a></td>
             <td></td>
             <td class="headerItem">Lines:</td>
-            <td class="headerCovTableEntry">72</td>
+            <td class="headerCovTableEntry">76</td>
             <td class="headerCovTableEntry">79</td>
-            <td class="headerCovTableEntryHi">91.1 %</td>
+            <td class="headerCovTableEntryHi">96.2 %</td>
           </tr>
           <tr>
             <td class="headerItem">Date:</td>
-            <td class="headerValue">2020-06-17 22:35:22</td>
+            <td class="headerValue">2020-07-08 04:59:32</td>
             <td></td>
             <td class="headerItem">Functions:</td>
-            <td class="headerCovTableEntry">173</td>
+            <td class="headerCovTableEntry">175</td>
             <td class="headerCovTableEntry">612</td>
-            <td class="headerCovTableEntryLo">28.3 %</td>
+            <td class="headerCovTableEntryLo">28.6 %</td>
           </tr>
           <tr>
             <td class="headerItem">Legend:</td>
@@ -120,405 +120,427 @@
 <span class="lineNum">      46 </span>                :            : solinc( tk::ncomp_t system, tk::ncomp_t ncomp, tk::real x, tk::real y,
 <span class="lineNum">      47 </span>                :            :         tk::real z, tk::real t, tk::real dt, tk::SolutionFn solution );
 <span class="lineNum">      48 </span>                :            : 
-<span class="lineNum">      49 </span>                :            : } // cg::
-<span class="lineNum">      50 </span>                :            : 
-<span class="lineNum">      51 </span>                :            : //! \brief Partial differential equation base for continuous Galerkin PDEs
-<span class="lineNum">      52 </span>                :            : //! \details This class uses runtime polymorphism without client-side
-<span class="lineNum">      53 </span>                :            : //!   inheritance: inheritance is confined to the internals of the this class,
-<span class="lineNum">      54 </span>                :            : //!   invisible to client-code. The class exclusively deals with ownership
-<span class="lineNum">      55 </span>                :            : //!   enabling client-side value semantics. Credit goes to Sean Parent at Adobe:
-<span class="lineNum">      56 </span>                :            : //!   https://github.com/sean-parent/sean-parent.github.com/wiki/
-<span class="lineNum">      57 </span>                :            : //!   Papers-and-Presentations. For example client code that models a CGPDE,
-<span class="lineNum">      58 </span>                :            : //!   see inciter::CompFlow.
-<span class="lineNum">      59 </span>                :            : class CGPDE {
+<span class="lineNum">      49 </span>                :            : //! Compute boundary point normals
+<span class="lineNum">      50 </span>                :            : std::unordered_map&lt; int,
+<span class="lineNum">      51 </span>                :            :   std::unordered_map&lt; std::size_t, std::array&lt; tk::real, 4 &gt; &gt; &gt;
+<span class="lineNum">      52 </span>                :            : bnorm( const std::map&lt; int, std::vector&lt; std::size_t &gt; &gt;&amp; bface,
+<span class="lineNum">      53 </span>                :            :        const std::vector&lt; std::size_t &gt;&amp; triinpoel,
+<span class="lineNum">      54 </span>                :            :        const std::array&lt; std::vector&lt; tk::real &gt;, 3 &gt;&amp; coord,
+<span class="lineNum">      55 </span>                :            :        const std::vector&lt; std::size_t &gt;&amp; gid,
+<span class="lineNum">      56 </span>                :            :        const std::unordered_map&lt; int,
+<span class="lineNum">      57 </span>                :            :          std::unordered_set&lt; std::size_t &gt; &gt;&amp; bcnodes );
+<span class="lineNum">      58 </span>                :            : 
+<span class="lineNum">      59 </span>                :            : } // cg::
 <span class="lineNum">      60 </span>                :            : 
-<span class="lineNum">      61 </span>                :            :   private:
-<span class="lineNum">      62 </span>                :            :     using ncomp_t = kw::ncomp::info::expect::type;
-<span class="lineNum">      63 </span>                :            : 
-<a name="64"><span class="lineNum">      64 </span>                :            :   public:</a>
-<span class="lineNum">      65 </span>                :            :     //! Default constructor taking no arguments for Charm++
-<span class="lineNum">      66 </span>                :<span class="lineNoCov">          0 :     explicit CGPDE() = default;</span>
-<span class="lineNum">      67 </span>                :            : 
-<span class="lineNum">      68 </span>                :            :     //! Constructor taking an object modeling Concept.
-<span class="lineNum">      69 </span>                :            :     //! \details The object of class T comes pre-constructed.
-<span class="lineNum">      70 </span>                :            :     //! \param[in] x Instantiated object of type T given by the template
-<span class="lineNum">      71 </span>                :            :     //!   argument.
-<span class="lineNum">      72 </span>                :            :     template&lt; typename T &gt; explicit CGPDE( T x ) :
-<span class="lineNum">      73 </span>                :            :       self( std::make_unique&lt; Model&lt;T&gt; &gt;( std::move(x) ) ) {}
-<span class="lineNum">      74 </span>                :            : 
-<span class="lineNum">      75 </span>                :            :     //! \brief Constructor taking a function pointer to a constructor of an
-<span class="lineNum">      76 </span>                :            :     //!   object modeling Concept.
-<span class="lineNum">      77 </span>                :            :     //! \details Passing std::function allows late execution of the constructor,
-<span class="lineNum">      78 </span>                :            :     //!   i.e., as late as inside this class' constructor, and thus usage from
-<span class="lineNum">      79 </span>                :            :     //!   a factory. Note that there are at least two different ways of using
-<span class="lineNum">      80 </span>                :            :     //!   this constructor:
-<span class="lineNum">      81 </span>                :            :     //!   - Bind T's constructor arguments and place it in std::function&lt;T()&gt;
-<span class="lineNum">      82 </span>                :            :     //!   and passing no arguments as args.... This case then instantiates the
-<span class="lineNum">      83 </span>                :            :     //!   model via its constructor and stores it in here.
-<span class="lineNum">      84 </span>                :            :     //!   - Bind a single placeholder argument to T's constructor and pass it in
-<span class="lineNum">      85 </span>                :            :     //!   as host's args..., which then forwards it to model's constructor. This
-<span class="lineNum">      86 </span>                :            :     //!   allows late binding, i.e., binding the argument only here.
-<span class="lineNum">      87 </span>                :            :     //! \see See also the wrapper tk::recordModel() which does the former and
-<span class="lineNum">      88 </span>                :            :     //!   tk::recordModelLate() which does the latter, both defined in
-<span class="lineNum">      89 </span>                :            :     //!   src/Base/Factory.h.
-<span class="lineNum">      90 </span>                :            :     //! \param[in] x Function pointer to a constructor of an object modeling
-<span class="lineNum">      91 </span>                :            :     //!    Concept.
-<a name="92"><span class="lineNum">      92 </span>                :            :     //! \param[in] args Zero or more constructor arguments</a>
-<span class="lineNum">      93 </span>                :            :     template&lt; typename T, typename...Args &gt;
-<span class="lineNum">      94 </span>                :<span class="lineCov">        453 :     explicit CGPDE( std::function&lt;T(Args...)&gt; x, Args&amp;&amp;... args ) :</span>
-<span class="lineNum">      95 </span>                :            :       self( std::make_unique&lt; Model&lt;T&gt; &gt;(
-<span class="lineNum">      96 </span>        [<span class="branchCov" title="Branch 0 was taken 453 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">        453 :               std::move( x( std::forward&lt;Args&gt;(args)... ) ) ) ) {}</span>
-<a name="97"><span class="lineNum">      97 </span>                :            : </a>
-<span class="lineNum">      98 </span>                :            :     //! Public interface to setting the initial conditions for the diff eq
-<span class="lineNum">      99 </span>                :<span class="lineCov">       1445 :     void initialize( const std::array&lt; std::vector&lt; tk::real &gt;, 3 &gt;&amp; coord,</span>
-<span class="lineNum">     100 </span>                :            :                      tk::Fields&amp; unk,
-<span class="lineNum">     101 </span>                :            :                      tk::real t,
-<span class="lineNum">     102 </span>                :            :                      std::vector&lt; std::size_t &gt;&amp; inbox )
-<span class="lineNum">     103 </span>                :<span class="lineCov">       1445 :     { self-&gt;initialize( coord, unk, t, inbox ); }</span>
-<a name="104"><span class="lineNum">     104 </span>                :            : </a>
-<span class="lineNum">     105 </span>                :            :     //! Public interface to updating the initial conditions in box ICs
-<span class="lineNum">     106 </span>                :<span class="lineCov">       1141 :     void box( tk::real v, const std::vector&lt; std::size_t &gt;&amp; boxnodes,</span>
-<span class="lineNum">     107 </span>                :<span class="lineCov">       1141 :               tk::Fields&amp; unk ) const { self-&gt;box( v, boxnodes, unk ); }</span>
-<a name="108"><span class="lineNum">     108 </span>                :            : </a>
-<span class="lineNum">     109 </span>                :            :     //! Public interface to computing the nodal gradients for ALECG
-<span class="lineNum">     110 </span>                :<span class="lineCov">      40284 :     void grad( const std::array&lt; std::vector&lt; tk::real &gt;, 3 &gt;&amp; coord,</span>
-<span class="lineNum">     111 </span>                :            :                const std::vector&lt; std::size_t &gt;&amp; inpoel,
-<span class="lineNum">     112 </span>                :            :                const std::vector&lt; std::size_t &gt;&amp; bndel,
-<span class="lineNum">     113 </span>                :            :                const std::vector&lt; std::size_t &gt;&amp; gid,
-<span class="lineNum">     114 </span>                :            :                const std::unordered_map&lt; std::size_t, std::size_t &gt;&amp; bid,
-<span class="lineNum">     115 </span>                :            :                const tk::Fields&amp; U,
-<span class="lineNum">     116 </span>                :            :                tk::Fields&amp; G ) const
-<span class="lineNum">     117 </span>                :<span class="lineCov">      40284 :     { self-&gt;grad( coord, inpoel, bndel, gid, bid, U, G ); }</span>
+<span class="lineNum">      61 </span>                :            : //! \brief Partial differential equation base for continuous Galerkin PDEs
+<span class="lineNum">      62 </span>                :            : //! \details This class uses runtime polymorphism without client-side
+<span class="lineNum">      63 </span>                :            : //!   inheritance: inheritance is confined to the internals of the this class,
+<span class="lineNum">      64 </span>                :            : //!   invisible to client-code. The class exclusively deals with ownership
+<span class="lineNum">      65 </span>                :            : //!   enabling client-side value semantics. Credit goes to Sean Parent at Adobe:
+<span class="lineNum">      66 </span>                :            : //!   https://github.com/sean-parent/sean-parent.github.com/wiki/
+<span class="lineNum">      67 </span>                :            : //!   Papers-and-Presentations. For example client code that models a CGPDE,
+<span class="lineNum">      68 </span>                :            : //!   see inciter::CompFlow.
+<span class="lineNum">      69 </span>                :            : class CGPDE {
+<span class="lineNum">      70 </span>                :            : 
+<span class="lineNum">      71 </span>                :            :   private:
+<span class="lineNum">      72 </span>                :            :     using ncomp_t = kw::ncomp::info::expect::type;
+<span class="lineNum">      73 </span>                :            : 
+<a name="74"><span class="lineNum">      74 </span>                :            :   public:</a>
+<span class="lineNum">      75 </span>                :            :     //! Default constructor taking no arguments for Charm++
+<span class="lineNum">      76 </span>                :<span class="lineNoCov">          0 :     explicit CGPDE() = default;</span>
+<span class="lineNum">      77 </span>                :            : 
+<span class="lineNum">      78 </span>                :            :     //! Constructor taking an object modeling Concept.
+<span class="lineNum">      79 </span>                :            :     //! \details The object of class T comes pre-constructed.
+<span class="lineNum">      80 </span>                :            :     //! \param[in] x Instantiated object of type T given by the template
+<span class="lineNum">      81 </span>                :            :     //!   argument.
+<span class="lineNum">      82 </span>                :            :     template&lt; typename T &gt; explicit CGPDE( T x ) :
+<span class="lineNum">      83 </span>                :            :       self( std::make_unique&lt; Model&lt;T&gt; &gt;( std::move(x) ) ) {}
+<span class="lineNum">      84 </span>                :            : 
+<span class="lineNum">      85 </span>                :            :     //! \brief Constructor taking a function pointer to a constructor of an
+<span class="lineNum">      86 </span>                :            :     //!   object modeling Concept.
+<span class="lineNum">      87 </span>                :            :     //! \details Passing std::function allows late execution of the constructor,
+<span class="lineNum">      88 </span>                :            :     //!   i.e., as late as inside this class' constructor, and thus usage from
+<span class="lineNum">      89 </span>                :            :     //!   a factory. Note that there are at least two different ways of using
+<span class="lineNum">      90 </span>                :            :     //!   this constructor:
+<span class="lineNum">      91 </span>                :            :     //!   - Bind T's constructor arguments and place it in std::function&lt;T()&gt;
+<span class="lineNum">      92 </span>                :            :     //!   and passing no arguments as args.... This case then instantiates the
+<span class="lineNum">      93 </span>                :            :     //!   model via its constructor and stores it in here.
+<span class="lineNum">      94 </span>                :            :     //!   - Bind a single placeholder argument to T's constructor and pass it in
+<span class="lineNum">      95 </span>                :            :     //!   as host's args..., which then forwards it to model's constructor. This
+<span class="lineNum">      96 </span>                :            :     //!   allows late binding, i.e., binding the argument only here.
+<span class="lineNum">      97 </span>                :            :     //! \see See also the wrapper tk::recordModel() which does the former and
+<span class="lineNum">      98 </span>                :            :     //!   tk::recordModelLate() which does the latter, both defined in
+<span class="lineNum">      99 </span>                :            :     //!   src/Base/Factory.h.
+<span class="lineNum">     100 </span>                :            :     //! \param[in] x Function pointer to a constructor of an object modeling
+<span class="lineNum">     101 </span>                :            :     //!    Concept.
+<a name="102"><span class="lineNum">     102 </span>                :            :     //! \param[in] args Zero or more constructor arguments</a>
+<span class="lineNum">     103 </span>                :            :     template&lt; typename T, typename...Args &gt;
+<span class="lineNum">     104 </span>                :<span class="lineCov">        460 :     explicit CGPDE( std::function&lt;T(Args...)&gt; x, Args&amp;&amp;... args ) :</span>
+<span class="lineNum">     105 </span>                :            :       self( std::make_unique&lt; Model&lt;T&gt; &gt;(
+<span class="lineNum">     106 </span>        [<span class="branchCov" title="Branch 0 was taken 460 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">        460 :               std::move( x( std::forward&lt;Args&gt;(args)... ) ) ) ) {}</span>
+<a name="107"><span class="lineNum">     107 </span>                :            : </a>
+<span class="lineNum">     108 </span>                :            :     //! Public interface to setting the initial conditions for the diff eq
+<span class="lineNum">     109 </span>                :<span class="lineCov">       1450 :     void initialize( const std::array&lt; std::vector&lt; tk::real &gt;, 3 &gt;&amp; coord,</span>
+<span class="lineNum">     110 </span>                :            :                      tk::Fields&amp; unk,
+<span class="lineNum">     111 </span>                :            :                      tk::real t,
+<span class="lineNum">     112 </span>                :            :                      std::vector&lt; std::size_t &gt;&amp; inbox )
+<span class="lineNum">     113 </span>                :<span class="lineCov">       1450 :     { self-&gt;initialize( coord, unk, t, inbox ); }</span>
+<a name="114"><span class="lineNum">     114 </span>                :            : </a>
+<span class="lineNum">     115 </span>                :            :     //! Public interface to updating the initial conditions in box ICs
+<span class="lineNum">     116 </span>                :<span class="lineCov">       1146 :     void box( tk::real v, const std::vector&lt; std::size_t &gt;&amp; boxnodes,</span>
+<span class="lineNum">     117 </span>                :<span class="lineCov">       1146 :               tk::Fields&amp; unk ) const { self-&gt;box( v, boxnodes, unk ); }</span>
 <a name="118"><span class="lineNum">     118 </span>                :            : </a>
-<span class="lineNum">     119 </span>                :            :     //! Public interface to computing the right-hand side vector for DiagCG
-<span class="lineNum">     120 </span>                :<span class="lineCov">      18345 :     void rhs( tk::real t,</span>
-<span class="lineNum">     121 </span>                :            :               tk::real deltat,
-<span class="lineNum">     122 </span>                :            :               const std::array&lt; std::vector&lt; tk::real &gt;, 3 &gt;&amp; coord,
-<span class="lineNum">     123 </span>                :            :               const std::vector&lt; std::size_t &gt;&amp; inpoel,
-<span class="lineNum">     124 </span>                :            :               const tk::Fields&amp; U,
-<span class="lineNum">     125 </span>                :            :               tk::Fields&amp; Ue,
-<span class="lineNum">     126 </span>                :            :               tk::Fields&amp; R ) const
-<span class="lineNum">     127 </span>                :<span class="lineCov">      18345 :     { self-&gt;rhs( t, deltat, coord, inpoel, U, Ue, R ); }</span>
+<span class="lineNum">     119 </span>                :            :     //! Public interface to computing the nodal gradients for ALECG
+<span class="lineNum">     120 </span>                :<span class="lineCov">      40869 :     void grad( const std::array&lt; std::vector&lt; tk::real &gt;, 3 &gt;&amp; coord,</span>
+<span class="lineNum">     121 </span>                :            :                const std::vector&lt; std::size_t &gt;&amp; inpoel,
+<span class="lineNum">     122 </span>                :            :                const std::vector&lt; std::size_t &gt;&amp; bndel,
+<span class="lineNum">     123 </span>                :            :                const std::vector&lt; std::size_t &gt;&amp; gid,
+<span class="lineNum">     124 </span>                :            :                const std::unordered_map&lt; std::size_t, std::size_t &gt;&amp; bid,
+<span class="lineNum">     125 </span>                :            :                const tk::Fields&amp; U,
+<span class="lineNum">     126 </span>                :            :                tk::Fields&amp; G ) const
+<span class="lineNum">     127 </span>                :<span class="lineCov">      40869 :     { self-&gt;grad( coord, inpoel, bndel, gid, bid, U, G ); }</span>
 <a name="128"><span class="lineNum">     128 </span>                :            : </a>
-<span class="lineNum">     129 </span>                :            :     //! Public interface to computing the right-hand side vector for ALECG
-<span class="lineNum">     130 </span>                :<span class="lineCov">      40284 :     void rhs(</span>
-<span class="lineNum">     131 </span>                :            :       tk::real t,
-<span class="lineNum">     132 </span>                :            :       const std::array&lt; std::vector&lt; tk::real &gt;, 3 &gt;&amp; coord,
-<span class="lineNum">     133 </span>                :            :       const std::vector&lt; std::size_t &gt;&amp; inpoel,
-<span class="lineNum">     134 </span>                :            :       const std::vector&lt; std::size_t &gt;&amp; triinpoel,
-<span class="lineNum">     135 </span>                :            :       const std::vector&lt; std::size_t &gt;&amp; gid,
-<span class="lineNum">     136 </span>                :            :       const std::unordered_map&lt; std::size_t, std::size_t &gt;&amp; bid,
-<span class="lineNum">     137 </span>                :            :       const std::unordered_map&lt; std::size_t, std::size_t &gt;&amp; lid,
-<span class="lineNum">     138 </span>                :            :       const std::vector&lt; tk::real &gt;&amp; dfn,
-<span class="lineNum">     139 </span>                :            :       const std::pair&lt; std::vector&lt; std::size_t &gt;,
-<span class="lineNum">     140 </span>                :            :                        std::vector&lt; std::size_t &gt; &gt;&amp; psup,
-<span class="lineNum">     141 </span>                :            :       const std::pair&lt; std::vector&lt; std::size_t &gt;,
-<span class="lineNum">     142 </span>                :            :                        std::vector&lt; std::size_t &gt; &gt;&amp; esup,
-<span class="lineNum">     143 </span>                :            :       const std::vector&lt; int &gt;&amp; symbcnode,
-<span class="lineNum">     144 </span>                :            :       const std::vector&lt; tk::real &gt;&amp; vol,
-<span class="lineNum">     145 </span>                :            :       const std::vector&lt; std::size_t &gt;&amp; edgenode,
-<span class="lineNum">     146 </span>                :            :       const std::vector&lt; std::size_t &gt;&amp; edgeid,
-<span class="lineNum">     147 </span>                :            :       const tk::Fields&amp; G,
-<span class="lineNum">     148 </span>                :            :       const tk::Fields&amp; U,
-<span class="lineNum">     149 </span>                :            :       const std::vector&lt; tk::real &gt;&amp; tp,
-<span class="lineNum">     150 </span>                :            :       tk::Fields&amp; R ) const
-<span class="lineNum">     151 </span>                :<span class="lineCov">      40284 :     { self-&gt;rhs( t, coord, inpoel, triinpoel, gid, bid, lid, dfn, psup, esup,</span>
-<span class="lineNum">     152 </span>                :<span class="lineCov">      40284 :                  symbcnode, vol, edgenode, edgeid, G, U, tp, R ); }</span>
-<a name="153"><span class="lineNum">     153 </span>                :            : </a>
-<span class="lineNum">     154 </span>                :            :     //! Public interface for computing the minimum time step size
-<span class="lineNum">     155 </span>                :<span class="lineCov">      21363 :     tk::real dt( const std::array&lt; std::vector&lt; tk::real &gt;, 3 &gt;&amp; coord,</span>
-<span class="lineNum">     156 </span>                :            :                  const std::vector&lt; std::size_t &gt;&amp; inpoel,
-<span class="lineNum">     157 </span>                :            :                  const tk::Fields&amp; U ) const
-<span class="lineNum">     158 </span>                :<span class="lineCov">      21363 :     { return self-&gt;dt( coord, inpoel, U ); }</span>
-<a name="159"><span class="lineNum">     159 </span>                :            : </a>
-<span class="lineNum">     160 </span>                :            :     //! Public interface for computing a time step size for each mesh node
-<span class="lineNum">     161 </span>                :<span class="lineNoCov">          0 :     void dt( uint64_t it,</span>
-<span class="lineNum">     162 </span>                :            :              const std::vector&lt; tk::real &gt;&amp; vol,
-<span class="lineNum">     163 </span>                :            :              const tk::Fields&amp; U,
-<span class="lineNum">     164 </span>                :            :              std::vector&lt; tk::real &gt;&amp; dtp ) const
-<span class="lineNum">     165 </span>                :<span class="lineNoCov">          0 :     { self-&gt;dt( it, vol, U, dtp ); }</span>
-<span class="lineNum">     166 </span>                :            : 
-<span class="lineNum">     167 </span>                :            :     //! \brief Public interface for querying Dirichlet boundary condition values
-<a name="168"><span class="lineNum">     168 </span>                :            :     //!  set by the user on a given side set for all components in a PDE system</a>
-<span class="lineNum">     169 </span>                :            :     std::map&lt; std::size_t, std::vector&lt; std::pair&lt;bool,tk::real&gt; &gt; &gt;
-<span class="lineNum">     170 </span>                :<span class="lineCov">      91229 :     dirbc( tk::real t,</span>
-<span class="lineNum">     171 </span>                :            :            tk::real deltat,
-<span class="lineNum">     172 </span>                :            :            const std::vector&lt; tk::real &gt;&amp; tp,
-<span class="lineNum">     173 </span>                :            :            const std::vector&lt; tk::real &gt;&amp; dtp,
-<span class="lineNum">     174 </span>                :            :            const std::pair&lt; const int, std::vector&lt; std::size_t &gt; &gt;&amp; sides,
-<span class="lineNum">     175 </span>                :            :            const std::array&lt; std::vector&lt; tk::real &gt;, 3 &gt;&amp; coord ) const
-<span class="lineNum">     176 </span>                :<span class="lineCov">      91229 :     { return self-&gt;dirbc( t, deltat, tp, dtp, sides, coord ); }</span>
-<span class="lineNum">     177 </span>                :            : 
-<a name="178"><span class="lineNum">     178 </span>                :            :     //! Public interface to set symmetry boundary conditions at nodes</a>
-<span class="lineNum">     179 </span>                :            :     void
-<span class="lineNum">     180 </span>                :<span class="lineCov">      56176 :     symbc( tk::Fields&amp; U,</span>
-<span class="lineNum">     181 </span>                :            :            const std::unordered_map&lt;std::size_t,std::array&lt;tk::real,4&gt;&gt;&amp; bnorm )
-<span class="lineNum">     182 </span>                :<span class="lineCov">      56176 :     const { self-&gt;symbc( U, bnorm ); }</span>
-<span class="lineNum">     183 </span>                :            : 
-<a name="184"><span class="lineNum">     184 </span>                :            :     //! Public interface to querying symmetry boundary nodes</a>
-<span class="lineNum">     185 </span>                :            :     void
-<span class="lineNum">     186 </span>                :<span class="lineCov">       1141 :     symbcnodes( const std::map&lt; int, std::vector&lt; std::size_t &gt; &gt;&amp; bface,</span>
-<span class="lineNum">     187 </span>                :            :                 const std::vector&lt; std::size_t &gt;&amp; triinpoel,
-<span class="lineNum">     188 </span>                :            :                 std::unordered_set&lt; std::size_t &gt;&amp; nodes ) const
-<span class="lineNum">     189 </span>                :<span class="lineCov">       1141 :     { self-&gt;symbcnodes( bface, triinpoel, nodes ); }</span>
-<a name="190"><span class="lineNum">     190 </span>                :            : </a>
-<span class="lineNum">     191 </span>                :            :     //! Public interface to returning field output labels
-<span class="lineNum">     192 </span>                :<span class="lineCov">       3588 :     std::vector&lt; std::string &gt; fieldNames() const { return self-&gt;fieldNames(); }</span>
-<a name="193"><span class="lineNum">     193 </span>                :            : </a>
-<span class="lineNum">     194 </span>                :            :     //! Public interface to returning surface field output labels
-<span class="lineNum">     195 </span>                :<span class="lineCov">       3588 :     std::vector&lt; std::string &gt; surfNames() const { return self-&gt;surfNames(); }</span>
-<a name="196"><span class="lineNum">     196 </span>                :            : </a>
-<span class="lineNum">     197 </span>                :            :     //! Public interface to returning time history field output labels
-<span class="lineNum">     198 </span>                :<span class="lineCov">         21 :     std::vector&lt; std::string &gt; histNames() const { return self-&gt;histNames(); }</span>
-<a name="199"><span class="lineNum">     199 </span>                :            : </a>
-<span class="lineNum">     200 </span>                :            :     //! Public interface to returning variable names
-<span class="lineNum">     201 </span>                :<span class="lineCov">        116 :     std::vector&lt; std::string &gt; names() const { return self-&gt;names(); }</span>
-<a name="202"><span class="lineNum">     202 </span>                :            : </a>
-<span class="lineNum">     203 </span>                :            :     //! Public interface to returning field output
-<span class="lineNum">     204 </span>                :<span class="lineCov">       3588 :     std::vector&lt; std::vector&lt; tk::real &gt; &gt; fieldOutput(</span>
-<span class="lineNum">     205 </span>                :            :       tk::real t,
-<span class="lineNum">     206 </span>                :            :       tk::real V,
-<span class="lineNum">     207 </span>                :            :       std::size_t nunk,
-<span class="lineNum">     208 </span>                :            :       const std::array&lt; std::vector&lt; tk::real &gt;, 3 &gt;&amp; coord,
-<span class="lineNum">     209 </span>                :            :       const std::vector&lt; tk::real &gt;&amp; v,
-<span class="lineNum">     210 </span>                :            :       tk::Fields&amp; U ) const
-<span class="lineNum">     211 </span>                :<span class="lineCov">       3588 :     { return self-&gt;fieldOutput( t, V, nunk, coord, v, U ); }</span>
-<span class="lineNum">     212 </span>                :            : 
-<a name="213"><span class="lineNum">     213 </span>                :            :     //! Public interface to returning surface field output</a>
-<span class="lineNum">     214 </span>                :            :     std::vector&lt; std::vector&lt; tk::real &gt; &gt;
-<span class="lineNum">     215 </span>                :<span class="lineCov">       3588 :     surfOutput( const std::map&lt; int, std::vector&lt; std::size_t &gt; &gt;&amp; bnd,</span>
-<span class="lineNum">     216 </span>                :            :                 tk::Fields&amp; U ) const
-<span class="lineNum">     217 </span>                :<span class="lineCov">       3588 :     { return self-&gt;surfOutput( bnd, U ); }</span>
-<span class="lineNum">     218 </span>                :            : 
-<a name="219"><span class="lineNum">     219 </span>                :            :     //! Public interface to returning time history output</a>
-<span class="lineNum">     220 </span>                :            :     std::vector&lt; std::vector&lt; tk::real &gt; &gt;
-<span class="lineNum">     221 </span>                :<span class="lineCov">      31773 :     histOutput( const std::vector&lt; HistData &gt;&amp; h,</span>
-<span class="lineNum">     222 </span>                :            :                 const std::vector&lt; std::size_t &gt;&amp; inpoel,
-<span class="lineNum">     223 </span>                :            :                 const tk::Fields&amp; U ) const
-<span class="lineNum">     224 </span>                :<span class="lineCov">      31773 :     { return self-&gt;histOutput( h, inpoel, U ); }</span>
-<span class="lineNum">     225 </span>                :            : 
-<a name="226"><span class="lineNum">     226 </span>                :            :     //! Public interface to returning analytic solution</a>
-<span class="lineNum">     227 </span>                :            :     std::vector&lt; tk::real &gt;
-<span class="lineNum">     228 </span>                :<span class="lineCov">    3721180 :     analyticSolution( tk::real xi, tk::real yi, tk::real zi, tk::real t ) const</span>
-<span class="lineNum">     229 </span>                :<span class="lineCov">    3721180 :     { return self-&gt;analyticSolution( xi, yi, zi, t ); }</span>
-<span class="lineNum">     230 </span>                :            : 
-<span class="lineNum">     231 </span>                :            :     //! Copy assignment
-<span class="lineNum">     232 </span>                :            :     CGPDE&amp; operator=( const CGPDE&amp; x )
-<span class="lineNum">     233 </span>                :            :     { CGPDE tmp(x); *this = std::move(tmp); return *this; }
-<span class="lineNum">     234 </span>                :            :     //! Copy constructor
-<span class="lineNum">     235 </span>                :            :     CGPDE( const CGPDE&amp; x ) : self( x.self-&gt;copy() ) {}
-<span class="lineNum">     236 </span>                :            :     //! Move assignment
-<a name="237"><span class="lineNum">     237 </span>                :            :     CGPDE&amp; operator=( CGPDE&amp;&amp; ) noexcept = default;</a>
-<span class="lineNum">     238 </span>                :            :     //! Move constructor
-<span class="lineNum">     239 </span>                :<span class="lineCov">        453 :     CGPDE( CGPDE&amp;&amp; ) noexcept = default;</span>
+<span class="lineNum">     129 </span>                :            :     //! Public interface to computing the right-hand side vector for DiagCG
+<span class="lineNum">     130 </span>                :<span class="lineCov">      18345 :     void rhs( tk::real t,</span>
+<span class="lineNum">     131 </span>                :            :               tk::real deltat,
+<span class="lineNum">     132 </span>                :            :               const std::array&lt; std::vector&lt; tk::real &gt;, 3 &gt;&amp; coord,
+<span class="lineNum">     133 </span>                :            :               const std::vector&lt; std::size_t &gt;&amp; inpoel,
+<span class="lineNum">     134 </span>                :            :               const tk::Fields&amp; U,
+<span class="lineNum">     135 </span>                :            :               tk::Fields&amp; Ue,
+<span class="lineNum">     136 </span>                :            :               tk::Fields&amp; R ) const
+<span class="lineNum">     137 </span>                :<span class="lineCov">      18345 :     { self-&gt;rhs( t, deltat, coord, inpoel, U, Ue, R ); }</span>
+<a name="138"><span class="lineNum">     138 </span>                :            : </a>
+<span class="lineNum">     139 </span>                :            :     //! Public interface to computing the right-hand side vector for ALECG
+<span class="lineNum">     140 </span>                :<span class="lineCov">      40869 :     void rhs(</span>
+<span class="lineNum">     141 </span>                :            :       tk::real t,
+<span class="lineNum">     142 </span>                :            :       const std::array&lt; std::vector&lt; tk::real &gt;, 3 &gt;&amp; coord,
+<span class="lineNum">     143 </span>                :            :       const std::vector&lt; std::size_t &gt;&amp; inpoel,
+<span class="lineNum">     144 </span>                :            :       const std::vector&lt; std::size_t &gt;&amp; triinpoel,
+<span class="lineNum">     145 </span>                :            :       const std::vector&lt; std::size_t &gt;&amp; gid,
+<span class="lineNum">     146 </span>                :            :       const std::unordered_map&lt; std::size_t, std::size_t &gt;&amp; bid,
+<span class="lineNum">     147 </span>                :            :       const std::unordered_map&lt; std::size_t, std::size_t &gt;&amp; lid,
+<span class="lineNum">     148 </span>                :            :       const std::vector&lt; tk::real &gt;&amp; dfn,
+<span class="lineNum">     149 </span>                :            :       const std::pair&lt; std::vector&lt; std::size_t &gt;,
+<span class="lineNum">     150 </span>                :            :                        std::vector&lt; std::size_t &gt; &gt;&amp; psup,
+<span class="lineNum">     151 </span>                :            :       const std::pair&lt; std::vector&lt; std::size_t &gt;,
+<span class="lineNum">     152 </span>                :            :                        std::vector&lt; std::size_t &gt; &gt;&amp; esup,
+<span class="lineNum">     153 </span>                :            :       const std::vector&lt; int &gt;&amp; symbctri,
+<span class="lineNum">     154 </span>                :            :       const std::vector&lt; tk::real &gt;&amp; vol,
+<span class="lineNum">     155 </span>                :            :       const std::vector&lt; std::size_t &gt;&amp; edgenode,
+<span class="lineNum">     156 </span>                :            :       const std::vector&lt; std::size_t &gt;&amp; edgeid,
+<span class="lineNum">     157 </span>                :            :       const tk::Fields&amp; G,
+<span class="lineNum">     158 </span>                :            :       const tk::Fields&amp; U,
+<span class="lineNum">     159 </span>                :            :       const std::vector&lt; tk::real &gt;&amp; tp,
+<span class="lineNum">     160 </span>                :            :       tk::Fields&amp; R ) const
+<span class="lineNum">     161 </span>                :<span class="lineCov">      40869 :     { self-&gt;rhs( t, coord, inpoel, triinpoel, gid, bid, lid, dfn, psup, esup,</span>
+<span class="lineNum">     162 </span>                :<span class="lineCov">      40869 :                  symbctri, vol, edgenode, edgeid, G, U, tp, R ); }</span>
+<a name="163"><span class="lineNum">     163 </span>                :            : </a>
+<span class="lineNum">     164 </span>                :            :     //! Public interface for computing the minimum time step size
+<span class="lineNum">     165 </span>                :<span class="lineCov">      21363 :     tk::real dt( const std::array&lt; std::vector&lt; tk::real &gt;, 3 &gt;&amp; coord,</span>
+<span class="lineNum">     166 </span>                :            :                  const std::vector&lt; std::size_t &gt;&amp; inpoel,
+<span class="lineNum">     167 </span>                :            :                  const tk::Fields&amp; U ) const
+<span class="lineNum">     168 </span>                :<span class="lineCov">      21363 :     { return self-&gt;dt( coord, inpoel, U ); }</span>
+<a name="169"><span class="lineNum">     169 </span>                :            : </a>
+<span class="lineNum">     170 </span>                :            :     //! Public interface for computing a time step size for each mesh node
+<span class="lineNum">     171 </span>                :<span class="lineCov">        195 :     void dt( uint64_t it,</span>
+<span class="lineNum">     172 </span>                :            :              const std::vector&lt; tk::real &gt;&amp; vol,
+<span class="lineNum">     173 </span>                :            :              const tk::Fields&amp; U,
+<span class="lineNum">     174 </span>                :            :              std::vector&lt; tk::real &gt;&amp; dtp ) const
+<span class="lineNum">     175 </span>                :<span class="lineCov">        195 :     { self-&gt;dt( it, vol, U, dtp ); }</span>
+<span class="lineNum">     176 </span>                :            : 
+<span class="lineNum">     177 </span>                :            :     //! \brief Public interface for querying Dirichlet boundary condition values
+<a name="178"><span class="lineNum">     178 </span>                :            :     //!  set by the user on a given side set for all components in a PDE system</a>
+<span class="lineNum">     179 </span>                :            :     std::map&lt; std::size_t, std::vector&lt; std::pair&lt;bool,tk::real&gt; &gt; &gt;
+<span class="lineNum">     180 </span>                :<span class="lineCov">      93803 :     dirbc( tk::real t,</span>
+<span class="lineNum">     181 </span>                :            :            tk::real deltat,
+<span class="lineNum">     182 </span>                :            :            const std::vector&lt; tk::real &gt;&amp; tp,
+<span class="lineNum">     183 </span>                :            :            const std::vector&lt; tk::real &gt;&amp; dtp,
+<span class="lineNum">     184 </span>                :            :            const std::pair&lt; const int, std::vector&lt; std::size_t &gt; &gt;&amp; sides,
+<span class="lineNum">     185 </span>                :            :            const std::array&lt; std::vector&lt; tk::real &gt;, 3 &gt;&amp; coord ) const
+<span class="lineNum">     186 </span>                :<span class="lineCov">      93803 :     { return self-&gt;dirbc( t, deltat, tp, dtp, sides, coord ); }</span>
+<span class="lineNum">     187 </span>                :            : 
+<a name="188"><span class="lineNum">     188 </span>                :            :     //! Public interface to set symmetry boundary conditions at nodes</a>
+<span class="lineNum">     189 </span>                :            :     void
+<span class="lineNum">     190 </span>                :<span class="lineCov">     128322 :     symbc( tk::Fields&amp; U,</span>
+<span class="lineNum">     191 </span>                :            :            const std::unordered_map&lt; int,
+<span class="lineNum">     192 </span>                :            :                    std::unordered_map&lt; std::size_t,
+<span class="lineNum">     193 </span>                :            :                      std::array&lt; tk::real, 4 &gt; &gt; &gt;&amp; bnorm,
+<span class="lineNum">     194 </span>                :            :            const std::unordered_set&lt; std::size_t &gt;&amp; nodes ) const
+<span class="lineNum">     195 </span>                :<span class="lineCov">     128322 :     { self-&gt;symbc( U, bnorm, nodes ); }</span>
+<span class="lineNum">     196 </span>                :            : 
+<a name="197"><span class="lineNum">     197 </span>                :            :     //! Public interface to set farfield boundary conditions at nodes</a>
+<span class="lineNum">     198 </span>                :            :     void
+<span class="lineNum">     199 </span>                :<span class="lineCov">     109977 :     farfieldbc( tk::Fields&amp; U,</span>
+<span class="lineNum">     200 </span>                :            :                 const std::unordered_map&lt; int,
+<span class="lineNum">     201 </span>                :            :                         std::unordered_map&lt; std::size_t,
+<span class="lineNum">     202 </span>                :            :                           std::array&lt; tk::real, 4 &gt; &gt; &gt;&amp; bnorm,
+<span class="lineNum">     203 </span>                :            :                 const std::unordered_set&lt; std::size_t &gt;&amp; nodes ) const
+<span class="lineNum">     204 </span>                :<span class="lineCov">     109977 :     { self-&gt;farfieldbc( U, bnorm, nodes ); }</span>
+<a name="205"><span class="lineNum">     205 </span>                :            : </a>
+<span class="lineNum">     206 </span>                :            :     //! Public interface to returning field output labels
+<span class="lineNum">     207 </span>                :<span class="lineCov">       3613 :     std::vector&lt; std::string &gt; fieldNames() const { return self-&gt;fieldNames(); }</span>
+<a name="208"><span class="lineNum">     208 </span>                :            : </a>
+<span class="lineNum">     209 </span>                :            :     //! Public interface to returning surface field output labels
+<span class="lineNum">     210 </span>                :<span class="lineCov">       3613 :     std::vector&lt; std::string &gt; surfNames() const { return self-&gt;surfNames(); }</span>
+<a name="211"><span class="lineNum">     211 </span>                :            : </a>
+<span class="lineNum">     212 </span>                :            :     //! Public interface to returning time history field output labels
+<span class="lineNum">     213 </span>                :<span class="lineCov">         21 :     std::vector&lt; std::string &gt; histNames() const { return self-&gt;histNames(); }</span>
+<a name="214"><span class="lineNum">     214 </span>                :            : </a>
+<span class="lineNum">     215 </span>                :            :     //! Public interface to returning variable names
+<span class="lineNum">     216 </span>                :<span class="lineCov">        118 :     std::vector&lt; std::string &gt; names() const { return self-&gt;names(); }</span>
+<a name="217"><span class="lineNum">     217 </span>                :            : </a>
+<span class="lineNum">     218 </span>                :            :     //! Public interface to returning field output
+<span class="lineNum">     219 </span>                :<span class="lineCov">       3613 :     std::vector&lt; std::vector&lt; tk::real &gt; &gt; fieldOutput(</span>
+<span class="lineNum">     220 </span>                :            :       tk::real t,
+<span class="lineNum">     221 </span>                :            :       tk::real V,
+<span class="lineNum">     222 </span>                :            :       std::size_t nunk,
+<span class="lineNum">     223 </span>                :            :       const std::array&lt; std::vector&lt; tk::real &gt;, 3 &gt;&amp; coord,
+<span class="lineNum">     224 </span>                :            :       const std::vector&lt; tk::real &gt;&amp; v,
+<span class="lineNum">     225 </span>                :            :       tk::Fields&amp; U ) const
+<span class="lineNum">     226 </span>                :<span class="lineCov">       3613 :     { return self-&gt;fieldOutput( t, V, nunk, coord, v, U ); }</span>
+<span class="lineNum">     227 </span>                :            : 
+<a name="228"><span class="lineNum">     228 </span>                :            :     //! Public interface to returning surface field output</a>
+<span class="lineNum">     229 </span>                :            :     std::vector&lt; std::vector&lt; tk::real &gt; &gt;
+<span class="lineNum">     230 </span>                :<span class="lineCov">       3613 :     surfOutput( const std::map&lt; int, std::vector&lt; std::size_t &gt; &gt;&amp; bnd,</span>
+<span class="lineNum">     231 </span>                :            :                 tk::Fields&amp; U ) const
+<span class="lineNum">     232 </span>                :<span class="lineCov">       3613 :     { return self-&gt;surfOutput( bnd, U ); }</span>
+<span class="lineNum">     233 </span>                :            : 
+<a name="234"><span class="lineNum">     234 </span>                :            :     //! Public interface to returning time history output</a>
+<span class="lineNum">     235 </span>                :            :     std::vector&lt; std::vector&lt; tk::real &gt; &gt;
+<span class="lineNum">     236 </span>                :<span class="lineCov">      31968 :     histOutput( const std::vector&lt; HistData &gt;&amp; h,</span>
+<span class="lineNum">     237 </span>                :            :                 const std::vector&lt; std::size_t &gt;&amp; inpoel,
+<span class="lineNum">     238 </span>                :            :                 const tk::Fields&amp; U ) const
+<span class="lineNum">     239 </span>                :<span class="lineCov">      31968 :     { return self-&gt;histOutput( h, inpoel, U ); }</span>
 <span class="lineNum">     240 </span>                :            : 
-<span class="lineNum">     241 </span>                :            :   private:
-<span class="lineNum">     242 </span>                :            :     //! \brief Concept is a pure virtual base class specifying the requirements
-<a name="243"><span class="lineNum">     243 </span>                :            :     //!   of polymorphic objects deriving from it</a>
-<a name="244"><span class="lineNum">     244 </span>                :            :     struct Concept {</a>
-<a name="245"><span class="lineNum">     245 </span>                :<span class="lineCov">        453 :       Concept() = default;</span></a>
-<span class="lineNum">     246 </span>                :<span class="lineNoCov">          0 :       Concept( const Concept&amp; ) = default;</span>
-<span class="lineNum">     247 </span>                :<span class="lineCov">        453 :       virtual ~Concept() = default;</span>
-<span class="lineNum">     248 </span>                :            :       virtual Concept* copy() const = 0;
-<span class="lineNum">     249 </span>                :            :       virtual void initialize( const std::array&lt; std::vector&lt; tk::real &gt;, 3 &gt;&amp;,
-<span class="lineNum">     250 </span>                :            :                                tk::Fields&amp;,
-<span class="lineNum">     251 </span>                :            :                                tk::real,
-<span class="lineNum">     252 </span>                :            :                                std::vector&lt; std::size_t &gt;&amp; inbox ) = 0;
-<span class="lineNum">     253 </span>                :            :       virtual void box( tk::real, const std::vector&lt; std::size_t &gt;&amp;,
-<span class="lineNum">     254 </span>                :            :                         tk::Fields&amp; unk ) const = 0;
-<span class="lineNum">     255 </span>                :            :       virtual void grad( const std::array&lt; std::vector&lt; tk::real &gt;, 3 &gt;&amp;,
-<span class="lineNum">     256 </span>                :            :                          const std::vector&lt; std::size_t &gt;&amp;,
-<span class="lineNum">     257 </span>                :            :                          const std::vector&lt; std::size_t &gt;&amp;,
-<span class="lineNum">     258 </span>                :            :                          const std::vector&lt; std::size_t &gt;&amp;,
-<span class="lineNum">     259 </span>                :            :                          const std::unordered_map&lt; std::size_t, std::size_t &gt;&amp;,
-<span class="lineNum">     260 </span>                :            :                          const tk::Fields&amp;,
-<span class="lineNum">     261 </span>                :            :                          tk::Fields&amp; ) const = 0;
-<span class="lineNum">     262 </span>                :            :       virtual void rhs( tk::real,
-<span class="lineNum">     263 </span>                :            :                         tk::real,
-<span class="lineNum">     264 </span>                :            :                         const std::array&lt; std::vector&lt; tk::real &gt;, 3 &gt;&amp;,
-<span class="lineNum">     265 </span>                :            :                         const std::vector&lt; std::size_t &gt;&amp;,
-<span class="lineNum">     266 </span>                :            :                         const tk::Fields&amp;,
-<span class="lineNum">     267 </span>                :            :                         tk::Fields&amp;,
-<span class="lineNum">     268 </span>                :            :                         tk::Fields&amp; ) const = 0;
-<span class="lineNum">     269 </span>                :            :       virtual void rhs(
-<span class="lineNum">     270 </span>                :            :         tk::real,
-<span class="lineNum">     271 </span>                :            :         const std::array&lt; std::vector&lt; tk::real &gt;, 3 &gt;&amp;,
-<span class="lineNum">     272 </span>                :            :         const std::vector&lt; std::size_t &gt;&amp;,
-<span class="lineNum">     273 </span>                :            :         const std::vector&lt; std::size_t &gt;&amp;,
-<span class="lineNum">     274 </span>                :            :         const std::vector&lt; std::size_t &gt;&amp;,
-<span class="lineNum">     275 </span>                :            :         const std::unordered_map&lt; std::size_t, std::size_t &gt;&amp;,
-<span class="lineNum">     276 </span>                :            :         const std::unordered_map&lt; std::size_t, std::size_t &gt;&amp;,
-<span class="lineNum">     277 </span>                :            :         const std::vector&lt; tk::real &gt;&amp;,
-<span class="lineNum">     278 </span>                :            :         const std::pair&lt; std::vector&lt; std::size_t &gt;,
-<span class="lineNum">     279 </span>                :            :                          std::vector&lt; std::size_t &gt; &gt;&amp;,
-<span class="lineNum">     280 </span>                :            :         const std::pair&lt; std::vector&lt; std::size_t &gt;,
-<span class="lineNum">     281 </span>                :            :                          std::vector&lt; std::size_t &gt; &gt;&amp;,
-<span class="lineNum">     282 </span>                :            :         const std::vector&lt; int &gt;&amp;,
-<span class="lineNum">     283 </span>                :            :         const std::vector&lt; tk::real &gt;&amp;,
-<span class="lineNum">     284 </span>                :            :         const std::vector&lt; std::size_t &gt;&amp;,
-<span class="lineNum">     285 </span>                :            :         const std::vector&lt; std::size_t &gt;&amp;,
-<span class="lineNum">     286 </span>                :            :         const tk::Fields&amp;,
-<span class="lineNum">     287 </span>                :            :         const tk::Fields&amp;,
-<span class="lineNum">     288 </span>                :            :         const std::vector&lt; tk::real &gt;&amp;,
-<span class="lineNum">     289 </span>                :            :         tk::Fields&amp; ) const = 0;
-<span class="lineNum">     290 </span>                :            :       virtual tk::real dt( const std::array&lt; std::vector&lt; tk::real &gt;, 3 &gt;&amp;,
-<span class="lineNum">     291 </span>                :            :                            const std::vector&lt; std::size_t &gt;&amp;,
-<span class="lineNum">     292 </span>                :            :                            const tk::Fields&amp; ) const = 0;
-<span class="lineNum">     293 </span>                :            :       virtual void dt( uint64_t,
-<span class="lineNum">     294 </span>                :            :                        const std::vector&lt; tk::real &gt; &amp;,
-<span class="lineNum">     295 </span>                :            :                        const tk::Fields&amp;,
-<span class="lineNum">     296 </span>                :            :                        std::vector&lt; tk::real &gt;&amp; ) const = 0;
-<span class="lineNum">     297 </span>                :            :       virtual std::map&lt; std::size_t, std::vector&lt; std::pair&lt;bool,tk::real&gt; &gt; &gt;
-<span class="lineNum">     298 </span>                :            :       dirbc( tk::real,
-<span class="lineNum">     299 </span>                :            :              tk::real,
-<span class="lineNum">     300 </span>                :            :              const std::vector&lt; tk::real &gt;&amp;,
-<span class="lineNum">     301 </span>                :            :              const std::vector&lt; tk::real &gt;&amp;,
-<span class="lineNum">     302 </span>                :            :              const std::pair&lt; const int, std::vector&lt; std::size_t &gt; &gt;&amp;,
-<span class="lineNum">     303 </span>                :            :              const std::array&lt; std::vector&lt; tk::real &gt;, 3 &gt;&amp; ) const = 0;
-<span class="lineNum">     304 </span>                :            :       virtual void symbc( tk::Fields&amp; U,
-<span class="lineNum">     305 </span>                :            :          const std::unordered_map&lt; std::size_t, std::array&lt; tk::real, 4 &gt; &gt;&amp; )
-<span class="lineNum">     306 </span>                :            :          const = 0;
-<span class="lineNum">     307 </span>                :            :       virtual void symbcnodes(
-<span class="lineNum">     308 </span>                :            :          const std::map&lt; int, std::vector&lt; std::size_t &gt; &gt;&amp;,
-<span class="lineNum">     309 </span>                :            :          const std::vector&lt; std::size_t &gt;&amp;,
-<span class="lineNum">     310 </span>                :            :          std::unordered_set&lt; std::size_t &gt;&amp; ) const = 0;
-<span class="lineNum">     311 </span>                :            :       virtual std::vector&lt; std::string &gt; fieldNames() const = 0;
-<span class="lineNum">     312 </span>                :            :       virtual std::vector&lt; std::string &gt; surfNames() const = 0;
-<span class="lineNum">     313 </span>                :            :       virtual std::vector&lt; std::string &gt; histNames() const = 0;
-<span class="lineNum">     314 </span>                :            :       virtual std::vector&lt; std::string &gt; names() const = 0;
-<span class="lineNum">     315 </span>                :            :       virtual std::vector&lt; std::vector&lt; tk::real &gt; &gt; fieldOutput(
-<span class="lineNum">     316 </span>                :            :         tk::real,
-<span class="lineNum">     317 </span>                :            :         tk::real,
-<span class="lineNum">     318 </span>                :            :         std::size_t,
-<span class="lineNum">     319 </span>                :            :         const std::array&lt; std::vector&lt; tk::real &gt;, 3 &gt;&amp;,
-<span class="lineNum">     320 </span>                :            :         const std::vector&lt; tk::real &gt;&amp;,
-<span class="lineNum">     321 </span>                :            :         tk::Fields&amp; ) const = 0;
-<span class="lineNum">     322 </span>                :            :       virtual std::vector&lt; std::vector&lt; tk::real &gt; &gt; surfOutput(
-<span class="lineNum">     323 </span>                :            :         const std::map&lt; int, std::vector&lt; std::size_t &gt; &gt;&amp;,
-<span class="lineNum">     324 </span>                :            :         tk::Fields&amp; ) const = 0;
-<span class="lineNum">     325 </span>                :            :       virtual std::vector&lt; std::vector&lt; tk::real &gt; &gt; histOutput(
-<span class="lineNum">     326 </span>                :            :         const std::vector&lt; HistData &gt;&amp;,
-<span class="lineNum">     327 </span>                :            :         const std::vector&lt; std::size_t &gt;&amp;,
-<span class="lineNum">     328 </span>                :            :         const tk::Fields&amp; ) const = 0;
-<span class="lineNum">     329 </span>                :            :       virtual std::vector&lt; tk::real &gt; analyticSolution(
-<span class="lineNum">     330 </span>                :            :         tk::real xi, tk::real yi, tk::real zi, tk::real t ) const = 0;
-<span class="lineNum">     331 </span>                :            :     };
-<span class="lineNum">     332 </span>                :            : 
-<span class="lineNum">     333 </span>                :            :     //! \brief Model models the Concept above by deriving from it and overriding
-<span class="lineNum">     334 </span>                :            :     //!   the virtual functions required by Concept
-<a name="335"><span class="lineNum">     335 </span>                :            :     template&lt; typename T &gt;</a>
-<a name="336"><span class="lineNum">     336 </span>                :            :     struct Model : Concept {</a>
-<a name="337"><span class="lineNum">     337 </span>        [<span class="branchCov" title="Branch 0 was taken 156 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">        453 :       explicit Model( T x ) : data( std::move(x) ) {}</span></a>
-<span class="lineNum">     338 </span>        [<span class="branchNoCov" title="Branch 0 was not taken"> - </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineNoCov">          0 :       Concept* copy() const override { return new Model( *this ); }</span>
-<span class="lineNum">     339 </span>                :<span class="lineCov">       1445 :       void initialize( const std::array&lt; std::vector&lt; tk::real &gt;, 3 &gt;&amp; coord,</span>
-<span class="lineNum">     340 </span>                :            :                        tk::Fields&amp; unk,
-<span class="lineNum">     341 </span>                :            :                        tk::real t,
-<a name="342"><span class="lineNum">     342 </span>                :            :                        std::vector&lt; std::size_t &gt;&amp; inbox )</a>
-<span class="lineNum">     343 </span>                :<span class="lineCov">       1445 :       override { data.initialize( coord, unk, t, inbox ); }</span>
-<span class="lineNum">     344 </span>                :<span class="lineCov">       1141 :       void box( tk::real v, const std::vector&lt; std::size_t &gt;&amp; boxnodes,</span>
-<a name="345"><span class="lineNum">     345 </span>                :            :                 tk::Fields&amp; unk ) const override</a>
-<span class="lineNum">     346 </span>                :<span class="lineCov">       1141 :       { data.box( v, boxnodes, unk ); }</span>
-<span class="lineNum">     347 </span>                :<span class="lineCov">      40284 :       void grad( const std::array&lt; std::vector&lt; tk::real &gt;, 3 &gt;&amp; coord,</span>
-<span class="lineNum">     348 </span>                :            :                  const std::vector&lt; std::size_t &gt;&amp; inpoel,
-<span class="lineNum">     349 </span>                :            :                  const std::vector&lt; std::size_t &gt;&amp; bndel,
-<span class="lineNum">     350 </span>                :            :                  const std::vector&lt; std::size_t &gt;&amp; gid,
-<span class="lineNum">     351 </span>                :            :                  const std::unordered_map&lt; std::size_t, std::size_t &gt;&amp; bid,
-<span class="lineNum">     352 </span>                :            :                  const tk::Fields&amp; U,
-<a name="353"><span class="lineNum">     353 </span>                :            :                  tk::Fields&amp; G ) const override</a>
-<span class="lineNum">     354 </span>                :<span class="lineCov">      40284 :       { data.grad( coord, inpoel, bndel, gid, bid, U, G ); }</span>
-<span class="lineNum">     355 </span>                :<span class="lineCov">      18345 :       void rhs( tk::real t,</span>
-<span class="lineNum">     356 </span>                :            :                 tk::real deltat,
-<span class="lineNum">     357 </span>                :            :                 const std::array&lt; std::vector&lt; tk::real &gt;, 3 &gt;&amp; coord,
-<span class="lineNum">     358 </span>                :            :                 const std::vector&lt; std::size_t &gt;&amp; inpoel,
-<span class="lineNum">     359 </span>                :            :                 const tk::Fields&amp; U,
-<span class="lineNum">     360 </span>                :            :                 tk::Fields&amp; Ue,
-<a name="361"><span class="lineNum">     361 </span>                :            :                 tk::Fields&amp; R ) const override</a>
-<span class="lineNum">     362 </span>                :<span class="lineCov">      18345 :       { data.rhs( t, deltat, coord, inpoel, U, Ue, R ); }</span>
-<span class="lineNum">     363 </span>                :<span class="lineCov">      40284 :       void rhs(</span>
-<span class="lineNum">     364 </span>                :            :         tk::real t,
-<span class="lineNum">     365 </span>                :            :         const std::array&lt; std::vector&lt; tk::real &gt;, 3 &gt;&amp; coord,
-<span class="lineNum">     366 </span>                :            :         const std::vector&lt; std::size_t &gt;&amp; inpoel,
-<span class="lineNum">     367 </span>                :            :         const std::vector&lt; std::size_t &gt;&amp; triinpoel,
-<span class="lineNum">     368 </span>                :            :         const std::vector&lt; std::size_t &gt;&amp; gid,
-<span class="lineNum">     369 </span>                :            :         const std::unordered_map&lt; std::size_t, std::size_t &gt;&amp; bid,
-<span class="lineNum">     370 </span>                :            :         const std::unordered_map&lt; std::size_t, std::size_t &gt;&amp; lid,
-<span class="lineNum">     371 </span>                :            :         const std::vector&lt; tk::real &gt;&amp; dfn,
-<span class="lineNum">     372 </span>                :            :         const std::pair&lt; std::vector&lt; std::size_t &gt;,
-<span class="lineNum">     373 </span>                :            :                          std::vector&lt; std::size_t &gt; &gt;&amp; psup,
-<span class="lineNum">     374 </span>                :            :         const std::pair&lt; std::vector&lt; std::size_t &gt;,
-<span class="lineNum">     375 </span>                :            :                          std::vector&lt; std::size_t &gt; &gt;&amp; esup,
-<span class="lineNum">     376 </span>                :            :         const std::vector&lt; int &gt;&amp; symbcnode,
-<span class="lineNum">     377 </span>                :            :         const std::vector&lt; tk::real &gt;&amp; vol,
-<span class="lineNum">     378 </span>                :            :         const std::vector&lt; std::size_t &gt;&amp; edgenode,
-<span class="lineNum">     379 </span>                :            :         const std::vector&lt; std::size_t &gt;&amp; edgeid,
-<span class="lineNum">     380 </span>                :            :         const tk::Fields&amp; G,
-<span class="lineNum">     381 </span>                :            :         const tk::Fields&amp; U,
-<span class="lineNum">     382 </span>                :            :         const std::vector&lt; tk::real &gt;&amp; tp,
-<span class="lineNum">     383 </span>                :            :         tk::Fields&amp; R ) const override
-<a name="384"><span class="lineNum">     384 </span>                :<span class="lineCov">      40284 :       { data.rhs( t, coord, inpoel, triinpoel, gid, bid, lid, dfn, psup, esup,</span></a>
-<span class="lineNum">     385 </span>                :<span class="lineCov">      40284 :                   symbcnode, vol, edgenode, edgeid, G, U, tp, R ); }</span>
-<span class="lineNum">     386 </span>                :<span class="lineCov">      21363 :       tk::real dt( const std::array&lt; std::vector&lt; tk::real &gt;, 3 &gt;&amp; coord,</span>
-<span class="lineNum">     387 </span>                :            :                    const std::vector&lt; std::size_t &gt;&amp; inpoel,
-<a name="388"><span class="lineNum">     388 </span>                :            :                    const tk::Fields&amp; U ) const override</a>
-<span class="lineNum">     389 </span>                :<span class="lineCov">      21363 :       { return data.dt( coord, inpoel, U ); }</span>
-<span class="lineNum">     390 </span>                :<span class="lineNoCov">          0 :       void dt( uint64_t it,</span>
-<span class="lineNum">     391 </span>                :            :                const std::vector&lt; tk::real &gt; &amp; vol,
-<span class="lineNum">     392 </span>                :            :                const tk::Fields&amp; U,
-<span class="lineNum">     393 </span>                :            :                std::vector&lt; tk::real &gt;&amp; dtp ) const override
-<a name="394"><span class="lineNum">     394 </span>                :<span class="lineNoCov">          0 :       { data.dt( it, vol, U, dtp ); }</span></a>
-<span class="lineNum">     395 </span>                :            :       std::map&lt; std::size_t, std::vector&lt; std::pair&lt;bool,tk::real&gt; &gt; &gt;
-<span class="lineNum">     396 </span>                :<span class="lineCov">      91229 :       dirbc( tk::real t,</span>
-<span class="lineNum">     397 </span>                :            :              tk::real deltat,
-<span class="lineNum">     398 </span>                :            :              const std::vector&lt; tk::real &gt;&amp; tp,
-<span class="lineNum">     399 </span>                :            :              const std::vector&lt; tk::real &gt;&amp; dtp,
-<span class="lineNum">     400 </span>                :            :              const std::pair&lt; const int, std::vector&lt; std::size_t &gt; &gt;&amp; sides,
-<a name="401"><span class="lineNum">     401 </span>                :            :              const std::array&lt; std::vector&lt; tk::real &gt;, 3 &gt;&amp; coord ) const</a>
-<span class="lineNum">     402 </span>                :<span class="lineCov">      91229 :         override { return data.dirbc( t, deltat, tp, dtp, sides, coord ); }</span>
-<span class="lineNum">     403 </span>                :<span class="lineCov">      56176 :       void symbc( tk::Fields&amp; U,</span>
-<a name="404"><span class="lineNum">     404 </span>                :            :         const std::unordered_map&lt;std::size_t,std::array&lt;tk::real,4&gt;&gt;&amp; bnorm )</a>
-<span class="lineNum">     405 </span>                :<span class="lineCov">      56176 :         const override { data.symbc( U, bnorm ); }</span>
-<span class="lineNum">     406 </span>                :<span class="lineCov">       1141 :       void symbcnodes(</span>
-<span class="lineNum">     407 </span>                :            :          const std::map&lt; int, std::vector&lt; std::size_t &gt; &gt;&amp; bface,
-<span class="lineNum">     408 </span>                :            :          const std::vector&lt; std::size_t &gt;&amp; triinpoel,
-<a name="409"><span class="lineNum">     409 </span>                :            :          std::unordered_set&lt; std::size_t &gt;&amp; nodes ) const override</a>
-<span class="lineNum">     410 </span>                :<span class="lineCov">       1141 :       { data.symbcnodes( bface, triinpoel, nodes ); }</span>
-<a name="411"><span class="lineNum">     411 </span>                :<span class="lineCov">       3588 :       std::vector&lt; std::string &gt; fieldNames() const override</span></a>
-<span class="lineNum">     412 </span>                :<span class="lineCov">       3588 :       { return data.fieldNames(); }</span>
-<a name="413"><span class="lineNum">     413 </span>                :<span class="lineCov">       3588 :       std::vector&lt; std::string &gt; surfNames() const override</span></a>
-<span class="lineNum">     414 </span>                :<span class="lineCov">       3588 :       { return data.surfNames(); }</span>
-<a name="415"><span class="lineNum">     415 </span>                :<span class="lineCov">         21 :       std::vector&lt; std::string &gt; histNames() const override</span></a>
-<span class="lineNum">     416 </span>                :<span class="lineCov">         21 :       { return data.histNames(); }</span>
-<a name="417"><span class="lineNum">     417 </span>                :<span class="lineCov">        116 :       std::vector&lt; std::string &gt; names() const override</span></a>
-<span class="lineNum">     418 </span>                :<span class="lineCov">        116 :       { return data.names(); }</span>
-<span class="lineNum">     419 </span>                :<span class="lineCov">       3588 :       std::vector&lt; std::vector&lt; tk::real &gt; &gt; fieldOutput(</span>
-<span class="lineNum">     420 </span>                :            :         tk::real t,
-<span class="lineNum">     421 </span>                :            :         tk::real V,
-<span class="lineNum">     422 </span>                :            :         std::size_t nunk,
-<span class="lineNum">     423 </span>                :            :         const std::array&lt; std::vector&lt; tk::real &gt;, 3 &gt;&amp; coord,
-<span class="lineNum">     424 </span>                :            :         const std::vector&lt; tk::real &gt;&amp; v,
-<a name="425"><span class="lineNum">     425 </span>                :            :         tk::Fields&amp; U ) const override</a>
-<span class="lineNum">     426 </span>                :<span class="lineCov">       3588 :       { return data.fieldOutput( t, V, nunk, coord, v, U ); }</span>
-<span class="lineNum">     427 </span>                :<span class="lineCov">       3588 :       std::vector&lt; std::vector&lt; tk::real &gt; &gt; surfOutput(</span>
-<span class="lineNum">     428 </span>                :            :         const std::map&lt; int, std::vector&lt; std::size_t &gt; &gt;&amp; bnd,
-<a name="429"><span class="lineNum">     429 </span>                :            :         tk::Fields&amp; U ) const override</a>
-<span class="lineNum">     430 </span>                :<span class="lineCov">       3588 :       { return data.surfOutput( bnd, U ); }</span>
-<span class="lineNum">     431 </span>                :<span class="lineCov">      31773 :       std::vector&lt; std::vector&lt; tk::real &gt; &gt; histOutput(</span>
-<span class="lineNum">     432 </span>                :            :         const std::vector&lt; HistData &gt;&amp; h,
-<span class="lineNum">     433 </span>                :            :         const std::vector&lt; std::size_t &gt;&amp; inpoel,
-<span class="lineNum">     434 </span>                :            :         const tk::Fields&amp; U ) const override
-<a name="435"><span class="lineNum">     435 </span>                :<span class="lineCov">      31773 :       { return data.histOutput( h, inpoel, U ); }</span></a>
-<span class="lineNum">     436 </span>                :            :       std::vector&lt; tk::real &gt;
-<span class="lineNum">     437 </span>                :<span class="lineCov">    3721177 :       analyticSolution( tk::real xi, tk::real yi, tk::real zi, tk::real t )</span>
-<span class="lineNum">     438 </span>                :<span class="lineCov">    3721177 :        const override { return data.analyticSolution( xi, yi, zi, t ); }</span>
-<span class="lineNum">     439 </span>                :            :       T data;
-<span class="lineNum">     440 </span>                :            :     };
-<span class="lineNum">     441 </span>                :            : 
-<span class="lineNum">     442 </span>                :            :     std::unique_ptr&lt; Concept &gt; self;    //!&lt; Base pointer used polymorphically
-<span class="lineNum">     443 </span>                :            : };
-<span class="lineNum">     444 </span>                :            : 
-<span class="lineNum">     445 </span>                :            : } // inciter::
-<span class="lineNum">     446 </span>                :            : 
-<span class="lineNum">     447 </span>                :            : #endif // CGPDE_h
+<a name="241"><span class="lineNum">     241 </span>                :            :     //! Public interface to returning analytic solution</a>
+<span class="lineNum">     242 </span>                :            :     std::vector&lt; tk::real &gt;
+<span class="lineNum">     243 </span>                :<span class="lineCov">    3739820 :     analyticSolution( tk::real xi, tk::real yi, tk::real zi, tk::real t ) const</span>
+<span class="lineNum">     244 </span>                :<span class="lineCov">    3739820 :     { return self-&gt;analyticSolution( xi, yi, zi, t ); }</span>
+<span class="lineNum">     245 </span>                :            : 
+<span class="lineNum">     246 </span>                :            :     //! Copy assignment
+<span class="lineNum">     247 </span>                :            :     CGPDE&amp; operator=( const CGPDE&amp; x )
+<span class="lineNum">     248 </span>                :            :     { CGPDE tmp(x); *this = std::move(tmp); return *this; }
+<span class="lineNum">     249 </span>                :            :     //! Copy constructor
+<span class="lineNum">     250 </span>                :            :     CGPDE( const CGPDE&amp; x ) : self( x.self-&gt;copy() ) {}
+<span class="lineNum">     251 </span>                :            :     //! Move assignment
+<a name="252"><span class="lineNum">     252 </span>                :            :     CGPDE&amp; operator=( CGPDE&amp;&amp; ) noexcept = default;</a>
+<span class="lineNum">     253 </span>                :            :     //! Move constructor
+<span class="lineNum">     254 </span>                :<span class="lineCov">        460 :     CGPDE( CGPDE&amp;&amp; ) noexcept = default;</span>
+<span class="lineNum">     255 </span>                :            : 
+<span class="lineNum">     256 </span>                :            :   private:
+<span class="lineNum">     257 </span>                :            :     //! \brief Concept is a pure virtual base class specifying the requirements
+<a name="258"><span class="lineNum">     258 </span>                :            :     //!   of polymorphic objects deriving from it</a>
+<a name="259"><span class="lineNum">     259 </span>                :            :     struct Concept {</a>
+<a name="260"><span class="lineNum">     260 </span>                :<span class="lineCov">        460 :       Concept() = default;</span></a>
+<span class="lineNum">     261 </span>                :<span class="lineNoCov">          0 :       Concept( const Concept&amp; ) = default;</span>
+<span class="lineNum">     262 </span>                :<span class="lineCov">        460 :       virtual ~Concept() = default;</span>
+<span class="lineNum">     263 </span>                :            :       virtual Concept* copy() const = 0;
+<span class="lineNum">     264 </span>                :            :       virtual void initialize( const std::array&lt; std::vector&lt; tk::real &gt;, 3 &gt;&amp;,
+<span class="lineNum">     265 </span>                :            :                                tk::Fields&amp;,
+<span class="lineNum">     266 </span>                :            :                                tk::real,
+<span class="lineNum">     267 </span>                :            :                                std::vector&lt; std::size_t &gt;&amp; inbox ) = 0;
+<span class="lineNum">     268 </span>                :            :       virtual void box( tk::real, const std::vector&lt; std::size_t &gt;&amp;,
+<span class="lineNum">     269 </span>                :            :                         tk::Fields&amp; unk ) const = 0;
+<span class="lineNum">     270 </span>                :            :       virtual void grad( const std::array&lt; std::vector&lt; tk::real &gt;, 3 &gt;&amp;,
+<span class="lineNum">     271 </span>                :            :                          const std::vector&lt; std::size_t &gt;&amp;,
+<span class="lineNum">     272 </span>                :            :                          const std::vector&lt; std::size_t &gt;&amp;,
+<span class="lineNum">     273 </span>                :            :                          const std::vector&lt; std::size_t &gt;&amp;,
+<span class="lineNum">     274 </span>                :            :                          const std::unordered_map&lt; std::size_t, std::size_t &gt;&amp;,
+<span class="lineNum">     275 </span>                :            :                          const tk::Fields&amp;,
+<span class="lineNum">     276 </span>                :            :                          tk::Fields&amp; ) const = 0;
+<span class="lineNum">     277 </span>                :            :       virtual void rhs( tk::real,
+<span class="lineNum">     278 </span>                :            :                         tk::real,
+<span class="lineNum">     279 </span>                :            :                         const std::array&lt; std::vector&lt; tk::real &gt;, 3 &gt;&amp;,
+<span class="lineNum">     280 </span>                :            :                         const std::vector&lt; std::size_t &gt;&amp;,
+<span class="lineNum">     281 </span>                :            :                         const tk::Fields&amp;,
+<span class="lineNum">     282 </span>                :            :                         tk::Fields&amp;,
+<span class="lineNum">     283 </span>                :            :                         tk::Fields&amp; ) const = 0;
+<span class="lineNum">     284 </span>                :            :       virtual void rhs(
+<span class="lineNum">     285 </span>                :            :         tk::real,
+<span class="lineNum">     286 </span>                :            :         const std::array&lt; std::vector&lt; tk::real &gt;, 3 &gt;&amp;,
+<span class="lineNum">     287 </span>                :            :         const std::vector&lt; std::size_t &gt;&amp;,
+<span class="lineNum">     288 </span>                :            :         const std::vector&lt; std::size_t &gt;&amp;,
+<span class="lineNum">     289 </span>                :            :         const std::vector&lt; std::size_t &gt;&amp;,
+<span class="lineNum">     290 </span>                :            :         const std::unordered_map&lt; std::size_t, std::size_t &gt;&amp;,
+<span class="lineNum">     291 </span>                :            :         const std::unordered_map&lt; std::size_t, std::size_t &gt;&amp;,
+<span class="lineNum">     292 </span>                :            :         const std::vector&lt; tk::real &gt;&amp;,
+<span class="lineNum">     293 </span>                :            :         const std::pair&lt; std::vector&lt; std::size_t &gt;,
+<span class="lineNum">     294 </span>                :            :                          std::vector&lt; std::size_t &gt; &gt;&amp;,
+<span class="lineNum">     295 </span>                :            :         const std::pair&lt; std::vector&lt; std::size_t &gt;,
+<span class="lineNum">     296 </span>                :            :                          std::vector&lt; std::size_t &gt; &gt;&amp;,
+<span class="lineNum">     297 </span>                :            :         const std::vector&lt; int &gt;&amp;,
+<span class="lineNum">     298 </span>                :            :         const std::vector&lt; tk::real &gt;&amp;,
+<span class="lineNum">     299 </span>                :            :         const std::vector&lt; std::size_t &gt;&amp;,
+<span class="lineNum">     300 </span>                :            :         const std::vector&lt; std::size_t &gt;&amp;,
+<span class="lineNum">     301 </span>                :            :         const tk::Fields&amp;,
+<span class="lineNum">     302 </span>                :            :         const tk::Fields&amp;,
+<span class="lineNum">     303 </span>                :            :         const std::vector&lt; tk::real &gt;&amp;,
+<span class="lineNum">     304 </span>                :            :         tk::Fields&amp; ) const = 0;
+<span class="lineNum">     305 </span>                :            :       virtual tk::real dt( const std::array&lt; std::vector&lt; tk::real &gt;, 3 &gt;&amp;,
+<span class="lineNum">     306 </span>                :            :                            const std::vector&lt; std::size_t &gt;&amp;,
+<span class="lineNum">     307 </span>                :            :                            const tk::Fields&amp; ) const = 0;
+<span class="lineNum">     308 </span>                :            :       virtual void dt( uint64_t,
+<span class="lineNum">     309 </span>                :            :                        const std::vector&lt; tk::real &gt; &amp;,
+<span class="lineNum">     310 </span>                :            :                        const tk::Fields&amp;,
+<span class="lineNum">     311 </span>                :            :                        std::vector&lt; tk::real &gt;&amp; ) const = 0;
+<span class="lineNum">     312 </span>                :            :       virtual std::map&lt; std::size_t, std::vector&lt; std::pair&lt;bool,tk::real&gt; &gt; &gt;
+<span class="lineNum">     313 </span>                :            :       dirbc( tk::real,
+<span class="lineNum">     314 </span>                :            :              tk::real,
+<span class="lineNum">     315 </span>                :            :              const std::vector&lt; tk::real &gt;&amp;,
+<span class="lineNum">     316 </span>                :            :              const std::vector&lt; tk::real &gt;&amp;,
+<span class="lineNum">     317 </span>                :            :              const std::pair&lt; const int, std::vector&lt; std::size_t &gt; &gt;&amp;,
+<span class="lineNum">     318 </span>                :            :              const std::array&lt; std::vector&lt; tk::real &gt;, 3 &gt;&amp; ) const = 0;
+<span class="lineNum">     319 </span>                :            :       virtual void symbc( tk::Fields&amp; U,
+<span class="lineNum">     320 </span>                :            :         const std::unordered_map&lt; int,
+<span class="lineNum">     321 </span>                :            :                 std::unordered_map&lt; std::size_t,
+<span class="lineNum">     322 </span>                :            :                   std::array&lt; tk::real, 4 &gt; &gt; &gt;&amp;,
+<span class="lineNum">     323 </span>                :            :         const std::unordered_set&lt; std::size_t &gt;&amp; ) const = 0;
+<span class="lineNum">     324 </span>                :            :       virtual void farfieldbc( tk::Fields&amp; U,
+<span class="lineNum">     325 </span>                :            :         const std::unordered_map&lt; int,
+<span class="lineNum">     326 </span>                :            :                 std::unordered_map&lt; std::size_t,
+<span class="lineNum">     327 </span>                :            :                   std::array&lt; tk::real, 4 &gt; &gt; &gt;&amp;,
+<span class="lineNum">     328 </span>                :            :         const std::unordered_set&lt; std::size_t &gt;&amp; ) const = 0;
+<span class="lineNum">     329 </span>                :            :       virtual std::vector&lt; std::string &gt; fieldNames() const = 0;
+<span class="lineNum">     330 </span>                :            :       virtual std::vector&lt; std::string &gt; surfNames() const = 0;
+<span class="lineNum">     331 </span>                :            :       virtual std::vector&lt; std::string &gt; histNames() const = 0;
+<span class="lineNum">     332 </span>                :            :       virtual std::vector&lt; std::string &gt; names() const = 0;
+<span class="lineNum">     333 </span>                :            :       virtual std::vector&lt; std::vector&lt; tk::real &gt; &gt; fieldOutput(
+<span class="lineNum">     334 </span>                :            :         tk::real,
+<span class="lineNum">     335 </span>                :            :         tk::real,
+<span class="lineNum">     336 </span>                :            :         std::size_t,
+<span class="lineNum">     337 </span>                :            :         const std::array&lt; std::vector&lt; tk::real &gt;, 3 &gt;&amp;,
+<span class="lineNum">     338 </span>                :            :         const std::vector&lt; tk::real &gt;&amp;,
+<span class="lineNum">     339 </span>                :            :         tk::Fields&amp; ) const = 0;
+<span class="lineNum">     340 </span>                :            :       virtual std::vector&lt; std::vector&lt; tk::real &gt; &gt; surfOutput(
+<span class="lineNum">     341 </span>                :            :         const std::map&lt; int, std::vector&lt; std::size_t &gt; &gt;&amp;,
+<span class="lineNum">     342 </span>                :            :         tk::Fields&amp; ) const = 0;
+<span class="lineNum">     343 </span>                :            :       virtual std::vector&lt; std::vector&lt; tk::real &gt; &gt; histOutput(
+<span class="lineNum">     344 </span>                :            :         const std::vector&lt; HistData &gt;&amp;,
+<span class="lineNum">     345 </span>                :            :         const std::vector&lt; std::size_t &gt;&amp;,
+<span class="lineNum">     346 </span>                :            :         const tk::Fields&amp; ) const = 0;
+<span class="lineNum">     347 </span>                :            :       virtual std::vector&lt; tk::real &gt; analyticSolution(
+<span class="lineNum">     348 </span>                :            :         tk::real xi, tk::real yi, tk::real zi, tk::real t ) const = 0;
+<span class="lineNum">     349 </span>                :            :     };
+<span class="lineNum">     350 </span>                :            : 
+<span class="lineNum">     351 </span>                :            :     //! \brief Model models the Concept above by deriving from it and overriding
+<span class="lineNum">     352 </span>                :            :     //!   the virtual functions required by Concept
+<a name="353"><span class="lineNum">     353 </span>                :            :     template&lt; typename T &gt;</a>
+<a name="354"><span class="lineNum">     354 </span>                :            :     struct Model : Concept {</a>
+<a name="355"><span class="lineNum">     355 </span>        [<span class="branchCov" title="Branch 0 was taken 163 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">        460 :       explicit Model( T x ) : data( std::move(x) ) {}</span></a>
+<span class="lineNum">     356 </span>        [<span class="branchNoCov" title="Branch 0 was not taken"> - </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineNoCov">          0 :       Concept* copy() const override { return new Model( *this ); }</span>
+<span class="lineNum">     357 </span>                :<span class="lineCov">       1450 :       void initialize( const std::array&lt; std::vector&lt; tk::real &gt;, 3 &gt;&amp; coord,</span>
+<span class="lineNum">     358 </span>                :            :                        tk::Fields&amp; unk,
+<span class="lineNum">     359 </span>                :            :                        tk::real t,
+<a name="360"><span class="lineNum">     360 </span>                :            :                        std::vector&lt; std::size_t &gt;&amp; inbox )</a>
+<span class="lineNum">     361 </span>                :<span class="lineCov">       1450 :       override { data.initialize( coord, unk, t, inbox ); }</span>
+<span class="lineNum">     362 </span>                :<span class="lineCov">       1146 :       void box( tk::real v, const std::vector&lt; std::size_t &gt;&amp; boxnodes,</span>
+<a name="363"><span class="lineNum">     363 </span>                :            :                 tk::Fields&amp; unk ) const override</a>
+<span class="lineNum">     364 </span>                :<span class="lineCov">       1146 :       { data.box( v, boxnodes, unk ); }</span>
+<span class="lineNum">     365 </span>                :<span class="lineCov">      40869 :       void grad( const std::array&lt; std::vector&lt; tk::real &gt;, 3 &gt;&amp; coord,</span>
+<span class="lineNum">     366 </span>                :            :                  const std::vector&lt; std::size_t &gt;&amp; inpoel,
+<span class="lineNum">     367 </span>                :            :                  const std::vector&lt; std::size_t &gt;&amp; bndel,
+<span class="lineNum">     368 </span>                :            :                  const std::vector&lt; std::size_t &gt;&amp; gid,
+<span class="lineNum">     369 </span>                :            :                  const std::unordered_map&lt; std::size_t, std::size_t &gt;&amp; bid,
+<span class="lineNum">     370 </span>                :            :                  const tk::Fields&amp; U,
+<a name="371"><span class="lineNum">     371 </span>                :            :                  tk::Fields&amp; G ) const override</a>
+<span class="lineNum">     372 </span>                :<span class="lineCov">      40869 :       { data.grad( coord, inpoel, bndel, gid, bid, U, G ); }</span>
+<span class="lineNum">     373 </span>                :<span class="lineCov">      18345 :       void rhs( tk::real t,</span>
+<span class="lineNum">     374 </span>                :            :                 tk::real deltat,
+<span class="lineNum">     375 </span>                :            :                 const std::array&lt; std::vector&lt; tk::real &gt;, 3 &gt;&amp; coord,
+<span class="lineNum">     376 </span>                :            :                 const std::vector&lt; std::size_t &gt;&amp; inpoel,
+<span class="lineNum">     377 </span>                :            :                 const tk::Fields&amp; U,
+<span class="lineNum">     378 </span>                :            :                 tk::Fields&amp; Ue,
+<a name="379"><span class="lineNum">     379 </span>                :            :                 tk::Fields&amp; R ) const override</a>
+<span class="lineNum">     380 </span>                :<span class="lineCov">      18345 :       { data.rhs( t, deltat, coord, inpoel, U, Ue, R ); }</span>
+<span class="lineNum">     381 </span>                :<span class="lineCov">      40869 :       void rhs(</span>
+<span class="lineNum">     382 </span>                :            :         tk::real t,
+<span class="lineNum">     383 </span>                :            :         const std::array&lt; std::vector&lt; tk::real &gt;, 3 &gt;&amp; coord,
+<span class="lineNum">     384 </span>                :            :         const std::vector&lt; std::size_t &gt;&amp; inpoel,
+<span class="lineNum">     385 </span>                :            :         const std::vector&lt; std::size_t &gt;&amp; triinpoel,
+<span class="lineNum">     386 </span>                :            :         const std::vector&lt; std::size_t &gt;&amp; gid,
+<span class="lineNum">     387 </span>                :            :         const std::unordered_map&lt; std::size_t, std::size_t &gt;&amp; bid,
+<span class="lineNum">     388 </span>                :            :         const std::unordered_map&lt; std::size_t, std::size_t &gt;&amp; lid,
+<span class="lineNum">     389 </span>                :            :         const std::vector&lt; tk::real &gt;&amp; dfn,
+<span class="lineNum">     390 </span>                :            :         const std::pair&lt; std::vector&lt; std::size_t &gt;,
+<span class="lineNum">     391 </span>                :            :                          std::vector&lt; std::size_t &gt; &gt;&amp; psup,
+<span class="lineNum">     392 </span>                :            :         const std::pair&lt; std::vector&lt; std::size_t &gt;,
+<span class="lineNum">     393 </span>                :            :                          std::vector&lt; std::size_t &gt; &gt;&amp; esup,
+<span class="lineNum">     394 </span>                :            :         const std::vector&lt; int &gt;&amp; symbctri,
+<span class="lineNum">     395 </span>                :            :         const std::vector&lt; tk::real &gt;&amp; vol,
+<span class="lineNum">     396 </span>                :            :         const std::vector&lt; std::size_t &gt;&amp; edgenode,
+<span class="lineNum">     397 </span>                :            :         const std::vector&lt; std::size_t &gt;&amp; edgeid,
+<span class="lineNum">     398 </span>                :            :         const tk::Fields&amp; G,
+<span class="lineNum">     399 </span>                :            :         const tk::Fields&amp; U,
+<span class="lineNum">     400 </span>                :            :         const std::vector&lt; tk::real &gt;&amp; tp,
+<span class="lineNum">     401 </span>                :            :         tk::Fields&amp; R ) const override
+<a name="402"><span class="lineNum">     402 </span>                :<span class="lineCov">      40869 :       { data.rhs( t, coord, inpoel, triinpoel, gid, bid, lid, dfn, psup, esup,</span></a>
+<span class="lineNum">     403 </span>                :<span class="lineCov">      40869 :                   symbctri, vol, edgenode, edgeid, G, U, tp, R ); }</span>
+<span class="lineNum">     404 </span>                :<span class="lineCov">      21363 :       tk::real dt( const std::array&lt; std::vector&lt; tk::real &gt;, 3 &gt;&amp; coord,</span>
+<span class="lineNum">     405 </span>                :            :                    const std::vector&lt; std::size_t &gt;&amp; inpoel,
+<a name="406"><span class="lineNum">     406 </span>                :            :                    const tk::Fields&amp; U ) const override</a>
+<span class="lineNum">     407 </span>                :<span class="lineCov">      21363 :       { return data.dt( coord, inpoel, U ); }</span>
+<span class="lineNum">     408 </span>                :<span class="lineCov">        195 :       void dt( uint64_t it,</span>
+<span class="lineNum">     409 </span>                :            :                const std::vector&lt; tk::real &gt; &amp; vol,
+<span class="lineNum">     410 </span>                :            :                const tk::Fields&amp; U,
+<span class="lineNum">     411 </span>                :            :                std::vector&lt; tk::real &gt;&amp; dtp ) const override
+<a name="412"><span class="lineNum">     412 </span>                :<span class="lineCov">        195 :       { data.dt( it, vol, U, dtp ); }</span></a>
+<span class="lineNum">     413 </span>                :            :       std::map&lt; std::size_t, std::vector&lt; std::pair&lt;bool,tk::real&gt; &gt; &gt;
+<span class="lineNum">     414 </span>                :<span class="lineCov">      93803 :       dirbc( tk::real t,</span>
+<span class="lineNum">     415 </span>                :            :              tk::real deltat,
+<span class="lineNum">     416 </span>                :            :              const std::vector&lt; tk::real &gt;&amp; tp,
+<span class="lineNum">     417 </span>                :            :              const std::vector&lt; tk::real &gt;&amp; dtp,
+<span class="lineNum">     418 </span>                :            :              const std::pair&lt; const int, std::vector&lt; std::size_t &gt; &gt;&amp; sides,
+<a name="419"><span class="lineNum">     419 </span>                :            :              const std::array&lt; std::vector&lt; tk::real &gt;, 3 &gt;&amp; coord ) const</a>
+<span class="lineNum">     420 </span>                :<span class="lineCov">      93803 :         override { return data.dirbc( t, deltat, tp, dtp, sides, coord ); }</span>
+<span class="lineNum">     421 </span>                :<span class="lineCov">     128322 :       void symbc( tk::Fields&amp; U,</span>
+<span class="lineNum">     422 </span>                :            :         const std::unordered_map&lt; int,
+<span class="lineNum">     423 </span>                :            :                 std::unordered_map&lt; std::size_t,
+<span class="lineNum">     424 </span>                :            :                   std::array&lt; tk::real, 4 &gt; &gt; &gt;&amp; bnorm,
+<a name="425"><span class="lineNum">     425 </span>                :            :         const std::unordered_set&lt; std::size_t &gt;&amp; nodes ) const override</a>
+<span class="lineNum">     426 </span>                :<span class="lineCov">     128322 :       { data.symbc( U, bnorm, nodes ); }</span>
+<span class="lineNum">     427 </span>                :<span class="lineCov">     109977 :       void farfieldbc( tk::Fields&amp; U,</span>
+<span class="lineNum">     428 </span>                :            :         const std::unordered_map&lt; int,
+<span class="lineNum">     429 </span>                :            :                 std::unordered_map&lt; std::size_t,
+<span class="lineNum">     430 </span>                :            :                   std::array&lt; tk::real, 4 &gt; &gt; &gt;&amp; bnorm,
+<a name="431"><span class="lineNum">     431 </span>                :            :         const std::unordered_set&lt; std::size_t &gt;&amp; nodes ) const override</a>
+<span class="lineNum">     432 </span>                :<span class="lineCov">     109977 :       { data.farfieldbc( U, bnorm, nodes ); }</span>
+<a name="433"><span class="lineNum">     433 </span>                :<span class="lineCov">       3613 :       std::vector&lt; std::string &gt; fieldNames() const override</span></a>
+<span class="lineNum">     434 </span>                :<span class="lineCov">       3613 :       { return data.fieldNames(); }</span>
+<a name="435"><span class="lineNum">     435 </span>                :<span class="lineCov">       3613 :       std::vector&lt; std::string &gt; surfNames() const override</span></a>
+<span class="lineNum">     436 </span>                :<span class="lineCov">       3613 :       { return data.surfNames(); }</span>
+<a name="437"><span class="lineNum">     437 </span>                :<span class="lineCov">         21 :       std::vector&lt; std::string &gt; histNames() const override</span></a>
+<span class="lineNum">     438 </span>                :<span class="lineCov">         21 :       { return data.histNames(); }</span>
+<a name="439"><span class="lineNum">     439 </span>                :<span class="lineCov">        118 :       std::vector&lt; std::string &gt; names() const override</span></a>
+<span class="lineNum">     440 </span>                :<span class="lineCov">        118 :       { return data.names(); }</span>
+<span class="lineNum">     441 </span>                :<span class="lineCov">       3613 :       std::vector&lt; std::vector&lt; tk::real &gt; &gt; fieldOutput(</span>
+<span class="lineNum">     442 </span>                :            :         tk::real t,
+<span class="lineNum">     443 </span>                :            :         tk::real V,
+<span class="lineNum">     444 </span>                :            :         std::size_t nunk,
+<span class="lineNum">     445 </span>                :            :         const std::array&lt; std::vector&lt; tk::real &gt;, 3 &gt;&amp; coord,
+<span class="lineNum">     446 </span>                :            :         const std::vector&lt; tk::real &gt;&amp; v,
+<a name="447"><span class="lineNum">     447 </span>                :            :         tk::Fields&amp; U ) const override</a>
+<span class="lineNum">     448 </span>                :<span class="lineCov">       3613 :       { return data.fieldOutput( t, V, nunk, coord, v, U ); }</span>
+<span class="lineNum">     449 </span>                :<span class="lineCov">       3613 :       std::vector&lt; std::vector&lt; tk::real &gt; &gt; surfOutput(</span>
+<span class="lineNum">     450 </span>                :            :         const std::map&lt; int, std::vector&lt; std::size_t &gt; &gt;&amp; bnd,
+<a name="451"><span class="lineNum">     451 </span>                :            :         tk::Fields&amp; U ) const override</a>
+<span class="lineNum">     452 </span>                :<span class="lineCov">       3613 :       { return data.surfOutput( bnd, U ); }</span>
+<span class="lineNum">     453 </span>                :<span class="lineCov">      31968 :       std::vector&lt; std::vector&lt; tk::real &gt; &gt; histOutput(</span>
+<span class="lineNum">     454 </span>                :            :         const std::vector&lt; HistData &gt;&amp; h,
+<span class="lineNum">     455 </span>                :            :         const std::vector&lt; std::size_t &gt;&amp; inpoel,
+<span class="lineNum">     456 </span>                :            :         const tk::Fields&amp; U ) const override
+<a name="457"><span class="lineNum">     457 </span>                :<span class="lineCov">      31968 :       { return data.histOutput( h, inpoel, U ); }</span></a>
+<span class="lineNum">     458 </span>                :            :       std::vector&lt; tk::real &gt;
+<span class="lineNum">     459 </span>                :<span class="lineCov">    3739819 :       analyticSolution( tk::real xi, tk::real yi, tk::real zi, tk::real t )</span>
+<span class="lineNum">     460 </span>                :<span class="lineCov">    3739819 :        const override { return data.analyticSolution( xi, yi, zi, t ); }</span>
+<span class="lineNum">     461 </span>                :            :       T data;
+<span class="lineNum">     462 </span>                :            :     };
+<span class="lineNum">     463 </span>                :            : 
+<span class="lineNum">     464 </span>                :            :     std::unique_ptr&lt; Concept &gt; self;    //!&lt; Base pointer used polymorphically
+<span class="lineNum">     465 </span>                :            : };
+<span class="lineNum">     466 </span>                :            : 
+<span class="lineNum">     467 </span>                :            : } // inciter::
+<span class="lineNum">     468 </span>                :            : 
+<span class="lineNum">     469 </span>                :            : #endif // CGPDE_h
 </pre>
       </td>
     </tr>
