@@ -175,6 +175,7 @@
   <span class="n">m_symbctri</span><span class="p">(),</span>
   <span class="n">m_stage</span><span class="p">(</span> <span class="mi">0</span> <span class="p">),</span>
   <span class="n">m_boxnodes</span><span class="p">(),</span>
+  <span class="n">m_boxnodes_set</span><span class="p">(),</span>
   <span class="n">m_edgenode</span><span class="p">(),</span>
   <span class="n">m_edgeid</span><span class="p">(),</span>
   <span class="n">m_dtp</span><span class="p">(</span> <span class="n">m_u</span><span class="p">.</span><span class="n">nunk</span><span class="p">(),</span> <span class="mf">0.0</span> <span class="p">),</span>
@@ -501,9 +502,9 @@
 <span class="p">}</span>
 
 <span class="kt">void</span>
-<span class="n">ALECG</span><span class="o">::</span><span class="n">boxvol</span><span class="p">(</span> <span class="n">tk</span><span class="o">::</span><span class="n">real</span> <span class="n">v</span> <span class="p">)</span>
+<span class="n">ALECG</span><span class="o">::</span><span class="n">box</span><span class="p">(</span> <span class="n">tk</span><span class="o">::</span><span class="n">real</span> <span class="n">v</span> <span class="p">)</span>
 <span class="c1">// *****************************************************************************</span>
-<span class="c1">// Receive total box IC volume</span>
+<span class="c1">// Receive total box IC volume and set conditions in box</span>
 <span class="c1">//! \param[in] v Total volume within user-specified box</span>
 <span class="c1">// *****************************************************************************</span>
 <span class="p">{</span>
@@ -512,8 +513,11 @@
   <span class="c1">// Store user-defined box IC volume</span>
   <span class="n">d</span><span class="o">-&gt;</span><span class="n">Boxvol</span><span class="p">()</span> <span class="o">=</span> <span class="n">v</span><span class="p">;</span>
 
-  <span class="c1">// Update density in user-defined IC box based on box volume</span>
-  <span class="k">for</span> <span class="p">(</span><span class="k">const</span> <span class="k">auto</span><span class="o">&amp;</span> <span class="nl">eq</span> <span class="p">:</span> <span class="n">g_cgpde</span><span class="p">)</span> <span class="n">eq</span><span class="p">.</span><span class="n">box</span><span class="p">(</span> <span class="n">d</span><span class="o">-&gt;</span><span class="n">Boxvol</span><span class="p">(),</span> <span class="n">m_boxnodes</span><span class="p">,</span> <span class="n">m_u</span> <span class="p">);</span>
+  <span class="c1">// Set user-defined IC box conditions</span>
+  <span class="k">for</span> <span class="p">(</span><span class="k">const</span> <span class="k">auto</span><span class="o">&amp;</span> <span class="nl">eq</span> <span class="p">:</span> <span class="n">g_cgpde</span><span class="p">)</span>
+    <span class="n">eq</span><span class="p">.</span><span class="n">box</span><span class="p">(</span> <span class="n">d</span><span class="o">-&gt;</span><span class="n">Boxvol</span><span class="p">(),</span> <span class="n">d</span><span class="o">-&gt;</span><span class="n">T</span><span class="p">(),</span> <span class="n">m_boxnodes</span><span class="p">,</span> <span class="n">d</span><span class="o">-&gt;</span><span class="n">Coord</span><span class="p">(),</span> <span class="n">m_u</span><span class="p">,</span> <span class="n">m_boxnodes_set</span> <span class="p">);</span>
+  <span class="c1">//if (m_boxnodes_set.size() != m_boxnodes.size())</span>
+  <span class="c1">//  std::cout &lt;&lt; thisIndex &lt;&lt; &#39;:&#39; &lt;&lt; m_boxnodes.size() - m_boxnodes_set.size() &lt;&lt; &#39;\n&#39;;</span>
 
   <span class="c1">// Compute left-hand side of PDEs</span>
   <span class="n">lhs</span><span class="p">();</span>
@@ -662,7 +666,8 @@
       <span class="n">n</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">/=</span> <span class="n">n</span><span class="p">[</span><span class="mi">3</span><span class="p">];</span>
       <span class="n">n</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">/=</span> <span class="n">n</span><span class="p">[</span><span class="mi">3</span><span class="p">];</span>
       <span class="n">Assert</span><span class="p">(</span> <span class="p">(</span><span class="n">n</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="n">n</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">n</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">*</span><span class="n">n</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">n</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">*</span><span class="n">n</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">-</span> <span class="mf">1.0</span><span class="p">)</span> <span class="o">&lt;</span>
-              <span class="n">std</span><span class="o">::</span><span class="n">numeric_limits</span><span class="o">&lt;</span> <span class="n">tk</span><span class="o">::</span><span class="n">real</span> <span class="o">&gt;::</span><span class="n">epsilon</span><span class="p">(),</span> <span class="s">&quot;Non-unit normal&quot;</span> <span class="p">);</span>
+              <span class="mf">1.0e+3</span><span class="o">*</span><span class="n">std</span><span class="o">::</span><span class="n">numeric_limits</span><span class="o">&lt;</span> <span class="n">tk</span><span class="o">::</span><span class="n">real</span> <span class="o">&gt;::</span><span class="n">epsilon</span><span class="p">(),</span>
+              <span class="s">&quot;Non-unit normal&quot;</span> <span class="p">);</span>
     <span class="p">}</span>
 
   <span class="c1">// Replace global-&gt;local ids associated to boundary point normals</span>
@@ -1034,6 +1039,13 @@
   <span class="k">for</span> <span class="p">(</span><span class="k">const</span> <span class="k">auto</span><span class="o">&amp;</span> <span class="nl">eq</span> <span class="p">:</span> <span class="n">g_cgpde</span><span class="p">)</span>
     <span class="n">eq</span><span class="p">.</span><span class="n">farfieldbc</span><span class="p">(</span> <span class="n">m_u</span><span class="p">,</span> <span class="n">d</span><span class="o">-&gt;</span><span class="n">Coord</span><span class="p">(),</span> <span class="n">m_bnorm</span><span class="p">,</span> <span class="n">m_farfieldbcnodes</span> <span class="p">);</span>
 
+  <span class="c1">// Set user-defined IC box conditions</span>
+  <span class="k">for</span> <span class="p">(</span><span class="k">const</span> <span class="k">auto</span><span class="o">&amp;</span> <span class="nl">eq</span> <span class="p">:</span> <span class="n">g_cgpde</span><span class="p">)</span>
+    <span class="n">eq</span><span class="p">.</span><span class="n">box</span><span class="p">(</span> <span class="n">d</span><span class="o">-&gt;</span><span class="n">Boxvol</span><span class="p">(),</span> <span class="n">d</span><span class="o">-&gt;</span><span class="n">T</span><span class="p">()</span><span class="o">+</span><span class="n">d</span><span class="o">-&gt;</span><span class="n">Dt</span><span class="p">(),</span> <span class="n">m_boxnodes</span><span class="p">,</span> <span class="n">d</span><span class="o">-&gt;</span><span class="n">Coord</span><span class="p">(),</span> <span class="n">m_u</span><span class="p">,</span>
+            <span class="n">m_boxnodes_set</span> <span class="p">);</span>
+  <span class="c1">//if (m_boxnodes_set.size() != m_boxnodes.size())</span>
+  <span class="c1">//  std::cout &lt;&lt; thisIndex &lt;&lt; &#39;:&#39; &lt;&lt; m_boxnodes.size() - m_boxnodes_set.size() &lt;&lt; &#39;\n&#39;;</span>
+
   <span class="c1">//! [Continue after solve]</span>
   <span class="k">if</span> <span class="p">(</span><span class="n">m_stage</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">)</span> <span class="p">{</span>
 
@@ -1237,6 +1249,11 @@
       <span class="n">nodesurfs</span><span class="p">.</span><span class="n">insert</span><span class="p">(</span> <span class="n">end</span><span class="p">(</span><span class="n">nodesurfs</span><span class="p">),</span> <span class="n">begin</span><span class="p">(</span><span class="n">s</span><span class="p">),</span> <span class="n">end</span><span class="p">(</span><span class="n">s</span><span class="p">)</span> <span class="p">);</span>
     <span class="p">}</span>
 
+    <span class="c1">// nodefieldnames.push_back( &quot;initiated&quot; );</span>
+    <span class="c1">// std::vector&lt; tk::real &gt; initiated( m_u.nunk(), 0.0 );</span>
+    <span class="c1">// for (auto i : m_boxnodes_set) initiated[i] = 1.0;</span>
+    <span class="c1">// nodefields.push_back( initiated );</span>
+
     <span class="n">Assert</span><span class="p">(</span> <span class="n">nodefieldnames</span><span class="p">.</span><span class="n">size</span><span class="p">()</span> <span class="o">==</span> <span class="n">nodefields</span><span class="p">.</span><span class="n">size</span><span class="p">(),</span> <span class="s">&quot;Size mismatch&quot;</span> <span class="p">);</span>
 
     <span class="c1">// Send mesh and fields data (solution dump) for output to file</span>
@@ -1391,7 +1408,7 @@
   <div class="m-container">
     <div class="m-row">
       <div class="m-col-l-10 m-push-l-1">
-        <p>Quinoa docs, part of the <a href="http://quinoacomputing.org/">Quinoa project</a>. Copyright © J. Bakosi 2012&ndash;2015, Los Alamos National Security, LLC, 2016&ndash;2018, <a href="https://www.triadns.org/">Triad National Security, LLC,</a> 2019-2020. Generated on Wednesday, Jul 08, 2020 based on <a href="https://github.com/quinoacomputing/quinoa/commit/479b108">479b108</a> by <a href="http://doxygen.org/">Doxygen</a> and <a href="http://mcss.mosra.cz/">m.css</a>. Contact us via <a href="https://github.com/quinoacomputing/quinoa/">GitHub</a>, <a href="https://groups.io/g/quinoa">Email</a> or <a href="https://quinoa.zulipchat.com">Chat</a>.</p>
+        <p>Quinoa docs, part of the <a href="http://quinoacomputing.org/">Quinoa project</a>. Copyright © J. Bakosi 2012&ndash;2015, Los Alamos National Security, LLC, 2016&ndash;2018, <a href="https://www.triadns.org/">Triad National Security, LLC,</a> 2019-2020. Generated on Tuesday, Jul 14, 2020 based on <a href="https://github.com/quinoacomputing/quinoa/commit/2e4e7c9">2e4e7c9</a> by <a href="http://doxygen.org/">Doxygen</a> and <a href="http://mcss.mosra.cz/">m.css</a>. Contact us via <a href="https://github.com/quinoacomputing/quinoa/">GitHub</a>, <a href="https://groups.io/g/quinoa">Email</a> or <a href="https://quinoa.zulipchat.com">Chat</a>.</p>
       </div>
     </div>
   </div>
