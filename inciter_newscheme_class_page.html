@@ -162,10 +162,10 @@
   <span class="n">m_un</span><span class="p">(</span> <span class="n">m_u</span><span class="p">.</span><span class="n">nunk</span><span class="p">(),</span> <span class="n">m_u</span><span class="p">.</span><span class="n">nprop</span><span class="p">()</span> <span class="p">),</span>
   <span class="n">m_lhs</span><span class="p">(</span> <span class="n">m_u</span><span class="p">.</span><span class="n">nunk</span><span class="p">(),</span> <span class="n">m_u</span><span class="p">.</span><span class="n">nprop</span><span class="p">()</span> <span class="p">),</span>
   <span class="n">m_rhs</span><span class="p">(</span> <span class="n">m_u</span><span class="p">.</span><span class="n">nunk</span><span class="p">(),</span> <span class="n">m_u</span><span class="p">.</span><span class="n">nprop</span><span class="p">()</span> <span class="p">),</span>
-  <span class="n">m_grad</span><span class="p">(</span> <span class="n">Disc</span><span class="p">()</span><span class="o">-&gt;</span><span class="n">Bid</span><span class="p">().</span><span class="n">size</span><span class="p">(),</span> <span class="n">m_u</span><span class="p">.</span><span class="n">nprop</span><span class="p">()</span><span class="o">*</span><span class="mi">3</span> <span class="p">),</span>
+  <span class="n">m_chBndGrad</span><span class="p">(</span> <span class="n">Disc</span><span class="p">()</span><span class="o">-&gt;</span><span class="n">Bid</span><span class="p">().</span><span class="n">size</span><span class="p">(),</span> <span class="n">m_u</span><span class="p">.</span><span class="n">nprop</span><span class="p">()</span><span class="o">*</span><span class="mi">3</span> <span class="p">),</span>
   <span class="n">m_bcdir</span><span class="p">(),</span>
   <span class="n">m_lhsc</span><span class="p">(),</span>
-  <span class="n">m_gradc</span><span class="p">(),</span>
+  <span class="n">m_chBndGradc</span><span class="p">(),</span>
   <span class="n">m_rhsc</span><span class="p">(),</span>
   <span class="n">m_diag</span><span class="p">(),</span>
   <span class="n">m_bnorm</span><span class="p">(),</span>
@@ -852,20 +852,22 @@
   <span class="k">if</span> <span class="p">(</span><span class="n">m_stage</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span> <span class="n">d</span><span class="o">-&gt;</span><span class="n">setdt</span><span class="p">(</span> <span class="n">newdt</span> <span class="p">);</span>
 
   <span class="c1">// Compute gradients for next time step</span>
-  <span class="n">grad</span><span class="p">();</span>
+  <span class="n">chBndGrad</span><span class="p">();</span>
 <span class="p">}</span>
 
 <span class="kt">void</span>
-<span class="n">ALECG</span><span class="o">::</span><span class="n">grad</span><span class="p">()</span>
+<span class="n">ALECG</span><span class="o">::</span><span class="n">chBndGrad</span><span class="p">()</span>
 <span class="c1">// *****************************************************************************</span>
-<span class="c1">// Compute nodal gradients</span>
+<span class="c1">// Compute nodal gradients at chare-boundary nodes. Gradients at internal nodes</span>
+<span class="c1">// are calculated locally as needed and are not stored.</span>
 <span class="c1">// *****************************************************************************</span>
 <span class="p">{</span>
   <span class="k">auto</span> <span class="n">d</span> <span class="o">=</span> <span class="n">Disc</span><span class="p">();</span>
 
   <span class="c1">// Compute own portion of gradients for all equations</span>
   <span class="k">for</span> <span class="p">(</span><span class="k">const</span> <span class="k">auto</span><span class="o">&amp;</span> <span class="nl">eq</span> <span class="p">:</span> <span class="n">g_cgpde</span><span class="p">)</span>
-    <span class="n">eq</span><span class="p">.</span><span class="n">grad</span><span class="p">(</span><span class="n">d</span><span class="o">-&gt;</span><span class="n">Coord</span><span class="p">(),</span> <span class="n">d</span><span class="o">-&gt;</span><span class="n">Inpoel</span><span class="p">(),</span> <span class="n">m_bndel</span><span class="p">,</span> <span class="n">d</span><span class="o">-&gt;</span><span class="n">Gid</span><span class="p">(),</span> <span class="n">d</span><span class="o">-&gt;</span><span class="n">Bid</span><span class="p">(),</span> <span class="n">m_u</span><span class="p">,</span> <span class="n">m_grad</span><span class="p">);</span>
+    <span class="n">eq</span><span class="p">.</span><span class="n">chBndGrad</span><span class="p">(</span><span class="n">d</span><span class="o">-&gt;</span><span class="n">Coord</span><span class="p">(),</span> <span class="n">d</span><span class="o">-&gt;</span><span class="n">Inpoel</span><span class="p">(),</span> <span class="n">m_bndel</span><span class="p">,</span> <span class="n">d</span><span class="o">-&gt;</span><span class="n">Gid</span><span class="p">(),</span> <span class="n">d</span><span class="o">-&gt;</span><span class="n">Bid</span><span class="p">(),</span> <span class="n">m_u</span><span class="p">,</span>
+      <span class="n">m_chBndGrad</span><span class="p">);</span>
 
   <span class="c1">// Communicate gradients to other chares on chare-boundary</span>
   <span class="k">if</span> <span class="p">(</span><span class="n">d</span><span class="o">-&gt;</span><span class="n">NodeCommMap</span><span class="p">().</span><span class="n">empty</span><span class="p">())</span>        <span class="c1">// in serial we are done</span>
@@ -874,32 +876,32 @@
     <span class="k">for</span> <span class="p">(</span><span class="k">const</span> <span class="k">auto</span><span class="o">&amp;</span> <span class="p">[</span><span class="n">c</span><span class="p">,</span><span class="n">n</span><span class="p">]</span> <span class="o">:</span> <span class="n">d</span><span class="o">-&gt;</span><span class="n">NodeCommMap</span><span class="p">())</span> <span class="p">{</span>
       <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span> <span class="n">tk</span><span class="o">::</span><span class="n">real</span> <span class="o">&gt;</span> <span class="o">&gt;</span> <span class="n">g</span><span class="p">(</span> <span class="n">n</span><span class="p">.</span><span class="n">size</span><span class="p">()</span> <span class="p">);</span>
       <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="n">j</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
-      <span class="k">for</span> <span class="p">(</span><span class="k">auto</span> <span class="nl">i</span> <span class="p">:</span> <span class="n">n</span><span class="p">)</span> <span class="n">g</span><span class="p">[</span> <span class="n">j</span><span class="o">++</span> <span class="p">]</span> <span class="o">=</span> <span class="n">m_grad</span><span class="p">[</span> <span class="n">tk</span><span class="o">::</span><span class="n">cref_find</span><span class="p">(</span><span class="n">d</span><span class="o">-&gt;</span><span class="n">Bid</span><span class="p">(),</span><span class="n">i</span><span class="p">)</span> <span class="p">];</span>
-      <span class="n">thisProxy</span><span class="p">[</span><span class="n">c</span><span class="p">].</span><span class="n">comgrad</span><span class="p">(</span> <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="o">&gt;</span><span class="p">(</span><span class="n">begin</span><span class="p">(</span><span class="n">n</span><span class="p">),</span><span class="n">end</span><span class="p">(</span><span class="n">n</span><span class="p">)),</span> <span class="n">g</span> <span class="p">);</span>
+      <span class="k">for</span> <span class="p">(</span><span class="k">auto</span> <span class="nl">i</span> <span class="p">:</span> <span class="n">n</span><span class="p">)</span> <span class="n">g</span><span class="p">[</span> <span class="n">j</span><span class="o">++</span> <span class="p">]</span> <span class="o">=</span> <span class="n">m_chBndGrad</span><span class="p">[</span> <span class="n">tk</span><span class="o">::</span><span class="n">cref_find</span><span class="p">(</span><span class="n">d</span><span class="o">-&gt;</span><span class="n">Bid</span><span class="p">(),</span><span class="n">i</span><span class="p">)</span> <span class="p">];</span>
+      <span class="n">thisProxy</span><span class="p">[</span><span class="n">c</span><span class="p">].</span><span class="n">comChBndGrad</span><span class="p">(</span> <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="o">&gt;</span><span class="p">(</span><span class="n">begin</span><span class="p">(</span><span class="n">n</span><span class="p">),</span><span class="n">end</span><span class="p">(</span><span class="n">n</span><span class="p">)),</span> <span class="n">g</span> <span class="p">);</span>
     <span class="p">}</span>
 
   <span class="n">owngrad_complete</span><span class="p">();</span>
 <span class="p">}</span>
 
 <span class="kt">void</span>
-<span class="n">ALECG</span><span class="o">::</span><span class="n">comgrad</span><span class="p">(</span> <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span> <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="o">&gt;&amp;</span> <span class="n">gid</span><span class="p">,</span>
-                <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span> <span class="n">tk</span><span class="o">::</span><span class="n">real</span> <span class="o">&gt;</span> <span class="o">&gt;&amp;</span> <span class="n">G</span> <span class="p">)</span>
+<span class="n">ALECG</span><span class="o">::</span><span class="n">comChBndGrad</span><span class="p">(</span> <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span> <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="o">&gt;&amp;</span> <span class="n">gid</span><span class="p">,</span>
+                     <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span> <span class="n">tk</span><span class="o">::</span><span class="n">real</span> <span class="o">&gt;</span> <span class="o">&gt;&amp;</span> <span class="n">G</span> <span class="p">)</span>
 <span class="c1">// *****************************************************************************</span>
 <span class="c1">//  Receive contributions to nodal gradients on chare-boundaries</span>
 <span class="c1">//! \param[in] gid Global mesh node IDs at which we receive grad contributions</span>
 <span class="c1">//! \param[in] G Partial contributions of gradients to chare-boundary nodes</span>
-<span class="c1">//! \details This function receives contributions to m_grad, which stores the</span>
-<span class="c1">//!   nodal gradients at mesh nodes. While m_grad stores own</span>
-<span class="c1">//!   contributions, m_gradc collects the neighbor chare contributions during</span>
-<span class="c1">//!   communication. This way work on m_grad and m_gradc is overlapped. The two</span>
-<span class="c1">//!   are combined in rhs().</span>
+<span class="c1">//! \details This function receives contributions to m_chBndGrad, which stores</span>
+<span class="c1">//!   nodal gradients at mesh chare-boundary nodes. While m_chBndGrad stores</span>
+<span class="c1">//!   own contributions, m_chBndGradc collects the neighbor chare</span>
+<span class="c1">//!   contributions during communication. This way work on m_chBndGrad and</span>
+<span class="c1">//!   m_chBndGradc is overlapped. The two are combined in rhs().</span>
 <span class="c1">// *****************************************************************************</span>
 <span class="p">{</span>
   <span class="n">Assert</span><span class="p">(</span> <span class="n">G</span><span class="p">.</span><span class="n">size</span><span class="p">()</span> <span class="o">==</span> <span class="n">gid</span><span class="p">.</span><span class="n">size</span><span class="p">(),</span> <span class="s">&quot;Size mismatch&quot;</span> <span class="p">);</span>
 
   <span class="k">using</span> <span class="n">tk</span><span class="o">::</span><span class="k">operator</span><span class="o">+=</span><span class="p">;</span>
 
-  <span class="k">for</span> <span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">i</span><span class="o">&lt;</span><span class="n">gid</span><span class="p">.</span><span class="n">size</span><span class="p">();</span> <span class="o">++</span><span class="n">i</span><span class="p">)</span> <span class="n">m_gradc</span><span class="p">[</span> <span class="n">gid</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="p">]</span> <span class="o">+=</span> <span class="n">G</span><span class="p">[</span><span class="n">i</span><span class="p">];</span>
+  <span class="k">for</span> <span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">i</span><span class="o">&lt;</span><span class="n">gid</span><span class="p">.</span><span class="n">size</span><span class="p">();</span> <span class="o">++</span><span class="n">i</span><span class="p">)</span> <span class="n">m_chBndGradc</span><span class="p">[</span> <span class="n">gid</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="p">]</span> <span class="o">+=</span> <span class="n">G</span><span class="p">[</span><span class="n">i</span><span class="p">];</span>
 
   <span class="k">if</span> <span class="p">(</span><span class="o">++</span><span class="n">m_ngrad</span> <span class="o">==</span> <span class="n">Disc</span><span class="p">()</span><span class="o">-&gt;</span><span class="n">NodeCommMap</span><span class="p">().</span><span class="n">size</span><span class="p">())</span> <span class="p">{</span>
     <span class="n">m_ngrad</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
@@ -916,13 +918,14 @@
   <span class="k">auto</span> <span class="n">d</span> <span class="o">=</span> <span class="n">Disc</span><span class="p">();</span>
 
   <span class="c1">// Combine own and communicated contributions to nodal gradients</span>
-  <span class="k">for</span> <span class="p">(</span><span class="k">const</span> <span class="k">auto</span><span class="o">&amp;</span> <span class="p">[</span><span class="n">gid</span><span class="p">,</span><span class="n">g</span><span class="p">]</span> <span class="o">:</span> <span class="n">m_gradc</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">for</span> <span class="p">(</span><span class="k">const</span> <span class="k">auto</span><span class="o">&amp;</span> <span class="p">[</span><span class="n">gid</span><span class="p">,</span><span class="n">g</span><span class="p">]</span> <span class="o">:</span> <span class="n">m_chBndGradc</span><span class="p">)</span> <span class="p">{</span>
     <span class="k">auto</span> <span class="n">bid</span> <span class="o">=</span> <span class="n">tk</span><span class="o">::</span><span class="n">cref_find</span><span class="p">(</span> <span class="n">d</span><span class="o">-&gt;</span><span class="n">Bid</span><span class="p">(),</span> <span class="n">gid</span> <span class="p">);</span>
-    <span class="k">for</span> <span class="p">(</span><span class="n">ncomp_t</span> <span class="n">c</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">c</span><span class="o">&lt;</span><span class="n">m_grad</span><span class="p">.</span><span class="n">nprop</span><span class="p">();</span> <span class="o">++</span><span class="n">c</span><span class="p">)</span> <span class="n">m_grad</span><span class="p">(</span><span class="n">bid</span><span class="p">,</span><span class="n">c</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span> <span class="o">+=</span> <span class="n">g</span><span class="p">[</span><span class="n">c</span><span class="p">];</span>
+    <span class="k">for</span> <span class="p">(</span><span class="n">ncomp_t</span> <span class="n">c</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">c</span><span class="o">&lt;</span><span class="n">m_chBndGrad</span><span class="p">.</span><span class="n">nprop</span><span class="p">();</span> <span class="o">++</span><span class="n">c</span><span class="p">)</span>
+      <span class="n">m_chBndGrad</span><span class="p">(</span><span class="n">bid</span><span class="p">,</span><span class="n">c</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span> <span class="o">+=</span> <span class="n">g</span><span class="p">[</span><span class="n">c</span><span class="p">];</span>
   <span class="p">}</span>
 
   <span class="c1">// clear gradients receive buffer</span>
-  <span class="n">tk</span><span class="o">::</span><span class="n">destroy</span><span class="p">(</span><span class="n">m_gradc</span><span class="p">);</span>
+  <span class="n">tk</span><span class="o">::</span><span class="n">destroy</span><span class="p">(</span><span class="n">m_chBndGradc</span><span class="p">);</span>
 
   <span class="k">const</span> <span class="k">auto</span> <span class="n">steady</span> <span class="o">=</span> <span class="n">g_inputdeck</span><span class="p">.</span><span class="n">get</span><span class="o">&lt;</span> <span class="n">tag</span><span class="o">::</span><span class="n">discr</span><span class="p">,</span> <span class="n">tag</span><span class="o">::</span><span class="n">steady_state</span> <span class="o">&gt;</span><span class="p">();</span>
 
@@ -933,7 +936,7 @@
   <span class="k">for</span> <span class="p">(</span><span class="k">const</span> <span class="k">auto</span><span class="o">&amp;</span> <span class="nl">eq</span> <span class="p">:</span> <span class="n">g_cgpde</span><span class="p">)</span>
     <span class="n">eq</span><span class="p">.</span><span class="n">rhs</span><span class="p">(</span> <span class="n">d</span><span class="o">-&gt;</span><span class="n">T</span><span class="p">()</span> <span class="o">+</span> <span class="n">prev_rkcoef</span> <span class="o">*</span> <span class="n">d</span><span class="o">-&gt;</span><span class="n">Dt</span><span class="p">(),</span> <span class="n">d</span><span class="o">-&gt;</span><span class="n">Coord</span><span class="p">(),</span> <span class="n">d</span><span class="o">-&gt;</span><span class="n">Inpoel</span><span class="p">(),</span>
             <span class="n">m_triinpoel</span><span class="p">,</span> <span class="n">d</span><span class="o">-&gt;</span><span class="n">Gid</span><span class="p">(),</span> <span class="n">d</span><span class="o">-&gt;</span><span class="n">Bid</span><span class="p">(),</span> <span class="n">d</span><span class="o">-&gt;</span><span class="n">Lid</span><span class="p">(),</span> <span class="n">m_dfn</span><span class="p">,</span> <span class="n">m_psup</span><span class="p">,</span> <span class="n">m_esup</span><span class="p">,</span>
-            <span class="n">m_symbctri</span><span class="p">,</span> <span class="n">d</span><span class="o">-&gt;</span><span class="n">Vol</span><span class="p">(),</span> <span class="n">m_edgenode</span><span class="p">,</span> <span class="n">m_edgeid</span><span class="p">,</span> <span class="n">m_grad</span><span class="p">,</span> <span class="n">m_u</span><span class="p">,</span> <span class="n">m_tp</span><span class="p">,</span>
+            <span class="n">m_symbctri</span><span class="p">,</span> <span class="n">d</span><span class="o">-&gt;</span><span class="n">Vol</span><span class="p">(),</span> <span class="n">m_edgenode</span><span class="p">,</span> <span class="n">m_edgeid</span><span class="p">,</span> <span class="n">m_chBndGrad</span><span class="p">,</span> <span class="n">m_u</span><span class="p">,</span> <span class="n">m_tp</span><span class="p">,</span>
             <span class="n">m_rhs</span> <span class="p">);</span>
   <span class="k">if</span> <span class="p">(</span><span class="n">steady</span><span class="p">)</span>
     <span class="k">for</span> <span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="n">p</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">p</span><span class="o">&lt;</span><span class="n">m_tp</span><span class="p">.</span><span class="n">size</span><span class="p">();</span> <span class="o">++</span><span class="n">p</span><span class="p">)</span> <span class="n">m_tp</span><span class="p">[</span><span class="n">p</span><span class="p">]</span> <span class="o">-=</span> <span class="n">prev_rkcoef</span> <span class="o">*</span> <span class="n">m_dtp</span><span class="p">[</span><span class="n">p</span><span class="p">];</span>
@@ -1173,7 +1176,7 @@
   <span class="n">m_un</span><span class="p">.</span><span class="n">resize</span><span class="p">(</span> <span class="n">npoin</span><span class="p">,</span> <span class="n">nprop</span> <span class="p">);</span>
   <span class="n">m_lhs</span><span class="p">.</span><span class="n">resize</span><span class="p">(</span> <span class="n">npoin</span><span class="p">,</span> <span class="n">nprop</span> <span class="p">);</span>
   <span class="n">m_rhs</span><span class="p">.</span><span class="n">resize</span><span class="p">(</span> <span class="n">npoin</span><span class="p">,</span> <span class="n">nprop</span> <span class="p">);</span>
-  <span class="n">m_grad</span><span class="p">.</span><span class="n">resize</span><span class="p">(</span> <span class="n">d</span><span class="o">-&gt;</span><span class="n">Bid</span><span class="p">().</span><span class="n">size</span><span class="p">(),</span> <span class="n">nprop</span><span class="o">*</span><span class="mi">3</span> <span class="p">);</span>
+  <span class="n">m_chBndGrad</span><span class="p">.</span><span class="n">resize</span><span class="p">(</span> <span class="n">d</span><span class="o">-&gt;</span><span class="n">Bid</span><span class="p">().</span><span class="n">size</span><span class="p">(),</span> <span class="n">nprop</span><span class="o">*</span><span class="mi">3</span> <span class="p">);</span>
 
   <span class="c1">// Update solution on new mesh</span>
   <span class="k">for</span> <span class="p">(</span><span class="k">const</span> <span class="k">auto</span><span class="o">&amp;</span> <span class="nl">n</span> <span class="p">:</span> <span class="n">addedNodes</span><span class="p">)</span>
@@ -1209,7 +1212,7 @@
 
   <span class="c1">// if not all Runge-Kutta stages complete, continue to next time stage,</span>
   <span class="c1">// otherwise output field data to file(s)</span>
-  <span class="k">if</span> <span class="p">(</span><span class="n">m_stage</span> <span class="o">&lt;</span> <span class="mi">3</span><span class="p">)</span> <span class="n">grad</span><span class="p">();</span> <span class="k">else</span> <span class="nf">out</span><span class="p">();</span>
+  <span class="k">if</span> <span class="p">(</span><span class="n">m_stage</span> <span class="o">&lt;</span> <span class="mi">3</span><span class="p">)</span> <span class="n">chBndGrad</span><span class="p">();</span> <span class="k">else</span> <span class="nf">out</span><span class="p">();</span>
 <span class="p">}</span>
 
 <span class="kt">void</span>
@@ -1408,7 +1411,7 @@
   <div class="m-container">
     <div class="m-row">
       <div class="m-col-l-10 m-push-l-1">
-        <p>Quinoa docs, part of the <a href="http://quinoacomputing.org/">Quinoa project</a>. Copyright © J. Bakosi 2012&ndash;2015, Los Alamos National Security, LLC, 2016&ndash;2018, <a href="https://www.triadns.org/">Triad National Security, LLC,</a> 2019-2020. Generated on Wednesday, Jul 29, 2020 based on <a href="https://github.com/quinoacomputing/quinoa/commit/bb74827">bb74827</a> by <a href="http://doxygen.org/">Doxygen</a> and <a href="http://mcss.mosra.cz/">m.css</a>. Contact us via <a href="https://github.com/quinoacomputing/quinoa/">GitHub</a>, <a href="https://groups.io/g/quinoa">Email</a> or <a href="https://quinoa.zulipchat.com">Chat</a>.</p>
+        <p>Quinoa docs, part of the <a href="http://quinoacomputing.org/">Quinoa project</a>. Copyright © J. Bakosi 2012&ndash;2015, Los Alamos National Security, LLC, 2016&ndash;2018, <a href="https://www.triadns.org/">Triad National Security, LLC,</a> 2019-2020. Generated on Wednesday, Aug 19, 2020 based on <a href="https://github.com/quinoacomputing/quinoa/commit/59a45ec">59a45ec</a> by <a href="http://doxygen.org/">Doxygen</a> and <a href="http://mcss.mosra.cz/">m.css</a>. Contact us via <a href="https://github.com/quinoacomputing/quinoa/">GitHub</a>, <a href="https://groups.io/g/quinoa">Email</a> or <a href="https://quinoa.zulipchat.com">Chat</a>.</p>
       </div>
     </div>
   </div>
