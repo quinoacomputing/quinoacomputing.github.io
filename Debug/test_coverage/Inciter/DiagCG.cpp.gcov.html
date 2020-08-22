@@ -1,0 +1,1098 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html lang="en">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>Quinoa unit test code coverage report</title>
+  <link rel="stylesheet" type="text/css" href="../gcov.css">
+</head>
+<body>
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title">Quinoa all test code coverage report</td></tr>
+    <tr><td class="ruler"><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../index.html">top level</a> - <a href="index.html">Inciter</a> - DiagCG.cpp<span style="font-size: 80%;"> (source / <a href="DiagCG.cpp.func-sort-c.html">functions</a>)</span></td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Commit:</td>
+            <td class="headerValue"><a href="https://github.com/quinoacomputing/quinoa/commit/59a45ec">Quinoa_v0.2-4332-g59a45ec</a></td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">393</td>
+            <td class="headerCovTableEntry">406</td>
+            <td class="headerCovTableEntryHi">96.8 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2020-08-22 17:04:53</td>
+            <td></td>
+            <td class="headerItem">Functions:</td>
+            <td class="headerCovTableEntry">27</td>
+            <td class="headerCovTableEntry">28</td>
+            <td class="headerCovTableEntryHi">96.4 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Legend:</td>
+            <td class="headerValueLeg">            Lines:
+            <span class="coverLegendCov">hit</span>
+            <span class="coverLegendNoCov">not hit</span>
+            | Branches:
+            <span class="coverLegendCov">+</span> taken
+            <span class="coverLegendNoCov">-</span> not taken
+            <span class="coverLegendNoCov">#</span> not executed
+</td>
+            <td></td>
+            <td class="headerItem">Branches:</td>
+            <td class="headerCovTableEntry">329</td>
+            <td class="headerCovTableEntry">586</td>
+            <td class="headerCovTableEntryLo">56.1 %</td>
+          </tr>
+          <tr><td><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">           Branch data     Line data    Source code</pre>
+<pre class="source">
+<a name="1"><span class="lineNum">       1 </span>                :            : // *****************************************************************************</a>
+<span class="lineNum">       2 </span>                :            : /*!
+<span class="lineNum">       3 </span>                :            :   \file      src/Inciter/DiagCG.cpp
+<span class="lineNum">       4 </span>                :            :   \copyright 2012-2015 J. Bakosi,
+<span class="lineNum">       5 </span>                :            :              2016-2018 Los Alamos National Security, LLC.,
+<span class="lineNum">       6 </span>                :            :              2019-2020 Triad National Security, LLC.
+<span class="lineNum">       7 </span>                :            :              All rights reserved. See the LICENSE file for details.
+<span class="lineNum">       8 </span>                :            :   \brief     DiagCG for a PDE system with continuous Galerkin without a matrix
+<span class="lineNum">       9 </span>                :            :   \details   DiagCG advances a system of partial differential equations (PDEs)
+<span class="lineNum">      10 </span>                :            :     using continuous Galerkin (CG) finite element (FE) spatial discretization
+<span class="lineNum">      11 </span>                :            :     (using linear shapefunctions on tetrahedron elements) combined with a time
+<span class="lineNum">      12 </span>                :            :     stepping scheme that is equivalent to the Lax-Wendroff (LW) scheme within
+<span class="lineNum">      13 </span>                :            :     the unstructured-mesh FE context and treats discontinuities with
+<span class="lineNum">      14 </span>                :            :     flux-corrected transport (FCT). Only the diagonal entries of the left-hand
+<span class="lineNum">      15 </span>                :            :     side matrix are non-zero thus it does not need a matrix-based linear solver.
+<span class="lineNum">      16 </span>                :            :   \see The documentation in DiagCG.h.
+<span class="lineNum">      17 </span>                :            : */
+<span class="lineNum">      18 </span>                :            : // *****************************************************************************
+<span class="lineNum">      19 </span>                :            : 
+<span class="lineNum">      20 </span>                :            : #include &quot;QuinoaConfig.hpp&quot;
+<span class="lineNum">      21 </span>                :            : #include &quot;DiagCG.hpp&quot;
+<span class="lineNum">      22 </span>                :            : #include &quot;Vector.hpp&quot;
+<span class="lineNum">      23 </span>                :            : #include &quot;Reader.hpp&quot;
+<span class="lineNum">      24 </span>                :            : #include &quot;ContainerUtil.hpp&quot;
+<span class="lineNum">      25 </span>                :            : #include &quot;UnsMesh.hpp&quot;
+<span class="lineNum">      26 </span>                :            : #include &quot;Inciter/InputDeck/InputDeck.hpp&quot;
+<span class="lineNum">      27 </span>                :            : #include &quot;DerivedData.hpp&quot;
+<span class="lineNum">      28 </span>                :            : #include &quot;CGPDE.hpp&quot;
+<span class="lineNum">      29 </span>                :            : #include &quot;Discretization.hpp&quot;
+<span class="lineNum">      30 </span>                :            : #include &quot;DistFCT.hpp&quot;
+<span class="lineNum">      31 </span>                :            : #include &quot;DiagReducer.hpp&quot;
+<span class="lineNum">      32 </span>                :            : #include &quot;NodeBC.hpp&quot;
+<span class="lineNum">      33 </span>                :            : #include &quot;Refiner.hpp&quot;
+<span class="lineNum">      34 </span>                :            : #include &quot;Reorder.hpp&quot;
+<span class="lineNum">      35 </span>                :            : #include &quot;Integrate/Mass.hpp&quot;
+<span class="lineNum">      36 </span>                :            : 
+<span class="lineNum">      37 </span>                :            : namespace inciter {
+<span class="lineNum">      38 </span>                :            : 
+<span class="lineNum">      39 </span>                :            : extern ctr::InputDeck g_inputdeck;
+<span class="lineNum">      40 </span>                :            : extern ctr::InputDeck g_inputdeck_defaults;
+<span class="lineNum">      41 </span>                :            : extern std::vector&lt; CGPDE &gt; g_cgpde;
+<span class="lineNum">      42 </span>                :            : 
+<span class="lineNum">      43 </span>                :            : } // inciter::
+<span class="lineNum">      44 </span>                :            : 
+<a name="45"><span class="lineNum">      45 </span>                :            : using inciter::DiagCG;</a>
+<span class="lineNum">      46 </span>                :            : 
+<span class="lineNum">      47 </span>                :<span class="lineCov">        651 : DiagCG::DiagCG( const CProxy_Discretization&amp; disc,</span>
+<span class="lineNum">      48 </span>                :            :                 const std::map&lt; int, std::vector&lt; std::size_t &gt; &gt;&amp; bface,
+<span class="lineNum">      49 </span>                :            :                 const std::map&lt; int, std::vector&lt; std::size_t &gt; &gt;&amp; bnode,
+<span class="lineNum">      50 </span>                :<span class="lineCov">        651 :                 const std::vector&lt; std::size_t &gt;&amp; triinpoel ) :</span>
+<span class="lineNum">      51 </span>                :            :   m_disc( disc ),
+<span class="lineNum">      52 </span>                :            :   m_initial( 1 ),
+<span class="lineNum">      53 </span>                :            :   m_nsol( 0 ),
+<span class="lineNum">      54 </span>                :            :   m_nlhs( 0 ),
+<span class="lineNum">      55 </span>                :            :   m_nrhs( 0 ),
+<span class="lineNum">      56 </span>                :            :   m_nnorm( 0 ),
+<span class="lineNum">      57 </span>                :            :   m_bnode( bnode ),
+<span class="lineNum">      58 </span>                :            :   m_bface( bface ),
+<span class="lineNum">      59 </span>        [<span class="branchCov" title="Branch 0 was taken 651 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">        651 :   m_triinpoel( tk::remap(triinpoel,Disc()-&gt;Lid()) ),</span>
+<span class="lineNum">      60 </span>        [<span class="branchCov" title="Branch 0 was taken 651 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">        651 :   m_u( Disc()-&gt;Gid().size(), g_inputdeck.get&lt; tag::component &gt;().nprop() ),</span>
+<span class="lineNum">      61 </span>                :            :   m_ul( m_u.nunk(), m_u.nprop() ),
+<span class="lineNum">      62 </span>                :            :   m_du( m_u.nunk(), m_u.nprop() ),
+<span class="lineNum">      63 </span>        [<span class="branchCov" title="Branch 0 was taken 651 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">        651 :   m_ue( Disc()-&gt;Inpoel().size()/4, m_u.nprop() ),</span>
+<span class="lineNum">      64 </span>                :            :   m_lhs( m_u.nunk(), m_u.nprop() ),
+<span class="lineNum">      65 </span>                :            :   m_rhs( m_u.nunk(), m_u.nprop() ),
+<span class="lineNum">      66 </span>                :            :   m_bcdir(),
+<span class="lineNum">      67 </span>                :            :   m_lhsc(),
+<span class="lineNum">      68 </span>                :            :   m_rhsc(),
+<span class="lineNum">      69 </span>                :            :   m_difc(),
+<span class="lineNum">      70 </span>                :            :   m_vol(),
+<span class="lineNum">      71 </span>                :            :   m_bnorm(),
+<span class="lineNum">      72 </span>                :            :   m_bnormc(),
+<span class="lineNum">      73 </span>                :            :   m_symbcnodemap(),
+<span class="lineNum">      74 </span>                :            :   m_symbcnodes(),
+<span class="lineNum">      75 </span>                :            :   m_farfieldbcnodes(),
+<span class="lineNum">      76 </span>                :            :   m_diag(),
+<span class="lineNum">      77 </span>                :            :   m_boxnodes(),
+<span class="lineNum">      78 </span>                :            :   m_boxnodes_set(),
+<span class="lineNum">      79 </span>                :<span class="lineNoCov">          0 :   m_dtp( m_u.nunk(), 0.0 ),</span>
+<span class="lineNum">      80 </span>                :<span class="lineCov">        651 :   m_tp( m_u.nunk(), g_inputdeck.get&lt; tag::discr, tag::t0 &gt;() ),</span>
+<span class="lineNum">      81 </span>[<span class="branchCov" title="Branch 0 was taken 651 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>][<span class="branchCov" title="Branch 2 was taken 651 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineCov">       3255 :   m_finished( 0 )</span>
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 4 was taken 651 times"> + </span><span class="branchNoCov" title="Branch 5 was not taken"> - </span>][<span class="branchCov" title="Branch 6 was taken 651 times"> + </span><span class="branchNoCov" title="Branch 7 was not taken"> - </span>]
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 8 was taken 651 times"> + </span><span class="branchNoCov" title="Branch 9 was not taken"> - </span>][<span class="branchCov" title="Branch 10 was taken 651 times"> + </span><span class="branchNoCov" title="Branch 11 was not taken"> - </span>]
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 12 was taken 651 times"> + </span><span class="branchNoCov" title="Branch 13 was not taken"> - </span>][<span class="branchCov" title="Branch 14 was taken 651 times"> + </span><span class="branchNoCov" title="Branch 15 was not taken"> - </span>]
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 16 was taken 651 times"> + </span><span class="branchNoCov" title="Branch 17 was not taken"> - </span>][<span class="branchCov" title="Branch 18 was taken 651 times"> + </span><span class="branchNoCov" title="Branch 19 was not taken"> - </span>]
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 20 was taken 651 times"> + </span><span class="branchNoCov" title="Branch 21 was not taken"> - </span>][<span class="branchCov" title="Branch 22 was taken 651 times"> + </span><span class="branchNoCov" title="Branch 23 was not taken"> - </span>]
+<span class="lineNum">      82 </span>                :            : // *****************************************************************************
+<span class="lineNum">      83 </span>                :            : //  Constructor
+<span class="lineNum">      84 </span>                :            : //! \param[in] disc Discretization proxy
+<span class="lineNum">      85 </span>                :            : //! \param[in] bface Boundary-faces mapped to side set ids
+<span class="lineNum">      86 </span>                :            : //! \param[in] bnode Boundary-node lists mapped to side set ids
+<span class="lineNum">      87 </span>                :            : //! \param[in] triinpoel Boundary-face connectivity
+<span class="lineNum">      88 </span>                :            : // *****************************************************************************
+<span class="lineNum">      89 </span>                :            : {
+<span class="lineNum">      90 </span>                :<span class="lineCov">        651 :   usesAtSync = true;    // enable migration at AtSync</span>
+<span class="lineNum">      91 </span>                :            : 
+<span class="lineNum">      92 </span>        [<span class="branchCov" title="Branch 0 was taken 651 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">        651 :   auto d = Disc();</span>
+<span class="lineNum">      93 </span>                :            : 
+<span class="lineNum">      94 </span>                :            :   // Perform optional operator-access-pattern mesh node reordering
+<span class="lineNum">      95 </span>        [<span class="branchCov" title="Branch 0 was taken 47 times"> + </span><span class="branchCov" title="Branch 1 was taken 604 times"> + </span>]:<span class="lineCov">        651 :   if (g_inputdeck.get&lt; tag::discr, tag::operator_reorder &gt;()) {</span>
+<span class="lineNum">      96 </span>                :            : 
+<span class="lineNum">      97 </span>                :<span class="lineCov">         47 :     const auto&amp; inpoel = d-&gt;Inpoel();</span>
+<span class="lineNum">      98 </span>                :            : 
+<span class="lineNum">      99 </span>                :            :     // Create new local ids based on access pattern of PDE operators
+<span class="lineNum">     100 </span>                :<span class="lineCov">         94 :     std::unordered_map&lt; std::size_t, std::size_t &gt; map;</span>
+<span class="lineNum">     101 </span>                :<span class="lineCov">         47 :     std::size_t n = 0;</span>
+<span class="lineNum">     102 </span>                :            : 
+<span class="lineNum">     103 </span>        [<span class="branchCov" title="Branch 0 was taken 2190 times"> + </span><span class="branchCov" title="Branch 1 was taken 47 times"> + </span>]:<span class="lineCov">       2237 :     for (std::size_t e=0; e&lt;inpoel.size()/4; ++e)</span>
+<span class="lineNum">     104 </span>        [<span class="branchCov" title="Branch 0 was taken 8760 times"> + </span><span class="branchCov" title="Branch 1 was taken 2190 times"> + </span>]:<span class="lineCov">      10950 :       for (std::size_t i=0; i&lt;4; ++i) {</span>
+<span class="lineNum">     105 </span>                :<span class="lineCov">       8760 :         std::size_t o = inpoel[e*4+i];</span>
+<span class="lineNum">     106 </span>[<span class="branchCov" title="Branch 0 was taken 8760 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>][<span class="branchCov" title="Branch 2 was taken 1254 times"> + </span><span class="branchCov" title="Branch 3 was taken 7506 times"> + </span>]:<span class="lineCov">       8760 :         if (map.find(o) == end(map)) map[o] = n++;</span>
+<span class="lineNum">         </span>        [<span class="branchCov" title="Branch 4 was taken 1254 times"> + </span><span class="branchNoCov" title="Branch 5 was not taken"> - </span>]
+<span class="lineNum">     107 </span>                :            :       }
+<span class="lineNum">     108 </span>                :            : 
+<span class="lineNum">     109 </span>[<span class="branchNoCov" title="Branch 0 was not taken"> - </span><span class="branchCov" title="Branch 1 was taken 47 times"> + </span>][<span class="branchNoCov" title="Branch 2 was not taken"> - </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineCov">         47 :     Assert( map.size() == d-&gt;Gid().size(), &quot;Map size mismatch&quot; );</span>
+<span class="lineNum">         </span>[<span class="branchNoCov" title="Branch 4 was not taken"> - </span><span class="branchNoCov" title="Branch 5 was not taken"> - </span>][<span class="branchNoCov" title="Branch 6 was not taken"> - </span><span class="branchNoCov" title="Branch 7 was not taken"> - </span>]
+<span class="lineNum">     110 </span>                :            : 
+<span class="lineNum">     111 </span>                :            :     // Remap data in bound Discretization object
+<span class="lineNum">     112 </span>        [<span class="branchCov" title="Branch 0 was taken 47 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">         47 :     d-&gt;remap( map );</span>
+<span class="lineNum">     113 </span>                :            :     // Remap local ids in DistFCT
+<span class="lineNum">     114 </span>[<span class="branchCov" title="Branch 0 was taken 47 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>][<span class="branchCov" title="Branch 2 was taken 47 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineCov">         47 :     d-&gt;FCT()-&gt;remap( *d );</span>
+<span class="lineNum">     115 </span>                :            :     // Remap boundary triangle face connectivity
+<span class="lineNum">     116 </span>        [<span class="branchCov" title="Branch 0 was taken 47 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">         47 :     tk::remap( m_triinpoel, map );</span>
+<span class="lineNum">     117 </span>                :            : 
+<span class="lineNum">     118 </span>                :            :   }
+<span class="lineNum">     119 </span>                :            : 
+<span class="lineNum">     120 </span>                :            :   // Activate SDAG wait
+<span class="lineNum">     121 </span>[<span class="branchCov" title="Branch 0 was taken 651 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>][<span class="branchCov" title="Branch 2 was taken 651 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineCov">        651 :   thisProxy[ thisIndex ].wait4norm();</span>
+<span class="lineNum">     122 </span>[<span class="branchCov" title="Branch 0 was taken 651 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>][<span class="branchCov" title="Branch 2 was taken 651 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineCov">        651 :   thisProxy[ thisIndex ].wait4lhs();</span>
+<span class="lineNum">     123 </span>                :            : 
+<span class="lineNum">     124 </span>                :            :   // Query nodes at which symmetry BCs are specified
+<span class="lineNum">     125 </span>        [<span class="branchCov" title="Branch 0 was taken 651 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">       1302 :   auto bcnodes = d-&gt;bcnodes&lt; tag::bcsym &gt;( m_bface, m_triinpoel );</span>
+<span class="lineNum">     126 </span>                :            :   // Query nodes at which farfield BCs are specified
+<span class="lineNum">     127 </span>        [<span class="branchCov" title="Branch 0 was taken 651 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">       1302 :   auto farfieldbcnodes = d-&gt;bcnodes&lt; tag::bcfarfield &gt;( m_bface, m_triinpoel );</span>
+<span class="lineNum">     128 </span>                :            : 
+<span class="lineNum">     129 </span>                :            :   // Merge BC data where boundary-point normals are required
+<span class="lineNum">     130 </span>        [<span class="branchNoCov" title="Branch 0 was not taken"> - </span><span class="branchCov" title="Branch 1 was taken 651 times"> + </span>]:<span class="lineCov">        651 :   for (const auto&amp; [s,n] : farfieldbcnodes)</span>
+<span class="lineNum">     131 </span>[<span class="branchNoCov" title="Branch 0 was not taken"> - </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>][<span class="branchNoCov" title="Branch 2 was not taken"> - </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineNoCov">          0 :     bcnodes[s].insert( begin(n), end(n) );</span>
+<span class="lineNum">     132 </span>                :            : 
+<span class="lineNum">     133 </span>                :            :   // Compute boundary point normals
+<span class="lineNum">     134 </span>        [<span class="branchCov" title="Branch 0 was taken 651 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">        651 :   bnorm( bcnodes );</span>
+<span class="lineNum">     135 </span>                :<span class="lineCov">        651 : }</span>
+<a name="136"><span class="lineNum">     136 </span>                :            : </a>
+<span class="lineNum">     137 </span>                :            : void
+<span class="lineNum">     138 </span>                :<span class="lineCov">        651 : DiagCG::bnorm( const std::unordered_map&lt; int,</span>
+<span class="lineNum">     139 </span>                :            :                  std::unordered_set&lt; std::size_t &gt; &gt;&amp; bcnodes )
+<span class="lineNum">     140 </span>                :            : // *****************************************************************************
+<span class="lineNum">     141 </span>                :            : //  Compute boundary point normals
+<span class="lineNum">     142 </span>                :            : //! \param[in] bcnodes Local node ids associated to side set ids at which BCs
+<span class="lineNum">     143 </span>                :            : //!    are set that require normals
+<span class="lineNum">     144 </span>                :            : // *****************************************************************************
+<span class="lineNum">     145 </span>                :            : {
+<span class="lineNum">     146 </span>                :<span class="lineCov">        651 :   auto d = Disc();</span>
+<span class="lineNum">     147 </span>                :            : 
+<span class="lineNum">     148 </span>                :<span class="lineCov">        651 :   m_bnorm = cg::bnorm( m_bface, m_triinpoel, d-&gt;Coord(), d-&gt;Gid(), bcnodes );</span>
+<span class="lineNum">     149 </span>                :            : 
+<span class="lineNum">     150 </span>                :            :   // Send our nodal normal contributions to neighbor chares
+<span class="lineNum">     151 </span>        [<span class="branchCov" title="Branch 0 was taken 25 times"> + </span><span class="branchCov" title="Branch 1 was taken 626 times"> + </span>]:<span class="lineCov">        651 :   if (d-&gt;NodeCommMap().empty())</span>
+<span class="lineNum">     152 </span>                :<span class="lineCov">         25 :     comnorm_complete();</span>
+<span class="lineNum">     153 </span>                :            :   else
+<span class="lineNum">     154 </span>        [<span class="branchCov" title="Branch 0 was taken 5338 times"> + </span><span class="branchCov" title="Branch 1 was taken 626 times"> + </span>]:<span class="lineCov">       5964 :     for (const auto&amp; [ neighborchare, sharednodes ] : d-&gt;NodeCommMap()) {</span>
+<span class="lineNum">     155 </span>                :            :       std::unordered_map&lt; int,
+<span class="lineNum">     156 </span>                :<span class="lineCov">       5338 :         std::unordered_map&lt; std::size_t, std::array&lt; tk::real, 4 &gt; &gt; &gt; exp;</span>
+<span class="lineNum">     157 </span>        [<span class="branchCov" title="Branch 0 was taken 107952 times"> + </span><span class="branchCov" title="Branch 1 was taken 5338 times"> + </span>]:<span class="lineCov">     113290 :       for (auto i : sharednodes) {</span>
+<span class="lineNum">     158 </span>        [<span class="branchCov" title="Branch 0 was taken 4396 times"> + </span><span class="branchCov" title="Branch 1 was taken 107952 times"> + </span>]:<span class="lineCov">     112348 :         for (const auto&amp; [s,norms] : m_bnorm) {</span>
+<span class="lineNum">     159 </span>        [<span class="branchCov" title="Branch 0 was taken 4396 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">       4396 :           auto j = norms.find(i);</span>
+<span class="lineNum">     160 </span>[<span class="branchCov" title="Branch 0 was taken 844 times"> + </span><span class="branchCov" title="Branch 1 was taken 3552 times"> + </span>][<span class="branchCov" title="Branch 2 was taken 844 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineCov">       4396 :           if (j != end(norms)) exp[s][i] = j-&gt;second;</span>
+<span class="lineNum">         </span>        [<span class="branchCov" title="Branch 4 was taken 844 times"> + </span><span class="branchNoCov" title="Branch 5 was not taken"> - </span>]
+<span class="lineNum">     161 </span>                :            :         }
+<span class="lineNum">     162 </span>                :            :       }
+<span class="lineNum">     163 </span>[<span class="branchCov" title="Branch 0 was taken 5338 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>][<span class="branchCov" title="Branch 2 was taken 5338 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineCov">       5338 :       thisProxy[ neighborchare ].comnorm( exp );</span>
+<span class="lineNum">     164 </span>                :            :     }
+<span class="lineNum">     165 </span>                :            : 
+<span class="lineNum">     166 </span>                :<span class="lineCov">        651 :   ownnorm_complete();</span>
+<span class="lineNum">     167 </span>                :<span class="lineCov">        651 : }</span>
+<a name="168"><span class="lineNum">     168 </span>                :            : </a>
+<span class="lineNum">     169 </span>                :            : void
+<span class="lineNum">     170 </span>                :<span class="lineCov">       5338 : DiagCG::comnorm( const std::unordered_map&lt; int,</span>
+<span class="lineNum">     171 </span>                :            :       std::unordered_map&lt; std::size_t, std::array&lt; tk::real, 4 &gt; &gt; &gt;&amp; innorm )
+<span class="lineNum">     172 </span>                :            : // *****************************************************************************
+<span class="lineNum">     173 </span>                :            : // Receive boundary point normals on chare-boundaries
+<span class="lineNum">     174 </span>                :            : //! \param[in] innorm Incoming partial sums of boundary point normal
+<span class="lineNum">     175 </span>                :            : //!   contributions to normals (first 3 components), inverse distance squared
+<span class="lineNum">     176 </span>                :            : //!   (4th component)
+<span class="lineNum">     177 </span>                :            : // *****************************************************************************
+<span class="lineNum">     178 </span>                :            : {
+<span class="lineNum">     179 </span>                :            :   // Buffer up inccoming boundary-point normal vector contributions
+<span class="lineNum">     180 </span>        [<span class="branchCov" title="Branch 0 was taken 136 times"> + </span><span class="branchCov" title="Branch 1 was taken 5338 times"> + </span>]:<span class="lineCov">       5474 :   for (const auto&amp; [s,norms] : innorm) {</span>
+<span class="lineNum">     181 </span>        [<span class="branchCov" title="Branch 0 was taken 136 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">        136 :     auto&amp; bnorms = m_bnormc[s];</span>
+<span class="lineNum">     182 </span>        [<span class="branchCov" title="Branch 0 was taken 844 times"> + </span><span class="branchCov" title="Branch 1 was taken 136 times"> + </span>]:<span class="lineCov">        980 :     for (const auto&amp; [p,n] : norms) {</span>
+<span class="lineNum">     183 </span>        [<span class="branchCov" title="Branch 0 was taken 844 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">        844 :       auto&amp; bnorm = bnorms[p];</span>
+<span class="lineNum">     184 </span>                :<span class="lineCov">        844 :       bnorm[0] += n[0];</span>
+<span class="lineNum">     185 </span>                :<span class="lineCov">        844 :       bnorm[1] += n[1];</span>
+<span class="lineNum">     186 </span>                :<span class="lineCov">        844 :       bnorm[2] += n[2];</span>
+<span class="lineNum">     187 </span>                :<span class="lineCov">        844 :       bnorm[3] += n[3];</span>
+<span class="lineNum">     188 </span>                :            :     }
+<span class="lineNum">     189 </span>                :            :   }
+<span class="lineNum">     190 </span>                :            : 
+<span class="lineNum">     191 </span>        [<span class="branchCov" title="Branch 0 was taken 626 times"> + </span><span class="branchCov" title="Branch 1 was taken 4712 times"> + </span>]:<span class="lineCov">       5338 :   if (++m_nnorm == Disc()-&gt;NodeCommMap().size()) {</span>
+<span class="lineNum">     192 </span>                :<span class="lineCov">        626 :     m_nnorm = 0;</span>
+<span class="lineNum">     193 </span>                :<span class="lineCov">        626 :     comnorm_complete();</span>
+<span class="lineNum">     194 </span>                :            :   }
+<span class="lineNum">     195 </span>                :<span class="lineCov">       5338 : }</span>
+<a name="196"><span class="lineNum">     196 </span>                :            : </a>
+<span class="lineNum">     197 </span>                :            : void
+<span class="lineNum">     198 </span>                :<span class="lineCov">        651 : DiagCG::normfinal()</span>
+<span class="lineNum">     199 </span>                :            : // *****************************************************************************
+<span class="lineNum">     200 </span>                :            : //  Finish computing boundary point normals
+<span class="lineNum">     201 </span>                :            : // *****************************************************************************
+<span class="lineNum">     202 </span>                :            : {
+<span class="lineNum">     203 </span>        [<span class="branchCov" title="Branch 0 was taken 651 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">        651 :   auto d = Disc();</span>
+<span class="lineNum">     204 </span>                :<span class="lineCov">        651 :   const auto&amp; lid = d-&gt;Lid();</span>
+<span class="lineNum">     205 </span>                :            : 
+<span class="lineNum">     206 </span>                :            :   // Combine own and communicated contributions to boundary point normals
+<span class="lineNum">     207 </span>        [<span class="branchCov" title="Branch 0 was taken 50 times"> + </span><span class="branchCov" title="Branch 1 was taken 651 times"> + </span>]:<span class="lineCov">        701 :   for (const auto&amp; [s,norms] : m_bnormc)</span>
+<span class="lineNum">     208 </span>        [<span class="branchCov" title="Branch 0 was taken 760 times"> + </span><span class="branchCov" title="Branch 1 was taken 50 times"> + </span>]:<span class="lineCov">        810 :     for (const auto&amp; [p,n] : norms) {</span>
+<span class="lineNum">     209 </span>        [<span class="branchCov" title="Branch 0 was taken 760 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">        760 :       auto k = m_bnorm.find(s);</span>
+<span class="lineNum">     210 </span>        [<span class="branchCov" title="Branch 0 was taken 748 times"> + </span><span class="branchCov" title="Branch 1 was taken 12 times"> + </span>]:<span class="lineCov">        760 :       if (k != end(m_bnorm)) {</span>
+<span class="lineNum">     211 </span>        [<span class="branchCov" title="Branch 0 was taken 748 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">        748 :         auto j = k-&gt;second.find(p);</span>
+<span class="lineNum">     212 </span>        [<span class="branchCov" title="Branch 0 was taken 748 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">        748 :         if (j != end(k-&gt;second)) {</span>
+<span class="lineNum">     213 </span>                :<span class="lineCov">        748 :           auto&amp; norm = j-&gt;second;</span>
+<span class="lineNum">     214 </span>                :<span class="lineCov">        748 :           norm[0] += n[0];</span>
+<span class="lineNum">     215 </span>                :<span class="lineCov">        748 :           norm[1] += n[1];</span>
+<span class="lineNum">     216 </span>                :<span class="lineCov">        748 :           norm[2] += n[2];</span>
+<span class="lineNum">     217 </span>                :<span class="lineCov">        748 :           norm[3] += n[3];</span>
+<span class="lineNum">     218 </span>                :            :         }
+<span class="lineNum">     219 </span>                :            :       }
+<span class="lineNum">     220 </span>                :            :     }
+<span class="lineNum">     221 </span>                :<span class="lineCov">        651 :   tk::destroy( m_bnormc );</span>
+<span class="lineNum">     222 </span>                :            : 
+<span class="lineNum">     223 </span>                :            :   // Divie summed point normals by the sum of inverse distance squared
+<span class="lineNum">     224 </span>        [<span class="branchCov" title="Branch 0 was taken 50 times"> + </span><span class="branchCov" title="Branch 1 was taken 651 times"> + </span>]:<span class="lineCov">        701 :   for (auto&amp; [s,norms] : m_bnorm)</span>
+<span class="lineNum">     225 </span>        [<span class="branchCov" title="Branch 0 was taken 2522 times"> + </span><span class="branchCov" title="Branch 1 was taken 50 times"> + </span>]:<span class="lineCov">       2572 :     for (auto&amp; [p,n] : norms) {</span>
+<span class="lineNum">     226 </span>                :<span class="lineCov">       2522 :       n[0] /= n[3];</span>
+<span class="lineNum">     227 </span>                :<span class="lineCov">       2522 :       n[1] /= n[3];</span>
+<span class="lineNum">     228 </span>                :<span class="lineCov">       2522 :       n[2] /= n[3];</span>
+<span class="lineNum">     229 </span>[<span class="branchNoCov" title="Branch 0 was not taken"> - </span><span class="branchCov" title="Branch 1 was taken 2522 times"> + </span>][<span class="branchNoCov" title="Branch 2 was not taken"> - </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineCov">       2522 :       Assert( (n[0]*n[0] + n[1]*n[1] + n[2]*n[2] - 1.0) &lt;</span>
+<span class="lineNum">         </span>[<span class="branchNoCov" title="Branch 4 was not taken"> - </span><span class="branchNoCov" title="Branch 5 was not taken"> - </span>][<span class="branchNoCov" title="Branch 6 was not taken"> - </span><span class="branchNoCov" title="Branch 7 was not taken"> - </span>]
+<span class="lineNum">     230 </span>                :            :               std::numeric_limits&lt; tk::real &gt;::epsilon(), &quot;Non-unit normal&quot; );
+<span class="lineNum">     231 </span>                :            :     }
+<span class="lineNum">     232 </span>                :            : 
+<span class="lineNum">     233 </span>                :            :   // Replace global-&gt;local ids associated to boundary point normals
+<span class="lineNum">     234 </span>                :<span class="lineCov">        651 :   decltype(m_bnorm) bnorm;</span>
+<span class="lineNum">     235 </span>        [<span class="branchCov" title="Branch 0 was taken 50 times"> + </span><span class="branchCov" title="Branch 1 was taken 651 times"> + </span>]:<span class="lineCov">        701 :   for (auto&amp; [s,norms] : m_bnorm) {</span>
+<span class="lineNum">     236 </span>        [<span class="branchCov" title="Branch 0 was taken 50 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">         50 :     auto&amp; bnorms = bnorm[s];</span>
+<span class="lineNum">     237 </span>        [<span class="branchCov" title="Branch 0 was taken 2522 times"> + </span><span class="branchCov" title="Branch 1 was taken 50 times"> + </span>]:<span class="lineCov">       2572 :     for (auto&amp;&amp; [g,n] : norms)</span>
+<span class="lineNum">     238 </span>[<span class="branchCov" title="Branch 0 was taken 2522 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>][<span class="branchCov" title="Branch 2 was taken 2522 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineCov">       2522 :       bnorms[ tk::cref_find(lid,g) ] = std::move(n);</span>
+<span class="lineNum">     239 </span>                :            :   }
+<span class="lineNum">     240 </span>                :<span class="lineCov">        651 :   m_bnorm = std::move(bnorm);</span>
+<span class="lineNum">     241 </span>                :            : 
+<span class="lineNum">     242 </span>                :            :   // Prepare unique set of symmetry BC nodes
+<span class="lineNum">     243 </span>        [<span class="branchCov" title="Branch 0 was taken 651 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">        651 :   m_symbcnodemap = d-&gt;bcnodes&lt;tag::bcsym&gt;( m_bface, m_triinpoel );</span>
+<span class="lineNum">     244 </span>        [<span class="branchCov" title="Branch 0 was taken 50 times"> + </span><span class="branchCov" title="Branch 1 was taken 651 times"> + </span>]:<span class="lineCov">        701 :   for (const auto&amp; [s,nodes] : m_symbcnodemap)</span>
+<span class="lineNum">     245 </span>        [<span class="branchCov" title="Branch 0 was taken 50 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">         50 :     m_symbcnodes.insert( begin(nodes), end(nodes) );</span>
+<span class="lineNum">     246 </span>                :            : 
+<span class="lineNum">     247 </span>                :            :   // Prepare unique set of farfield BC nodes
+<span class="lineNum">     248 </span>[<span class="branchCov" title="Branch 0 was taken 651 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>][<span class="branchNoCov" title="Branch 2 was not taken"> - </span><span class="branchCov" title="Branch 3 was taken 651 times"> + </span>]:<span class="lineCov">        651 :   for (const auto&amp; [s,nodes] : d-&gt;bcnodes&lt;tag::bcfarfield&gt;(m_bface,m_triinpoel))</span>
+<span class="lineNum">     249 </span>        [<span class="branchNoCov" title="Branch 0 was not taken"> - </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineNoCov">          0 :     m_farfieldbcnodes.insert( begin(nodes), end(nodes) );</span>
+<span class="lineNum">     250 </span>                :            : 
+<span class="lineNum">     251 </span>                :            :   // If farfield BC is set on a node, will not also set symmetry BC
+<span class="lineNum">     252 </span>        [<span class="branchNoCov" title="Branch 0 was not taken"> - </span><span class="branchCov" title="Branch 1 was taken 651 times"> + </span>]:<span class="lineCov">        651 :   for (auto fn : m_farfieldbcnodes) {</span>
+<span class="lineNum">     253 </span>        [<span class="branchNoCov" title="Branch 0 was not taken"> - </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineNoCov">          0 :     m_symbcnodes.erase(fn);</span>
+<span class="lineNum">     254 </span>[<span class="branchNoCov" title="Branch 0 was not taken"> - </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>][<span class="branchNoCov" title="Branch 2 was not taken"> - </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineNoCov">          0 :     for (auto&amp; [s,nodes] : m_symbcnodemap) nodes.erase(fn);</span>
+<span class="lineNum">     255 </span>                :            :   }
+<span class="lineNum">     256 </span>                :            : 
+<span class="lineNum">     257 </span>                :            :   // Signal the runtime system that the workers have been created
+<span class="lineNum">     258 </span>        [<span class="branchCov" title="Branch 0 was taken 651 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">        651 :   contribute( sizeof(int), &amp;m_initial, CkReduction::sum_int,</span>
+<span class="lineNum">     259 </span>[<span class="branchCov" title="Branch 0 was taken 651 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>][<span class="branchCov" title="Branch 2 was taken 651 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineCov">       1302 :     CkCallback(CkReductionTarget(Transporter,comfinal), d-&gt;Tr()) );</span>
+<span class="lineNum">     260 </span>                :<span class="lineCov">        651 : }</span>
+<a name="261"><span class="lineNum">     261 </span>                :            : </a>
+<span class="lineNum">     262 </span>                :            : void
+<span class="lineNum">     263 </span>                :<span class="lineCov">        617 : DiagCG::registerReducers()</span>
+<span class="lineNum">     264 </span>                :            : // *****************************************************************************
+<span class="lineNum">     265 </span>                :            : //  Configure Charm++ reduction types initiated from this chare array
+<span class="lineNum">     266 </span>                :            : //! \details Since this is a [initnode] routine, the runtime system executes the
+<span class="lineNum">     267 </span>                :            : //!   routine exactly once on every logical node early on in the Charm++ init
+<span class="lineNum">     268 </span>                :            : //!   sequence. Must be static as it is called without an object. See also:
+<span class="lineNum">     269 </span>                :            : //!   Section &quot;Initializations at Program Startup&quot; at in the Charm++ manual
+<span class="lineNum">     270 </span>                :            : //!   http://charm.cs.illinois.edu/manuals/html/charm++/manual.html.
+<span class="lineNum">     271 </span>                :            : // *****************************************************************************
+<span class="lineNum">     272 </span>                :            : {
+<span class="lineNum">     273 </span>                :<span class="lineCov">        617 :   NodeDiagnostics::registerReducers();</span>
+<span class="lineNum">     274 </span>                :<span class="lineCov">        617 : }</span>
+<a name="275"><span class="lineNum">     275 </span>                :            : </a>
+<span class="lineNum">     276 </span>                :            : void
+<span class="lineNum">     277 </span>                :<span class="lineCov">       9930 : DiagCG::ResumeFromSync()</span>
+<span class="lineNum">     278 </span>                :            : // *****************************************************************************
+<span class="lineNum">     279 </span>                :            : //  Return from migration
+<span class="lineNum">     280 </span>                :            : //! \details This is called when load balancing (LB) completes. The presence of
+<span class="lineNum">     281 </span>                :            : //!   this function does not affect whether or not we block on LB.
+<span class="lineNum">     282 </span>                :            : // *****************************************************************************
+<span class="lineNum">     283 </span>                :            : {
+<span class="lineNum">     284 </span>[<span class="branchNoCov" title="Branch 0 was not taken"> - </span><span class="branchCov" title="Branch 1 was taken 9930 times"> + </span>][<span class="branchNoCov" title="Branch 2 was not taken"> - </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineCov">       9930 :   if (Disc()-&gt;It() == 0) Throw( &quot;it = 0 in ResumeFromSync()&quot; );</span>
+<span class="lineNum">         </span>[<span class="branchNoCov" title="Branch 4 was not taken"> - </span><span class="branchNoCov" title="Branch 5 was not taken"> - </span>][<span class="branchNoCov" title="Branch 6 was not taken"> - </span><span class="branchNoCov" title="Branch 7 was not taken"> - </span>]
+<span class="lineNum">     285 </span>                :            : 
+<span class="lineNum">     286 </span>        [<span class="branchCov" title="Branch 0 was taken 9930 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">       9930 :   if (!g_inputdeck.get&lt; tag::cmd, tag::nonblocking &gt;()) next();</span>
+<span class="lineNum">     287 </span>                :<span class="lineCov">       9930 : }</span>
+<a name="288"><span class="lineNum">     288 </span>                :            : </a>
+<span class="lineNum">     289 </span>                :            : void
+<span class="lineNum">     290 </span>                :<span class="lineCov">        651 : DiagCG::setup()</span>
+<span class="lineNum">     291 </span>                :            : // *****************************************************************************
+<span class="lineNum">     292 </span>                :            : // Set and output initial conditions and mesh to file
+<span class="lineNum">     293 </span>                :            : // *****************************************************************************
+<span class="lineNum">     294 </span>                :            : {
+<span class="lineNum">     295 </span>                :<span class="lineCov">        651 :   auto d = Disc();</span>
+<span class="lineNum">     296 </span>                :<span class="lineCov">        651 :   const auto&amp; coord = d-&gt;Coord();</span>
+<span class="lineNum">     297 </span>                :            : 
+<span class="lineNum">     298 </span>                :            :   // Set initial conditions for all PDEs
+<span class="lineNum">     299 </span>[<span class="branchCov" title="Branch 0 was taken 651 times"> + </span><span class="branchCov" title="Branch 1 was taken 651 times"> + </span>][<span class="branchCov" title="Branch 2 was taken 651 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineCov">       1302 :   for (auto&amp; eq : g_cgpde) eq.initialize( coord, m_u, d-&gt;T(), m_boxnodes );</span>
+<span class="lineNum">     300 </span>                :            : 
+<span class="lineNum">     301 </span>                :            :   // Apply symmetry BCs on initial conditions
+<span class="lineNum">     302 </span>        [<span class="branchCov" title="Branch 0 was taken 651 times"> + </span><span class="branchCov" title="Branch 1 was taken 651 times"> + </span>]:<span class="lineCov">       1302 :   for (const auto&amp; eq : g_cgpde)</span>
+<span class="lineNum">     303 </span>        [<span class="branchCov" title="Branch 0 was taken 651 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">        651 :     eq.symbc( m_u, coord, m_bnorm, m_symbcnodes );</span>
+<span class="lineNum">     304 </span>                :            :   // Apply farfield BCs on initial conditions
+<span class="lineNum">     305 </span>        [<span class="branchCov" title="Branch 0 was taken 651 times"> + </span><span class="branchCov" title="Branch 1 was taken 651 times"> + </span>]:<span class="lineCov">       1302 :   for (const auto&amp; eq : g_cgpde)</span>
+<span class="lineNum">     306 </span>        [<span class="branchCov" title="Branch 0 was taken 651 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">        651 :     eq.farfieldbc( m_u, coord, m_bnorm, m_farfieldbcnodes );</span>
+<span class="lineNum">     307 </span>                :            : 
+<span class="lineNum">     308 </span>                :            :   // Compute volume of user-defined box IC
+<span class="lineNum">     309 </span>                :<span class="lineCov">        651 :   d-&gt;boxvol( m_boxnodes );</span>
+<span class="lineNum">     310 </span>                :            : 
+<span class="lineNum">     311 </span>                :            :   // Query time history field output labels from all PDEs integrated
+<span class="lineNum">     312 </span>                :<span class="lineCov">        651 :   const auto&amp; hist_points = g_inputdeck.get&lt; tag::history, tag::point &gt;();</span>
+<span class="lineNum">     313 </span>        [<span class="branchNoCov" title="Branch 0 was not taken"> - </span><span class="branchCov" title="Branch 1 was taken 651 times"> + </span>]:<span class="lineCov">        651 :   if (!hist_points.empty()) {</span>
+<span class="lineNum">     314 </span>                :<span class="lineNoCov">          0 :     std::vector&lt; std::string &gt; histnames;</span>
+<span class="lineNum">     315 </span>        [<span class="branchNoCov" title="Branch 0 was not taken"> - </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineNoCov">          0 :     for (const auto&amp; eq : g_cgpde) {</span>
+<span class="lineNum">     316 </span>        [<span class="branchNoCov" title="Branch 0 was not taken"> - </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineNoCov">          0 :       auto n = eq.histNames();</span>
+<span class="lineNum">     317 </span>        [<span class="branchNoCov" title="Branch 0 was not taken"> - </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineNoCov">          0 :       histnames.insert( end(histnames), begin(n), end(n) );</span>
+<span class="lineNum">     318 </span>                :            :     }
+<span class="lineNum">     319 </span>        [<span class="branchNoCov" title="Branch 0 was not taken"> - </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineNoCov">          0 :     d-&gt;histheader( std::move(histnames) );</span>
+<span class="lineNum">     320 </span>                :            :   }
+<span class="lineNum">     321 </span>                :<span class="lineCov">        651 : }</span>
+<a name="322"><span class="lineNum">     322 </span>                :            : </a>
+<span class="lineNum">     323 </span>                :            : void
+<span class="lineNum">     324 </span>                :<span class="lineCov">        651 : DiagCG::box( tk::real v )</span>
+<span class="lineNum">     325 </span>                :            : // *****************************************************************************
+<span class="lineNum">     326 </span>                :            : // Receive total box IC volume and set conditions in box
+<span class="lineNum">     327 </span>                :            : //! \param[in] v Total volume within user-specified box
+<span class="lineNum">     328 </span>                :            : // *****************************************************************************
+<span class="lineNum">     329 </span>                :            : {
+<span class="lineNum">     330 </span>                :<span class="lineCov">        651 :   auto d = Disc();</span>
+<span class="lineNum">     331 </span>                :            : 
+<span class="lineNum">     332 </span>                :            :   // Store user-defined box IC volume
+<span class="lineNum">     333 </span>                :<span class="lineCov">        651 :   d-&gt;Boxvol() = v;</span>
+<span class="lineNum">     334 </span>                :            : 
+<span class="lineNum">     335 </span>                :            :   // Set user-defined IC box conditions
+<span class="lineNum">     336 </span>        [<span class="branchCov" title="Branch 0 was taken 651 times"> + </span><span class="branchCov" title="Branch 1 was taken 651 times"> + </span>]:<span class="lineCov">       1302 :   for (const auto&amp; eq : g_cgpde)</span>
+<span class="lineNum">     337 </span>        [<span class="branchCov" title="Branch 0 was taken 651 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">        651 :     eq.box( d-&gt;Boxvol(), d-&gt;T(), m_boxnodes, d-&gt;Coord(), m_u, m_boxnodes_set );</span>
+<span class="lineNum">     338 </span>                :            : 
+<span class="lineNum">     339 </span>                :            :   // Output initial conditions to file (regardless of whether it was requested)
+<span class="lineNum">     340 </span>[<span class="branchCov" title="Branch 0 was taken 651 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>][<span class="branchCov" title="Branch 2 was taken 651 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineCov">        651 :   writeFields( CkCallback(CkIndex_DiagCG::init(), thisProxy[thisIndex]) );</span>
+<span class="lineNum">         </span>        [<span class="branchCov" title="Branch 4 was taken 651 times"> + </span><span class="branchNoCov" title="Branch 5 was not taken"> - </span>]
+<span class="lineNum">     341 </span>                :<span class="lineCov">        651 : }</span>
+<a name="342"><span class="lineNum">     342 </span>                :            : </a>
+<span class="lineNum">     343 </span>                :            : void
+<span class="lineNum">     344 </span>                :<span class="lineCov">        651 : DiagCG::init()</span>
+<span class="lineNum">     345 </span>                :            : // *****************************************************************************
+<span class="lineNum">     346 </span>                :            : // Initially compute left hand side diagonal matrix
+<span class="lineNum">     347 </span>                :            : // *****************************************************************************
+<span class="lineNum">     348 </span>                :            : {
+<span class="lineNum">     349 </span>                :<span class="lineCov">        651 :   lhs();</span>
+<span class="lineNum">     350 </span>                :<span class="lineCov">        651 : }</span>
+<a name="351"><span class="lineNum">     351 </span>                :            : </a>
+<span class="lineNum">     352 </span>                :            : void
+<span class="lineNum">     353 </span>                :<span class="lineCov">      18345 : DiagCG::next()</span>
+<span class="lineNum">     354 </span>                :            : // *****************************************************************************
+<span class="lineNum">     355 </span>                :            : // Continue to next time step
+<span class="lineNum">     356 </span>                :            : // *****************************************************************************
+<span class="lineNum">     357 </span>                :            : {
+<span class="lineNum">     358 </span>                :<span class="lineCov">      18345 :   dt();</span>
+<span class="lineNum">     359 </span>                :<span class="lineCov">      18345 : }</span>
+<a name="360"><span class="lineNum">     360 </span>                :            : </a>
+<span class="lineNum">     361 </span>                :            : void
+<span class="lineNum">     362 </span>                :<span class="lineCov">        727 : DiagCG::lhs()</span>
+<span class="lineNum">     363 </span>                :            : // *****************************************************************************
+<span class="lineNum">     364 </span>                :            : // Compute the left-hand side of transport equations
+<span class="lineNum">     365 </span>                :            : // *****************************************************************************
+<span class="lineNum">     366 </span>                :            : {
+<span class="lineNum">     367 </span>                :<span class="lineCov">        727 :   auto d = Disc();</span>
+<span class="lineNum">     368 </span>                :            : 
+<span class="lineNum">     369 </span>                :            :   // Compute lumped mass lhs required for both high and low order solutions
+<span class="lineNum">     370 </span>                :<span class="lineCov">        727 :   m_lhs = tk::lump( m_u.nprop(), d-&gt;Coord(), d-&gt;Inpoel() );</span>
+<span class="lineNum">     371 </span>                :            : 
+<span class="lineNum">     372 </span>        [<span class="branchCov" title="Branch 0 was taken 27 times"> + </span><span class="branchCov" title="Branch 1 was taken 700 times"> + </span>]:<span class="lineCov">        727 :   if (d-&gt;NodeCommMap().empty())</span>
+<span class="lineNum">     373 </span>                :<span class="lineCov">         27 :     comlhs_complete();</span>
+<span class="lineNum">     374 </span>                :            :   else // send contributions of lhs to chare-boundary nodes to fellow chares
+<span class="lineNum">     375 </span>        [<span class="branchCov" title="Branch 0 was taken 5810 times"> + </span><span class="branchCov" title="Branch 1 was taken 700 times"> + </span>]:<span class="lineCov">       6510 :     for (const auto&amp; [c,n] : d-&gt;NodeCommMap()) {</span>
+<span class="lineNum">     376 </span>        [<span class="branchCov" title="Branch 0 was taken 5810 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">       5810 :       std::vector&lt; std::vector&lt; tk::real &gt; &gt; l( n.size() );</span>
+<span class="lineNum">     377 </span>                :<span class="lineCov">       5810 :       std::size_t j = 0;</span>
+<span class="lineNum">     378 </span>[<span class="branchCov" title="Branch 0 was taken 128126 times"> + </span><span class="branchCov" title="Branch 1 was taken 5810 times"> + </span>][<span class="branchCov" title="Branch 2 was taken 128126 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineCov">     133936 :       for (auto i : n) l[ j++ ] = m_lhs[ tk::cref_find(d-&gt;Lid(),i) ];</span>
+<span class="lineNum">         </span>        [<span class="branchCov" title="Branch 4 was taken 128126 times"> + </span><span class="branchNoCov" title="Branch 5 was not taken"> - </span>]
+<span class="lineNum">     379 </span>[<span class="branchCov" title="Branch 0 was taken 5810 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>][<span class="branchCov" title="Branch 2 was taken 5810 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineCov">       5810 :       thisProxy[c].comlhs( std::vector&lt;std::size_t&gt;(begin(n),end(n)), l );</span>
+<span class="lineNum">         </span>        [<span class="branchCov" title="Branch 4 was taken 5810 times"> + </span><span class="branchNoCov" title="Branch 5 was not taken"> - </span>]
+<span class="lineNum">     380 </span>                :            :     }
+<span class="lineNum">     381 </span>                :            : 
+<span class="lineNum">     382 </span>                :<span class="lineCov">        727 :   ownlhs_complete();</span>
+<span class="lineNum">     383 </span>                :<span class="lineCov">        727 : }</span>
+<a name="384"><span class="lineNum">     384 </span>                :            : </a>
+<span class="lineNum">     385 </span>                :            : void
+<span class="lineNum">     386 </span>                :<span class="lineCov">       5810 : DiagCG::comlhs( const std::vector&lt; std::size_t &gt;&amp; gid,</span>
+<span class="lineNum">     387 </span>                :            :                 const std::vector&lt; std::vector&lt; tk::real &gt; &gt;&amp; L )
+<span class="lineNum">     388 </span>                :            : // *****************************************************************************
+<span class="lineNum">     389 </span>                :            : //  Receive contributions to left-hand side diagonal matrix on chare-boundaries
+<span class="lineNum">     390 </span>                :            : //! \param[in] gid Global mesh node IDs at which we receive LHS contributions
+<span class="lineNum">     391 </span>                :            : //! \param[in] L Partial contributions of LHS to chare-boundary nodes
+<span class="lineNum">     392 </span>                :            : //! \details This function receives contributions to m_lhs, which stores the
+<span class="lineNum">     393 </span>                :            : //!   diagonal (lumped) mass matrix at mesh nodes. While m_lhs stores
+<span class="lineNum">     394 </span>                :            : //!   own contributions, m_lhsc collects the neighbor chare contributions during
+<span class="lineNum">     395 </span>                :            : //!   communication. This way work on m_lhs and m_lhsc is overlapped. The two
+<span class="lineNum">     396 </span>                :            : //!   are combined in lhsmerge().
+<span class="lineNum">     397 </span>                :            : // *****************************************************************************
+<span class="lineNum">     398 </span>                :            : {
+<span class="lineNum">     399 </span>[<span class="branchNoCov" title="Branch 0 was not taken"> - </span><span class="branchCov" title="Branch 1 was taken 5810 times"> + </span>][<span class="branchNoCov" title="Branch 2 was not taken"> - </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineCov">       5810 :   Assert( L.size() == gid.size(), &quot;Size mismatch&quot; );</span>
+<span class="lineNum">         </span>[<span class="branchNoCov" title="Branch 4 was not taken"> - </span><span class="branchNoCov" title="Branch 5 was not taken"> - </span>][<span class="branchNoCov" title="Branch 6 was not taken"> - </span><span class="branchNoCov" title="Branch 7 was not taken"> - </span>]
+<span class="lineNum">     400 </span>                :            : 
+<span class="lineNum">     401 </span>                :            :   using tk::operator+=;
+<span class="lineNum">     402 </span>                :            : 
+<span class="lineNum">     403 </span>        [<span class="branchCov" title="Branch 0 was taken 128126 times"> + </span><span class="branchCov" title="Branch 1 was taken 5810 times"> + </span>]:<span class="lineCov">     133936 :   for (std::size_t i=0; i&lt;gid.size(); ++i)</span>
+<span class="lineNum">     404 </span>                :<span class="lineCov">     128126 :     m_lhsc[ gid[i] ] += L[i];</span>
+<span class="lineNum">     405 </span>                :            : 
+<span class="lineNum">     406 </span>        [<span class="branchCov" title="Branch 0 was taken 700 times"> + </span><span class="branchCov" title="Branch 1 was taken 5110 times"> + </span>]:<span class="lineCov">       5810 :   if (++m_nlhs == Disc()-&gt;NodeCommMap().size()) {</span>
+<span class="lineNum">     407 </span>                :<span class="lineCov">        700 :     m_nlhs = 0;</span>
+<span class="lineNum">     408 </span>                :<span class="lineCov">        700 :     comlhs_complete();</span>
+<span class="lineNum">     409 </span>                :            :   }
+<span class="lineNum">     410 </span>                :<span class="lineCov">       5810 : }</span>
+<a name="411"><span class="lineNum">     411 </span>                :            : </a>
+<span class="lineNum">     412 </span>                :            : void
+<span class="lineNum">     413 </span>                :<span class="lineCov">        727 : DiagCG::lhsmerge()</span>
+<span class="lineNum">     414 </span>                :            : // *****************************************************************************
+<span class="lineNum">     415 </span>                :            : // The own and communication portion of the left-hand side is complete
+<span class="lineNum">     416 </span>                :            : // *****************************************************************************
+<span class="lineNum">     417 </span>                :            : {
+<span class="lineNum">     418 </span>                :            :   // Combine own and communicated contributions to left hand side
+<span class="lineNum">     419 </span>        [<span class="branchCov" title="Branch 0 was taken 92364 times"> + </span><span class="branchCov" title="Branch 1 was taken 727 times"> + </span>]:<span class="lineCov">      93091 :   for (const auto&amp; b : m_lhsc) {</span>
+<span class="lineNum">     420 </span>[<span class="branchCov" title="Branch 0 was taken 92364 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>][<span class="branchCov" title="Branch 2 was taken 92364 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineCov">      92364 :     auto lid = tk::cref_find( Disc()-&gt;Lid(), b.first );</span>
+<span class="lineNum">     421 </span>        [<span class="branchCov" title="Branch 0 was taken 149240 times"> + </span><span class="branchCov" title="Branch 1 was taken 92364 times"> + </span>]:<span class="lineCov">     241604 :     for (ncomp_t c=0; c&lt;m_lhs.nprop(); ++c)</span>
+<span class="lineNum">     422 </span>        [<span class="branchCov" title="Branch 0 was taken 149240 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">     149240 :       m_lhs(lid,c,0) += b.second[c];</span>
+<span class="lineNum">     423 </span>                :            :   }
+<span class="lineNum">     424 </span>                :            : 
+<span class="lineNum">     425 </span>                :            :   // Clear receive buffer
+<span class="lineNum">     426 </span>                :<span class="lineCov">        727 :   tk::destroy(m_lhsc);</span>
+<span class="lineNum">     427 </span>                :            : 
+<span class="lineNum">     428 </span>                :            :   // Continue after lhs is complete
+<span class="lineNum">     429 </span>        [<span class="branchCov" title="Branch 0 was taken 651 times"> + </span><span class="branchCov" title="Branch 1 was taken 76 times"> + </span>]:<span class="lineCov">        727 :   if (m_initial) {</span>
+<span class="lineNum">     430 </span>                :            :     // Start timer measuring time stepping wall clock time
+<span class="lineNum">     431 </span>                :<span class="lineCov">        651 :     Disc()-&gt;Timer().zero();</span>
+<span class="lineNum">     432 </span>                :            :     // Zero grind-timer
+<span class="lineNum">     433 </span>                :<span class="lineCov">        651 :     Disc()-&gt;grindZero();</span>
+<span class="lineNum">     434 </span>                :            :     // Continue to next time step
+<span class="lineNum">     435 </span>                :<span class="lineCov">        651 :     next();</span>
+<span class="lineNum">     436 </span>                :            :   } else {
+<span class="lineNum">     437 </span>                :<span class="lineCov">         76 :     lhs_complete();</span>
+<span class="lineNum">     438 </span>                :            :   }
+<span class="lineNum">     439 </span>                :<span class="lineCov">        727 : }</span>
+<a name="440"><span class="lineNum">     440 </span>                :            : </a>
+<span class="lineNum">     441 </span>                :            : void
+<span class="lineNum">     442 </span>                :<span class="lineCov">      18345 : DiagCG::dt()</span>
+<span class="lineNum">     443 </span>                :            : // *****************************************************************************
+<span class="lineNum">     444 </span>                :            : // Compute time step size
+<span class="lineNum">     445 </span>                :            : // *****************************************************************************
+<span class="lineNum">     446 </span>                :            : {
+<span class="lineNum">     447 </span>                :<span class="lineCov">      18345 :   tk::real mindt = std::numeric_limits&lt; tk::real &gt;::max();</span>
+<span class="lineNum">     448 </span>                :            : 
+<span class="lineNum">     449 </span>                :<span class="lineCov">      18345 :   auto const_dt = g_inputdeck.get&lt; tag::discr, tag::dt &gt;();</span>
+<span class="lineNum">     450 </span>                :<span class="lineCov">      18345 :   auto def_const_dt = g_inputdeck_defaults.get&lt; tag::discr, tag::dt &gt;();</span>
+<span class="lineNum">     451 </span>                :<span class="lineCov">      18345 :   auto eps = std::numeric_limits&lt; tk::real &gt;::epsilon();</span>
+<span class="lineNum">     452 </span>                :            : 
+<span class="lineNum">     453 </span>        [<span class="branchCov" title="Branch 0 was taken 18345 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">      18345 :   auto d = Disc();</span>
+<span class="lineNum">     454 </span>                :            : 
+<span class="lineNum">     455 </span>                :            :   // use constant dt if configured
+<span class="lineNum">     456 </span>        [<span class="branchCov" title="Branch 0 was taken 3120 times"> + </span><span class="branchCov" title="Branch 1 was taken 15225 times"> + </span>]:<span class="lineCov">      18345 :   if (std::abs(const_dt - def_const_dt) &gt; eps) {</span>
+<span class="lineNum">     457 </span>                :            : 
+<span class="lineNum">     458 </span>                :<span class="lineCov">       3120 :     mindt = const_dt;</span>
+<span class="lineNum">     459 </span>                :            : 
+<span class="lineNum">     460 </span>                :            :   } else {      // compute dt based on CFL
+<span class="lineNum">     461 </span>                :            : 
+<span class="lineNum">     462 </span>                :            :     // find the minimum dt across all PDEs integrated
+<span class="lineNum">     463 </span>        [<span class="branchCov" title="Branch 0 was taken 15225 times"> + </span><span class="branchCov" title="Branch 1 was taken 15225 times"> + </span>]:<span class="lineCov">      30450 :     for (const auto&amp; eq : g_cgpde) {</span>
+<span class="lineNum">     464 </span>        [<span class="branchCov" title="Branch 0 was taken 15225 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">      15225 :       auto eqdt = eq.dt( d-&gt;Coord(), d-&gt;Inpoel(), m_u );</span>
+<span class="lineNum">     465 </span>        [<span class="branchCov" title="Branch 0 was taken 15225 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">      15225 :       if (eqdt &lt; mindt) mindt = eqdt;</span>
+<span class="lineNum">     466 </span>                :            :     }
+<span class="lineNum">     467 </span>                :            : 
+<span class="lineNum">     468 </span>                :            :   }
+<span class="lineNum">     469 </span>                :            : 
+<span class="lineNum">     470 </span>                :            :   // Actiavate SDAG waits for time step
+<span class="lineNum">     471 </span>[<span class="branchCov" title="Branch 0 was taken 18345 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>][<span class="branchCov" title="Branch 2 was taken 18345 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineCov">      18345 :   thisProxy[ thisIndex ].wait4rhs();</span>
+<span class="lineNum">     472 </span>[<span class="branchCov" title="Branch 0 was taken 18345 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>][<span class="branchCov" title="Branch 2 was taken 18345 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineCov">      18345 :   thisProxy[ thisIndex ].wait4out();</span>
+<span class="lineNum">     473 </span>                :            : 
+<span class="lineNum">     474 </span>                :            :   // Activate SDAG-waits for FCT
+<span class="lineNum">     475 </span>[<span class="branchCov" title="Branch 0 was taken 18345 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>][<span class="branchCov" title="Branch 2 was taken 18345 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineCov">      18345 :   d-&gt;FCT()-&gt;next();</span>
+<span class="lineNum">     476 </span>                :            : 
+<span class="lineNum">     477 </span>                :            :   // Contribute to minimum dt across all chares the advance to next step
+<span class="lineNum">     478 </span>        [<span class="branchCov" title="Branch 0 was taken 18345 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">      18345 :   contribute( sizeof(tk::real), &amp;mindt, CkReduction::min_double,</span>
+<span class="lineNum">     479 </span>[<span class="branchCov" title="Branch 0 was taken 18345 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>][<span class="branchCov" title="Branch 2 was taken 18345 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineCov">      36690 :               CkCallback(CkReductionTarget(DiagCG,advance), thisProxy) );</span>
+<span class="lineNum">     480 </span>                :<span class="lineCov">      18345 : }</span>
+<a name="481"><span class="lineNum">     481 </span>                :            : </a>
+<span class="lineNum">     482 </span>                :            : void
+<span class="lineNum">     483 </span>                :<span class="lineCov">      18345 : DiagCG::advance( tk::real newdt )</span>
+<span class="lineNum">     484 </span>                :            : // *****************************************************************************
+<span class="lineNum">     485 </span>                :            : // Advance equations to next time step
+<span class="lineNum">     486 </span>                :            : //! \param[in] newdt Size of this new time step
+<span class="lineNum">     487 </span>                :            : // *****************************************************************************
+<span class="lineNum">     488 </span>                :            : {
+<span class="lineNum">     489 </span>                :<span class="lineCov">      18345 :   auto d = Disc();</span>
+<span class="lineNum">     490 </span>                :            : 
+<span class="lineNum">     491 </span>                :            :   // Set new time step size
+<span class="lineNum">     492 </span>                :<span class="lineCov">      18345 :   d-&gt;setdt( newdt );</span>
+<span class="lineNum">     493 </span>                :            : 
+<span class="lineNum">     494 </span>                :            :   // Compute rhs for next time step
+<span class="lineNum">     495 </span>                :<span class="lineCov">      18345 :   rhs();</span>
+<span class="lineNum">     496 </span>                :<span class="lineCov">      18345 : }</span>
+<a name="497"><span class="lineNum">     497 </span>                :            : </a>
+<span class="lineNum">     498 </span>                :            : void
+<span class="lineNum">     499 </span>                :<span class="lineCov">      18345 : DiagCG::rhs()</span>
+<span class="lineNum">     500 </span>                :            : // *****************************************************************************
+<span class="lineNum">     501 </span>                :            : // Compute right-hand side of transport equations
+<span class="lineNum">     502 </span>                :            : // *****************************************************************************
+<span class="lineNum">     503 </span>                :            : {
+<span class="lineNum">     504 </span>        [<span class="branchCov" title="Branch 0 was taken 18345 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">      18345 :   auto d = Disc();</span>
+<span class="lineNum">     505 </span>                :<span class="lineCov">      18345 :   const auto&amp; lid = d-&gt;Lid();</span>
+<span class="lineNum">     506 </span>                :<span class="lineCov">      18345 :   const auto&amp; inpoel = d-&gt;Inpoel();</span>
+<span class="lineNum">     507 </span>                :            : 
+<span class="lineNum">     508 </span>                :            :   // Sum nodal averages to elements (1st term of gather)
+<span class="lineNum">     509 </span>        [<span class="branchCov" title="Branch 0 was taken 18345 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">      18345 :   m_ue.fill( 0.0 );</span>
+<span class="lineNum">     510 </span>        [<span class="branchCov" title="Branch 0 was taken 9472740 times"> + </span><span class="branchCov" title="Branch 1 was taken 18345 times"> + </span>]:<span class="lineCov">    9491080 :   for (std::size_t e=0; e&lt;inpoel.size()/4; ++e)</span>
+<span class="lineNum">     511 </span>        [<span class="branchCov" title="Branch 0 was taken 14106500 times"> + </span><span class="branchCov" title="Branch 1 was taken 9472740 times"> + </span>]:<span class="lineCov">   23579200 :     for (ncomp_t c=0; c&lt;m_u.nprop(); ++c)</span>
+<span class="lineNum">     512 </span>        [<span class="branchCov" title="Branch 0 was taken 56425900 times"> + </span><span class="branchCov" title="Branch 1 was taken 14106500 times"> + </span>]:<span class="lineCov">   70532400 :       for (std::size_t a=0; a&lt;4; ++a)</span>
+<span class="lineNum">     513 </span>[<span class="branchCov" title="Branch 0 was taken 56425900 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>][<span class="branchCov" title="Branch 2 was taken 56425900 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineCov">   56425900 :         m_ue(e,c,0) += m_u(inpoel[e*4+a],c,0)/4.0;</span>
+<span class="lineNum">     514 </span>                :            : 
+<span class="lineNum">     515 </span>                :            :   // Scatter the right-hand side for chare-boundary cells only
+<span class="lineNum">     516 </span>        [<span class="branchCov" title="Branch 0 was taken 18345 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">      18345 :   m_rhs.fill( 0.0 );</span>
+<span class="lineNum">     517 </span>        [<span class="branchCov" title="Branch 0 was taken 18345 times"> + </span><span class="branchCov" title="Branch 1 was taken 18345 times"> + </span>]:<span class="lineCov">      36690 :   for (const auto&amp; eq : g_cgpde)</span>
+<span class="lineNum">     518 </span>        [<span class="branchCov" title="Branch 0 was taken 18345 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">      18345 :    eq.rhs( d-&gt;T(), d-&gt;Dt(), d-&gt;Coord(), d-&gt;Inpoel(), m_u, m_ue, m_rhs );</span>
+<span class="lineNum">     519 </span>                :            : 
+<span class="lineNum">     520 </span>                :            :   // Compute mass diffusion
+<span class="lineNum">     521 </span>[<span class="branchCov" title="Branch 0 was taken 18345 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>][<span class="branchCov" title="Branch 2 was taken 18345 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineCov">      36690 :   auto dif = d-&gt;FCT()-&gt;diff( *d, m_u );</span>
+<span class="lineNum">     522 </span>                :            : 
+<span class="lineNum">     523 </span>                :            :   // Query and match user-specified boundary conditions to side sets
+<span class="lineNum">     524 </span>        [<span class="branchCov" title="Branch 0 was taken 18345 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">      36690 :   m_bcdir = match( m_u.nprop(), d-&gt;T(), d-&gt;Dt(), m_tp, m_dtp, d-&gt;Coord(),</span>
+<span class="lineNum">     525 </span>                :<span class="lineCov">      36690 :                    lid, m_bnode );</span>
+<span class="lineNum">     526 </span>                :            : 
+<span class="lineNum">     527 </span>                :            :   // Send rhs data on chare-boundary nodes to fellow chares
+<span class="lineNum">     528 </span>        [<span class="branchCov" title="Branch 0 was taken 511 times"> + </span><span class="branchCov" title="Branch 1 was taken 17834 times"> + </span>]:<span class="lineCov">      18345 :   if (d-&gt;NodeCommMap().empty())</span>
+<span class="lineNum">     529 </span>        [<span class="branchCov" title="Branch 0 was taken 511 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">        511 :     comrhs_complete();</span>
+<span class="lineNum">     530 </span>                :            :   else  // send contributions of rhs to chare-boundary nodes to fellow chares
+<span class="lineNum">     531 </span>        [<span class="branchCov" title="Branch 0 was taken 166052 times"> + </span><span class="branchCov" title="Branch 1 was taken 17834 times"> + </span>]:<span class="lineCov">     183886 :     for (const auto&amp; [c,n] : d-&gt;NodeCommMap()) {</span>
+<span class="lineNum">     532 </span>        [<span class="branchCov" title="Branch 0 was taken 166052 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">     332104 :       std::vector&lt; std::vector&lt; tk::real &gt; &gt; r( n.size() );</span>
+<span class="lineNum">     533 </span>        [<span class="branchCov" title="Branch 0 was taken 166052 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">     166052 :       std::vector&lt; std::vector&lt; tk::real &gt; &gt; D( n.size() );</span>
+<span class="lineNum">     534 </span>                :<span class="lineCov">     166052 :       std::size_t j = 0;</span>
+<span class="lineNum">     535 </span>        [<span class="branchCov" title="Branch 0 was taken 1614940 times"> + </span><span class="branchCov" title="Branch 1 was taken 166052 times"> + </span>]:<span class="lineCov">    1781000 :       for (auto i : n) {</span>
+<span class="lineNum">     536 </span>        [<span class="branchCov" title="Branch 0 was taken 1614940 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">    1614940 :         auto k = tk::cref_find( lid, i );</span>
+<span class="lineNum">     537 </span>        [<span class="branchCov" title="Branch 0 was taken 1614940 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">    1614940 :         r[j] = m_rhs[k];</span>
+<span class="lineNum">     538 </span>        [<span class="branchCov" title="Branch 0 was taken 1614940 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">    1614940 :         D[j] = dif[k];</span>
+<span class="lineNum">     539 </span>                :<span class="lineCov">    1614940 :         ++j;</span>
+<span class="lineNum">     540 </span>                :            :       }
+<span class="lineNum">     541 </span>[<span class="branchCov" title="Branch 0 was taken 166052 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>][<span class="branchCov" title="Branch 2 was taken 166052 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineCov">     166052 :       thisProxy[c].comrhs( std::vector&lt;std::size_t&gt;(begin(n),end(n)), r, D );</span>
+<span class="lineNum">         </span>        [<span class="branchCov" title="Branch 4 was taken 166052 times"> + </span><span class="branchNoCov" title="Branch 5 was not taken"> - </span>]
+<span class="lineNum">     542 </span>                :            :     }
+<span class="lineNum">     543 </span>                :            : 
+<span class="lineNum">     544 </span>        [<span class="branchCov" title="Branch 0 was taken 18345 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">      18345 :   ownrhs_complete( dif );</span>
+<span class="lineNum">     545 </span>                :<span class="lineCov">      18345 : }</span>
+<a name="546"><span class="lineNum">     546 </span>                :            : </a>
+<span class="lineNum">     547 </span>                :            : void
+<span class="lineNum">     548 </span>                :<span class="lineCov">     166052 : DiagCG::comrhs( const std::vector&lt; std::size_t &gt;&amp; gid,</span>
+<span class="lineNum">     549 </span>                :            :                 const std::vector&lt; std::vector&lt; tk::real &gt; &gt;&amp; R,
+<span class="lineNum">     550 </span>                :            :                 const std::vector&lt; std::vector&lt; tk::real &gt; &gt;&amp; D )
+<span class="lineNum">     551 </span>                :            : // *****************************************************************************
+<span class="lineNum">     552 </span>                :            : //  Receive contributions to right-hand side vector on chare-boundaries
+<span class="lineNum">     553 </span>                :            : //! \param[in] gid Global mesh node IDs at which we receive RHS contributions
+<span class="lineNum">     554 </span>                :            : //! \param[in] R Partial contributions of RHS to chare-boundary nodes
+<span class="lineNum">     555 </span>                :            : //! \param[in] D Partial contributions to chare-boundary nodes
+<span class="lineNum">     556 </span>                :            : //! \details This function receives contributions to m_rhs, which stores the
+<span class="lineNum">     557 </span>                :            : //!   right hand side vector at mesh nodes. While m_rhs stores own
+<span class="lineNum">     558 </span>                :            : //!   contributions, m_rhsc collects the neighbor chare contributions during
+<span class="lineNum">     559 </span>                :            : //!   communication. This way work on m_rhs and m_rhsc is overlapped. The two
+<span class="lineNum">     560 </span>                :            : //!   are combined in solve(). This function also receives contributions to
+<span class="lineNum">     561 </span>                :            : //!   mass diffusion term of the right hand side vector at mesh nodes.
+<span class="lineNum">     562 </span>                :            : // *****************************************************************************
+<span class="lineNum">     563 </span>                :            : {
+<span class="lineNum">     564 </span>[<span class="branchNoCov" title="Branch 0 was not taken"> - </span><span class="branchCov" title="Branch 1 was taken 166052 times"> + </span>][<span class="branchNoCov" title="Branch 2 was not taken"> - </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineCov">     166052 :   Assert( R.size() == gid.size(), &quot;Size mismatch&quot; );</span>
+<span class="lineNum">         </span>[<span class="branchNoCov" title="Branch 4 was not taken"> - </span><span class="branchNoCov" title="Branch 5 was not taken"> - </span>][<span class="branchNoCov" title="Branch 6 was not taken"> - </span><span class="branchNoCov" title="Branch 7 was not taken"> - </span>]
+<span class="lineNum">     565 </span>[<span class="branchNoCov" title="Branch 0 was not taken"> - </span><span class="branchCov" title="Branch 1 was taken 166052 times"> + </span>][<span class="branchNoCov" title="Branch 2 was not taken"> - </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineCov">     166052 :   Assert( D.size() == gid.size(), &quot;Size mismatch&quot; );</span>
+<span class="lineNum">         </span>[<span class="branchNoCov" title="Branch 4 was not taken"> - </span><span class="branchNoCov" title="Branch 5 was not taken"> - </span>][<span class="branchNoCov" title="Branch 6 was not taken"> - </span><span class="branchNoCov" title="Branch 7 was not taken"> - </span>]
+<span class="lineNum">     566 </span>                :            : 
+<span class="lineNum">     567 </span>                :            :   using tk::operator+=;
+<span class="lineNum">     568 </span>                :            : 
+<span class="lineNum">     569 </span>        [<span class="branchCov" title="Branch 0 was taken 1614940 times"> + </span><span class="branchCov" title="Branch 1 was taken 166052 times"> + </span>]:<span class="lineCov">    1781000 :   for (std::size_t i=0; i&lt;gid.size(); ++i) {</span>
+<span class="lineNum">     570 </span>                :<span class="lineCov">    1614940 :     m_rhsc[ gid[i] ] += R[i];</span>
+<span class="lineNum">     571 </span>                :<span class="lineCov">    1614940 :     m_difc[ gid[i] ] += D[i];</span>
+<span class="lineNum">     572 </span>                :            :   }
+<span class="lineNum">     573 </span>                :            : 
+<span class="lineNum">     574 </span>        [<span class="branchCov" title="Branch 0 was taken 17834 times"> + </span><span class="branchCov" title="Branch 1 was taken 148218 times"> + </span>]:<span class="lineCov">     166052 :   if (++m_nrhs == Disc()-&gt;NodeCommMap().size()) {</span>
+<span class="lineNum">     575 </span>                :<span class="lineCov">      17834 :     m_nrhs = 0;</span>
+<span class="lineNum">     576 </span>                :<span class="lineCov">      17834 :     comrhs_complete();</span>
+<span class="lineNum">     577 </span>                :            :   }
+<span class="lineNum">     578 </span>                :<span class="lineCov">     166052 : }</span>
+<a name="579"><span class="lineNum">     579 </span>                :            : </a>
+<span class="lineNum">     580 </span>                :            : void
+<span class="lineNum">     581 </span>                :<span class="lineCov">      18345 : DiagCG::solve( tk::Fields&amp; dif )</span>
+<span class="lineNum">     582 </span>                :            : // *****************************************************************************
+<span class="lineNum">     583 </span>                :            : //  Solve low and high order diagonal systems
+<span class="lineNum">     584 </span>                :            : //! \param[in,out] dif Mass diffusion own contribution
+<span class="lineNum">     585 </span>                :            : // *****************************************************************************
+<span class="lineNum">     586 </span>                :            : {
+<span class="lineNum">     587 </span>                :<span class="lineCov">      18345 :   const auto ncomp = m_rhs.nprop();</span>
+<span class="lineNum">     588 </span>                :            : 
+<span class="lineNum">     589 </span>        [<span class="branchCov" title="Branch 0 was taken 18345 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">      18345 :   auto d = Disc();</span>
+<span class="lineNum">     590 </span>                :            : 
+<span class="lineNum">     591 </span>                :            :   // Combine own and communicated contributions to rhs
+<span class="lineNum">     592 </span>        [<span class="branchCov" title="Branch 0 was taken 1035030 times"> + </span><span class="branchCov" title="Branch 1 was taken 18345 times"> + </span>]:<span class="lineCov">    1053370 :   for (const auto&amp; b : m_rhsc) {</span>
+<span class="lineNum">     593 </span>        [<span class="branchCov" title="Branch 0 was taken 1035030 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">    1035030 :     auto lid = tk::cref_find( d-&gt;Lid(), b.first );</span>
+<span class="lineNum">     594 </span>[<span class="branchCov" title="Branch 0 was taken 2117770 times"> + </span><span class="branchCov" title="Branch 1 was taken 1035030 times"> + </span>][<span class="branchCov" title="Branch 2 was taken 2117770 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineCov">    3152800 :     for (ncomp_t c=0; c&lt;ncomp; ++c) m_rhs(lid,c,0) += b.second[c];</span>
+<span class="lineNum">     595 </span>                :            :   }
+<span class="lineNum">     596 </span>                :            : 
+<span class="lineNum">     597 </span>                :            :   // Combine own and communicated contributions to mass diffusion
+<span class="lineNum">     598 </span>        [<span class="branchCov" title="Branch 0 was taken 1035030 times"> + </span><span class="branchCov" title="Branch 1 was taken 18345 times"> + </span>]:<span class="lineCov">    1053370 :   for (const auto&amp; b : m_difc) {</span>
+<span class="lineNum">     599 </span>        [<span class="branchCov" title="Branch 0 was taken 1035030 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">    1035030 :     auto lid = tk::cref_find( d-&gt;Lid(), b.first );</span>
+<span class="lineNum">     600 </span>[<span class="branchCov" title="Branch 0 was taken 2117770 times"> + </span><span class="branchCov" title="Branch 1 was taken 1035030 times"> + </span>][<span class="branchCov" title="Branch 2 was taken 2117770 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineCov">    3152800 :     for (ncomp_t c=0; c&lt;ncomp; ++c) dif(lid,c,0) += b.second[c];</span>
+<span class="lineNum">     601 </span>                :            :   }
+<span class="lineNum">     602 </span>                :            : 
+<span class="lineNum">     603 </span>                :            :   // Clear receive buffers
+<span class="lineNum">     604 </span>                :<span class="lineCov">      18345 :   tk::destroy(m_rhsc);</span>
+<span class="lineNum">     605 </span>                :<span class="lineCov">      18345 :   tk::destroy(m_difc);</span>
+<span class="lineNum">     606 </span>                :            : 
+<span class="lineNum">     607 </span>                :            :   // Set Dirichlet BCs for lhs and both low and high order rhs vectors. Note
+<span class="lineNum">     608 </span>                :            :   // that the low order rhs (more precisely the mass-diffusion term) is set to
+<span class="lineNum">     609 </span>                :            :   // zero instead of the solution increment at Dirichlet BCs, because for the
+<span class="lineNum">     610 </span>                :            :   // low order solution the right hand side is the sum of the high order right
+<span class="lineNum">     611 </span>                :            :   // hand side and mass diffusion so the low order system is L = R + D, where L
+<span class="lineNum">     612 </span>                :            :   // is the lumped mass matrix, R is the high order RHS, and D is
+<span class="lineNum">     613 </span>                :            :   // mass diffusion, and R already will have the Dirichlet BC set.
+<span class="lineNum">     614 </span>        [<span class="branchCov" title="Branch 0 was taken 509724 times"> + </span><span class="branchCov" title="Branch 1 was taken 18345 times"> + </span>]:<span class="lineCov">     528069 :   for (const auto&amp; [b,bc] : m_bcdir) {</span>
+<span class="lineNum">     615 </span>        [<span class="branchCov" title="Branch 0 was taken 2048320 times"> + </span><span class="branchCov" title="Branch 1 was taken 509724 times"> + </span>]:<span class="lineCov">    2558040 :     for (ncomp_t c=0; c&lt;ncomp; ++c) {</span>
+<span class="lineNum">     616 </span>        [<span class="branchCov" title="Branch 0 was taken 2048320 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">    2048320 :       if (bc[c].first) {</span>
+<span class="lineNum">     617 </span>        [<span class="branchCov" title="Branch 0 was taken 2048320 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">    2048320 :         m_lhs( b, c, 0 ) = 1.0;</span>
+<span class="lineNum">     618 </span>        [<span class="branchCov" title="Branch 0 was taken 2048320 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">    2048320 :         m_rhs( b, c, 0 ) = bc[c].second;</span>
+<span class="lineNum">     619 </span>        [<span class="branchCov" title="Branch 0 was taken 2048320 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">    2048320 :         dif( b, c, 0 ) = 0.0;</span>
+<span class="lineNum">     620 </span>                :            :       }
+<span class="lineNum">     621 </span>                :            :     }
+<span class="lineNum">     622 </span>                :            :   }
+<span class="lineNum">     623 </span>                :            : 
+<span class="lineNum">     624 </span>                :            :   // Solve low and high order diagonal systems and update low order solution
+<span class="lineNum">     625 </span>[<span class="branchCov" title="Branch 0 was taken 18345 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>][<span class="branchCov" title="Branch 2 was taken 18345 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineCov">      36690 :   auto dul = (m_rhs + dif) / m_lhs;</span>
+<span class="lineNum">     626 </span>                :            : 
+<span class="lineNum">     627 </span>        [<span class="branchCov" title="Branch 0 was taken 18345 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">      18345 :   m_ul = m_u + dul;</span>
+<span class="lineNum">     628 </span>        [<span class="branchCov" title="Branch 0 was taken 18345 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">      18345 :   m_du = m_rhs / m_lhs;</span>
+<span class="lineNum">     629 </span>                :            : 
+<span class="lineNum">     630 </span>                :<span class="lineCov">      18345 :   const auto&amp; coord = d-&gt;Coord();</span>
+<span class="lineNum">     631 </span>        [<span class="branchCov" title="Branch 0 was taken 18345 times"> + </span><span class="branchCov" title="Branch 1 was taken 18345 times"> + </span>]:<span class="lineCov">      36690 :   for (const auto&amp; eq : g_cgpde) {</span>
+<span class="lineNum">     632 </span>                :            :     // Apply symmetry BCs
+<span class="lineNum">     633 </span>        [<span class="branchCov" title="Branch 0 was taken 18345 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">      18345 :     eq.symbc( dul, coord, m_bnorm, m_symbcnodes );</span>
+<span class="lineNum">     634 </span>        [<span class="branchCov" title="Branch 0 was taken 18345 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">      18345 :     eq.symbc( m_ul, coord, m_bnorm, m_symbcnodes );</span>
+<span class="lineNum">     635 </span>        [<span class="branchCov" title="Branch 0 was taken 18345 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">      18345 :     eq.symbc( m_du, coord, m_bnorm, m_symbcnodes );</span>
+<span class="lineNum">     636 </span>                :            :     // Apply farfield BCs
+<span class="lineNum">     637 </span>        [<span class="branchCov" title="Branch 0 was taken 18345 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">      18345 :     eq.farfieldbc( m_ul, coord, m_bnorm, m_farfieldbcnodes );</span>
+<span class="lineNum">     638 </span>        [<span class="branchCov" title="Branch 0 was taken 18345 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">      18345 :     eq.farfieldbc( m_du, coord, m_bnorm, m_farfieldbcnodes );</span>
+<span class="lineNum">     639 </span>                :            :   }
+<span class="lineNum">     640 </span>                :            : 
+<span class="lineNum">     641 </span>                :            :   // Continue with FCT
+<span class="lineNum">     642 </span>[<span class="branchCov" title="Branch 0 was taken 18345 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>][<span class="branchCov" title="Branch 2 was taken 18345 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineCov">      18345 :   d-&gt;FCT()-&gt;aec( *d, m_du, m_u, m_bcdir, m_symbcnodemap, m_bnorm );</span>
+<span class="lineNum">     643 </span>[<span class="branchCov" title="Branch 0 was taken 18345 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>][<span class="branchCov" title="Branch 2 was taken 18345 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineCov">      18345 :   d-&gt;FCT()-&gt;alw( m_u, m_ul, std::move(dul), thisProxy );</span>
+<span class="lineNum">     644 </span>                :<span class="lineCov">      18345 : }</span>
+<a name="645"><span class="lineNum">     645 </span>                :            : </a>
+<span class="lineNum">     646 </span>                :            : void
+<span class="lineNum">     647 </span>                :<span class="lineCov">       3204 : DiagCG::writeFields( CkCallback c ) const</span>
+<span class="lineNum">     648 </span>                :            : // *****************************************************************************
+<span class="lineNum">     649 </span>                :            : // Output mesh-based fields to file
+<span class="lineNum">     650 </span>                :            : //! \param[in] c Function to continue with after the write
+<span class="lineNum">     651 </span>                :            : // *****************************************************************************
+<span class="lineNum">     652 </span>                :            : {
+<span class="lineNum">     653 </span>        [<span class="branchCov" title="Branch 0 was taken 912 times"> + </span><span class="branchCov" title="Branch 1 was taken 2292 times"> + </span>]:<span class="lineCov">       3204 :   if (g_inputdeck.get&lt; tag::cmd, tag::benchmark &gt;()) {</span>
+<span class="lineNum">     654 </span>                :            : 
+<span class="lineNum">     655 </span>                :<span class="lineCov">        912 :     c.send();</span>
+<span class="lineNum">     656 </span>                :            : 
+<span class="lineNum">     657 </span>                :            :   } else {
+<span class="lineNum">     658 </span>                :            : 
+<span class="lineNum">     659 </span>        [<span class="branchCov" title="Branch 0 was taken 2292 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">       2292 :     auto d = Disc();</span>
+<span class="lineNum">     660 </span>                :            : 
+<span class="lineNum">     661 </span>                :            :     // Query and collect block and surface field names from PDEs integrated
+<span class="lineNum">     662 </span>                :<span class="lineCov">       4584 :     std::vector&lt; std::string &gt; nodefieldnames;</span>
+<span class="lineNum">     663 </span>                :<span class="lineCov">       4584 :     std::vector&lt; std::string &gt; nodesurfnames;</span>
+<span class="lineNum">     664 </span>        [<span class="branchCov" title="Branch 0 was taken 2292 times"> + </span><span class="branchCov" title="Branch 1 was taken 2292 times"> + </span>]:<span class="lineCov">       4584 :     for (const auto&amp; eq : g_cgpde) {</span>
+<span class="lineNum">     665 </span>        [<span class="branchCov" title="Branch 0 was taken 2292 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">       4584 :       auto n = eq.fieldNames();</span>
+<span class="lineNum">     666 </span>        [<span class="branchCov" title="Branch 0 was taken 2292 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">       2292 :       nodefieldnames.insert( end(nodefieldnames), begin(n), end(n) );</span>
+<span class="lineNum">     667 </span>        [<span class="branchCov" title="Branch 0 was taken 2292 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">       2292 :       auto s = eq.surfNames();</span>
+<span class="lineNum">     668 </span>        [<span class="branchCov" title="Branch 0 was taken 2292 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">       2292 :       nodesurfnames.insert( end(nodesurfnames), begin(s), end(s) );</span>
+<span class="lineNum">     669 </span>                :            :     }
+<span class="lineNum">     670 </span>                :            : 
+<span class="lineNum">     671 </span>                :            :     // Collect node field solution
+<span class="lineNum">     672 </span>        [<span class="branchCov" title="Branch 0 was taken 2292 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">       4584 :     auto u = m_u;</span>
+<span class="lineNum">     673 </span>                :<span class="lineCov">       4584 :     std::vector&lt; std::vector&lt; tk::real &gt; &gt; nodefields;</span>
+<span class="lineNum">     674 </span>                :<span class="lineCov">       4584 :     std::vector&lt; std::vector&lt; tk::real &gt; &gt; nodesurfs;</span>
+<span class="lineNum">     675 </span>        [<span class="branchCov" title="Branch 0 was taken 2292 times"> + </span><span class="branchCov" title="Branch 1 was taken 2292 times"> + </span>]:<span class="lineCov">       4584 :     for (const auto&amp; eq : g_cgpde) {</span>
+<span class="lineNum">     676 </span>                :<span class="lineCov">       2292 :       auto o = eq.fieldOutput( d-&gt;T(), d-&gt;meshvol(), d-&gt;Coord()[0].size(),</span>
+<span class="lineNum">     677 </span>        [<span class="branchCov" title="Branch 0 was taken 2292 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">       6876 :                                d-&gt;Coord(), d-&gt;V(), u );</span>
+<span class="lineNum">     678 </span>        [<span class="branchCov" title="Branch 0 was taken 2292 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">       2292 :       nodefields.insert( end(nodefields), begin(o), end(o) );</span>
+<span class="lineNum">     679 </span>[<span class="branchCov" title="Branch 0 was taken 2292 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>][<span class="branchCov" title="Branch 2 was taken 2292 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineCov">       2292 :       auto s = eq.surfOutput( tk::bfacenodes(m_bface,m_triinpoel), u );</span>
+<span class="lineNum">     680 </span>        [<span class="branchCov" title="Branch 0 was taken 2292 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">       2292 :       nodesurfs.insert( end(nodesurfs), begin(s), end(s) );</span>
+<span class="lineNum">     681 </span>                :            :     }
+<span class="lineNum">     682 </span>                :            : 
+<span class="lineNum">     683 </span>[<span class="branchNoCov" title="Branch 0 was not taken"> - </span><span class="branchCov" title="Branch 1 was taken 2292 times"> + </span>][<span class="branchNoCov" title="Branch 2 was not taken"> - </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineCov">       2292 :     Assert( nodefieldnames.size() == nodefields.size(), &quot;Size mismatch&quot; );</span>
+<span class="lineNum">         </span>[<span class="branchNoCov" title="Branch 4 was not taken"> - </span><span class="branchNoCov" title="Branch 5 was not taken"> - </span>][<span class="branchNoCov" title="Branch 6 was not taken"> - </span><span class="branchNoCov" title="Branch 7 was not taken"> - </span>]
+<span class="lineNum">     684 </span>                :            : 
+<span class="lineNum">     685 </span>                :<span class="lineCov">       4584 :     std::vector&lt; std::string &gt; elemfieldnames;</span>
+<span class="lineNum">     686 </span>                :<span class="lineCov">       4584 :     std::vector&lt; std::vector&lt; tk::real &gt; &gt; elemfields;</span>
+<span class="lineNum">     687 </span>                :            : 
+<span class="lineNum">     688 </span>                :            :     // Query refinement data
+<span class="lineNum">     689 </span>                :<span class="lineCov">       2292 :     auto dtref = g_inputdeck.get&lt; tag::amr, tag::dtref &gt;();</span>
+<span class="lineNum">     690 </span>                :            : 
+<span class="lineNum">     691 </span>                :            :     std::tuple&lt; std::vector&lt; std::string &gt;,
+<span class="lineNum">     692 </span>                :            :                 std::vector&lt; std::vector&lt; tk::real &gt; &gt;,
+<span class="lineNum">     693 </span>                :            :                 std::vector&lt; std::string &gt;,
+<span class="lineNum">     694 </span>        [<span class="branchCov" title="Branch 0 was taken 2292 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">       4584 :                 std::vector&lt; std::vector&lt; tk::real &gt; &gt; &gt; r;</span>
+<span class="lineNum">     695 </span>[<span class="branchCov" title="Branch 0 was taken 440 times"> + </span><span class="branchCov" title="Branch 1 was taken 1852 times"> + </span>][<span class="branchCov" title="Branch 2 was taken 440 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineCov">       2292 :     if (dtref) r = d-&gt;Ref()-&gt;refinementFields();</span>
+<span class="lineNum">         </span>        [<span class="branchCov" title="Branch 4 was taken 440 times"> + </span><span class="branchNoCov" title="Branch 5 was not taken"> - </span>]
+<span class="lineNum">     696 </span>                :            : 
+<span class="lineNum">     697 </span>                :<span class="lineCov">       2292 :     const auto&amp; refinement_elemfieldnames = std::get&lt; 0 &gt;( r );</span>
+<span class="lineNum">     698 </span>                :<span class="lineCov">       2292 :     const auto&amp; refinement_elemfields = std::get&lt; 1 &gt;( r );</span>
+<span class="lineNum">     699 </span>                :<span class="lineCov">       2292 :     const auto&amp; refinement_nodefieldnames = std::get&lt; 2 &gt;( r );</span>
+<span class="lineNum">     700 </span>                :<span class="lineCov">       2292 :     const auto&amp; refinement_nodefields = std::get&lt; 3 &gt;( r );</span>
+<span class="lineNum">     701 </span>                :            : 
+<span class="lineNum">     702 </span>                :<span class="lineCov">       2292 :     nodefieldnames.insert( end(nodefieldnames),</span>
+<span class="lineNum">     703 </span>        [<span class="branchCov" title="Branch 0 was taken 2292 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">       4584 :       begin(refinement_nodefieldnames), end(refinement_nodefieldnames) );</span>
+<span class="lineNum">     704 </span>                :<span class="lineCov">       2292 :     nodefields.insert( end(nodefields),</span>
+<span class="lineNum">     705 </span>        [<span class="branchCov" title="Branch 0 was taken 2292 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">       4584 :       begin(refinement_nodefields), end(refinement_nodefields) );</span>
+<span class="lineNum">     706 </span>                :            : 
+<span class="lineNum">     707 </span>                :<span class="lineCov">       2292 :     elemfieldnames.insert( end(elemfieldnames),</span>
+<span class="lineNum">     708 </span>        [<span class="branchCov" title="Branch 0 was taken 2292 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">       4584 :       begin(refinement_elemfieldnames), end(refinement_elemfieldnames) );</span>
+<span class="lineNum">     709 </span>                :<span class="lineCov">       2292 :     elemfields.insert( end(elemfields),</span>
+<span class="lineNum">     710 </span>        [<span class="branchCov" title="Branch 0 was taken 2292 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">       4584 :       begin(refinement_elemfields), end(refinement_elemfields) );</span>
+<span class="lineNum">     711 </span>                :            : 
+<span class="lineNum">     712 </span>                :            :     // Collect FCT field data (for debugging)
+<span class="lineNum">     713 </span>[<span class="branchCov" title="Branch 0 was taken 2292 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>][<span class="branchCov" title="Branch 2 was taken 2292 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineCov">       2292 :     auto f = d-&gt;FCT()-&gt;fields();</span>
+<span class="lineNum">     714 </span>                :            : 
+<span class="lineNum">     715 </span>                :<span class="lineCov">       2292 :     const auto&amp; fct_elemfieldnames = std::get&lt; 0 &gt;( f );</span>
+<span class="lineNum">     716 </span>                :<span class="lineCov">       2292 :     const auto&amp; fct_elemfields = std::get&lt; 1 &gt;( f );</span>
+<span class="lineNum">     717 </span>                :<span class="lineCov">       2292 :     const auto&amp; fct_nodefieldnames = std::get&lt; 2 &gt;( f );</span>
+<span class="lineNum">     718 </span>                :<span class="lineCov">       2292 :     const auto&amp; fct_nodefields = std::get&lt; 3 &gt;( f );</span>
+<span class="lineNum">     719 </span>                :            : 
+<span class="lineNum">     720 </span>                :<span class="lineCov">       2292 :     nodefieldnames.insert( end(nodefieldnames),</span>
+<span class="lineNum">     721 </span>        [<span class="branchCov" title="Branch 0 was taken 2292 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">       4584 :       begin(fct_nodefieldnames), end(fct_nodefieldnames) );</span>
+<span class="lineNum">     722 </span>                :<span class="lineCov">       2292 :     nodefields.insert( end(nodefields),</span>
+<span class="lineNum">     723 </span>        [<span class="branchCov" title="Branch 0 was taken 2292 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">       4584 :       begin(fct_nodefields), end(fct_nodefields) );</span>
+<span class="lineNum">     724 </span>                :            : 
+<span class="lineNum">     725 </span>                :<span class="lineCov">       2292 :     elemfieldnames.insert( end(elemfieldnames),</span>
+<span class="lineNum">     726 </span>        [<span class="branchCov" title="Branch 0 was taken 2292 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">       4584 :       begin(fct_elemfieldnames), end(fct_elemfieldnames) );</span>
+<span class="lineNum">     727 </span>                :<span class="lineCov">       2292 :     elemfields.insert( end(elemfields),</span>
+<span class="lineNum">     728 </span>        [<span class="branchCov" title="Branch 0 was taken 2292 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">       4584 :       begin(fct_elemfields), end(fct_elemfields) );</span>
+<span class="lineNum">     729 </span>                :            : 
+<span class="lineNum">     730 </span>                :            :     // Send mesh and fields data (solution dump) for output to file
+<span class="lineNum">     731 </span>[<span class="branchCov" title="Branch 0 was taken 2292 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>][<span class="branchCov" title="Branch 2 was taken 2292 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineCov">       2292 :     d-&gt;write( d-&gt;Inpoel(), d-&gt;Coord(), m_bface, tk::remap( m_bnode,d-&gt;Lid() ),</span>
+<span class="lineNum">     732 </span>                :<span class="lineCov">       2292 :               m_triinpoel, elemfieldnames, nodefieldnames, nodesurfnames,</span>
+<span class="lineNum">     733 </span>                :            :               elemfields, nodefields, nodesurfs, c );
+<span class="lineNum">     734 </span>                :            : 
+<span class="lineNum">     735 </span>                :            :   }
+<span class="lineNum">     736 </span>                :<span class="lineCov">       3204 : }</span>
+<a name="737"><span class="lineNum">     737 </span>                :            : </a>
+<span class="lineNum">     738 </span>                :            : void
+<span class="lineNum">     739 </span>                :<span class="lineCov">      18345 : DiagCG::update( const tk::Fields&amp; a, [[maybe_unused]] tk::Fields&amp;&amp; dul )</span>
+<span class="lineNum">     740 </span>                :            : // *****************************************************************************
+<span class="lineNum">     741 </span>                :            : // Prepare for next step
+<span class="lineNum">     742 </span>                :            : //! \param[in] a Limited antidiffusive element contributions
+<span class="lineNum">     743 </span>                :            : //! \param[in] dul Low order solution increment
+<span class="lineNum">     744 </span>                :            : // *****************************************************************************
+<span class="lineNum">     745 </span>                :            : {
+<span class="lineNum">     746 </span>        [<span class="branchCov" title="Branch 0 was taken 18345 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">      18345 :   auto d = Disc();</span>
+<span class="lineNum">     747 </span>                :            : 
+<span class="lineNum">     748 </span>                :            :   // Verify that the change in the solution at those nodes where Dirichlet
+<span class="lineNum">     749 </span>                :            :   // boundary conditions are set is exactly the amount the BCs prescribe
+<span class="lineNum">     750 </span>[<span class="branchCov" title="Branch 0 was taken 18345 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>][<span class="branchNoCov" title="Branch 2 was not taken"> - </span><span class="branchCov" title="Branch 3 was taken 18345 times"> + </span>]:<span class="lineCov">      18345 :   Assert( correctBC(a,dul,m_bcdir), &quot;Dirichlet boundary condition incorrect&quot; );</span>
+<span class="lineNum">         </span>[<span class="branchNoCov" title="Branch 4 was not taken"> - </span><span class="branchNoCov" title="Branch 5 was not taken"> - </span>][<span class="branchNoCov" title="Branch 6 was not taken"> - </span><span class="branchNoCov" title="Branch 7 was not taken"> - </span>]
+<span class="lineNum">         </span>        [<span class="branchNoCov" title="Branch 8 was not taken"> - </span><span class="branchNoCov" title="Branch 9 was not taken"> - </span>]
+<span class="lineNum">     751 </span>                :            : 
+<span class="lineNum">     752 </span>                :            :   // Apply limited antidiffusive element contributions to low order solution
+<span class="lineNum">     753 </span>        [<span class="branchCov" title="Branch 0 was taken 18345 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">      36690 :   auto un = m_u;</span>
+<span class="lineNum">     754 </span>        [<span class="branchCov" title="Branch 0 was taken 18335 times"> + </span><span class="branchCov" title="Branch 1 was taken 10 times"> + </span>]:<span class="lineCov">      18345 :   if (g_inputdeck.get&lt; tag::discr, tag::fct &gt;())</span>
+<span class="lineNum">     755 </span>        [<span class="branchCov" title="Branch 0 was taken 18335 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">      18335 :     m_u = m_ul + a;</span>
+<span class="lineNum">     756 </span>                :            :   else
+<span class="lineNum">     757 </span>        [<span class="branchCov" title="Branch 0 was taken 10 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">         10 :     m_u = m_u + m_du;</span>
+<span class="lineNum">     758 </span>                :            : 
+<span class="lineNum">     759 </span>                :            :   // Compute diagnostics, e.g., residuals
+<span class="lineNum">     760 </span>                :            :   auto diag_computed =
+<span class="lineNum">     761 </span>        [<span class="branchCov" title="Branch 0 was taken 18345 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">      18345 :     m_diag.compute( *d, m_u, un, m_bnorm, m_symbcnodes, m_farfieldbcnodes );</span>
+<span class="lineNum">     762 </span>                :            :   // Increase number of iterations and physical time
+<span class="lineNum">     763 </span>        [<span class="branchCov" title="Branch 0 was taken 18345 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">      18345 :   d-&gt;next();</span>
+<span class="lineNum">     764 </span>                :            :   // Continue to mesh refinement (if configured)
+<span class="lineNum">     765 </span>[<span class="branchCov" title="Branch 0 was taken 696 times"> + </span><span class="branchCov" title="Branch 1 was taken 17649 times"> + </span>][<span class="branchCov" title="Branch 2 was taken 696 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineCov">      18345 :   if (!diag_computed) refine( std::vector&lt; tk::real &gt;( m_u.nprop(), 0.0 ) );</span>
+<span class="lineNum">         </span>        [<span class="branchCov" title="Branch 4 was taken 696 times"> + </span><span class="branchNoCov" title="Branch 5 was not taken"> - </span>]
+<span class="lineNum">     766 </span>                :<span class="lineCov">      18345 : }</span>
+<a name="767"><span class="lineNum">     767 </span>                :            : </a>
+<span class="lineNum">     768 </span>                :            : void
+<span class="lineNum">     769 </span>                :<span class="lineCov">      18345 : DiagCG::refine( [[maybe_unused]] const std::vector&lt; tk::real &gt;&amp; l2res )</span>
+<span class="lineNum">     770 </span>                :            : // *****************************************************************************
+<span class="lineNum">     771 </span>                :            : // Optionally refine/derefine mesh
+<span class="lineNum">     772 </span>                :            : //! \param[in] l2res L2-norms of the residual for each scalar component
+<span class="lineNum">     773 </span>                :            : //!   computed across the whole problem
+<span class="lineNum">     774 </span>                :            : // *****************************************************************************
+<span class="lineNum">     775 </span>                :            : {
+<span class="lineNum">     776 </span>                :<span class="lineCov">      18345 :   auto d = Disc();</span>
+<span class="lineNum">     777 </span>                :            : 
+<span class="lineNum">     778 </span>                :<span class="lineCov">      18345 :   auto dtref = g_inputdeck.get&lt; tag::amr, tag::dtref &gt;();</span>
+<span class="lineNum">     779 </span>                :<span class="lineCov">      18345 :   auto dtfreq = g_inputdeck.get&lt; tag::amr, tag::dtfreq &gt;();</span>
+<span class="lineNum">     780 </span>                :            : 
+<span class="lineNum">     781 </span>                :            :   // if t&gt;0 refinement enabled and we hit the dtref frequency
+<span class="lineNum">     782 </span>[<span class="branchCov" title="Branch 0 was taken 556 times"> + </span><span class="branchCov" title="Branch 1 was taken 17789 times"> + </span>][<span class="branchCov" title="Branch 2 was taken 76 times"> + </span><span class="branchCov" title="Branch 3 was taken 480 times"> + </span>]:<span class="lineCov">      18345 :   if (dtref &amp;&amp; !(d-&gt;It() % dtfreq)) {   // h-refine</span>
+<span class="lineNum">         </span>        [<span class="branchCov" title="Branch 4 was taken 76 times"> + </span><span class="branchCov" title="Branch 5 was taken 18269 times"> + </span>]
+<span class="lineNum">     783 </span>                :            : 
+<span class="lineNum">     784 </span>                :            :     // Activate SDAG waits for re-computing the left-hand side
+<span class="lineNum">     785 </span>        [<span class="branchCov" title="Branch 0 was taken 76 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">         76 :     thisProxy[ thisIndex ].wait4lhs();</span>
+<span class="lineNum">     786 </span>                :            : 
+<span class="lineNum">     787 </span>                :<span class="lineCov">         76 :     d-&gt;startvol();</span>
+<span class="lineNum">     788 </span>        [<span class="branchCov" title="Branch 0 was taken 76 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">         76 :     d-&gt;Ref()-&gt;dtref( {}, m_bnode, {} );</span>
+<span class="lineNum">     789 </span>                :<span class="lineCov">         76 :     d-&gt;refined() = 1;</span>
+<span class="lineNum">     790 </span>                :            : 
+<span class="lineNum">     791 </span>                :            :   } else {      // do not h-refine
+<span class="lineNum">     792 </span>                :            : 
+<span class="lineNum">     793 </span>                :<span class="lineCov">      18269 :     d-&gt;refined() = 0;</span>
+<span class="lineNum">     794 </span>                :<span class="lineCov">      18269 :     lhs_complete();</span>
+<span class="lineNum">     795 </span>                :<span class="lineCov">      18269 :     resized();</span>
+<span class="lineNum">     796 </span>                :            : 
+<span class="lineNum">     797 </span>                :            :   }
+<span class="lineNum">     798 </span>                :<span class="lineCov">      18345 : }</span>
+<a name="799"><span class="lineNum">     799 </span>                :            : </a>
+<span class="lineNum">     800 </span>                :            : void
+<span class="lineNum">     801 </span>                :<span class="lineCov">         76 : DiagCG::resizePostAMR(</span>
+<span class="lineNum">     802 </span>                :            :   const std::vector&lt; std::size_t &gt;&amp; /*ginpoel*/,
+<span class="lineNum">     803 </span>                :            :   const tk::UnsMesh::Chunk&amp; chunk,
+<span class="lineNum">     804 </span>                :            :   const tk::UnsMesh::Coords&amp; coord,
+<span class="lineNum">     805 </span>                :            :   const std::unordered_map&lt; std::size_t, tk::UnsMesh::Edge &gt;&amp; addedNodes,
+<span class="lineNum">     806 </span>                :            :   const std::unordered_map&lt; std::size_t, std::size_t &gt;&amp; /*addedTets*/,
+<span class="lineNum">     807 </span>                :            :   const tk::NodeCommMap&amp; nodeCommMap,
+<span class="lineNum">     808 </span>                :            :   const std::map&lt; int, std::vector&lt; std::size_t &gt; &gt;&amp; /*bface*/,
+<span class="lineNum">     809 </span>                :            :   const std::map&lt; int, std::vector&lt; std::size_t &gt; &gt;&amp; bnode,
+<span class="lineNum">     810 </span>                :            :   const std::vector&lt; std::size_t &gt;&amp; /*triinpoel*/ )
+<span class="lineNum">     811 </span>                :            : // *****************************************************************************
+<span class="lineNum">     812 </span>                :            : //  Receive new mesh from Refiner
+<span class="lineNum">     813 </span>                :            : //! \param[in] ginpoel Mesh connectivity with global node ids
+<span class="lineNum">     814 </span>                :            : //! \param[in] chunk New mesh chunk (connectivity and global&lt;-&gt;local id maps)
+<span class="lineNum">     815 </span>                :            : //! \param[in] coord New mesh node coordinates
+<span class="lineNum">     816 </span>                :            : //! \param[in] addedNodes Newly added mesh nodes and their parents (local ids)
+<span class="lineNum">     817 </span>                :            : //! \param[in] addedTets Newly added mesh cells and their parents (local ids)
+<span class="lineNum">     818 </span>                :            : //! \param[in] nodeCommMap New node communication map
+<span class="lineNum">     819 </span>                :            : //! \param[in] bnode Boundary-node lists mapped to side set ids
+<span class="lineNum">     820 </span>                :            : // *****************************************************************************
+<span class="lineNum">     821 </span>                :            : {
+<span class="lineNum">     822 </span>                :<span class="lineCov">         76 :   auto d = Disc();</span>
+<span class="lineNum">     823 </span>                :            : 
+<span class="lineNum">     824 </span>                :            :   // Set flag that indicates that we are during time stepping
+<span class="lineNum">     825 </span>                :<span class="lineCov">         76 :   m_initial = 0;</span>
+<span class="lineNum">     826 </span>                :            : 
+<span class="lineNum">     827 </span>                :            :   // Zero field output iteration count between two mesh refinement steps
+<span class="lineNum">     828 </span>                :<span class="lineCov">         76 :   d-&gt;Itf() = 0;</span>
+<span class="lineNum">     829 </span>                :            : 
+<span class="lineNum">     830 </span>                :            :   // Increase number of iterations with mesh refinement
+<span class="lineNum">     831 </span>                :<span class="lineCov">         76 :   ++d-&gt;Itr();</span>
+<span class="lineNum">     832 </span>                :            : 
+<span class="lineNum">     833 </span>                :            :   // Resize mesh data structures
+<span class="lineNum">     834 </span>                :<span class="lineCov">         76 :   d-&gt;resizePostAMR( chunk, coord, nodeCommMap );</span>
+<span class="lineNum">     835 </span>                :            : 
+<span class="lineNum">     836 </span>                :            :   // Resize auxiliary solution vectors
+<span class="lineNum">     837 </span>                :<span class="lineCov">         76 :   auto nelem = d-&gt;Inpoel().size()/4;</span>
+<span class="lineNum">     838 </span>                :<span class="lineCov">         76 :   auto npoin = coord[0].size();</span>
+<span class="lineNum">     839 </span>                :<span class="lineCov">         76 :   auto nprop = m_u.nprop();</span>
+<span class="lineNum">     840 </span>                :<span class="lineCov">         76 :   m_u.resize( npoin, nprop );</span>
+<span class="lineNum">     841 </span>                :<span class="lineCov">         76 :   m_ul.resize( npoin, nprop );</span>
+<span class="lineNum">     842 </span>                :<span class="lineCov">         76 :   m_du.resize( npoin, nprop );</span>
+<span class="lineNum">     843 </span>                :<span class="lineCov">         76 :   m_ue.resize( nelem, nprop );</span>
+<span class="lineNum">     844 </span>                :<span class="lineCov">         76 :   m_lhs.resize( npoin, nprop );</span>
+<span class="lineNum">     845 </span>                :<span class="lineCov">         76 :   m_rhs.resize( npoin, nprop );</span>
+<span class="lineNum">     846 </span>                :            : 
+<span class="lineNum">     847 </span>                :            :   // Update solution on new mesh
+<span class="lineNum">     848 </span>        [<span class="branchCov" title="Branch 0 was taken 50841 times"> + </span><span class="branchCov" title="Branch 1 was taken 76 times"> + </span>]:<span class="lineCov">      50917 :   for (const auto&amp; n : addedNodes)</span>
+<span class="lineNum">     849 </span>        [<span class="branchCov" title="Branch 0 was taken 211849 times"> + </span><span class="branchCov" title="Branch 1 was taken 50841 times"> + </span>]:<span class="lineCov">     262690 :     for (std::size_t c=0; c&lt;nprop; ++c)</span>
+<span class="lineNum">     850 </span>[<span class="branchCov" title="Branch 0 was taken 211849 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>][<span class="branchCov" title="Branch 2 was taken 211849 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineCov">     211849 :       m_u(n.first,c,0) = (m_u(n.second[0],c,0) + m_u(n.second[1],c,0))/2.0;</span>
+<span class="lineNum">         </span>        [<span class="branchCov" title="Branch 4 was taken 211849 times"> + </span><span class="branchNoCov" title="Branch 5 was not taken"> - </span>]
+<span class="lineNum">     851 </span>                :            : 
+<span class="lineNum">     852 </span>                :            :   // Update physical-boundary node lists
+<span class="lineNum">     853 </span>                :<span class="lineCov">         76 :   m_bnode = bnode;</span>
+<span class="lineNum">     854 </span>                :            : 
+<span class="lineNum">     855 </span>                :            :   // Resize FCT data structures
+<span class="lineNum">     856 </span>                :<span class="lineCov">         76 :   d-&gt;FCT()-&gt;resize( npoin, nodeCommMap, d-&gt;Bid(), d-&gt;Lid(), d-&gt;Inpoel() );</span>
+<span class="lineNum">     857 </span>                :            : 
+<span class="lineNum">     858 </span>        [<span class="branchCov" title="Branch 0 was taken 76 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">         76 :   contribute( CkCallback(CkReductionTarget(Transporter,resized), d-&gt;Tr()) );</span>
+<span class="lineNum">     859 </span>                :<span class="lineCov">         76 : }</span>
+<a name="860"><span class="lineNum">     860 </span>                :            : </a>
+<span class="lineNum">     861 </span>                :            : void
+<span class="lineNum">     862 </span>                :<span class="lineCov">      18345 : DiagCG::resized()</span>
+<span class="lineNum">     863 </span>                :            : // *****************************************************************************
+<span class="lineNum">     864 </span>                :            : // Resizing data sutrctures after mesh refinement has been completed
+<span class="lineNum">     865 </span>                :            : // *****************************************************************************
+<span class="lineNum">     866 </span>                :            : {
+<span class="lineNum">     867 </span>                :<span class="lineCov">      18345 :   resize_complete();</span>
+<span class="lineNum">     868 </span>                :<span class="lineCov">      18345 : }</span>
+<a name="869"><span class="lineNum">     869 </span>                :            : </a>
+<span class="lineNum">     870 </span>                :            : void
+<span class="lineNum">     871 </span>                :<span class="lineCov">      18345 : DiagCG::out()</span>
+<span class="lineNum">     872 </span>                :            : // *****************************************************************************
+<span class="lineNum">     873 </span>                :            : // Output mesh field data
+<span class="lineNum">     874 </span>                :            : // *****************************************************************************
+<span class="lineNum">     875 </span>                :            : {
+<span class="lineNum">     876 </span>                :<span class="lineCov">      18345 :   auto d = Disc();</span>
+<span class="lineNum">     877 </span>                :            : 
+<span class="lineNum">     878 </span>                :            :   // Output time history if we hit its output frequency
+<span class="lineNum">     879 </span>                :<span class="lineCov">      18345 :   const auto histfreq = g_inputdeck.get&lt; tag::interval, tag::history &gt;();</span>
+<span class="lineNum">     880 </span>        [<span class="branchCov" title="Branch 0 was taken 18345 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">      18345 :   if ( !((d-&gt;It()) % histfreq) ) {</span>
+<span class="lineNum">     881 </span>                :<span class="lineCov">      36690 :     std::vector&lt; std::vector&lt; tk::real &gt; &gt; hist;</span>
+<span class="lineNum">     882 </span>        [<span class="branchCov" title="Branch 0 was taken 18345 times"> + </span><span class="branchCov" title="Branch 1 was taken 18345 times"> + </span>]:<span class="lineCov">      36690 :     for (const auto&amp; eq : g_cgpde) {</span>
+<span class="lineNum">     883 </span>        [<span class="branchCov" title="Branch 0 was taken 18345 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">      18345 :       auto h = eq.histOutput( d-&gt;Hist(), d-&gt;Inpoel(), m_u );</span>
+<span class="lineNum">     884 </span>        [<span class="branchCov" title="Branch 0 was taken 18345 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">      18345 :       hist.insert( end(hist), begin(h), end(h) );</span>
+<span class="lineNum">     885 </span>                :            :     }
+<span class="lineNum">     886 </span>        [<span class="branchCov" title="Branch 0 was taken 18345 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">      18345 :     d-&gt;history( std::move(hist) );</span>
+<span class="lineNum">     887 </span>                :            :   }
+<span class="lineNum">     888 </span>                :            : 
+<span class="lineNum">     889 </span>                :<span class="lineCov">      18345 :   const auto term = g_inputdeck.get&lt; tag::discr, tag::term &gt;();</span>
+<span class="lineNum">     890 </span>                :<span class="lineCov">      18345 :   const auto nstep = g_inputdeck.get&lt; tag::discr, tag::nstep &gt;();</span>
+<span class="lineNum">     891 </span>                :<span class="lineCov">      18345 :   const auto eps = std::numeric_limits&lt; tk::real &gt;::epsilon();</span>
+<span class="lineNum">     892 </span>                :<span class="lineCov">      18345 :   const auto fieldfreq = g_inputdeck.get&lt; tag::interval, tag::field &gt;();</span>
+<span class="lineNum">     893 </span>                :            : 
+<span class="lineNum">     894 </span>                :            :   // output field data if field iteration count is reached or in the last time
+<span class="lineNum">     895 </span>                :            :   // step, otherwise continue to next time step
+<span class="lineNum">     896 </span>[<span class="branchCov" title="Branch 0 was taken 15996 times"> + </span><span class="branchCov" title="Branch 1 was taken 2349 times"> + </span>][<span class="branchCov" title="Branch 2 was taken 2553 times"> + </span><span class="branchCov" title="Branch 3 was taken 15792 times"> + </span>]:<span class="lineCov">      34341 :   if ( !((d-&gt;It()) % fieldfreq) ||</span>
+<span class="lineNum">     897 </span>[<span class="branchCov" title="Branch 0 was taken 15856 times"> + </span><span class="branchCov" title="Branch 1 was taken 140 times"> + </span>][<span class="branchCov" title="Branch 2 was taken 64 times"> + </span><span class="branchCov" title="Branch 3 was taken 15792 times"> + </span>]:<span class="lineCov">      15996 :        (std::fabs(d-&gt;T()-term) &lt; eps || d-&gt;It() &gt;= nstep) )</span>
+<span class="lineNum">     898 </span>[<span class="branchCov" title="Branch 0 was taken 2553 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>][<span class="branchCov" title="Branch 2 was taken 2553 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineCov">       2553 :     writeFields( CkCallback(CkIndex_DiagCG::step(), thisProxy[thisIndex]) );</span>
+<span class="lineNum">         </span>        [<span class="branchCov" title="Branch 4 was taken 2553 times"> + </span><span class="branchNoCov" title="Branch 5 was not taken"> - </span>]
+<span class="lineNum">     899 </span>                :            :   else
+<span class="lineNum">     900 </span>                :<span class="lineCov">      15792 :     step();</span>
+<span class="lineNum">     901 </span>                :<span class="lineCov">      18345 : }</span>
+<a name="902"><span class="lineNum">     902 </span>                :            : </a>
+<span class="lineNum">     903 </span>                :            : void
+<span class="lineNum">     904 </span>                :<span class="lineCov">      17694 : DiagCG::evalLB( int nrestart )</span>
+<span class="lineNum">     905 </span>                :            : // *****************************************************************************
+<span class="lineNum">     906 </span>                :            : // Evaluate whether to do load balancing
+<span class="lineNum">     907 </span>                :            : //! \param[in] nrestart Number of times restarted
+<span class="lineNum">     908 </span>                :            : // *****************************************************************************
+<span class="lineNum">     909 </span>                :            : {
+<span class="lineNum">     910 </span>                :<span class="lineCov">      17694 :   auto d = Disc();</span>
+<span class="lineNum">     911 </span>                :            : 
+<span class="lineNum">     912 </span>                :            :   // Detect if just returned from a checkpoint and if so, zero timers
+<span class="lineNum">     913 </span>                :<span class="lineCov">      17694 :   d-&gt;restarted( nrestart );</span>
+<span class="lineNum">     914 </span>                :            : 
+<span class="lineNum">     915 </span>                :<span class="lineCov">      17694 :   const auto lbfreq = g_inputdeck.get&lt; tag::cmd, tag::lbfreq &gt;();</span>
+<span class="lineNum">     916 </span>                :<span class="lineCov">      17694 :   const auto nonblocking = g_inputdeck.get&lt; tag::cmd, tag::nonblocking &gt;();</span>
+<span class="lineNum">     917 </span>                :            : 
+<span class="lineNum">     918 </span>                :            :   // Load balancing if user frequency is reached or after the second time-step
+<span class="lineNum">     919 </span>[<span class="branchCov" title="Branch 0 was taken 7880 times"> + </span><span class="branchCov" title="Branch 1 was taken 9814 times"> + </span>][<span class="branchCov" title="Branch 2 was taken 116 times"> + </span><span class="branchCov" title="Branch 3 was taken 7764 times"> + </span>]:<span class="lineCov">      17694 :   if ( (d-&gt;It()) % lbfreq == 0 || d-&gt;It() == 2 ) {</span>
+<span class="lineNum">         </span>        [<span class="branchCov" title="Branch 4 was taken 9930 times"> + </span><span class="branchCov" title="Branch 5 was taken 7764 times"> + </span>]
+<span class="lineNum">     920 </span>                :            : 
+<span class="lineNum">     921 </span>                :<span class="lineCov">       9930 :     AtSync();</span>
+<span class="lineNum">     922 </span>        [<span class="branchNoCov" title="Branch 0 was not taken"> - </span><span class="branchCov" title="Branch 1 was taken 9930 times"> + </span>]:<span class="lineCov">       9930 :     if (nonblocking) next();</span>
+<span class="lineNum">     923 </span>                :            : 
+<span class="lineNum">     924 </span>                :            :   } else {
+<span class="lineNum">     925 </span>                :            : 
+<span class="lineNum">     926 </span>                :<span class="lineCov">       7764 :     next();</span>
+<span class="lineNum">     927 </span>                :            : 
+<span class="lineNum">     928 </span>                :            :   }
+<span class="lineNum">     929 </span>                :<span class="lineCov">      17694 : }</span>
+<a name="930"><span class="lineNum">     930 </span>                :            : </a>
+<span class="lineNum">     931 </span>                :            : void
+<span class="lineNum">     932 </span>                :<span class="lineCov">      17689 : DiagCG::evalRestart()</span>
+<span class="lineNum">     933 </span>                :            : // *****************************************************************************
+<span class="lineNum">     934 </span>                :            : // Evaluate whether to save checkpoint/restart
+<span class="lineNum">     935 </span>                :            : // *****************************************************************************
+<span class="lineNum">     936 </span>                :            : {
+<span class="lineNum">     937 </span>                :<span class="lineCov">      17689 :   auto d = Disc();</span>
+<span class="lineNum">     938 </span>                :            : 
+<span class="lineNum">     939 </span>                :<span class="lineCov">      17689 :   const auto rsfreq = g_inputdeck.get&lt; tag::cmd, tag::rsfreq &gt;();</span>
+<span class="lineNum">     940 </span>                :<span class="lineCov">      17689 :   const auto benchmark = g_inputdeck.get&lt; tag::cmd, tag::benchmark &gt;();</span>
+<span class="lineNum">     941 </span>                :            : 
+<span class="lineNum">     942 </span>[<span class="branchCov" title="Branch 0 was taken 14953 times"> + </span><span class="branchCov" title="Branch 1 was taken 2736 times"> + </span>][<span class="branchNoCov" title="Branch 2 was not taken"> - </span><span class="branchCov" title="Branch 3 was taken 14953 times"> + </span>]:<span class="lineCov">      17689 :   if ( !benchmark &amp;&amp; d-&gt;It() % rsfreq == 0 ) {</span>
+<span class="lineNum">         </span>        [<span class="branchNoCov" title="Branch 4 was not taken"> - </span><span class="branchCov" title="Branch 5 was taken 17689 times"> + </span>]
+<span class="lineNum">     943 </span>                :            : 
+<span class="lineNum">     944 </span>                :<span class="lineNoCov">          0 :     int finished = 0;</span>
+<span class="lineNum">     945 </span>        [<span class="branchNoCov" title="Branch 0 was not taken"> - </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineNoCov">          0 :     d-&gt;contribute( sizeof(int), &amp;finished, CkReduction::nop,</span>
+<span class="lineNum">     946 </span>[<span class="branchNoCov" title="Branch 0 was not taken"> - </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>][<span class="branchNoCov" title="Branch 2 was not taken"> - </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineNoCov">          0 :       CkCallback(CkReductionTarget(Transporter,checkpoint), d-&gt;Tr()) );</span>
+<span class="lineNum">     947 </span>                :            : 
+<span class="lineNum">     948 </span>                :            :   } else {
+<span class="lineNum">     949 </span>                :            : 
+<span class="lineNum">     950 </span>                :<span class="lineCov">      17689 :     evalLB( /* nrestart = */ -1 );</span>
+<span class="lineNum">     951 </span>                :            : 
+<span class="lineNum">     952 </span>                :            :   }
+<span class="lineNum">     953 </span>                :<span class="lineCov">      17689 : }</span>
+<a name="954"><span class="lineNum">     954 </span>                :            : </a>
+<span class="lineNum">     955 </span>                :            : void
+<span class="lineNum">     956 </span>                :<span class="lineCov">      18345 : DiagCG::step()</span>
+<span class="lineNum">     957 </span>                :            : // *****************************************************************************
+<span class="lineNum">     958 </span>                :            : // Evaluate whether to continue with next time step
+<span class="lineNum">     959 </span>                :            : // *****************************************************************************
+<span class="lineNum">     960 </span>                :            : {
+<span class="lineNum">     961 </span>                :<span class="lineCov">      18345 :   auto d = Disc();</span>
+<span class="lineNum">     962 </span>                :            : 
+<span class="lineNum">     963 </span>                :            :   // Output one-liner status report to screen
+<span class="lineNum">     964 </span>                :<span class="lineCov">      18345 :   d-&gt;status();</span>
+<span class="lineNum">     965 </span>                :            : 
+<span class="lineNum">     966 </span>                :<span class="lineCov">      18345 :   const auto term = g_inputdeck.get&lt; tag::discr, tag::term &gt;();</span>
+<span class="lineNum">     967 </span>                :<span class="lineCov">      18345 :   const auto nstep = g_inputdeck.get&lt; tag::discr, tag::nstep &gt;();</span>
+<span class="lineNum">     968 </span>                :<span class="lineCov">      18345 :   const auto eps = std::numeric_limits&lt; tk::real &gt;::epsilon();</span>
+<span class="lineNum">     969 </span>                :            : 
+<span class="lineNum">     970 </span>                :            :   // If neither max iterations nor max time reached, continue, otherwise finish
+<span class="lineNum">     971 </span>[<span class="branchCov" title="Branch 0 was taken 18205 times"> + </span><span class="branchCov" title="Branch 1 was taken 140 times"> + </span>][<span class="branchCov" title="Branch 2 was taken 17689 times"> + </span><span class="branchCov" title="Branch 3 was taken 516 times"> + </span>]:<span class="lineCov">      18345 :   if (std::fabs(d-&gt;T()-term) &gt; eps &amp;&amp; d-&gt;It() &lt; nstep) {</span>
+<span class="lineNum">         </span>        [<span class="branchCov" title="Branch 4 was taken 17689 times"> + </span><span class="branchCov" title="Branch 5 was taken 656 times"> + </span>]
+<span class="lineNum">     972 </span>                :            : 
+<span class="lineNum">     973 </span>                :<span class="lineCov">      17689 :     evalRestart();</span>
+<span class="lineNum">     974 </span>                :            : 
+<span class="lineNum">     975 </span>                :            :   } else {
+<span class="lineNum">     976 </span>                :            : 
+<span class="lineNum">     977 </span>        [<span class="branchCov" title="Branch 0 was taken 656 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">        656 :     d-&gt;contribute( CkCallback(CkReductionTarget(Transporter,finish), d-&gt;Tr()) );</span>
+<span class="lineNum">     978 </span>                :            : 
+<span class="lineNum">     979 </span>                :            :   }
+<span class="lineNum">     980 </span>                :<span class="lineCov">      18345 : }</span>
+<span class="lineNum">     981 </span>                :            : 
+<span class="lineNum">     982 </span>                :            : #include &quot;NoWarning/diagcg.def.h&quot;
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.12</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>
