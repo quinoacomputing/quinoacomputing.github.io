@@ -97,8 +97,8 @@
 <span class="cm">    discretizations.</span>
 <span class="cm">*/</span>
 <span class="c1">// *****************************************************************************</span>
-<span class="cp">#ifndef MultiMatDG_h</span>
-<span class="cp">#define MultiMatDG_h</span>
+<span class="cp">#ifndef DGMultiMat_h</span>
+<span class="cp">#define DGMultiMat_h</span>
 
 <span class="cp">#include</span> <span class="cpf">&lt;cmath&gt;</span><span class="cp"></span>
 <span class="cp">#include</span> <span class="cpf">&lt;algorithm&gt;</span><span class="cp"></span>
@@ -126,6 +126,7 @@
 <span class="cp">#include</span> <span class="cpf">&quot;Reconstruction.hpp&quot;</span><span class="cp"></span>
 <span class="cp">#include</span> <span class="cpf">&quot;Limiter.hpp&quot;</span><span class="cp"></span>
 <span class="cp">#include</span> <span class="cpf">&quot;Problem/FieldOutput.hpp&quot;</span><span class="cp"></span>
+<span class="cp">#include</span> <span class="cpf">&quot;FieldOutputUtil.hpp&quot;</span><span class="cp"></span>
 
 <span class="k">namespace</span> <span class="n">inciter</span> <span class="p">{</span>
 
@@ -884,60 +885,58 @@
     <span class="p">}</span>
 
     <span class="c1">//! Return field output going to file</span>
-    <span class="c1">//! \param[in] rdof Total number of degrees of freedom</span>
     <span class="c1">//! \param[in] nunk Number of unknowns</span>
-    <span class="c1">//! \param[in] geoElem Element geometry array</span>
+    <span class="c1">//! \param[in] vol Volumes associated to elements (or nodes)</span>
+    <span class="c1">//! \param[in] coord Coordinates at which to evaluate the solution</span>
     <span class="c1">//! \param[in,out] U Solution vector at recent time step</span>
     <span class="c1">//! \param[in] P Vector of primitive quantities at recent time step</span>
     <span class="c1">//! \return Vector of vectors to be output to file</span>
     <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span> <span class="n">tk</span><span class="o">::</span><span class="n">real</span> <span class="o">&gt;</span> <span class="o">&gt;</span>
     <span class="n">fieldOutput</span><span class="p">(</span> <span class="n">tk</span><span class="o">::</span><span class="n">real</span><span class="p">,</span>
                  <span class="n">tk</span><span class="o">::</span><span class="n">real</span><span class="p">,</span>
-                 <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="n">rdof</span><span class="p">,</span>
                  <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="n">nunk</span><span class="p">,</span>
-                 <span class="k">const</span> <span class="n">tk</span><span class="o">::</span><span class="n">Fields</span><span class="o">&amp;</span> <span class="n">geoElem</span><span class="p">,</span>
-                 <span class="n">tk</span><span class="o">::</span><span class="n">Fields</span><span class="o">&amp;</span> <span class="n">U</span><span class="p">,</span>
+                 <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="n">rdof</span><span class="p">,</span>
+                 <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span> <span class="n">tk</span><span class="o">::</span><span class="n">real</span> <span class="o">&gt;&amp;</span> <span class="n">vol</span><span class="p">,</span>
+                 <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">array</span><span class="o">&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span> <span class="n">tk</span><span class="o">::</span><span class="n">real</span> <span class="o">&gt;</span><span class="p">,</span> <span class="mi">3</span> <span class="o">&gt;&amp;</span> <span class="n">coord</span><span class="p">,</span>
+                 <span class="k">const</span> <span class="n">tk</span><span class="o">::</span><span class="n">Fields</span><span class="o">&amp;</span> <span class="n">U</span><span class="p">,</span>
                  <span class="k">const</span> <span class="n">tk</span><span class="o">::</span><span class="n">Fields</span><span class="o">&amp;</span> <span class="n">P</span> <span class="p">)</span> <span class="k">const</span>
     <span class="p">{</span>
       <span class="c1">// number of materials</span>
-      <span class="k">auto</span> <span class="n">nmat</span> <span class="o">=</span>
-        <span class="n">g_inputdeck</span><span class="p">.</span><span class="n">get</span><span class="o">&lt;</span> <span class="n">tag</span><span class="o">::</span><span class="n">param</span><span class="p">,</span> <span class="n">eq</span><span class="p">,</span> <span class="n">tag</span><span class="o">::</span><span class="n">nmat</span> <span class="o">&gt;</span><span class="p">()[</span><span class="n">m_system</span><span class="p">];</span>
-
-      <span class="k">return</span> <span class="nf">MultiMatFieldOutput</span><span class="p">(</span><span class="n">m_system</span><span class="p">,</span> <span class="n">nmat</span><span class="p">,</span> <span class="n">m_offset</span><span class="p">,</span> <span class="n">nunk</span><span class="p">,</span> <span class="n">rdof</span><span class="p">,</span> <span class="n">geoElem</span><span class="p">,</span>
-        <span class="n">U</span><span class="p">,</span> <span class="n">P</span><span class="p">);</span>
+      <span class="k">auto</span> <span class="n">nmat</span> <span class="o">=</span> <span class="n">g_inputdeck</span><span class="p">.</span><span class="n">get</span><span class="o">&lt;</span> <span class="n">tag</span><span class="o">::</span><span class="n">param</span><span class="p">,</span> <span class="n">eq</span><span class="p">,</span> <span class="n">tag</span><span class="o">::</span><span class="n">nmat</span> <span class="o">&gt;</span><span class="p">()[</span><span class="n">m_system</span><span class="p">];</span>
+      <span class="k">return</span> <span class="nf">MultiMatFieldOutput</span><span class="p">(</span> <span class="n">m_system</span><span class="p">,</span> <span class="n">nmat</span><span class="p">,</span> <span class="n">m_offset</span><span class="p">,</span> <span class="n">nunk</span><span class="p">,</span> <span class="n">rdof</span><span class="p">,</span> <span class="n">vol</span><span class="p">,</span>
+                                  <span class="n">coord</span><span class="p">,</span> <span class="n">U</span><span class="p">,</span> <span class="n">P</span> <span class="p">);</span>
     <span class="p">}</span>
 
-    <span class="c1">//! Return nodal field output going to file</span>
-    <span class="c1">//! \param[in] npoin Number of nodes</span>
+    <span class="c1">//! Compute nodal field output</span>
+    <span class="c1">//! \param[in] t Physical time</span>
+    <span class="c1">//! \param[in] V Total mesh volume</span>
+    <span class="c1">//! \param[in] coord Node coordinates</span>
+    <span class="c1">//! \param[in] inpoel Mesh connectivity</span>
     <span class="c1">//! \param[in] esup Elements surrounding points</span>
     <span class="c1">//! \param[in] geoElem Element geometry array</span>
-    <span class="c1">//! \param[in,out] Unode Nodal solution vector</span>
-    <span class="c1">//! \param[in,out] Pnode Nodal vector of primitive quantities</span>
-    <span class="c1">//! \param[in,out] U Nodal solution vector at recent time step</span>
-    <span class="c1">//! \param[in] P Nodal vector of primitive quantities at recent time step</span>
+    <span class="c1">//! \param[in] U Solution vector at recent time step</span>
+    <span class="c1">//! \param[in] P Primitive variable vector at recent time step</span>
     <span class="c1">//! \return Vector of vectors to be output to file</span>
     <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span> <span class="n">tk</span><span class="o">::</span><span class="n">real</span> <span class="o">&gt;</span> <span class="o">&gt;</span>
-    <span class="n">nodalFieldOutput</span><span class="p">(</span> <span class="n">tk</span><span class="o">::</span><span class="n">real</span><span class="p">,</span>
-                 <span class="n">tk</span><span class="o">::</span><span class="n">real</span><span class="p">,</span>
-                 <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="n">npoin</span><span class="p">,</span>
-                 <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">map</span><span class="o">&lt;</span> <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="p">,</span> <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span> <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="o">&gt;</span> <span class="o">&gt;&amp;</span>
-                   <span class="n">esup</span><span class="p">,</span>
-                 <span class="k">const</span> <span class="n">tk</span><span class="o">::</span><span class="n">Fields</span><span class="o">&amp;</span> <span class="n">geoElem</span><span class="p">,</span>
-                 <span class="n">tk</span><span class="o">::</span><span class="n">Fields</span><span class="o">&amp;</span> <span class="n">Unode</span><span class="p">,</span>
-                 <span class="n">tk</span><span class="o">::</span><span class="n">Fields</span><span class="o">&amp;</span> <span class="n">Pnode</span><span class="p">,</span>
-                 <span class="n">tk</span><span class="o">::</span><span class="n">Fields</span><span class="o">&amp;</span> <span class="n">U</span><span class="p">,</span>
-                 <span class="k">const</span> <span class="n">tk</span><span class="o">::</span><span class="n">Fields</span><span class="o">&amp;</span> <span class="n">P</span> <span class="p">)</span> <span class="k">const</span>
+    <span class="n">nodeFieldOutput</span><span class="p">(</span> <span class="n">tk</span><span class="o">::</span><span class="n">real</span> <span class="n">t</span><span class="p">,</span>
+                     <span class="n">tk</span><span class="o">::</span><span class="n">real</span> <span class="n">V</span><span class="p">,</span>
+                     <span class="k">const</span> <span class="n">tk</span><span class="o">::</span><span class="n">UnsMesh</span><span class="o">::</span><span class="n">Coords</span><span class="o">&amp;</span> <span class="n">coord</span><span class="p">,</span>
+                     <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span> <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="o">&gt;&amp;</span> <span class="n">inpoel</span><span class="p">,</span>
+                     <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">pair</span><span class="o">&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span> <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="o">&gt;</span><span class="p">,</span>
+                                      <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span> <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="o">&gt;</span> <span class="o">&gt;&amp;</span> <span class="n">esup</span><span class="p">,</span>
+                     <span class="k">const</span> <span class="n">tk</span><span class="o">::</span><span class="n">Fields</span><span class="o">&amp;</span> <span class="n">geoElem</span><span class="p">,</span>
+                     <span class="k">const</span> <span class="n">tk</span><span class="o">::</span><span class="n">Fields</span><span class="o">&amp;</span> <span class="n">U</span><span class="p">,</span>
+                     <span class="k">const</span> <span class="n">tk</span><span class="o">::</span><span class="n">Fields</span><span class="o">&amp;</span> <span class="n">P</span> <span class="p">)</span> <span class="k">const</span>
     <span class="p">{</span>
-      <span class="k">const</span> <span class="k">auto</span> <span class="n">rdof</span> <span class="o">=</span> <span class="n">g_inputdeck</span><span class="p">.</span><span class="n">get</span><span class="o">&lt;</span> <span class="n">tag</span><span class="o">::</span><span class="n">discr</span><span class="p">,</span> <span class="n">tag</span><span class="o">::</span><span class="n">rdof</span> <span class="o">&gt;</span><span class="p">();</span>
-      <span class="c1">// number of materials</span>
-      <span class="k">const</span> <span class="k">auto</span> <span class="n">nmat</span> <span class="o">=</span>
-        <span class="n">g_inputdeck</span><span class="p">.</span><span class="n">get</span><span class="o">&lt;</span> <span class="n">tag</span><span class="o">::</span><span class="n">param</span><span class="p">,</span> <span class="n">eq</span><span class="p">,</span> <span class="n">tag</span><span class="o">::</span><span class="n">nmat</span> <span class="o">&gt;</span><span class="p">()[</span><span class="n">m_system</span><span class="p">];</span>
-
-      <span class="n">tk</span><span class="o">::</span><span class="n">nodeAvg</span><span class="p">(</span><span class="n">m_ncomp</span><span class="p">,</span> <span class="n">nprim</span><span class="p">(),</span> <span class="n">m_offset</span><span class="p">,</span> <span class="n">rdof</span><span class="p">,</span> <span class="n">npoin</span><span class="p">,</span> <span class="n">esup</span><span class="p">,</span> <span class="n">U</span><span class="p">,</span> <span class="n">P</span><span class="p">,</span> <span class="n">Unode</span><span class="p">,</span>
-        <span class="n">Pnode</span><span class="p">);</span>
-
-      <span class="k">return</span> <span class="nf">MultiMatFieldOutput</span><span class="p">(</span><span class="n">m_system</span><span class="p">,</span> <span class="n">nmat</span><span class="p">,</span> <span class="n">m_offset</span><span class="p">,</span> <span class="n">npoin</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">geoElem</span><span class="p">,</span>
-        <span class="n">Unode</span><span class="p">,</span> <span class="n">Pnode</span><span class="p">);</span>
+      <span class="c1">// Evaluate solution in nodes</span>
+      <span class="k">auto</span> <span class="n">rdof</span> <span class="o">=</span> <span class="n">g_inputdeck</span><span class="p">.</span><span class="n">get</span><span class="o">&lt;</span> <span class="n">tag</span><span class="o">::</span><span class="n">discr</span><span class="p">,</span> <span class="n">tag</span><span class="o">::</span><span class="n">rdof</span> <span class="o">&gt;</span><span class="p">();</span>
+      <span class="k">auto</span> <span class="n">ndof</span> <span class="o">=</span> <span class="n">g_inputdeck</span><span class="p">.</span><span class="n">get</span><span class="o">&lt;</span> <span class="n">tag</span><span class="o">::</span><span class="n">discr</span><span class="p">,</span> <span class="n">tag</span><span class="o">::</span><span class="n">ndof</span> <span class="o">&gt;</span><span class="p">();</span>
+      <span class="k">auto</span> <span class="p">[</span><span class="n">Un</span><span class="p">,</span><span class="n">Pn</span><span class="p">]</span> <span class="o">=</span>
+        <span class="n">tk</span><span class="o">::</span><span class="n">nodeEval</span><span class="p">(</span> <span class="n">m_offset</span><span class="p">,</span> <span class="n">ndof</span><span class="p">,</span> <span class="n">rdof</span><span class="p">,</span> <span class="n">coord</span><span class="p">,</span> <span class="n">inpoel</span><span class="p">,</span> <span class="n">esup</span><span class="p">,</span> <span class="n">U</span><span class="p">,</span> <span class="n">P</span> <span class="p">);</span>
+      <span class="c1">// Extract nodal fields</span>
+      <span class="k">auto</span> <span class="n">f</span> <span class="o">=</span> <span class="n">fieldOutput</span><span class="p">(</span> <span class="n">t</span><span class="p">,</span> <span class="n">V</span><span class="p">,</span> <span class="n">coord</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="n">size</span><span class="p">(),</span> <span class="mi">1</span><span class="p">,</span> <span class="n">geoElem</span><span class="p">.</span><span class="n">extract</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">),</span>
+                            <span class="n">coord</span><span class="p">,</span> <span class="n">Un</span><span class="p">,</span> <span class="n">Pn</span> <span class="p">);</span>
+      <span class="k">return</span> <span class="n">f</span><span class="p">;</span>
     <span class="p">}</span>
 
     <span class="c1">//! Return surface field output going to file</span>
@@ -1292,7 +1291,7 @@
 
 <span class="p">}</span> <span class="c1">// inciter::</span>
 
-<span class="cp">#endif </span><span class="c1">// MultiMatDG_h</span></pre>
+<span class="cp">#endif </span><span class="c1">// DGMultiMat_h</span></pre>
       </div>
     </div>
   </div>
@@ -1330,7 +1329,7 @@
   <div class="m-container">
     <div class="m-row">
       <div class="m-col-l-10 m-push-l-1">
-        <p>Quinoa docs, part of the <a href="http://quinoacomputing.org/">Quinoa project</a>. Copyright © J. Bakosi 2012&ndash;2015, Los Alamos National Security, LLC, 2016&ndash;2018, <a href="https://www.triadns.org/">Triad National Security, LLC,</a> 2019-2020. Generated on Thursday, Oct 08, 2020 based on <a href="https://github.com/quinoacomputing/quinoa/commit/cd7de07">cd7de07</a> by <a href="http://doxygen.org/">Doxygen</a> and <a href="http://mcss.mosra.cz/">m.css</a>. Contact us via <a href="https://github.com/quinoacomputing/quinoa/">GitHub</a>, <a href="https://groups.io/g/quinoa">Email</a> or <a href="https://quinoa.zulipchat.com">Chat</a>.</p>
+        <p>Quinoa docs, part of the <a href="http://quinoacomputing.org/">Quinoa project</a>. Copyright © J. Bakosi 2012&ndash;2015, Los Alamos National Security, LLC, 2016&ndash;2018, <a href="https://www.triadns.org/">Triad National Security, LLC,</a> 2019-2020. Generated on Thursday, Oct 29, 2020 based on <a href="https://github.com/quinoacomputing/quinoa/commit/32ff243">32ff243</a> by <a href="http://doxygen.org/">Doxygen</a> and <a href="http://mcss.mosra.cz/">m.css</a>. Contact us via <a href="https://github.com/quinoacomputing/quinoa/">GitHub</a>, <a href="https://groups.io/g/quinoa">Email</a> or <a href="https://quinoa.zulipchat.com">Chat</a>.</p>
       </div>
     </div>
   </div>
