@@ -126,7 +126,6 @@
 <span class="cp">#include</span> <span class="cpf">&quot;Reconstruction.hpp&quot;</span><span class="cp"></span>
 <span class="cp">#include</span> <span class="cpf">&quot;Limiter.hpp&quot;</span><span class="cp"></span>
 <span class="cp">#include</span> <span class="cpf">&quot;Problem/FieldOutput.hpp&quot;</span><span class="cp"></span>
-<span class="cp">#include</span> <span class="cpf">&quot;FieldOutputUtil.hpp&quot;</span><span class="cp"></span>
 
 <span class="k">namespace</span> <span class="n">inciter</span> <span class="p">{</span>
 
@@ -911,32 +910,20 @@
     <span class="c1">//! \param[in] t Physical time</span>
     <span class="c1">//! \param[in] V Total mesh volume</span>
     <span class="c1">//! \param[in] coord Node coordinates</span>
-    <span class="c1">//! \param[in] inpoel Mesh connectivity</span>
-    <span class="c1">//! \param[in] esup Elements surrounding points</span>
     <span class="c1">//! \param[in] geoElem Element geometry array</span>
-    <span class="c1">//! \param[in] U Solution vector at recent time step</span>
-    <span class="c1">//! \param[in] P Primitive variable vector at recent time step</span>
+    <span class="c1">//! \param[in] Un Node solution vector at recent time step</span>
+    <span class="c1">//! \param[in] Pn Node primitive variable vector at recent time step</span>
     <span class="c1">//! \return Vector of vectors to be output to file</span>
     <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span> <span class="n">tk</span><span class="o">::</span><span class="n">real</span> <span class="o">&gt;</span> <span class="o">&gt;</span>
     <span class="n">nodeFieldOutput</span><span class="p">(</span> <span class="n">tk</span><span class="o">::</span><span class="n">real</span> <span class="n">t</span><span class="p">,</span>
                      <span class="n">tk</span><span class="o">::</span><span class="n">real</span> <span class="n">V</span><span class="p">,</span>
                      <span class="k">const</span> <span class="n">tk</span><span class="o">::</span><span class="n">UnsMesh</span><span class="o">::</span><span class="n">Coords</span><span class="o">&amp;</span> <span class="n">coord</span><span class="p">,</span>
-                     <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span> <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="o">&gt;&amp;</span> <span class="n">inpoel</span><span class="p">,</span>
-                     <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">pair</span><span class="o">&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span> <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="o">&gt;</span><span class="p">,</span>
-                                      <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span> <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="o">&gt;</span> <span class="o">&gt;&amp;</span> <span class="n">esup</span><span class="p">,</span>
                      <span class="k">const</span> <span class="n">tk</span><span class="o">::</span><span class="n">Fields</span><span class="o">&amp;</span> <span class="n">geoElem</span><span class="p">,</span>
-                     <span class="k">const</span> <span class="n">tk</span><span class="o">::</span><span class="n">Fields</span><span class="o">&amp;</span> <span class="n">U</span><span class="p">,</span>
-                     <span class="k">const</span> <span class="n">tk</span><span class="o">::</span><span class="n">Fields</span><span class="o">&amp;</span> <span class="n">P</span> <span class="p">)</span> <span class="k">const</span>
+                     <span class="k">const</span> <span class="n">tk</span><span class="o">::</span><span class="n">Fields</span><span class="o">&amp;</span> <span class="n">Un</span><span class="p">,</span>
+                     <span class="k">const</span> <span class="n">tk</span><span class="o">::</span><span class="n">Fields</span><span class="o">&amp;</span> <span class="n">Pn</span> <span class="p">)</span> <span class="k">const</span>
     <span class="p">{</span>
-      <span class="c1">// Evaluate solution in nodes</span>
-      <span class="k">auto</span> <span class="n">rdof</span> <span class="o">=</span> <span class="n">g_inputdeck</span><span class="p">.</span><span class="n">get</span><span class="o">&lt;</span> <span class="n">tag</span><span class="o">::</span><span class="n">discr</span><span class="p">,</span> <span class="n">tag</span><span class="o">::</span><span class="n">rdof</span> <span class="o">&gt;</span><span class="p">();</span>
-      <span class="k">auto</span> <span class="n">ndof</span> <span class="o">=</span> <span class="n">g_inputdeck</span><span class="p">.</span><span class="n">get</span><span class="o">&lt;</span> <span class="n">tag</span><span class="o">::</span><span class="n">discr</span><span class="p">,</span> <span class="n">tag</span><span class="o">::</span><span class="n">ndof</span> <span class="o">&gt;</span><span class="p">();</span>
-      <span class="k">auto</span> <span class="p">[</span><span class="n">Un</span><span class="p">,</span><span class="n">Pn</span><span class="p">]</span> <span class="o">=</span>
-        <span class="n">tk</span><span class="o">::</span><span class="n">nodeEval</span><span class="p">(</span> <span class="n">m_offset</span><span class="p">,</span> <span class="n">ndof</span><span class="p">,</span> <span class="n">rdof</span><span class="p">,</span> <span class="n">coord</span><span class="p">,</span> <span class="n">inpoel</span><span class="p">,</span> <span class="n">esup</span><span class="p">,</span> <span class="n">U</span><span class="p">,</span> <span class="n">P</span> <span class="p">);</span>
-      <span class="c1">// Extract nodal fields</span>
-      <span class="k">auto</span> <span class="n">f</span> <span class="o">=</span> <span class="n">fieldOutput</span><span class="p">(</span> <span class="n">t</span><span class="p">,</span> <span class="n">V</span><span class="p">,</span> <span class="n">coord</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="n">size</span><span class="p">(),</span> <span class="mi">1</span><span class="p">,</span> <span class="n">geoElem</span><span class="p">.</span><span class="n">extract</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">),</span>
-                            <span class="n">coord</span><span class="p">,</span> <span class="n">Un</span><span class="p">,</span> <span class="n">Pn</span> <span class="p">);</span>
-      <span class="k">return</span> <span class="n">f</span><span class="p">;</span>
+      <span class="k">return</span> <span class="n">fieldOutput</span><span class="p">(</span> <span class="n">t</span><span class="p">,</span> <span class="n">V</span><span class="p">,</span> <span class="n">coord</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="n">size</span><span class="p">(),</span> <span class="mi">1</span><span class="p">,</span> <span class="n">geoElem</span><span class="p">.</span><span class="n">extract</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">),</span>
+                          <span class="n">coord</span><span class="p">,</span> <span class="n">Un</span><span class="p">,</span> <span class="n">Pn</span> <span class="p">);</span>
     <span class="p">}</span>
 
     <span class="c1">//! Return surface field output going to file</span>
@@ -1329,7 +1316,7 @@
   <div class="m-container">
     <div class="m-row">
       <div class="m-col-l-10 m-push-l-1">
-        <p>Quinoa docs, part of the <a href="http://quinoacomputing.org/">Quinoa project</a>. Copyright © J. Bakosi 2012&ndash;2015, Los Alamos National Security, LLC, 2016&ndash;2018, <a href="https://www.triadns.org/">Triad National Security, LLC,</a> 2019-2020. Generated on Friday, Oct 30, 2020 based on <a href="https://github.com/quinoacomputing/quinoa/commit/0c6ba0f">0c6ba0f</a> by <a href="http://doxygen.org/">Doxygen</a> and <a href="http://mcss.mosra.cz/">m.css</a>. Contact us via <a href="https://github.com/quinoacomputing/quinoa/">GitHub</a>, <a href="https://groups.io/g/quinoa">Email</a> or <a href="https://quinoa.zulipchat.com">Chat</a>.</p>
+        <p>Quinoa docs, part of the <a href="http://quinoacomputing.org/">Quinoa project</a>. Copyright © J. Bakosi 2012&ndash;2015, Los Alamos National Security, LLC, 2016&ndash;2018, <a href="https://www.triadns.org/">Triad National Security, LLC,</a> 2019-2020. Generated on Friday, Nov 06, 2020 based on <a href="https://github.com/quinoacomputing/quinoa/commit/afb3924">afb3924</a> by <a href="http://doxygen.org/">Doxygen</a> and <a href="http://mcss.mosra.cz/">m.css</a>. Contact us via <a href="https://github.com/quinoacomputing/quinoa/">GitHub</a>, <a href="https://groups.io/g/quinoa">Email</a> or <a href="https://quinoa.zulipchat.com">Chat</a>.</p>
       </div>
     </div>
   </div>
