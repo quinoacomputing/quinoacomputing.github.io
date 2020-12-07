@@ -192,10 +192,10 @@
 <span class="p">{</span>
   <span class="n">usesAtSync</span> <span class="o">=</span> <span class="nb">true</span><span class="p">;</span>    <span class="c1">// enable migration at AtSync</span>
 
+  <span class="k">auto</span> <span class="n">d</span> <span class="o">=</span> <span class="n">Disc</span><span class="p">();</span>
+
   <span class="c1">// Perform optional operator-access-pattern mesh node reordering</span>
   <span class="k">if</span> <span class="p">(</span><span class="n">g_inputdeck</span><span class="p">.</span><span class="n">get</span><span class="o">&lt;</span> <span class="n">tag</span><span class="o">::</span><span class="n">discr</span><span class="p">,</span> <span class="n">tag</span><span class="o">::</span><span class="n">operator_reorder</span> <span class="o">&gt;</span><span class="p">())</span> <span class="p">{</span>
-
-    <span class="k">auto</span> <span class="n">d</span> <span class="o">=</span> <span class="n">Disc</span><span class="p">();</span>
 
     <span class="c1">// Create new local ids based on access pattern of PDE operators</span>
     <span class="n">std</span><span class="o">::</span><span class="n">unordered_map</span><span class="o">&lt;</span> <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="p">,</span> <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="o">&gt;</span> <span class="n">map</span><span class="p">;</span>
@@ -224,7 +224,8 @@
   <span class="n">thisProxy</span><span class="p">[</span> <span class="n">thisIndex</span> <span class="p">].</span><span class="n">wait4lhs</span><span class="p">();</span>
 
   <span class="c1">// Signal the runtime system that the workers have been created</span>
-  <span class="n">contribute</span><span class="p">(</span> <span class="k">sizeof</span><span class="p">(</span><span class="kt">int</span><span class="p">),</span> <span class="o">&amp;</span><span class="n">m_initial</span><span class="p">,</span> <span class="n">CkReduction</span><span class="o">::</span><span class="n">sum_int</span><span class="p">,</span>
+  <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span> <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="o">&gt;</span> <span class="n">meshdata</span><span class="p">{</span> <span class="n">m_initial</span><span class="p">,</span> <span class="n">d</span><span class="o">-&gt;</span><span class="n">MeshId</span><span class="p">()</span> <span class="p">};</span>
+  <span class="n">contribute</span><span class="p">(</span> <span class="n">meshdata</span><span class="p">,</span> <span class="n">CkReduction</span><span class="o">::</span><span class="n">sum_ulong</span><span class="p">,</span>
     <span class="n">CkCallback</span><span class="p">(</span><span class="n">CkReductionTarget</span><span class="p">(</span><span class="n">Transporter</span><span class="p">,</span><span class="n">comfinal</span><span class="p">),</span> <span class="n">Disc</span><span class="p">()</span><span class="o">-&gt;</span><span class="n">Tr</span><span class="p">())</span> <span class="p">);</span>
 <span class="p">}</span>
 <span class="c1">//! [Constructor]</span>
@@ -1163,7 +1164,9 @@
   <span class="n">m_bface</span> <span class="o">=</span> <span class="n">bface</span><span class="p">;</span>
   <span class="n">m_triinpoel</span> <span class="o">=</span> <span class="n">tk</span><span class="o">::</span><span class="n">remap</span><span class="p">(</span> <span class="n">triinpoel</span><span class="p">,</span> <span class="n">d</span><span class="o">-&gt;</span><span class="n">Lid</span><span class="p">()</span> <span class="p">);</span>
 
-  <span class="n">contribute</span><span class="p">(</span> <span class="n">CkCallback</span><span class="p">(</span><span class="n">CkReductionTarget</span><span class="p">(</span><span class="n">Transporter</span><span class="p">,</span><span class="n">resized</span><span class="p">),</span> <span class="n">d</span><span class="o">-&gt;</span><span class="n">Tr</span><span class="p">())</span> <span class="p">);</span>
+  <span class="k">auto</span> <span class="n">meshid</span> <span class="o">=</span> <span class="n">d</span><span class="o">-&gt;</span><span class="n">MeshId</span><span class="p">();</span>
+  <span class="n">contribute</span><span class="p">(</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="p">),</span> <span class="o">&amp;</span><span class="n">meshid</span><span class="p">,</span> <span class="n">CkReduction</span><span class="o">::</span><span class="n">nop</span><span class="p">,</span>
+              <span class="n">CkCallback</span><span class="p">(</span><span class="n">CkReductionTarget</span><span class="p">(</span><span class="n">Transporter</span><span class="p">,</span><span class="n">resized</span><span class="p">),</span> <span class="n">d</span><span class="o">-&gt;</span><span class="n">Tr</span><span class="p">())</span> <span class="p">);</span>
 <span class="p">}</span>
 <span class="c1">//! [Resize]</span>
 
@@ -1316,8 +1319,8 @@
 
   <span class="k">if</span> <span class="p">(</span> <span class="o">!</span><span class="n">benchmark</span> <span class="o">&amp;&amp;</span> <span class="p">(</span><span class="n">d</span><span class="o">-&gt;</span><span class="n">It</span><span class="p">())</span> <span class="o">%</span> <span class="n">rsfreq</span> <span class="o">==</span> <span class="mi">0</span> <span class="p">)</span> <span class="p">{</span>
 
-    <span class="kt">int</span> <span class="n">finished</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
-    <span class="n">d</span><span class="o">-&gt;</span><span class="n">contribute</span><span class="p">(</span> <span class="k">sizeof</span><span class="p">(</span><span class="kt">int</span><span class="p">),</span> <span class="o">&amp;</span><span class="n">finished</span><span class="p">,</span> <span class="n">CkReduction</span><span class="o">::</span><span class="n">nop</span><span class="p">,</span>
+    <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span> <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="o">&gt;</span> <span class="n">meshdata</span><span class="p">{</span> <span class="cm">/* finished = */</span> <span class="mi">0</span><span class="p">,</span> <span class="n">d</span><span class="o">-&gt;</span><span class="n">MeshId</span><span class="p">()</span> <span class="p">};</span>
+    <span class="n">contribute</span><span class="p">(</span> <span class="n">meshdata</span><span class="p">,</span> <span class="n">CkReduction</span><span class="o">::</span><span class="n">nop</span><span class="p">,</span>
       <span class="n">CkCallback</span><span class="p">(</span><span class="n">CkReductionTarget</span><span class="p">(</span><span class="n">Transporter</span><span class="p">,</span><span class="n">checkpoint</span><span class="p">),</span> <span class="n">d</span><span class="o">-&gt;</span><span class="n">Tr</span><span class="p">())</span> <span class="p">);</span>
 
   <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
@@ -1346,7 +1349,9 @@
 
   <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
 
-    <span class="n">d</span><span class="o">-&gt;</span><span class="n">contribute</span><span class="p">(</span> <span class="n">CkCallback</span><span class="p">(</span><span class="n">CkReductionTarget</span><span class="p">(</span><span class="n">Transporter</span><span class="p">,</span><span class="n">finish</span><span class="p">),</span> <span class="n">d</span><span class="o">-&gt;</span><span class="n">Tr</span><span class="p">())</span> <span class="p">);</span>
+    <span class="k">auto</span> <span class="n">meshid</span> <span class="o">=</span> <span class="n">d</span><span class="o">-&gt;</span><span class="n">MeshId</span><span class="p">();</span>
+    <span class="n">d</span><span class="o">-&gt;</span><span class="n">contribute</span><span class="p">(</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="p">),</span> <span class="o">&amp;</span><span class="n">meshid</span><span class="p">,</span> <span class="n">CkReduction</span><span class="o">::</span><span class="n">nop</span><span class="p">,</span>
+                   <span class="n">CkCallback</span><span class="p">(</span><span class="n">CkReductionTarget</span><span class="p">(</span><span class="n">Transporter</span><span class="p">,</span><span class="n">finish</span><span class="p">),</span> <span class="n">d</span><span class="o">-&gt;</span><span class="n">Tr</span><span class="p">())</span> <span class="p">);</span>
 
   <span class="p">}</span>
 <span class="p">}</span>
@@ -1389,7 +1394,7 @@
   <div class="m-container">
     <div class="m-row">
       <div class="m-col-l-10 m-push-l-1">
-        <p>Quinoa docs, part of the <a href="http://quinoacomputing.org/">Quinoa project</a>. Copyright © J. Bakosi 2012&ndash;2015, Los Alamos National Security, LLC, 2016&ndash;2018, <a href="https://www.triadns.org/">Triad National Security, LLC,</a> 2019-2020. Generated on Thursday, Nov 26, 2020 based on <a href="https://github.com/quinoacomputing/quinoa/commit/1765a19">1765a19</a> by <a href="http://doxygen.org/">Doxygen</a> and <a href="http://mcss.mosra.cz/">m.css</a>. Contact us via <a href="https://github.com/quinoacomputing/quinoa/">GitHub</a>, <a href="https://groups.io/g/quinoa">Email</a> or <a href="https://quinoa.zulipchat.com">Chat</a>.</p>
+        <p>Quinoa docs, part of the <a href="http://quinoacomputing.org/">Quinoa project</a>. Copyright © J. Bakosi 2012&ndash;2015, Los Alamos National Security, LLC, 2016&ndash;2018, <a href="https://www.triadns.org/">Triad National Security, LLC,</a> 2019-2020. Generated on Saturday, Dec 05, 2020 based on <a href="https://github.com/quinoacomputing/quinoa/commit/a9f718f">a9f718f</a> by <a href="http://doxygen.org/">Doxygen</a> and <a href="http://mcss.mosra.cz/">m.css</a>. Contact us via <a href="https://github.com/quinoacomputing/quinoa/">GitHub</a>, <a href="https://groups.io/g/quinoa">Email</a> or <a href="https://quinoa.zulipchat.com">Chat</a>.</p>
       </div>
     </div>
   </div>
