@@ -100,7 +100,7 @@
 <span class="cm">*/</span>
 <span class="c1">// *****************************************************************************</span>
 
-<span class="cp">#include</span> <span class="cpf">&quot;QuinoaConfig.hpp&quot;</span><span class="cp"></span>
+<span class="cp">#include</span> <span class="cpf">&quot;QuinoaBuildConfig.hpp&quot;</span><span class="cp"></span>
 <span class="cp">#include</span> <span class="cpf">&quot;ALECG.hpp&quot;</span><span class="cp"></span>
 <span class="cp">#include</span> <span class="cpf">&quot;Vector.hpp&quot;</span><span class="cp"></span>
 <span class="cp">#include</span> <span class="cpf">&quot;Reader.hpp&quot;</span><span class="cp"></span>
@@ -223,10 +223,22 @@
   <span class="c1">// Activate SDAG wait for initially computing the left-hand side and normals</span>
   <span class="n">thisProxy</span><span class="p">[</span> <span class="n">thisIndex</span> <span class="p">].</span><span class="n">wait4lhs</span><span class="p">();</span>
 
-  <span class="c1">// Signal the runtime system that the workers have been created</span>
-  <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span> <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="o">&gt;</span> <span class="n">meshdata</span><span class="p">{</span> <span class="n">m_initial</span><span class="p">,</span> <span class="n">d</span><span class="o">-&gt;</span><span class="n">MeshId</span><span class="p">()</span> <span class="p">};</span>
-  <span class="n">contribute</span><span class="p">(</span> <span class="n">meshdata</span><span class="p">,</span> <span class="n">CkReduction</span><span class="o">::</span><span class="n">sum_ulong</span><span class="p">,</span>
-    <span class="n">CkCallback</span><span class="p">(</span><span class="n">CkReductionTarget</span><span class="p">(</span><span class="n">Transporter</span><span class="p">,</span><span class="n">comfinal</span><span class="p">),</span> <span class="n">Disc</span><span class="p">()</span><span class="o">-&gt;</span><span class="n">Tr</span><span class="p">())</span> <span class="p">);</span>
+  <span class="c1">// Generate callbacks for solution transfers we are involved in</span>
+
+  <span class="c1">// Always add a callback to be used when we are not involved in any transfers</span>
+  <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span> <span class="n">CkCallback</span> <span class="o">&gt;</span> <span class="n">cb</span><span class="p">;</span>
+  <span class="k">auto</span> <span class="n">c</span> <span class="o">=</span> <span class="n">CkCallback</span><span class="p">(</span><span class="n">CkIndex_ALECG</span><span class="o">::</span><span class="n">transfer_complete</span><span class="p">(),</span> <span class="n">thisProxy</span><span class="p">[</span><span class="n">thisIndex</span><span class="p">]);</span>
+  <span class="n">cb</span><span class="p">.</span><span class="n">push_back</span><span class="p">(</span> <span class="n">c</span> <span class="p">);</span>
+
+  <span class="c1">// Generate a callback for each transfer we are involved in (either as a</span>
+  <span class="c1">// source or a destination)</span>
+  <span class="k">auto</span> <span class="n">meshid</span> <span class="o">=</span> <span class="n">d</span><span class="o">-&gt;</span><span class="n">MeshId</span><span class="p">();</span>
+  <span class="k">for</span> <span class="p">(</span><span class="k">const</span> <span class="k">auto</span><span class="o">&amp;</span> <span class="nl">t</span> <span class="p">:</span> <span class="n">d</span><span class="o">-&gt;</span><span class="n">Transfers</span><span class="p">())</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">meshid</span> <span class="o">==</span> <span class="n">t</span><span class="p">.</span><span class="n">src</span> <span class="o">||</span> <span class="n">meshid</span> <span class="o">==</span> <span class="n">t</span><span class="p">.</span><span class="n">dst</span><span class="p">)</span>
+      <span class="n">cb</span><span class="p">.</span><span class="n">push_back</span><span class="p">(</span> <span class="n">c</span> <span class="p">);</span>
+
+  <span class="c1">// Send callbacks to base</span>
+  <span class="n">d</span><span class="o">-&gt;</span><span class="n">transferCallback</span><span class="p">(</span> <span class="n">cb</span> <span class="p">);</span>
 <span class="p">}</span>
 <span class="c1">//! [Constructor]</span>
 
@@ -493,8 +505,11 @@
   <span class="n">d</span><span class="o">-&gt;</span><span class="n">Boxvol</span><span class="p">()</span> <span class="o">=</span> <span class="n">v</span><span class="p">;</span>
 
   <span class="c1">// Set initial conditions for all PDEs</span>
-  <span class="k">for</span> <span class="p">(</span><span class="k">auto</span><span class="o">&amp;</span> <span class="nl">eq</span> <span class="p">:</span> <span class="n">g_cgpde</span><span class="p">)</span> <span class="n">eq</span><span class="p">.</span><span class="n">initialize</span><span class="p">(</span> <span class="n">d</span><span class="o">-&gt;</span><span class="n">Coord</span><span class="p">(),</span> <span class="n">m_u</span><span class="p">,</span> <span class="n">d</span><span class="o">-&gt;</span><span class="n">T</span><span class="p">(),</span> <span class="n">d</span><span class="o">-&gt;</span><span class="n">Boxvol</span><span class="p">(),</span>
-    <span class="n">m_boxnodes</span> <span class="p">);</span>
+  <span class="k">for</span> <span class="p">(</span><span class="k">auto</span><span class="o">&amp;</span> <span class="nl">eq</span> <span class="p">:</span> <span class="n">g_cgpde</span><span class="p">)</span>
+    <span class="n">eq</span><span class="p">.</span><span class="n">initialize</span><span class="p">(</span> <span class="n">d</span><span class="o">-&gt;</span><span class="n">Coord</span><span class="p">(),</span> <span class="n">m_u</span><span class="p">,</span> <span class="n">d</span><span class="o">-&gt;</span><span class="n">T</span><span class="p">(),</span> <span class="n">d</span><span class="o">-&gt;</span><span class="n">Boxvol</span><span class="p">(),</span> <span class="n">m_boxnodes</span> <span class="p">);</span>
+
+  <span class="c1">// Initiate IC transfer (if coupled)</span>
+  <span class="n">Disc</span><span class="p">()</span><span class="o">-&gt;</span><span class="n">transfer</span><span class="p">(</span> <span class="n">m_u</span> <span class="p">);</span>
 
   <span class="c1">// Compute left-hand side of PDEs</span>
   <span class="n">lhs</span><span class="p">();</span>
@@ -808,7 +823,7 @@
   <span class="c1">// Actiavate SDAG waits for next time step stage</span>
   <span class="n">thisProxy</span><span class="p">[</span> <span class="n">thisIndex</span> <span class="p">].</span><span class="n">wait4grad</span><span class="p">();</span>
   <span class="n">thisProxy</span><span class="p">[</span> <span class="n">thisIndex</span> <span class="p">].</span><span class="n">wait4rhs</span><span class="p">();</span>
-  <span class="n">thisProxy</span><span class="p">[</span> <span class="n">thisIndex</span> <span class="p">].</span><span class="n">wait4stage</span><span class="p">();</span>
+  <span class="n">thisProxy</span><span class="p">[</span> <span class="n">thisIndex</span> <span class="p">].</span><span class="n">wait4trans</span><span class="p">();</span>
 
   <span class="c1">// Contribute to minimum dt across all chares the advance to next step</span>
   <span class="n">contribute</span><span class="p">(</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">tk</span><span class="o">::</span><span class="n">real</span><span class="p">),</span> <span class="o">&amp;</span><span class="n">mindt</span><span class="p">,</span> <span class="n">CkReduction</span><span class="o">::</span><span class="n">min_double</span><span class="p">,</span>
@@ -907,7 +922,7 @@
   <span class="k">const</span> <span class="k">auto</span> <span class="n">steady</span> <span class="o">=</span> <span class="n">g_inputdeck</span><span class="p">.</span><span class="n">get</span><span class="o">&lt;</span> <span class="n">tag</span><span class="o">::</span><span class="n">discr</span><span class="p">,</span> <span class="n">tag</span><span class="o">::</span><span class="n">steady_state</span> <span class="o">&gt;</span><span class="p">();</span>
 
   <span class="c1">// Compute own portion of right-hand side for all equations</span>
-  <span class="k">auto</span> <span class="n">prev_rkcoef</span> <span class="o">=</span> <span class="n">m_stage</span> <span class="o">==</span> <span class="mi">0</span> <span class="o">?</span> <span class="mf">0.0</span> <span class="o">:</span> <span class="n">rkcoef</span><span class="p">[</span><span class="n">m_stage</span><span class="o">-</span><span class="mi">1</span><span class="p">];</span>
+  <span class="k">auto</span> <span class="n">prev_rkcoef</span> <span class="o">=</span> <span class="n">m_stage</span> <span class="o">==</span> <span class="mi">0</span> <span class="o">?</span> <span class="mf">0.0</span> <span class="o">:</span> <span class="n">rkcoef</span><span class="p">[</span><span class="n">m_stage</span><span class="mi">-1</span><span class="p">];</span>
   <span class="k">if</span> <span class="p">(</span><span class="n">steady</span><span class="p">)</span>
     <span class="k">for</span> <span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="n">p</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">p</span><span class="o">&lt;</span><span class="n">m_tp</span><span class="p">.</span><span class="n">size</span><span class="p">();</span> <span class="o">++</span><span class="n">p</span><span class="p">)</span> <span class="n">m_tp</span><span class="p">[</span><span class="n">p</span><span class="p">]</span> <span class="o">+=</span> <span class="n">prev_rkcoef</span> <span class="o">*</span> <span class="n">m_dtp</span><span class="p">[</span><span class="n">p</span><span class="p">];</span>
   <span class="k">for</span> <span class="p">(</span><span class="k">const</span> <span class="k">auto</span><span class="o">&amp;</span> <span class="nl">eq</span> <span class="p">:</span> <span class="n">g_cgpde</span><span class="p">)</span>
@@ -1032,8 +1047,8 @@
     <span class="n">thisProxy</span><span class="p">[</span> <span class="n">thisIndex</span> <span class="p">].</span><span class="n">wait4grad</span><span class="p">();</span>
     <span class="n">thisProxy</span><span class="p">[</span> <span class="n">thisIndex</span> <span class="p">].</span><span class="n">wait4rhs</span><span class="p">();</span>
 
-    <span class="c1">// continue with next time step stage</span>
-    <span class="n">stage</span><span class="p">();</span>
+    <span class="c1">// continue to mesh-to-mesh transfer (if coupled)</span>
+    <span class="n">transfer</span><span class="p">();</span>
 
   <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
 
@@ -1177,6 +1192,18 @@
 <span class="c1">// *****************************************************************************</span>
 <span class="p">{</span>
   <span class="n">resize_complete</span><span class="p">();</span>
+<span class="p">}</span>
+
+<span class="kt">void</span>
+<span class="n">ALECG</span><span class="o">::</span><span class="n">transfer</span><span class="p">()</span>
+<span class="c1">// *****************************************************************************</span>
+<span class="c1">// Transfer solution to other solver and mesh if coupled</span>
+<span class="c1">// *****************************************************************************</span>
+<span class="p">{</span>
+  <span class="c1">// Initiate solution transfer (if coupled)</span>
+  <span class="c1">//Disc()-&gt;transfer( m_u,</span>
+  <span class="c1">//  CkCallback(CkIndex_ALECG::stage(), thisProxy[thisIndex]) );</span>
+  <span class="n">thisProxy</span><span class="p">[</span><span class="n">thisIndex</span><span class="p">].</span><span class="n">stage</span><span class="p">();</span>
 <span class="p">}</span>
 
 <span class="kt">void</span>
@@ -1325,7 +1352,7 @@
 
   <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
 
-    <span class="n">evalLB</span><span class="p">(</span> <span class="cm">/* nrestart = */</span> <span class="o">-</span><span class="mi">1</span> <span class="p">);</span>
+    <span class="n">evalLB</span><span class="p">(</span> <span class="cm">/* nrestart = */</span> <span class="mi">-1</span> <span class="p">);</span>
 
   <span class="p">}</span>
 <span class="p">}</span>
@@ -1394,7 +1421,7 @@
   <div class="m-container">
     <div class="m-row">
       <div class="m-col-l-10 m-push-l-1">
-        <p>Quinoa docs, part of the <a href="http://quinoacomputing.org/">Quinoa project</a>. Copyright © J. Bakosi 2012&ndash;2015, Los Alamos National Security, LLC, 2016&ndash;2018, <a href="https://www.triadns.org/">Triad National Security, LLC,</a> 2019-2020. Generated on Saturday, Jan 09, 2021 based on <a href="https://github.com/quinoacomputing/quinoa/commit/5666f42">5666f42</a> by <a href="http://doxygen.org/">Doxygen</a> and <a href="http://mcss.mosra.cz/">m.css</a>. Contact us via <a href="https://github.com/quinoacomputing/quinoa/">GitHub</a>, <a href="https://groups.io/g/quinoa">Email</a> or <a href="https://quinoa.zulipchat.com">Chat</a>.</p>
+        <p>Quinoa docs, part of the <a href="http://quinoacomputing.org/">Quinoa project</a>. Copyright © J. Bakosi 2012&ndash;2015, Los Alamos National Security, LLC, 2016&ndash;2018, <a href="https://www.triadns.org/">Triad National Security, LLC,</a> 2019-2020. Generated on Thursday, Jan 21, 2021 based on <a href="https://github.com/quinoacomputing/quinoa/commit/3124ba504">3124ba504</a> by <a href="http://doxygen.org/">Doxygen</a> and <a href="http://mcss.mosra.cz/">m.css</a>. Contact us via <a href="https://github.com/quinoacomputing/quinoa/">GitHub</a>, <a href="https://groups.io/g/quinoa">Email</a> or <a href="https://quinoa.zulipchat.com">Chat</a>.</p>
       </div>
     </div>
   </div>
