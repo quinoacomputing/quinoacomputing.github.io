@@ -119,6 +119,7 @@
 <span class="cp">#include</span> <span class="cpf">&quot;CGPDE.hpp&quot;</span><span class="cp"></span>
 <span class="cp">#include</span> <span class="cpf">&quot;Integrate/Mass.hpp&quot;</span><span class="cp"></span>
 <span class="cp">#include</span> <span class="cpf">&quot;FieldOutput.hpp&quot;</span><span class="cp"></span>
+<span class="cp">#include</span> <span class="cpf">&quot;ALE/MeshMotion.hpp&quot;</span><span class="cp"></span>
 
 <span class="cp">#ifdef HAS_ROOT</span>
   <span class="cp">#include</span> <span class="cpf">&quot;RootMeshWriter.hpp&quot;</span><span class="cp"></span>
@@ -144,7 +145,6 @@
   <span class="n">m_disc</span><span class="p">(</span> <span class="n">disc</span> <span class="p">),</span>
   <span class="n">m_initial</span><span class="p">(</span> <span class="mi">1</span> <span class="p">),</span>
   <span class="n">m_nsol</span><span class="p">(</span> <span class="mi">0</span> <span class="p">),</span>
-  <span class="n">m_nlhs</span><span class="p">(</span> <span class="mi">0</span> <span class="p">),</span>
   <span class="n">m_ngrad</span><span class="p">(</span> <span class="mi">0</span> <span class="p">),</span>
   <span class="n">m_nrhs</span><span class="p">(</span> <span class="mi">0</span> <span class="p">),</span>
   <span class="n">m_nbnorm</span><span class="p">(</span> <span class="mi">0</span> <span class="p">),</span>
@@ -158,14 +158,12 @@
   <span class="n">m_dfn</span><span class="p">(),</span>
   <span class="n">m_esup</span><span class="p">(</span> <span class="n">tk</span><span class="o">::</span><span class="n">genEsup</span><span class="p">(</span> <span class="n">Disc</span><span class="p">()</span><span class="o">-&gt;</span><span class="n">Inpoel</span><span class="p">(),</span> <span class="mi">4</span> <span class="p">)</span> <span class="p">),</span>
   <span class="n">m_psup</span><span class="p">(</span> <span class="n">tk</span><span class="o">::</span><span class="n">genPsup</span><span class="p">(</span> <span class="n">Disc</span><span class="p">()</span><span class="o">-&gt;</span><span class="n">Inpoel</span><span class="p">(),</span> <span class="mi">4</span><span class="p">,</span> <span class="n">m_esup</span> <span class="p">)</span> <span class="p">),</span>
-  <span class="n">m_u</span><span class="p">(</span> <span class="n">m_disc</span><span class="p">[</span><span class="n">thisIndex</span><span class="p">].</span><span class="n">ckLocal</span><span class="p">()</span><span class="o">-&gt;</span><span class="n">Gid</span><span class="p">().</span><span class="n">size</span><span class="p">(),</span>
-       <span class="n">g_inputdeck</span><span class="p">.</span><span class="n">get</span><span class="o">&lt;</span> <span class="n">tag</span><span class="o">::</span><span class="n">component</span> <span class="o">&gt;</span><span class="p">().</span><span class="n">nprop</span><span class="p">()</span> <span class="p">),</span>
+  <span class="n">m_u</span><span class="p">(</span> <span class="n">Disc</span><span class="p">()</span><span class="o">-&gt;</span><span class="n">Gid</span><span class="p">().</span><span class="n">size</span><span class="p">(),</span> <span class="n">g_inputdeck</span><span class="p">.</span><span class="n">get</span><span class="o">&lt;</span> <span class="n">tag</span><span class="o">::</span><span class="n">component</span> <span class="o">&gt;</span><span class="p">().</span><span class="n">nprop</span><span class="p">()</span> <span class="p">),</span>
   <span class="n">m_un</span><span class="p">(</span> <span class="n">m_u</span><span class="p">.</span><span class="n">nunk</span><span class="p">(),</span> <span class="n">m_u</span><span class="p">.</span><span class="n">nprop</span><span class="p">()</span> <span class="p">),</span>
-  <span class="n">m_lhs</span><span class="p">(</span> <span class="n">m_u</span><span class="p">.</span><span class="n">nunk</span><span class="p">(),</span> <span class="n">m_u</span><span class="p">.</span><span class="n">nprop</span><span class="p">()</span> <span class="p">),</span>
+  <span class="n">m_w</span><span class="p">(</span> <span class="n">m_u</span><span class="p">.</span><span class="n">nunk</span><span class="p">(),</span> <span class="mi">3</span> <span class="p">),</span>
   <span class="n">m_rhs</span><span class="p">(</span> <span class="n">m_u</span><span class="p">.</span><span class="n">nunk</span><span class="p">(),</span> <span class="n">m_u</span><span class="p">.</span><span class="n">nprop</span><span class="p">()</span> <span class="p">),</span>
   <span class="n">m_chBndGrad</span><span class="p">(</span> <span class="n">Disc</span><span class="p">()</span><span class="o">-&gt;</span><span class="n">Bid</span><span class="p">().</span><span class="n">size</span><span class="p">(),</span> <span class="n">m_u</span><span class="p">.</span><span class="n">nprop</span><span class="p">()</span><span class="o">*</span><span class="mi">3</span> <span class="p">),</span>
   <span class="n">m_bcdir</span><span class="p">(),</span>
-  <span class="n">m_lhsc</span><span class="p">(),</span>
   <span class="n">m_chBndGradc</span><span class="p">(),</span>
   <span class="n">m_rhsc</span><span class="p">(),</span>
   <span class="n">m_diag</span><span class="p">(),</span>
@@ -180,7 +178,9 @@
   <span class="n">m_edgeid</span><span class="p">(),</span>
   <span class="n">m_dtp</span><span class="p">(</span> <span class="n">m_u</span><span class="p">.</span><span class="n">nunk</span><span class="p">(),</span> <span class="mf">0.0</span> <span class="p">),</span>
   <span class="n">m_tp</span><span class="p">(</span> <span class="n">m_u</span><span class="p">.</span><span class="n">nunk</span><span class="p">(),</span> <span class="n">g_inputdeck</span><span class="p">.</span><span class="n">get</span><span class="o">&lt;</span> <span class="n">tag</span><span class="o">::</span><span class="n">discr</span><span class="p">,</span> <span class="n">tag</span><span class="o">::</span><span class="n">t0</span> <span class="o">&gt;</span><span class="p">()</span> <span class="p">),</span>
-  <span class="n">m_finished</span><span class="p">(</span> <span class="mi">0</span> <span class="p">)</span>
+  <span class="n">m_finished</span><span class="p">(</span> <span class="mi">0</span> <span class="p">),</span>
+  <span class="n">m_newmesh</span><span class="p">(</span> <span class="mi">0</span> <span class="p">),</span>
+  <span class="n">m_coordn</span><span class="p">(</span> <span class="n">Disc</span><span class="p">()</span><span class="o">-&gt;</span><span class="n">Coord</span><span class="p">()</span> <span class="p">)</span>
 <span class="c1">// *****************************************************************************</span>
 <span class="c1">//  Constructor</span>
 <span class="c1">//! \param[in] disc Discretization proxy</span>
@@ -193,6 +193,15 @@
   <span class="n">usesAtSync</span> <span class="o">=</span> <span class="nb">true</span><span class="p">;</span>    <span class="c1">// enable migration at AtSync</span>
 
   <span class="k">auto</span> <span class="n">d</span> <span class="o">=</span> <span class="n">Disc</span><span class="p">();</span>
+
+  <span class="c1">// Zero ALE mesh velocity by default</span>
+  <span class="n">m_w</span><span class="p">.</span><span class="n">fill</span><span class="p">(</span> <span class="mf">0.0</span> <span class="p">);</span>
+
+  <span class="c1">// Assign mesh velocity if configured</span>
+  <span class="k">if</span> <span class="p">(</span><span class="n">d</span><span class="o">-&gt;</span><span class="n">ALE</span><span class="p">())</span>
+    <span class="n">meshvel</span><span class="p">(</span> <span class="n">g_inputdeck</span><span class="p">.</span><span class="n">get</span><span class="o">&lt;</span> <span class="n">tag</span><span class="o">::</span><span class="n">ale</span><span class="p">,</span> <span class="n">tag</span><span class="o">::</span><span class="n">meshvelocity</span> <span class="o">&gt;</span><span class="p">(),</span>
+             <span class="n">d</span><span class="o">-&gt;</span><span class="n">Coord</span><span class="p">(),</span>
+             <span class="n">m_w</span> <span class="p">);</span>
 
   <span class="c1">// Perform optional operator-access-pattern mesh node reordering</span>
   <span class="k">if</span> <span class="p">(</span><span class="n">g_inputdeck</span><span class="p">.</span><span class="n">get</span><span class="o">&lt;</span> <span class="n">tag</span><span class="o">::</span><span class="n">discr</span><span class="p">,</span> <span class="n">tag</span><span class="o">::</span><span class="n">operator_reorder</span> <span class="o">&gt;</span><span class="p">())</span> <span class="p">{</span>
@@ -220,8 +229,8 @@
     <span class="n">tk</span><span class="o">::</span><span class="n">remap</span><span class="p">(</span> <span class="n">m_triinpoel</span><span class="p">,</span> <span class="n">map</span> <span class="p">);</span>
   <span class="p">}</span>
 
-  <span class="c1">// Activate SDAG wait for initially computing the left-hand side and normals</span>
-  <span class="n">thisProxy</span><span class="p">[</span> <span class="n">thisIndex</span> <span class="p">].</span><span class="n">wait4lhs</span><span class="p">();</span>
+  <span class="c1">// Activate SDAG wait for initially computing normals</span>
+  <span class="n">thisProxy</span><span class="p">[</span> <span class="n">thisIndex</span> <span class="p">].</span><span class="n">wait4norm</span><span class="p">();</span>
 
   <span class="c1">// Generate callbacks for solution transfers we are involved in</span>
 
@@ -493,6 +502,34 @@
 <span class="p">}</span>
 
 <span class="kt">void</span>
+<span class="n">ALECG</span><span class="o">::</span><span class="n">volumetric</span><span class="p">(</span> <span class="n">tk</span><span class="o">::</span><span class="n">Fields</span><span class="o">&amp;</span> <span class="n">u</span> <span class="p">)</span>
+<span class="c1">// *****************************************************************************</span>
+<span class="c1">//  Multiply solution with mesh volume</span>
+<span class="c1">//! \param[in,out] u Solution vector</span>
+<span class="c1">// *****************************************************************************</span>
+<span class="p">{</span>
+  <span class="n">Assert</span><span class="p">(</span> <span class="n">Disc</span><span class="p">()</span><span class="o">-&gt;</span><span class="n">Vol</span><span class="p">().</span><span class="n">size</span><span class="p">()</span> <span class="o">==</span> <span class="n">u</span><span class="p">.</span><span class="n">nunk</span><span class="p">(),</span> <span class="s">&quot;Size mismatch&quot;</span> <span class="p">);</span>
+
+  <span class="k">for</span> <span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">i</span><span class="o">&lt;</span><span class="n">u</span><span class="p">.</span><span class="n">nunk</span><span class="p">();</span> <span class="o">++</span><span class="n">i</span><span class="p">)</span>
+    <span class="k">for</span> <span class="p">(</span><span class="n">ncomp_t</span> <span class="n">c</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">c</span><span class="o">&lt;</span><span class="n">u</span><span class="p">.</span><span class="n">nprop</span><span class="p">();</span> <span class="o">++</span><span class="n">c</span><span class="p">)</span>
+      <span class="n">u</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="n">c</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span> <span class="o">*=</span> <span class="n">Disc</span><span class="p">()</span><span class="o">-&gt;</span><span class="n">Vol</span><span class="p">()[</span><span class="n">i</span><span class="p">];</span>
+<span class="p">}</span>
+
+<span class="kt">void</span>
+<span class="n">ALECG</span><span class="o">::</span><span class="n">conserved</span><span class="p">(</span> <span class="n">tk</span><span class="o">::</span><span class="n">Fields</span><span class="o">&amp;</span> <span class="n">u</span> <span class="p">)</span>
+<span class="c1">// *****************************************************************************</span>
+<span class="c1">//  Divide solution with mesh volume</span>
+<span class="c1">//! \param[in,out] u Solution vector</span>
+<span class="c1">// *****************************************************************************</span>
+<span class="p">{</span>
+  <span class="n">Assert</span><span class="p">(</span> <span class="n">Disc</span><span class="p">()</span><span class="o">-&gt;</span><span class="n">Vol</span><span class="p">().</span><span class="n">size</span><span class="p">()</span> <span class="o">==</span> <span class="n">u</span><span class="p">.</span><span class="n">nunk</span><span class="p">(),</span> <span class="s">&quot;Size mismatch&quot;</span> <span class="p">);</span>
+
+  <span class="k">for</span> <span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">i</span><span class="o">&lt;</span><span class="n">u</span><span class="p">.</span><span class="n">nunk</span><span class="p">();</span> <span class="o">++</span><span class="n">i</span><span class="p">)</span>
+    <span class="k">for</span> <span class="p">(</span><span class="n">ncomp_t</span> <span class="n">c</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">c</span><span class="o">&lt;</span><span class="n">u</span><span class="p">.</span><span class="n">nprop</span><span class="p">();</span> <span class="o">++</span><span class="n">c</span><span class="p">)</span>
+      <span class="n">u</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="n">c</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span> <span class="o">/=</span> <span class="n">Disc</span><span class="p">()</span><span class="o">-&gt;</span><span class="n">Vol</span><span class="p">()[</span><span class="n">i</span><span class="p">];</span>
+<span class="p">}</span>
+
+<span class="kt">void</span>
 <span class="n">ALECG</span><span class="o">::</span><span class="n">box</span><span class="p">(</span> <span class="n">tk</span><span class="o">::</span><span class="n">real</span> <span class="n">v</span> <span class="p">)</span>
 <span class="c1">// *****************************************************************************</span>
 <span class="c1">// Receive total box IC volume and set conditions in box</span>
@@ -507,6 +544,9 @@
   <span class="c1">// Set initial conditions for all PDEs</span>
   <span class="k">for</span> <span class="p">(</span><span class="k">auto</span><span class="o">&amp;</span> <span class="nl">eq</span> <span class="p">:</span> <span class="n">g_cgpde</span><span class="p">)</span>
     <span class="n">eq</span><span class="p">.</span><span class="n">initialize</span><span class="p">(</span> <span class="n">d</span><span class="o">-&gt;</span><span class="n">Coord</span><span class="p">(),</span> <span class="n">m_u</span><span class="p">,</span> <span class="n">d</span><span class="o">-&gt;</span><span class="n">T</span><span class="p">(),</span> <span class="n">d</span><span class="o">-&gt;</span><span class="n">Boxvol</span><span class="p">(),</span> <span class="n">m_boxnodes</span> <span class="p">);</span>
+
+  <span class="c1">// Multiply conserved variables with mesh volume</span>
+  <span class="n">volumetric</span><span class="p">(</span> <span class="n">m_u</span> <span class="p">);</span>
 
   <span class="c1">// Initiate IC transfer (if coupled)</span>
   <span class="n">Disc</span><span class="p">()</span><span class="o">-&gt;</span><span class="n">transfer</span><span class="p">(</span> <span class="n">m_u</span> <span class="p">);</span>
@@ -528,10 +568,14 @@
   <span class="n">Disc</span><span class="p">()</span><span class="o">-&gt;</span><span class="n">grindZero</span><span class="p">();</span>
   <span class="c1">// Continue to next time step</span>
   <span class="n">next</span><span class="p">();</span>
+  <span class="c1">// Apply BCs on initial conditions</span>
+  <span class="n">BC</span><span class="p">();</span>
+  <span class="c1">// Set flag that indicates that we are during time stepping</span>
+  <span class="n">m_initial</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
 <span class="p">}</span>
 <span class="c1">//! [start]</span>
 
-<span class="c1">//! [Compute own and send lhs on chare-boundary]</span>
+<span class="c1">//! [Compute own and send contributions to normals on chare-boundary]</span>
 <span class="kt">void</span>
 <span class="n">ALECG</span><span class="o">::</span><span class="n">lhs</span><span class="p">()</span>
 <span class="c1">// *****************************************************************************</span>
@@ -539,94 +583,32 @@
 <span class="c1">//! \details Also (re-)compute all data structures if the mesh changed.</span>
 <span class="c1">// *****************************************************************************</span>
 <span class="p">{</span>
-  <span class="k">auto</span> <span class="n">d</span> <span class="o">=</span> <span class="n">Disc</span><span class="p">();</span>
-
-  <span class="c1">// Compute lumped mass lhs</span>
-  <span class="n">m_lhs</span> <span class="o">=</span> <span class="n">tk</span><span class="o">::</span><span class="n">lump</span><span class="p">(</span> <span class="n">m_u</span><span class="p">.</span><span class="n">nprop</span><span class="p">(),</span> <span class="n">d</span><span class="o">-&gt;</span><span class="n">Coord</span><span class="p">(),</span> <span class="n">d</span><span class="o">-&gt;</span><span class="n">Inpoel</span><span class="p">()</span> <span class="p">);</span>
-
-  <span class="k">if</span> <span class="p">(</span><span class="n">d</span><span class="o">-&gt;</span><span class="n">NodeCommMap</span><span class="p">().</span><span class="n">empty</span><span class="p">())</span>        <span class="c1">// in serial we are done</span>
-    <span class="n">comlhs_complete</span><span class="p">();</span>
-  <span class="k">else</span> <span class="c1">// send contributions of lhs to chare-boundary nodes to fellow chares</span>
-    <span class="k">for</span> <span class="p">(</span><span class="k">const</span> <span class="k">auto</span><span class="o">&amp;</span> <span class="p">[</span><span class="n">c</span><span class="p">,</span><span class="n">n</span><span class="p">]</span> <span class="o">:</span> <span class="n">d</span><span class="o">-&gt;</span><span class="n">NodeCommMap</span><span class="p">())</span> <span class="p">{</span>
-      <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span> <span class="n">tk</span><span class="o">::</span><span class="n">real</span> <span class="o">&gt;</span> <span class="o">&gt;</span> <span class="n">l</span><span class="p">(</span> <span class="n">n</span><span class="p">.</span><span class="n">size</span><span class="p">()</span> <span class="p">);</span>
-      <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="n">j</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
-      <span class="k">for</span> <span class="p">(</span><span class="k">auto</span> <span class="nl">i</span> <span class="p">:</span> <span class="n">n</span><span class="p">)</span> <span class="n">l</span><span class="p">[</span> <span class="n">j</span><span class="o">++</span> <span class="p">]</span> <span class="o">=</span> <span class="n">m_lhs</span><span class="p">[</span> <span class="n">tk</span><span class="o">::</span><span class="n">cref_find</span><span class="p">(</span><span class="n">d</span><span class="o">-&gt;</span><span class="n">Lid</span><span class="p">(),</span><span class="n">i</span><span class="p">)</span> <span class="p">];</span>
-      <span class="n">thisProxy</span><span class="p">[</span><span class="n">c</span><span class="p">].</span><span class="n">comlhs</span><span class="p">(</span> <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="o">&gt;</span><span class="p">(</span><span class="n">begin</span><span class="p">(</span><span class="n">n</span><span class="p">),</span><span class="n">end</span><span class="p">(</span><span class="n">n</span><span class="p">)),</span> <span class="n">l</span> <span class="p">);</span>
-    <span class="p">}</span>
-
-  <span class="n">ownlhs_complete</span><span class="p">();</span>
+  <span class="c1">// No need for LHS in ALECG</span>
 
   <span class="c1">// (Re-)compute boundary point-, and dual-face normals</span>
   <span class="n">norm</span><span class="p">();</span>
 <span class="p">}</span>
-<span class="c1">//! [Compute own and send lhs on chare-boundary]</span>
+<span class="c1">//! [Compute own and send contributions to normals on chare-boundary]</span>
 
-<span class="c1">//! [Receive lhs on chare-boundary]</span>
+<span class="c1">//! [Merge normals and continue]</span>
 <span class="kt">void</span>
-<span class="n">ALECG</span><span class="o">::</span><span class="n">comlhs</span><span class="p">(</span> <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span> <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="o">&gt;&amp;</span> <span class="n">gid</span><span class="p">,</span>
-               <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span> <span class="n">tk</span><span class="o">::</span><span class="n">real</span> <span class="o">&gt;</span> <span class="o">&gt;&amp;</span> <span class="n">L</span> <span class="p">)</span>
-<span class="c1">// *****************************************************************************</span>
-<span class="c1">//  Receive contributions to left-hand side diagonal matrix on chare-boundaries</span>
-<span class="c1">//! \param[in] gid Global mesh node IDs at which we receive LHS contributions</span>
-<span class="c1">//! \param[in] L Partial contributions of LHS to chare-boundary nodes</span>
-<span class="c1">//! \details This function receives contributions to m_lhs, which stores the</span>
-<span class="c1">//!   diagonal (lumped) mass matrix at mesh nodes. While m_lhs stores</span>
-<span class="c1">//!   own contributions, m_lhsc collects the neighbor chare contributions during</span>
-<span class="c1">//!   communication. This way work on m_lhs and m_lhsc is overlapped. The two</span>
-<span class="c1">//!   are combined in lhsmerge().</span>
-<span class="c1">// *****************************************************************************</span>
-<span class="p">{</span>
-  <span class="n">Assert</span><span class="p">(</span> <span class="n">L</span><span class="p">.</span><span class="n">size</span><span class="p">()</span> <span class="o">==</span> <span class="n">gid</span><span class="p">.</span><span class="n">size</span><span class="p">(),</span> <span class="s">&quot;Size mismatch&quot;</span> <span class="p">);</span>
-
-  <span class="k">using</span> <span class="n">tk</span><span class="o">::</span><span class="k">operator</span><span class="o">+=</span><span class="p">;</span>
-
-  <span class="k">auto</span> <span class="n">d</span> <span class="o">=</span> <span class="n">Disc</span><span class="p">();</span>
-
-  <span class="k">for</span> <span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">i</span><span class="o">&lt;</span><span class="n">gid</span><span class="p">.</span><span class="n">size</span><span class="p">();</span> <span class="o">++</span><span class="n">i</span><span class="p">)</span> <span class="p">{</span>
-    <span class="n">m_lhsc</span><span class="p">[</span> <span class="n">gid</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="p">]</span> <span class="o">+=</span> <span class="n">L</span><span class="p">[</span><span class="n">i</span><span class="p">];</span>
-  <span class="p">}</span>
-
-  <span class="c1">// When we have heard from all chares we communicate with, this chare is done</span>
-  <span class="k">if</span> <span class="p">(</span><span class="o">++</span><span class="n">m_nlhs</span> <span class="o">==</span> <span class="n">d</span><span class="o">-&gt;</span><span class="n">NodeCommMap</span><span class="p">().</span><span class="n">size</span><span class="p">())</span> <span class="p">{</span>
-    <span class="n">m_nlhs</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
-    <span class="n">comlhs_complete</span><span class="p">();</span>
-  <span class="p">}</span>
-<span class="p">}</span>
-<span class="c1">//! [Receive lhs on chare-boundary]</span>
-
-<span class="c1">//! [Merge lhs and continue]</span>
-<span class="kt">void</span>
-<span class="n">ALECG</span><span class="o">::</span><span class="n">lhsmerge</span><span class="p">()</span>
+<span class="n">ALECG</span><span class="o">::</span><span class="n">merge</span><span class="p">()</span>
 <span class="c1">// *****************************************************************************</span>
 <span class="c1">// The own and communication portion of the left-hand side is complete</span>
 <span class="c1">// *****************************************************************************</span>
 <span class="p">{</span>
-  <span class="c1">// Combine own and communicated contributions to left hand side</span>
-  <span class="k">auto</span> <span class="n">d</span> <span class="o">=</span> <span class="n">Disc</span><span class="p">();</span>
-
-  <span class="c1">// Combine own and communicated contributions to LHS and ICs</span>
-  <span class="k">for</span> <span class="p">(</span><span class="k">const</span> <span class="k">auto</span><span class="o">&amp;</span> <span class="nl">b</span> <span class="p">:</span> <span class="n">m_lhsc</span><span class="p">)</span> <span class="p">{</span>
-    <span class="k">auto</span> <span class="n">lid</span> <span class="o">=</span> <span class="n">tk</span><span class="o">::</span><span class="n">cref_find</span><span class="p">(</span> <span class="n">d</span><span class="o">-&gt;</span><span class="n">Lid</span><span class="p">(),</span> <span class="n">b</span><span class="p">.</span><span class="n">first</span> <span class="p">);</span>
-    <span class="k">for</span> <span class="p">(</span><span class="n">ncomp_t</span> <span class="n">c</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">c</span><span class="o">&lt;</span><span class="n">m_lhs</span><span class="p">.</span><span class="n">nprop</span><span class="p">();</span> <span class="o">++</span><span class="n">c</span><span class="p">)</span>
-      <span class="n">m_lhs</span><span class="p">(</span><span class="n">lid</span><span class="p">,</span><span class="n">c</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span> <span class="o">+=</span> <span class="n">b</span><span class="p">.</span><span class="n">second</span><span class="p">[</span><span class="n">c</span><span class="p">];</span>
-  <span class="p">}</span>
-
-  <span class="c1">// Clear receive buffer</span>
-  <span class="n">tk</span><span class="o">::</span><span class="n">destroy</span><span class="p">(</span><span class="n">m_lhsc</span><span class="p">);</span>
-
   <span class="c1">// Combine own and communicated contributions of normals and apply boundary</span>
   <span class="c1">// conditions on the initial conditions</span>
   <span class="n">normfinal</span><span class="p">();</span>
 
-  <span class="c1">// Continue after lhs is complete</span>
   <span class="k">if</span> <span class="p">(</span><span class="n">m_initial</span><span class="p">)</span> <span class="p">{</span>
     <span class="c1">// Output initial conditions to file</span>
     <span class="n">writeFields</span><span class="p">(</span> <span class="n">CkCallback</span><span class="p">(</span><span class="n">CkIndex_ALECG</span><span class="o">::</span><span class="n">start</span><span class="p">(),</span> <span class="n">thisProxy</span><span class="p">[</span><span class="n">thisIndex</span><span class="p">])</span> <span class="p">);</span>
   <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
-    <span class="n">lhs_complete</span><span class="p">();</span>
+    <span class="n">norm_complete</span><span class="p">();</span>
   <span class="p">}</span>
 <span class="p">}</span>
-<span class="c1">//! [Merge lhs and continue]</span>
+<span class="c1">//! [Merge normals and continue]</span>
 
 <span class="kt">void</span>
 <span class="n">ALECG</span><span class="o">::</span><span class="n">normfinal</span><span class="p">()</span>
@@ -681,13 +663,6 @@
 
   <span class="c1">// If farfield BC is set on a node, will not also set symmetry BC</span>
   <span class="k">for</span> <span class="p">(</span><span class="k">auto</span> <span class="nl">fn</span> <span class="p">:</span> <span class="n">m_farfieldbcnodes</span><span class="p">)</span> <span class="n">m_symbcnodes</span><span class="p">.</span><span class="n">erase</span><span class="p">(</span><span class="n">fn</span><span class="p">);</span>
-
-  <span class="c1">// Apply symmetry BCs on initial conditions</span>
-  <span class="k">for</span> <span class="p">(</span><span class="k">const</span> <span class="k">auto</span><span class="o">&amp;</span> <span class="nl">eq</span> <span class="p">:</span> <span class="n">g_cgpde</span><span class="p">)</span>
-    <span class="n">eq</span><span class="p">.</span><span class="n">symbc</span><span class="p">(</span> <span class="n">m_u</span><span class="p">,</span> <span class="n">d</span><span class="o">-&gt;</span><span class="n">Coord</span><span class="p">(),</span> <span class="n">m_bnorm</span><span class="p">,</span> <span class="n">m_symbcnodes</span> <span class="p">);</span>
-  <span class="c1">// Apply farfield BCs on initial conditions</span>
-  <span class="k">for</span> <span class="p">(</span><span class="k">const</span> <span class="k">auto</span><span class="o">&amp;</span> <span class="nl">eq</span> <span class="p">:</span> <span class="n">g_cgpde</span><span class="p">)</span>
-    <span class="n">eq</span><span class="p">.</span><span class="n">farfieldbc</span><span class="p">(</span> <span class="n">m_u</span><span class="p">,</span> <span class="n">d</span><span class="o">-&gt;</span><span class="n">Coord</span><span class="p">(),</span> <span class="n">m_bnorm</span><span class="p">,</span> <span class="n">m_farfieldbcnodes</span> <span class="p">);</span>
 
   <span class="c1">// Prepare boundary nodes contiguously accessible from a triangle-face loop</span>
   <span class="n">m_symbctri</span><span class="p">.</span><span class="n">resize</span><span class="p">(</span> <span class="n">m_triinpoel</span><span class="p">.</span><span class="n">size</span><span class="p">()</span><span class="o">/</span><span class="mi">3</span><span class="p">,</span> <span class="mi">0</span> <span class="p">);</span>
@@ -767,6 +742,39 @@
 <span class="p">}</span>
 
 <span class="kt">void</span>
+<span class="n">ALECG</span><span class="o">::</span><span class="n">BC</span><span class="p">()</span>
+<span class="c1">// *****************************************************************************</span>
+<span class="c1">// Apply boundary conditions</span>
+<span class="c1">// \details The following BC enforcement changes the initial condition or</span>
+<span class="c1">//!   updated solution (dependending on when it is called) to ensure strong</span>
+<span class="c1">//!   imposition of the BCs. This is a matter of choice. Another alternative is</span>
+<span class="c1">//!   to only apply BCs when computing fluxes at boundary faces, thereby only</span>
+<span class="c1">//!   weakly enforcing the BCs. The former is conventionally used in continunous</span>
+<span class="c1">//!   Galerkin finite element methods (such as ALECG implements), whereas the</span>
+<span class="c1">//!   latter, in finite volume methods.</span>
+<span class="c1">// *****************************************************************************</span>
+<span class="p">{</span>
+  <span class="k">const</span> <span class="k">auto</span><span class="o">&amp;</span> <span class="n">coord</span> <span class="o">=</span> <span class="n">Disc</span><span class="p">()</span><span class="o">-&gt;</span><span class="n">Coord</span><span class="p">();</span>
+
+  <span class="n">conserved</span><span class="p">(</span> <span class="n">m_u</span> <span class="p">);</span>
+
+  <span class="c1">// Apply Dirichlet BCs</span>
+  <span class="k">for</span> <span class="p">(</span><span class="k">const</span> <span class="k">auto</span><span class="o">&amp;</span> <span class="p">[</span><span class="n">b</span><span class="p">,</span><span class="n">bc</span><span class="p">]</span> <span class="o">:</span> <span class="n">m_bcdir</span><span class="p">)</span>
+    <span class="k">for</span> <span class="p">(</span><span class="n">ncomp_t</span> <span class="n">c</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">c</span><span class="o">&lt;</span><span class="n">m_u</span><span class="p">.</span><span class="n">nprop</span><span class="p">();</span> <span class="o">++</span><span class="n">c</span><span class="p">)</span>
+      <span class="k">if</span> <span class="p">(</span><span class="n">bc</span><span class="p">[</span><span class="n">c</span><span class="p">].</span><span class="n">first</span><span class="p">)</span> <span class="n">m_u</span><span class="p">(</span><span class="n">b</span><span class="p">,</span><span class="n">c</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span> <span class="o">=</span> <span class="n">bc</span><span class="p">[</span><span class="n">c</span><span class="p">].</span><span class="n">second</span><span class="p">;</span>
+
+  <span class="c1">// Apply symmetry BCs</span>
+  <span class="k">for</span> <span class="p">(</span><span class="k">const</span> <span class="k">auto</span><span class="o">&amp;</span> <span class="nl">eq</span> <span class="p">:</span> <span class="n">g_cgpde</span><span class="p">)</span>
+    <span class="n">eq</span><span class="p">.</span><span class="n">symbc</span><span class="p">(</span> <span class="n">m_u</span><span class="p">,</span> <span class="n">coord</span><span class="p">,</span> <span class="n">m_bnorm</span><span class="p">,</span> <span class="n">m_symbcnodes</span> <span class="p">);</span>
+
+  <span class="c1">// Apply farfield BCs</span>
+  <span class="k">for</span> <span class="p">(</span><span class="k">const</span> <span class="k">auto</span><span class="o">&amp;</span> <span class="nl">eq</span> <span class="p">:</span> <span class="n">g_cgpde</span><span class="p">)</span>
+    <span class="n">eq</span><span class="p">.</span><span class="n">farfieldbc</span><span class="p">(</span> <span class="n">m_u</span><span class="p">,</span> <span class="n">coord</span><span class="p">,</span> <span class="n">m_bnorm</span><span class="p">,</span> <span class="n">m_farfieldbcnodes</span> <span class="p">);</span>
+
+  <span class="n">volumetric</span><span class="p">(</span> <span class="n">m_u</span> <span class="p">);</span>
+<span class="p">}</span>
+
+<span class="kt">void</span>
 <span class="n">ALECG</span><span class="o">::</span><span class="n">next</span><span class="p">()</span>
 <span class="c1">// *****************************************************************************</span>
 <span class="c1">// Continue to next time step</span>
@@ -797,6 +805,7 @@
   <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>      <span class="c1">// compute dt based on CFL</span>
 
     <span class="c1">//! [Find the minimum dt across all PDEs integrated]</span>
+    <span class="n">conserved</span><span class="p">(</span> <span class="n">m_u</span> <span class="p">);</span>
     <span class="k">if</span> <span class="p">(</span><span class="n">g_inputdeck</span><span class="p">.</span><span class="n">get</span><span class="o">&lt;</span> <span class="n">tag</span><span class="o">::</span><span class="n">discr</span><span class="p">,</span> <span class="n">tag</span><span class="o">::</span><span class="n">steady_state</span> <span class="o">&gt;</span><span class="p">())</span> <span class="p">{</span>
 
       <span class="c1">// compute new dt for each mesh point</span>
@@ -815,6 +824,7 @@
       <span class="p">}</span>
 
     <span class="p">}</span>
+    <span class="n">volumetric</span><span class="p">(</span> <span class="n">m_u</span> <span class="p">);</span>
     <span class="c1">//! [Find the minimum dt across all PDEs integrated]</span>
 
   <span class="p">}</span>
@@ -823,7 +833,6 @@
   <span class="c1">// Actiavate SDAG waits for next time step stage</span>
   <span class="n">thisProxy</span><span class="p">[</span> <span class="n">thisIndex</span> <span class="p">].</span><span class="n">wait4grad</span><span class="p">();</span>
   <span class="n">thisProxy</span><span class="p">[</span> <span class="n">thisIndex</span> <span class="p">].</span><span class="n">wait4rhs</span><span class="p">();</span>
-  <span class="n">thisProxy</span><span class="p">[</span> <span class="n">thisIndex</span> <span class="p">].</span><span class="n">wait4trans</span><span class="p">();</span>
 
   <span class="c1">// Contribute to minimum dt across all chares the advance to next step</span>
   <span class="n">contribute</span><span class="p">(</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">tk</span><span class="o">::</span><span class="n">real</span><span class="p">),</span> <span class="o">&amp;</span><span class="n">mindt</span><span class="p">,</span> <span class="n">CkReduction</span><span class="o">::</span><span class="n">min_double</span><span class="p">,</span>
@@ -856,10 +865,14 @@
 <span class="p">{</span>
   <span class="k">auto</span> <span class="n">d</span> <span class="o">=</span> <span class="n">Disc</span><span class="p">();</span>
 
+  <span class="c1">// Divide solution with mesh volume</span>
+  <span class="n">conserved</span><span class="p">(</span> <span class="n">m_u</span> <span class="p">);</span>
   <span class="c1">// Compute own portion of gradients for all equations</span>
   <span class="k">for</span> <span class="p">(</span><span class="k">const</span> <span class="k">auto</span><span class="o">&amp;</span> <span class="nl">eq</span> <span class="p">:</span> <span class="n">g_cgpde</span><span class="p">)</span>
-    <span class="n">eq</span><span class="p">.</span><span class="n">chBndGrad</span><span class="p">(</span><span class="n">d</span><span class="o">-&gt;</span><span class="n">Coord</span><span class="p">(),</span> <span class="n">d</span><span class="o">-&gt;</span><span class="n">Inpoel</span><span class="p">(),</span> <span class="n">m_bndel</span><span class="p">,</span> <span class="n">d</span><span class="o">-&gt;</span><span class="n">Gid</span><span class="p">(),</span> <span class="n">d</span><span class="o">-&gt;</span><span class="n">Bid</span><span class="p">(),</span> <span class="n">m_u</span><span class="p">,</span>
-      <span class="n">m_chBndGrad</span><span class="p">);</span>
+    <span class="n">eq</span><span class="p">.</span><span class="n">chBndGrad</span><span class="p">(</span> <span class="n">d</span><span class="o">-&gt;</span><span class="n">Coord</span><span class="p">(),</span> <span class="n">d</span><span class="o">-&gt;</span><span class="n">Inpoel</span><span class="p">(),</span> <span class="n">m_bndel</span><span class="p">,</span> <span class="n">d</span><span class="o">-&gt;</span><span class="n">Gid</span><span class="p">(),</span> <span class="n">d</span><span class="o">-&gt;</span><span class="n">Bid</span><span class="p">(),</span> <span class="n">m_u</span><span class="p">,</span>
+                  <span class="n">m_chBndGrad</span> <span class="p">);</span>
+  <span class="c1">// Multiply solution with mesh volume</span>
+  <span class="n">volumetric</span><span class="p">(</span> <span class="n">m_u</span> <span class="p">);</span>
 
   <span class="c1">// Communicate gradients to other chares on chare-boundary</span>
   <span class="k">if</span> <span class="p">(</span><span class="n">d</span><span class="o">-&gt;</span><span class="n">NodeCommMap</span><span class="p">().</span><span class="n">empty</span><span class="p">())</span>        <span class="c1">// in serial we are done</span>
@@ -925,18 +938,21 @@
   <span class="k">auto</span> <span class="n">prev_rkcoef</span> <span class="o">=</span> <span class="n">m_stage</span> <span class="o">==</span> <span class="mi">0</span> <span class="o">?</span> <span class="mf">0.0</span> <span class="o">:</span> <span class="n">rkcoef</span><span class="p">[</span><span class="n">m_stage</span><span class="mi">-1</span><span class="p">];</span>
   <span class="k">if</span> <span class="p">(</span><span class="n">steady</span><span class="p">)</span>
     <span class="k">for</span> <span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="n">p</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">p</span><span class="o">&lt;</span><span class="n">m_tp</span><span class="p">.</span><span class="n">size</span><span class="p">();</span> <span class="o">++</span><span class="n">p</span><span class="p">)</span> <span class="n">m_tp</span><span class="p">[</span><span class="n">p</span><span class="p">]</span> <span class="o">+=</span> <span class="n">prev_rkcoef</span> <span class="o">*</span> <span class="n">m_dtp</span><span class="p">[</span><span class="n">p</span><span class="p">];</span>
+  <span class="n">conserved</span><span class="p">(</span> <span class="n">m_u</span> <span class="p">);</span>
   <span class="k">for</span> <span class="p">(</span><span class="k">const</span> <span class="k">auto</span><span class="o">&amp;</span> <span class="nl">eq</span> <span class="p">:</span> <span class="n">g_cgpde</span><span class="p">)</span>
     <span class="n">eq</span><span class="p">.</span><span class="n">rhs</span><span class="p">(</span> <span class="n">d</span><span class="o">-&gt;</span><span class="n">T</span><span class="p">()</span> <span class="o">+</span> <span class="n">prev_rkcoef</span> <span class="o">*</span> <span class="n">d</span><span class="o">-&gt;</span><span class="n">Dt</span><span class="p">(),</span> <span class="n">d</span><span class="o">-&gt;</span><span class="n">Coord</span><span class="p">(),</span> <span class="n">d</span><span class="o">-&gt;</span><span class="n">Inpoel</span><span class="p">(),</span>
             <span class="n">m_triinpoel</span><span class="p">,</span> <span class="n">d</span><span class="o">-&gt;</span><span class="n">Gid</span><span class="p">(),</span> <span class="n">d</span><span class="o">-&gt;</span><span class="n">Bid</span><span class="p">(),</span> <span class="n">d</span><span class="o">-&gt;</span><span class="n">Lid</span><span class="p">(),</span> <span class="n">m_dfn</span><span class="p">,</span> <span class="n">m_psup</span><span class="p">,</span> <span class="n">m_esup</span><span class="p">,</span>
             <span class="n">m_symbctri</span><span class="p">,</span> <span class="n">d</span><span class="o">-&gt;</span><span class="n">Vol</span><span class="p">(),</span> <span class="n">m_edgenode</span><span class="p">,</span> <span class="n">m_edgeid</span><span class="p">,</span> <span class="n">m_boxnodes</span><span class="p">,</span> <span class="n">m_chBndGrad</span><span class="p">,</span>
-            <span class="n">m_u</span><span class="p">,</span> <span class="n">m_tp</span><span class="p">,</span> <span class="n">d</span><span class="o">-&gt;</span><span class="n">Boxvol</span><span class="p">(),</span> <span class="n">m_rhs</span> <span class="p">);</span>
+            <span class="n">m_u</span><span class="p">,</span> <span class="n">m_w</span><span class="p">,</span> <span class="n">m_tp</span><span class="p">,</span> <span class="n">d</span><span class="o">-&gt;</span><span class="n">Boxvol</span><span class="p">(),</span> <span class="n">m_rhs</span> <span class="p">);</span>
+  <span class="n">volumetric</span><span class="p">(</span> <span class="n">m_u</span> <span class="p">);</span>
   <span class="k">if</span> <span class="p">(</span><span class="n">steady</span><span class="p">)</span>
     <span class="k">for</span> <span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="n">p</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">p</span><span class="o">&lt;</span><span class="n">m_tp</span><span class="p">.</span><span class="n">size</span><span class="p">();</span> <span class="o">++</span><span class="n">p</span><span class="p">)</span> <span class="n">m_tp</span><span class="p">[</span><span class="n">p</span><span class="p">]</span> <span class="o">-=</span> <span class="n">prev_rkcoef</span> <span class="o">*</span> <span class="n">m_dtp</span><span class="p">[</span><span class="n">p</span><span class="p">];</span>
 
   <span class="c1">// Query and match user-specified boundary conditions to side sets</span>
   <span class="k">if</span> <span class="p">(</span><span class="n">steady</span><span class="p">)</span> <span class="k">for</span> <span class="p">(</span><span class="k">auto</span><span class="o">&amp;</span> <span class="nl">deltat</span> <span class="p">:</span> <span class="n">m_dtp</span><span class="p">)</span> <span class="n">deltat</span> <span class="o">*=</span> <span class="n">rkcoef</span><span class="p">[</span><span class="n">m_stage</span><span class="p">];</span>
   <span class="n">m_bcdir</span> <span class="o">=</span> <span class="n">match</span><span class="p">(</span> <span class="n">m_u</span><span class="p">.</span><span class="n">nprop</span><span class="p">(),</span> <span class="n">d</span><span class="o">-&gt;</span><span class="n">T</span><span class="p">(),</span> <span class="n">rkcoef</span><span class="p">[</span><span class="n">m_stage</span><span class="p">]</span> <span class="o">*</span> <span class="n">d</span><span class="o">-&gt;</span><span class="n">Dt</span><span class="p">(),</span>
-                   <span class="n">m_tp</span><span class="p">,</span> <span class="n">m_dtp</span><span class="p">,</span> <span class="n">d</span><span class="o">-&gt;</span><span class="n">Coord</span><span class="p">(),</span> <span class="n">d</span><span class="o">-&gt;</span><span class="n">Lid</span><span class="p">(),</span> <span class="n">m_bnode</span> <span class="p">);</span>
+                   <span class="n">m_tp</span><span class="p">,</span> <span class="n">m_dtp</span><span class="p">,</span> <span class="n">d</span><span class="o">-&gt;</span><span class="n">Coord</span><span class="p">(),</span> <span class="n">d</span><span class="o">-&gt;</span><span class="n">Lid</span><span class="p">(),</span> <span class="n">m_bnode</span><span class="p">,</span>
+                   <span class="cm">/* increment = */</span> <span class="nb">false</span> <span class="p">);</span>
   <span class="k">if</span> <span class="p">(</span><span class="n">steady</span><span class="p">)</span> <span class="k">for</span> <span class="p">(</span><span class="k">auto</span><span class="o">&amp;</span> <span class="nl">deltat</span> <span class="p">:</span> <span class="n">m_dtp</span><span class="p">)</span> <span class="n">deltat</span> <span class="o">/=</span> <span class="n">rkcoef</span><span class="p">[</span><span class="n">m_stage</span><span class="p">];</span>
 
   <span class="c1">// Communicate rhs to other chares on chare-boundary</span>
@@ -983,63 +999,80 @@
 <span class="kt">void</span>
 <span class="n">ALECG</span><span class="o">::</span><span class="n">solve</span><span class="p">()</span>
 <span class="c1">// *****************************************************************************</span>
-<span class="c1">//  Solve low and high order diagonal systems</span>
+<span class="c1">//  Advance systems of equations</span>
 <span class="c1">// *****************************************************************************</span>
 <span class="p">{</span>
-  <span class="k">const</span> <span class="k">auto</span> <span class="n">ncomp</span> <span class="o">=</span> <span class="n">m_rhs</span><span class="p">.</span><span class="n">nprop</span><span class="p">();</span>
-
   <span class="k">auto</span> <span class="n">d</span> <span class="o">=</span> <span class="n">Disc</span><span class="p">();</span>
 
   <span class="c1">// Combine own and communicated contributions to rhs</span>
   <span class="k">for</span> <span class="p">(</span><span class="k">const</span> <span class="k">auto</span><span class="o">&amp;</span> <span class="nl">b</span> <span class="p">:</span> <span class="n">m_rhsc</span><span class="p">)</span> <span class="p">{</span>
     <span class="k">auto</span> <span class="n">lid</span> <span class="o">=</span> <span class="n">tk</span><span class="o">::</span><span class="n">cref_find</span><span class="p">(</span> <span class="n">d</span><span class="o">-&gt;</span><span class="n">Lid</span><span class="p">(),</span> <span class="n">b</span><span class="p">.</span><span class="n">first</span> <span class="p">);</span>
-    <span class="k">for</span> <span class="p">(</span><span class="n">ncomp_t</span> <span class="n">c</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">c</span><span class="o">&lt;</span><span class="n">ncomp</span><span class="p">;</span> <span class="o">++</span><span class="n">c</span><span class="p">)</span> <span class="n">m_rhs</span><span class="p">(</span><span class="n">lid</span><span class="p">,</span><span class="n">c</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span> <span class="o">+=</span> <span class="n">b</span><span class="p">.</span><span class="n">second</span><span class="p">[</span><span class="n">c</span><span class="p">];</span>
+    <span class="k">for</span> <span class="p">(</span><span class="n">ncomp_t</span> <span class="n">c</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">c</span><span class="o">&lt;</span><span class="n">m_rhs</span><span class="p">.</span><span class="n">nprop</span><span class="p">();</span> <span class="o">++</span><span class="n">c</span><span class="p">)</span> <span class="n">m_rhs</span><span class="p">(</span><span class="n">lid</span><span class="p">,</span><span class="n">c</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span> <span class="o">+=</span> <span class="n">b</span><span class="p">.</span><span class="n">second</span><span class="p">[</span><span class="n">c</span><span class="p">];</span>
   <span class="p">}</span>
 
   <span class="c1">// clear receive buffer</span>
   <span class="n">tk</span><span class="o">::</span><span class="n">destroy</span><span class="p">(</span><span class="n">m_rhsc</span><span class="p">);</span>
 
-  <span class="k">const</span> <span class="k">auto</span> <span class="n">steady</span> <span class="o">=</span> <span class="n">g_inputdeck</span><span class="p">.</span><span class="n">get</span><span class="o">&lt;</span> <span class="n">tag</span><span class="o">::</span><span class="n">discr</span><span class="p">,</span> <span class="n">tag</span><span class="o">::</span><span class="n">steady_state</span> <span class="o">&gt;</span><span class="p">();</span>
-
-  <span class="c1">// Set Dirichlet BCs for lhs and rhs</span>
-  <span class="k">for</span> <span class="p">(</span><span class="k">const</span> <span class="k">auto</span><span class="o">&amp;</span> <span class="p">[</span><span class="n">b</span><span class="p">,</span><span class="n">bc</span><span class="p">]</span> <span class="o">:</span> <span class="n">m_bcdir</span><span class="p">)</span>
-    <span class="k">for</span> <span class="p">(</span><span class="n">ncomp_t</span> <span class="n">c</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">c</span><span class="o">&lt;</span><span class="n">ncomp</span><span class="p">;</span> <span class="o">++</span><span class="n">c</span><span class="p">)</span>
-      <span class="k">if</span> <span class="p">(</span><span class="n">bc</span><span class="p">[</span><span class="n">c</span><span class="p">].</span><span class="n">first</span><span class="p">)</span> <span class="p">{</span>
-        <span class="n">m_lhs</span><span class="p">(</span><span class="n">b</span><span class="p">,</span><span class="n">c</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">;</span>
-        <span class="k">auto</span> <span class="n">deltat</span> <span class="o">=</span> <span class="n">steady</span> <span class="o">?</span> <span class="n">m_dtp</span><span class="p">[</span><span class="n">b</span><span class="p">]</span> <span class="o">:</span> <span class="n">d</span><span class="o">-&gt;</span><span class="n">Dt</span><span class="p">();</span>
-        <span class="n">m_rhs</span><span class="p">(</span><span class="n">b</span><span class="p">,</span><span class="n">c</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span> <span class="o">=</span> <span class="n">bc</span><span class="p">[</span><span class="n">c</span><span class="p">].</span><span class="n">second</span> <span class="o">/</span> <span class="n">deltat</span> <span class="o">/</span> <span class="n">rkcoef</span><span class="p">[</span><span class="n">m_stage</span><span class="p">];</span>
-      <span class="p">}</span>
-
-  <span class="c1">// Update Un</span>
-  <span class="k">if</span> <span class="p">(</span><span class="n">m_stage</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span> <span class="n">m_un</span> <span class="o">=</span> <span class="n">m_u</span><span class="p">;</span>
+  <span class="c1">// Update state at time n</span>
+  <span class="k">if</span> <span class="p">(</span><span class="n">m_stage</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+    <span class="n">m_un</span> <span class="o">=</span> <span class="n">m_u</span><span class="p">;</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">d</span><span class="o">-&gt;</span><span class="n">ALE</span><span class="p">())</span> <span class="n">m_coordn</span> <span class="o">=</span> <span class="n">d</span><span class="o">-&gt;</span><span class="n">Coord</span><span class="p">();</span>
+  <span class="p">}</span>
 
   <span class="c1">// Solve the sytem</span>
-  <span class="k">if</span> <span class="p">(</span><span class="n">steady</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">if</span> <span class="p">(</span><span class="n">g_inputdeck</span><span class="p">.</span><span class="n">get</span><span class="o">&lt;</span> <span class="n">tag</span><span class="o">::</span><span class="n">discr</span><span class="p">,</span> <span class="n">tag</span><span class="o">::</span><span class="n">steady_state</span> <span class="o">&gt;</span><span class="p">())</span> <span class="p">{</span>
 
+    <span class="c1">// Advance solution, converging to steady state</span>
     <span class="k">for</span> <span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">i</span><span class="o">&lt;</span><span class="n">m_u</span><span class="p">.</span><span class="n">nunk</span><span class="p">();</span> <span class="o">++</span><span class="n">i</span><span class="p">)</span>
       <span class="k">for</span> <span class="p">(</span><span class="n">ncomp_t</span> <span class="n">c</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">c</span><span class="o">&lt;</span><span class="n">m_u</span><span class="p">.</span><span class="n">nprop</span><span class="p">();</span> <span class="o">++</span><span class="n">c</span><span class="p">)</span>
-        <span class="n">m_u</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="n">c</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span> <span class="o">=</span> <span class="n">m_un</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="n">c</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span>
-          <span class="o">+</span> <span class="n">rkcoef</span><span class="p">[</span><span class="n">m_stage</span><span class="p">]</span> <span class="o">*</span> <span class="n">m_dtp</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">*</span> <span class="n">m_rhs</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="n">c</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span> <span class="o">/</span> <span class="n">m_lhs</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="n">c</span><span class="p">,</span><span class="mi">0</span><span class="p">);</span>
+        <span class="n">m_u</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="n">c</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span> <span class="o">=</span> <span class="n">m_un</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="n">c</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span> <span class="o">+</span> <span class="n">rkcoef</span><span class="p">[</span><span class="n">m_stage</span><span class="p">]</span> <span class="o">*</span> <span class="n">m_dtp</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">*</span> <span class="n">m_rhs</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="n">c</span><span class="p">,</span><span class="mi">0</span><span class="p">);</span>
 
   <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
 
-    <span class="n">m_u</span> <span class="o">=</span> <span class="n">m_un</span> <span class="o">+</span> <span class="n">rkcoef</span><span class="p">[</span><span class="n">m_stage</span><span class="p">]</span> <span class="o">*</span> <span class="n">d</span><span class="o">-&gt;</span><span class="n">Dt</span><span class="p">()</span> <span class="o">*</span> <span class="n">m_rhs</span> <span class="o">/</span> <span class="n">m_lhs</span><span class="p">;</span>
+    <span class="k">auto</span> <span class="n">adt</span> <span class="o">=</span> <span class="n">rkcoef</span><span class="p">[</span><span class="n">m_stage</span><span class="p">]</span> <span class="o">*</span> <span class="n">d</span><span class="o">-&gt;</span><span class="n">Dt</span><span class="p">();</span>
+
+    <span class="c1">// Advance unsteady solution</span>
+    <span class="n">m_u</span> <span class="o">=</span> <span class="n">m_un</span> <span class="o">+</span> <span class="n">adt</span> <span class="o">*</span> <span class="n">m_rhs</span><span class="p">;</span>
+
+    <span class="c1">// Advance mesh if ALE is enabled</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">d</span><span class="o">-&gt;</span><span class="n">ALE</span><span class="p">())</span> <span class="p">{</span>
+      <span class="k">auto</span><span class="o">&amp;</span> <span class="n">coord</span> <span class="o">=</span> <span class="n">d</span><span class="o">-&gt;</span><span class="n">Coord</span><span class="p">();</span>
+      <span class="k">for</span> <span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="n">j</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">j</span><span class="o">&lt;</span><span class="mi">3</span><span class="p">;</span> <span class="o">++</span><span class="n">j</span><span class="p">)</span>
+        <span class="k">for</span> <span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">i</span><span class="o">&lt;</span><span class="n">coord</span><span class="p">[</span><span class="n">j</span><span class="p">].</span><span class="n">size</span><span class="p">();</span> <span class="o">++</span><span class="n">i</span><span class="p">)</span>
+          <span class="n">coord</span><span class="p">[</span><span class="n">j</span><span class="p">][</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">m_coordn</span><span class="p">[</span><span class="n">j</span><span class="p">][</span><span class="n">i</span><span class="p">]</span> <span class="o">+</span> <span class="n">adt</span> <span class="o">*</span> <span class="n">m_w</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">,</span><span class="mi">0</span><span class="p">);</span>
+    <span class="p">}</span>
 
   <span class="p">}</span>
 
-  <span class="c1">// The following BC enforcement changes the updated solution to ensure strong</span>
-  <span class="c1">// imposition of the BCs. This is a matter of choice. Another alternative is</span>
-  <span class="c1">// to only apply BCs when computing fluxes at boundary faces, thereby only</span>
-  <span class="c1">// weakly enforcing the BCs. The former is conventionally used in finite</span>
-  <span class="c1">// element methods, whereas the latter, in finite volume methods.</span>
+  <span class="c1">// Apply BCs on new solution</span>
+  <span class="n">BC</span><span class="p">();</span>
 
-  <span class="c1">// Apply symmetry BCs on new solution</span>
-  <span class="k">for</span> <span class="p">(</span><span class="k">const</span> <span class="k">auto</span><span class="o">&amp;</span> <span class="nl">eq</span> <span class="p">:</span> <span class="n">g_cgpde</span><span class="p">)</span>
-    <span class="n">eq</span><span class="p">.</span><span class="n">symbc</span><span class="p">(</span> <span class="n">m_u</span><span class="p">,</span> <span class="n">d</span><span class="o">-&gt;</span><span class="n">Coord</span><span class="p">(),</span> <span class="n">m_bnorm</span><span class="p">,</span> <span class="n">m_symbcnodes</span> <span class="p">);</span>
-  <span class="c1">// Apply farfield BCs on new solution</span>
-  <span class="k">for</span> <span class="p">(</span><span class="k">const</span> <span class="k">auto</span><span class="o">&amp;</span> <span class="nl">eq</span> <span class="p">:</span> <span class="n">g_cgpde</span><span class="p">)</span>
-    <span class="n">eq</span><span class="p">.</span><span class="n">farfieldbc</span><span class="p">(</span> <span class="n">m_u</span><span class="p">,</span> <span class="n">d</span><span class="o">-&gt;</span><span class="n">Coord</span><span class="p">(),</span> <span class="n">m_bnorm</span><span class="p">,</span> <span class="n">m_farfieldbcnodes</span> <span class="p">);</span>
+  <span class="c1">// Activate SDAG waits for re-computing the normals</span>
+  <span class="n">m_newmesh</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>  <span class="c1">// recompute normals after ALE (if enabled)</span>
+  <span class="n">thisProxy</span><span class="p">[</span> <span class="n">thisIndex</span> <span class="p">].</span><span class="n">wait4norm</span><span class="p">();</span>
+  <span class="n">thisProxy</span><span class="p">[</span> <span class="n">thisIndex</span> <span class="p">].</span><span class="n">wait4mesh</span><span class="p">();</span>
 
+  <span class="c1">// Recompute mesh volumes if ALE is enabled</span>
+  <span class="k">if</span> <span class="p">(</span><span class="n">d</span><span class="o">-&gt;</span><span class="n">ALE</span><span class="p">())</span> <span class="p">{</span>
+    <span class="n">transfer_complete</span><span class="p">();</span>
+    <span class="c1">// Resize mesh data structures after mesh movement</span>
+    <span class="n">d</span><span class="o">-&gt;</span><span class="n">resizePostALE</span><span class="p">(</span> <span class="n">d</span><span class="o">-&gt;</span><span class="n">Coord</span><span class="p">()</span> <span class="p">);</span>
+    <span class="n">d</span><span class="o">-&gt;</span><span class="n">startvol</span><span class="p">();</span>
+    <span class="k">auto</span> <span class="n">meshid</span> <span class="o">=</span> <span class="n">d</span><span class="o">-&gt;</span><span class="n">MeshId</span><span class="p">();</span>
+    <span class="n">contribute</span><span class="p">(</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="p">),</span> <span class="o">&amp;</span><span class="n">meshid</span><span class="p">,</span> <span class="n">CkReduction</span><span class="o">::</span><span class="n">nop</span><span class="p">,</span>
+                <span class="n">CkCallback</span><span class="p">(</span><span class="n">CkReductionTarget</span><span class="p">(</span><span class="n">Transporter</span><span class="p">,</span><span class="n">resized</span><span class="p">),</span> <span class="n">d</span><span class="o">-&gt;</span><span class="n">Tr</span><span class="p">())</span> <span class="p">);</span>
+  <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+    <span class="n">norm_complete</span><span class="p">();</span>
+    <span class="n">resized</span><span class="p">();</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="kt">void</span>
+<span class="n">ALECG</span><span class="o">::</span><span class="n">ale</span><span class="p">()</span>
+<span class="c1">// *****************************************************************************</span>
+<span class="c1">//  Continue after ALE mesh movement</span>
+<span class="c1">// *****************************************************************************</span>
+<span class="p">{</span>
   <span class="c1">//! [Continue after solve]</span>
   <span class="k">if</span> <span class="p">(</span><span class="n">m_stage</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">)</span> <span class="p">{</span>
 
@@ -1052,13 +1085,26 @@
 
   <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
 
+    <span class="k">auto</span> <span class="n">d</span> <span class="o">=</span> <span class="n">Disc</span><span class="p">();</span>
+
+    <span class="c1">// Ensure new field output file if mesh moved if ALE is enabled</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">d</span><span class="o">-&gt;</span><span class="n">ALE</span><span class="p">())</span> <span class="p">{</span>
+      <span class="n">d</span><span class="o">-&gt;</span><span class="n">Itf</span><span class="p">()</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>  <span class="c1">// Zero field output iteration count if mesh moved</span>
+      <span class="o">++</span><span class="n">d</span><span class="o">-&gt;</span><span class="n">Itr</span><span class="p">();</span>    <span class="c1">// Increase number of iterations with a change in the mesh</span>
+    <span class="p">}</span>
+
     <span class="c1">// Compute diagnostics, e.g., residuals</span>
-    <span class="k">auto</span> <span class="n">diag_computed</span> <span class="o">=</span>
-      <span class="n">m_diag</span><span class="p">.</span><span class="n">compute</span><span class="p">(</span> <span class="o">*</span><span class="n">d</span><span class="p">,</span> <span class="n">m_u</span><span class="p">,</span> <span class="n">m_un</span><span class="p">,</span> <span class="n">m_bnorm</span><span class="p">,</span> <span class="n">m_symbcnodes</span><span class="p">,</span> <span class="n">m_farfieldbcnodes</span> <span class="p">);</span>
+    <span class="n">conserved</span><span class="p">(</span> <span class="n">m_u</span> <span class="p">);</span>
+    <span class="n">conserved</span><span class="p">(</span> <span class="n">m_un</span> <span class="p">);</span>
+    <span class="k">auto</span> <span class="n">diag_computed</span> <span class="o">=</span> <span class="n">m_diag</span><span class="p">.</span><span class="n">compute</span><span class="p">(</span> <span class="o">*</span><span class="n">d</span><span class="p">,</span> <span class="n">m_u</span><span class="p">,</span> <span class="n">m_un</span><span class="p">,</span> <span class="n">m_bnorm</span><span class="p">,</span>
+                                         <span class="n">m_symbcnodes</span><span class="p">,</span> <span class="n">m_farfieldbcnodes</span> <span class="p">);</span>
+    <span class="n">volumetric</span><span class="p">(</span> <span class="n">m_u</span> <span class="p">);</span>
+    <span class="n">volumetric</span><span class="p">(</span> <span class="n">m_un</span> <span class="p">);</span>
     <span class="c1">// Increase number of iterations and physical time</span>
     <span class="n">d</span><span class="o">-&gt;</span><span class="n">next</span><span class="p">();</span>
     <span class="c1">// Advance physical time for local time stepping</span>
-    <span class="k">if</span> <span class="p">(</span><span class="n">steady</span><span class="p">)</span> <span class="k">for</span> <span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">i</span><span class="o">&lt;</span><span class="n">m_u</span><span class="p">.</span><span class="n">nunk</span><span class="p">();</span> <span class="o">++</span><span class="n">i</span><span class="p">)</span> <span class="n">m_tp</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+=</span> <span class="n">m_dtp</span><span class="p">[</span><span class="n">i</span><span class="p">];</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">g_inputdeck</span><span class="p">.</span><span class="n">get</span><span class="o">&lt;</span> <span class="n">tag</span><span class="o">::</span><span class="n">discr</span><span class="p">,</span> <span class="n">tag</span><span class="o">::</span><span class="n">steady_state</span> <span class="o">&gt;</span><span class="p">())</span>
+      <span class="k">for</span> <span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">i</span><span class="o">&lt;</span><span class="n">m_u</span><span class="p">.</span><span class="n">nunk</span><span class="p">();</span> <span class="o">++</span><span class="n">i</span><span class="p">)</span> <span class="n">m_tp</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+=</span> <span class="n">m_dtp</span><span class="p">[</span><span class="n">i</span><span class="p">];</span>
     <span class="c1">// Continue to mesh refinement (if configured)</span>
     <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">diag_computed</span><span class="p">)</span> <span class="n">refine</span><span class="p">(</span> <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span> <span class="n">tk</span><span class="o">::</span><span class="n">real</span> <span class="o">&gt;</span><span class="p">(</span> <span class="n">m_u</span><span class="p">.</span><span class="n">nprop</span><span class="p">(),</span> <span class="mf">1.0</span> <span class="p">)</span> <span class="p">);</span>
 
@@ -1101,11 +1147,13 @@
   <span class="k">auto</span> <span class="n">dtref</span> <span class="o">=</span> <span class="n">g_inputdeck</span><span class="p">.</span><span class="n">get</span><span class="o">&lt;</span> <span class="n">tag</span><span class="o">::</span><span class="n">amr</span><span class="p">,</span> <span class="n">tag</span><span class="o">::</span><span class="n">dtref</span> <span class="o">&gt;</span><span class="p">();</span>
   <span class="k">auto</span> <span class="n">dtfreq</span> <span class="o">=</span> <span class="n">g_inputdeck</span><span class="p">.</span><span class="n">get</span><span class="o">&lt;</span> <span class="n">tag</span><span class="o">::</span><span class="n">amr</span><span class="p">,</span> <span class="n">tag</span><span class="o">::</span><span class="n">dtfreq</span> <span class="o">&gt;</span><span class="p">();</span>
 
+  <span class="c1">// Activate SDAG waits for re-computing the normals</span>
+  <span class="n">m_newmesh</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>  <span class="c1">// recompute normals after AMR (if enabled)</span>
+  <span class="n">thisProxy</span><span class="p">[</span> <span class="n">thisIndex</span> <span class="p">].</span><span class="n">wait4norm</span><span class="p">();</span>
+  <span class="n">thisProxy</span><span class="p">[</span> <span class="n">thisIndex</span> <span class="p">].</span><span class="n">wait4mesh</span><span class="p">();</span>
+
   <span class="c1">// if t&gt;0 refinement enabled and we hit the frequency</span>
   <span class="k">if</span> <span class="p">(</span><span class="n">dtref</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="p">(</span><span class="n">d</span><span class="o">-&gt;</span><span class="n">It</span><span class="p">()</span> <span class="o">%</span> <span class="n">dtfreq</span><span class="p">))</span> <span class="p">{</span>   <span class="c1">// refine</span>
-
-    <span class="c1">// Activate SDAG waits for re-computing the left-hand side</span>
-    <span class="n">thisProxy</span><span class="p">[</span> <span class="n">thisIndex</span> <span class="p">].</span><span class="n">wait4lhs</span><span class="p">();</span>
 
     <span class="n">d</span><span class="o">-&gt;</span><span class="n">startvol</span><span class="p">();</span>
     <span class="n">d</span><span class="o">-&gt;</span><span class="n">Ref</span><span class="p">()</span><span class="o">-&gt;</span><span class="n">dtref</span><span class="p">(</span> <span class="p">{},</span> <span class="n">m_bnode</span><span class="p">,</span> <span class="p">{}</span> <span class="p">);</span>
@@ -1114,7 +1162,7 @@
   <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>      <span class="c1">// do not refine</span>
 
     <span class="n">d</span><span class="o">-&gt;</span><span class="n">refined</span><span class="p">()</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
-    <span class="n">lhs_complete</span><span class="p">();</span>
+    <span class="n">norm_complete</span><span class="p">();</span>
     <span class="n">resized</span><span class="p">();</span>
 
   <span class="p">}</span>
@@ -1148,16 +1196,10 @@
 <span class="p">{</span>
   <span class="k">auto</span> <span class="n">d</span> <span class="o">=</span> <span class="n">Disc</span><span class="p">();</span>
 
-  <span class="c1">// Set flag that indicates that we are during time stepping</span>
-  <span class="n">m_initial</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+  <span class="n">d</span><span class="o">-&gt;</span><span class="n">Itf</span><span class="p">()</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>  <span class="c1">// Zero field output iteration count if AMR</span>
+  <span class="o">++</span><span class="n">d</span><span class="o">-&gt;</span><span class="n">Itr</span><span class="p">();</span>    <span class="c1">// Increase number of iterations with a change in the mesh</span>
 
-  <span class="c1">// Zero field output iteration count between two mesh refinement steps</span>
-  <span class="n">d</span><span class="o">-&gt;</span><span class="n">Itf</span><span class="p">()</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
-
-  <span class="c1">// Increase number of iterations with mesh refinement</span>
-  <span class="o">++</span><span class="n">d</span><span class="o">-&gt;</span><span class="n">Itr</span><span class="p">();</span>
-
-  <span class="c1">// Resize mesh data structures</span>
+  <span class="c1">// Resize mesh data structures after mesh refinement</span>
   <span class="n">d</span><span class="o">-&gt;</span><span class="n">resizePostAMR</span><span class="p">(</span> <span class="n">chunk</span><span class="p">,</span> <span class="n">coord</span><span class="p">,</span> <span class="n">nodeCommMap</span> <span class="p">);</span>
 
   <span class="c1">// Resize auxiliary solution vectors</span>
@@ -1165,7 +1207,6 @@
   <span class="k">auto</span> <span class="n">nprop</span> <span class="o">=</span> <span class="n">m_u</span><span class="p">.</span><span class="n">nprop</span><span class="p">();</span>
   <span class="n">m_u</span><span class="p">.</span><span class="n">resize</span><span class="p">(</span> <span class="n">npoin</span><span class="p">,</span> <span class="n">nprop</span> <span class="p">);</span>
   <span class="n">m_un</span><span class="p">.</span><span class="n">resize</span><span class="p">(</span> <span class="n">npoin</span><span class="p">,</span> <span class="n">nprop</span> <span class="p">);</span>
-  <span class="n">m_lhs</span><span class="p">.</span><span class="n">resize</span><span class="p">(</span> <span class="n">npoin</span><span class="p">,</span> <span class="n">nprop</span> <span class="p">);</span>
   <span class="n">m_rhs</span><span class="p">.</span><span class="n">resize</span><span class="p">(</span> <span class="n">npoin</span><span class="p">,</span> <span class="n">nprop</span> <span class="p">);</span>
   <span class="n">m_chBndGrad</span><span class="p">.</span><span class="n">resize</span><span class="p">(</span> <span class="n">d</span><span class="o">-&gt;</span><span class="n">Bid</span><span class="p">().</span><span class="n">size</span><span class="p">(),</span> <span class="n">nprop</span><span class="o">*</span><span class="mi">3</span> <span class="p">);</span>
 
@@ -1221,7 +1262,7 @@
 <span class="p">}</span>
 
 <span class="kt">void</span>
-<span class="n">ALECG</span><span class="o">::</span><span class="n">writeFields</span><span class="p">(</span> <span class="n">CkCallback</span> <span class="n">c</span> <span class="p">)</span> <span class="k">const</span>
+<span class="n">ALECG</span><span class="o">::</span><span class="n">writeFields</span><span class="p">(</span> <span class="n">CkCallback</span> <span class="n">c</span> <span class="p">)</span>
 <span class="c1">// *****************************************************************************</span>
 <span class="c1">// Output mesh-based fields to file</span>
 <span class="c1">//! \param[in] c Function to continue with after the write</span>
@@ -1239,7 +1280,22 @@
     <span class="c1">// Query fields names requested by user</span>
     <span class="k">auto</span> <span class="n">nodefieldnames</span> <span class="o">=</span> <span class="n">numericFieldNames</span><span class="p">(</span> <span class="n">tk</span><span class="o">::</span><span class="n">Centering</span><span class="o">::</span><span class="n">NODE</span> <span class="p">);</span>
     <span class="c1">// Collect field output from numerical solution requested by user</span>
+    <span class="n">conserved</span><span class="p">(</span> <span class="n">m_u</span> <span class="p">);</span>
     <span class="k">auto</span> <span class="n">nodefields</span> <span class="o">=</span> <span class="n">numericFieldOutput</span><span class="p">(</span> <span class="n">m_u</span><span class="p">,</span> <span class="n">tk</span><span class="o">::</span><span class="n">Centering</span><span class="o">::</span><span class="n">NODE</span> <span class="p">);</span>
+    <span class="n">volumetric</span><span class="p">(</span> <span class="n">m_u</span> <span class="p">);</span>
+
+    <span class="c1">// Output mesh velocity if ALE is enabled</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">d</span><span class="o">-&gt;</span><span class="n">ALE</span><span class="p">())</span> <span class="p">{</span>
+       <span class="n">nodefieldnames</span><span class="p">.</span><span class="n">push_back</span><span class="p">(</span> <span class="s">&quot;x mesh velocity&quot;</span> <span class="p">);</span>
+       <span class="n">nodefieldnames</span><span class="p">.</span><span class="n">push_back</span><span class="p">(</span> <span class="s">&quot;y mesh velocity&quot;</span> <span class="p">);</span>
+       <span class="n">nodefieldnames</span><span class="p">.</span><span class="n">push_back</span><span class="p">(</span> <span class="s">&quot;z mesh velocity&quot;</span> <span class="p">);</span>
+       <span class="n">nodefieldnames</span><span class="p">.</span><span class="n">push_back</span><span class="p">(</span> <span class="s">&quot;volume&quot;</span> <span class="p">);</span>
+       <span class="n">nodefields</span><span class="p">.</span><span class="n">push_back</span><span class="p">(</span> <span class="n">m_w</span><span class="p">.</span><span class="n">extract</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span> <span class="p">);</span>
+       <span class="n">nodefields</span><span class="p">.</span><span class="n">push_back</span><span class="p">(</span> <span class="n">m_w</span><span class="p">.</span><span class="n">extract</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span> <span class="p">);</span>
+       <span class="n">nodefields</span><span class="p">.</span><span class="n">push_back</span><span class="p">(</span> <span class="n">m_w</span><span class="p">.</span><span class="n">extract</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span> <span class="p">);</span>
+       <span class="n">nodefields</span><span class="p">.</span><span class="n">push_back</span><span class="p">(</span> <span class="n">d</span><span class="o">-&gt;</span><span class="n">Vol</span><span class="p">()</span> <span class="p">);</span>
+    <span class="p">}</span>
+
     <span class="c1">// Collect field output names for analytical solutions</span>
     <span class="k">for</span> <span class="p">(</span><span class="k">const</span> <span class="k">auto</span><span class="o">&amp;</span> <span class="nl">eq</span> <span class="p">:</span> <span class="n">g_cgpde</span><span class="p">)</span>
       <span class="n">analyticFieldNames</span><span class="p">(</span> <span class="n">eq</span><span class="p">,</span> <span class="n">tk</span><span class="o">::</span><span class="n">Centering</span><span class="o">::</span><span class="n">NODE</span><span class="p">,</span> <span class="n">nodefieldnames</span> <span class="p">);</span>
@@ -1258,12 +1314,13 @@
     <span class="p">}</span>
 
     <span class="c1">// Collect node block and surface field solution</span>
-    <span class="k">auto</span> <span class="n">u</span> <span class="o">=</span> <span class="n">m_u</span><span class="p">;</span>
     <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span> <span class="n">tk</span><span class="o">::</span><span class="n">real</span> <span class="o">&gt;</span> <span class="o">&gt;</span> <span class="n">nodesurfs</span><span class="p">;</span>
+    <span class="n">conserved</span><span class="p">(</span> <span class="n">m_u</span> <span class="p">);</span>
     <span class="k">for</span> <span class="p">(</span><span class="k">const</span> <span class="k">auto</span><span class="o">&amp;</span> <span class="nl">eq</span> <span class="p">:</span> <span class="n">g_cgpde</span><span class="p">)</span> <span class="p">{</span>
-      <span class="k">auto</span> <span class="n">s</span> <span class="o">=</span> <span class="n">eq</span><span class="p">.</span><span class="n">surfOutput</span><span class="p">(</span> <span class="n">tk</span><span class="o">::</span><span class="n">bfacenodes</span><span class="p">(</span><span class="n">m_bface</span><span class="p">,</span><span class="n">m_triinpoel</span><span class="p">),</span> <span class="n">u</span> <span class="p">);</span>
+      <span class="k">auto</span> <span class="n">s</span> <span class="o">=</span> <span class="n">eq</span><span class="p">.</span><span class="n">surfOutput</span><span class="p">(</span> <span class="n">tk</span><span class="o">::</span><span class="n">bfacenodes</span><span class="p">(</span><span class="n">m_bface</span><span class="p">,</span><span class="n">m_triinpoel</span><span class="p">),</span> <span class="n">m_u</span> <span class="p">);</span>
       <span class="n">nodesurfs</span><span class="p">.</span><span class="n">insert</span><span class="p">(</span> <span class="n">end</span><span class="p">(</span><span class="n">nodesurfs</span><span class="p">),</span> <span class="n">begin</span><span class="p">(</span><span class="n">s</span><span class="p">),</span> <span class="n">end</span><span class="p">(</span><span class="n">s</span><span class="p">)</span> <span class="p">);</span>
     <span class="p">}</span>
+    <span class="n">volumetric</span><span class="p">(</span> <span class="n">m_u</span> <span class="p">);</span>
 
     <span class="n">Assert</span><span class="p">(</span> <span class="n">nodefieldnames</span><span class="p">.</span><span class="n">size</span><span class="p">()</span> <span class="o">==</span> <span class="n">nodefields</span><span class="p">.</span><span class="n">size</span><span class="p">(),</span> <span class="s">&quot;Size mismatch&quot;</span> <span class="p">);</span>
 
@@ -1287,10 +1344,12 @@
   <span class="k">const</span> <span class="k">auto</span> <span class="n">histfreq</span> <span class="o">=</span> <span class="n">g_inputdeck</span><span class="p">.</span><span class="n">get</span><span class="o">&lt;</span> <span class="n">tag</span><span class="o">::</span><span class="n">interval</span><span class="p">,</span> <span class="n">tag</span><span class="o">::</span><span class="n">history</span> <span class="o">&gt;</span><span class="p">();</span>
   <span class="k">if</span> <span class="p">(</span> <span class="o">!</span><span class="p">((</span><span class="n">d</span><span class="o">-&gt;</span><span class="n">It</span><span class="p">())</span> <span class="o">%</span> <span class="n">histfreq</span><span class="p">)</span> <span class="p">)</span> <span class="p">{</span>
     <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span> <span class="n">tk</span><span class="o">::</span><span class="n">real</span> <span class="o">&gt;</span> <span class="o">&gt;</span> <span class="n">hist</span><span class="p">;</span>
+    <span class="n">conserved</span><span class="p">(</span> <span class="n">m_u</span> <span class="p">);</span>
     <span class="k">for</span> <span class="p">(</span><span class="k">const</span> <span class="k">auto</span><span class="o">&amp;</span> <span class="nl">eq</span> <span class="p">:</span> <span class="n">g_cgpde</span><span class="p">)</span> <span class="p">{</span>
       <span class="k">auto</span> <span class="n">h</span> <span class="o">=</span> <span class="n">eq</span><span class="p">.</span><span class="n">histOutput</span><span class="p">(</span> <span class="n">d</span><span class="o">-&gt;</span><span class="n">Hist</span><span class="p">(),</span> <span class="n">d</span><span class="o">-&gt;</span><span class="n">Inpoel</span><span class="p">(),</span> <span class="n">m_u</span> <span class="p">);</span>
       <span class="n">hist</span><span class="p">.</span><span class="n">insert</span><span class="p">(</span> <span class="n">end</span><span class="p">(</span><span class="n">hist</span><span class="p">),</span> <span class="n">begin</span><span class="p">(</span><span class="n">h</span><span class="p">),</span> <span class="n">end</span><span class="p">(</span><span class="n">h</span><span class="p">)</span> <span class="p">);</span>
     <span class="p">}</span>
+    <span class="n">volumetric</span><span class="p">(</span> <span class="n">m_u</span> <span class="p">);</span>
     <span class="n">d</span><span class="o">-&gt;</span><span class="n">history</span><span class="p">(</span> <span class="n">std</span><span class="o">::</span><span class="n">move</span><span class="p">(</span><span class="n">hist</span><span class="p">)</span> <span class="p">);</span>
   <span class="p">}</span>
 
@@ -1421,7 +1480,7 @@
   <div class="m-container">
     <div class="m-row">
       <div class="m-col-l-10 m-push-l-1">
-        <p>Quinoa docs, part of the <a href="http://quinoacomputing.org/">Quinoa project</a>. Copyright © J. Bakosi 2012&ndash;2015, Los Alamos National Security, LLC, 2016&ndash;2018, <a href="https://www.triadns.org/">Triad National Security, LLC,</a> 2019-2021. Generated on Tuesday, Apr 27, 2021 based on <a href="https://github.com/quinoacomputing/quinoa/commit/198e127ce">198e127ce</a> by <a href="http://doxygen.org/">Doxygen</a> and <a href="http://mcss.mosra.cz/">m.css</a>. Contact us via <a href="https://github.com/quinoacomputing/quinoa/">GitHub</a>, <a href="https://groups.io/g/quinoa">Email</a> or <a href="https://quinoa.zulipchat.com">Chat</a>.</p>
+        <p>Quinoa docs, part of the <a href="http://quinoacomputing.org/">Quinoa project</a>. Copyright © J. Bakosi 2012&ndash;2015, Los Alamos National Security, LLC, 2016&ndash;2018, <a href="https://www.triadns.org/">Triad National Security, LLC,</a> 2019-2021. Generated on Tuesday, May 04, 2021 based on <a href="https://github.com/quinoacomputing/quinoa/commit/fed01a911">fed01a911</a> by <a href="http://doxygen.org/">Doxygen</a> and <a href="http://mcss.mosra.cz/">m.css</a>. Contact us via <a href="https://github.com/quinoacomputing/quinoa/">GitHub</a>, <a href="https://groups.io/g/quinoa">Email</a> or <a href="https://quinoa.zulipchat.com">Chat</a>.</p>
       </div>
     </div>
   </div>
