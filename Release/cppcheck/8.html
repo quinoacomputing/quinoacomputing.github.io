@@ -3,7 +3,7 @@
 <html lang="en">
   <head>
     <meta charset="utf-8">
-    <title>Cppcheck - HTML report - [<a href=https://github.com/quinoacomputing/quinoa/commit/e732d14f5>Quinoa_v0.3-577-ge732d14f5</a>]</title>
+    <title>Cppcheck - HTML report - [<a href=https://github.com/quinoacomputing/quinoa/commit/a6f98cde5>Quinoa_v0.3-587-ga6f98cde5</a>]</title>
     <link rel="stylesheet" href="style.css">
     <style>
 pre { line-height: 125%; margin: 0; }
@@ -152,12 +152,12 @@ span.linenos.special { color: #000000; background-color: #ffffc0; padding: 0 5px
   </head>
   <body>
     <div id="header" class="header">
-      <h1>Cppcheck report - [<a href=https://github.com/quinoacomputing/quinoa/commit/e732d14f5>Quinoa_v0.3-577-ge732d14f5</a>]: /tmp/TeamCity-2/work/821a9fd6f64749d9/src/DiffEq/Dirichlet/MixDirichlet.hpp</h1>
+      <h1>Cppcheck report - [<a href=https://github.com/quinoacomputing/quinoa/commit/a6f98cde5>Quinoa_v0.3-587-ga6f98cde5</a>]: /tmp/TeamCity-4/work/821a9fd6f64749d9/src/DiffEq/Beta/MixMassFractionBeta.hpp</h1>
     </div>
     <div class="wrapper">
       <div id="menu">
-       <p id="filename"><a href="index.html">Defects:</a> MixDirichlet.hpp</p>
-<a href="8.html#line-237"> constParameter 237</a>
+       <p id="filename"><a href="index.html">Defects:</a> MixMassFractionBeta.hpp</p>
+<a href="8.html#line-327"> constVariable 327</a>
     </div>
     <div id="content">
 <table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>  1
@@ -409,256 +409,452 @@ span.linenos.special { color: #000000; background-color: #ffffc0; padding: 0 5px
 247
 248
 249
-250</pre></div></td><td class="code"><div class="highlight"><pre><span></span><a name="line-1"></a><span class="c1">// *****************************************************************************</span>
+250
+251
+252
+253
+254
+255
+256
+257
+258
+259
+260
+261
+262
+263
+264
+265
+266
+267
+268
+269
+270
+271
+272
+273
+274
+275
+276
+277
+278
+279
+280
+281
+282
+283
+284
+285
+286
+287
+288
+289
+290
+291
+292
+293
+294
+295
+296
+297
+298
+299
+300
+301
+302
+303
+304
+305
+306
+307
+308
+309
+310
+311
+312
+313
+314
+315
+316
+317
+318
+319
+320
+321
+322
+323
+324
+325
+326
+327
+328
+329
+330
+331
+332
+333
+334
+335
+336
+337
+338
+339
+340
+341
+342
+343
+344
+345
+346
+347
+348</pre></div></td><td class="code"><div class="highlight"><pre><span></span><a name="line-1"></a><span class="c1">// *****************************************************************************</span>
 <a name="line-2"></a><span class="cm">/*!</span>
-<a name="line-3"></a><span class="cm">  \file      src/DiffEq/Dirichlet/MixDirichlet.hpp</span>
+<a name="line-3"></a><span class="cm">  \file      src/DiffEq/Beta/MixMassFractionBeta.hpp</span>
 <a name="line-4"></a><span class="cm">  \copyright 2012-2015 J. Bakosi,</span>
 <a name="line-5"></a><span class="cm">             2016-2018 Los Alamos National Security, LLC.,</span>
 <a name="line-6"></a><span class="cm">             2019-2021 Triad National Security, LLC.</span>
 <a name="line-7"></a><span class="cm">             All rights reserved. See the LICENSE file for details.</span>
-<a name="line-8"></a><span class="cm">  \brief     Mixture Dirichlet SDE</span>
+<a name="line-8"></a><span class="cm">  \brief     System of mix mass-fraction beta SDEs</span>
 <a name="line-9"></a><span class="cm">  \details   This file implements the time integration of a system of stochastic</span>
-<a name="line-10"></a><span class="cm">    differential equations (SDEs), whose invariant is the [Dirichlet</span>
-<a name="line-11"></a><span class="cm">    distribution](http://en.wikipedia.org/wiki/Dirichlet_distribution), with</span>
-<a name="line-12"></a><span class="cm">    various constraints to model multi-material mixing process in turbulent</span>
-<a name="line-13"></a><span class="cm">    flows.</span>
+<a name="line-10"></a><span class="cm">    differential equations (SDEs) with linear drift and quadratic diagonal</span>
+<a name="line-11"></a><span class="cm">    diffusion, whose invariant is the joint [beta</span>
+<a name="line-12"></a><span class="cm">    distribution](http://en.wikipedia.org/wiki/Beta_distribution). There are two</span>
+<a name="line-13"></a><span class="cm">    differences compared to the plain beta SDE (see DiffEq/Beta.h):</span>
 <a name="line-14"></a>
-<a name="line-15"></a><span class="cm">    In a nutshell, the equation integrated governs a set of scalars,</span>
-<a name="line-16"></a><span class="cm">    \f$0\!\le\!Y_\alpha\f$, \f$\alpha\!=\!1,\dots,N-1\f$,</span>
-<a name="line-17"></a><span class="cm">    \f$\sum_{\alpha=1}^{N-1}Y_\alpha\!\le\!1\f$, as</span>
-<a name="line-18"></a>
-<a name="line-19"></a><span class="cm">    @m_class{m-show-m}</span>
-<a name="line-20"></a>
-<a name="line-21"></a><span class="cm">    \f[</span>
-<a name="line-22"></a><span class="cm">       \mathrm{d}Y_\alpha(t) = \frac{b_\alpha}{2}\big[S_\alpha Y_N -</span>
-<a name="line-23"></a><span class="cm">       (1-S_\alpha)Y_\alpha\big]\mathrm{d}t + \sqrt{\kappa_\alpha Y_\alpha</span>
-<a name="line-24"></a><span class="cm">       Y_N}\mathrm{d}W_\alpha(t), \qquad \alpha=1,\dots,N-1</span>
-<a name="line-25"></a><span class="cm">    \f]</span>
+<a name="line-15"></a><span class="cm">    - First, the parameters, b, and kappa are specified via functions that</span>
+<a name="line-16"></a><span class="cm">    constrain the beta SDE to be consistent with the turbulent mixing process.</span>
+<a name="line-17"></a><span class="cm">    In particular, the SDE is made consistent with the no-mix and fully mixed</span>
+<a name="line-18"></a><span class="cm">    limits. See, e.g., MixMassFractionBetaCoeffConst::update().</span>
+<a name="line-19"></a>
+<a name="line-20"></a><span class="cm">    - Second, there two additional random variables computed, the same as also</span>
+<a name="line-21"></a><span class="cm">    computed by the mass-fraction beta equation, see also</span>
+<a name="line-22"></a><span class="cm">    DiffEq/MassFractionBeta.h.</span>
+<a name="line-23"></a>
+<a name="line-24"></a><span class="cm">    In a nutshell, the equation integrated governs a set of scalars,</span>
+<a name="line-25"></a><span class="cm">    \f$0\!\le\!Y_\alpha\f$, \f$\alpha\!=\!1,\dots,N\f$, as</span>
 <a name="line-26"></a>
-<a name="line-27"></a><span class="cm">    @m_class{m-hide-m}</span>
+<a name="line-27"></a><span class="cm">    @m_class{m-show-m}</span>
 <a name="line-28"></a>
 <a name="line-29"></a><span class="cm">    \f[</span>
-<a name="line-30"></a><span class="cm">       \begin{split}</span>
-<a name="line-31"></a><span class="cm">       \mathrm{d}Y_\alpha(t) = \frac{b_\alpha}{2}\big[S_\alpha Y_N -</span>
-<a name="line-32"></a><span class="cm">       (1-S_\alpha)Y_\alpha\big]\mathrm{d}t + \sqrt{\kappa_\alpha Y_\alpha</span>
-<a name="line-33"></a><span class="cm">       Y_N}\mathrm{d}W_\alpha(t), \\ \alpha=1,\dots,N-1</span>
-<a name="line-34"></a><span class="cm">       \end{split}</span>
-<a name="line-35"></a><span class="cm">    \f]</span>
+<a name="line-30"></a><span class="cm">       \mathrm{d}Y_\alpha(t) = \frac{b_\alpha}{2}\left(S_\alpha - Y_\alpha\right)</span>
+<a name="line-31"></a><span class="cm">       \mathrm{d}t + \sqrt{\kappa_\alpha Y_\alpha(1-Y_\alpha)}</span>
+<a name="line-32"></a><span class="cm">       \mathrm{d}W_\alpha(t), \qquad \alpha=1,\dots,N</span>
+<a name="line-33"></a><span class="cm">    \f]</span>
+<a name="line-34"></a>
+<a name="line-35"></a><span class="cm">    @m_class{m-hide-m}</span>
 <a name="line-36"></a>
-<a name="line-37"></a><span class="cm">    with parameter vectors \f$b_\alpha &gt; 0\f$, \f$\kappa_\alpha &gt; 0\f$, and \f$0</span>
-<a name="line-38"></a><span class="cm">    &lt; S_\alpha &lt; 1\f$, and \f$Y_N = 1-\sum_{\alpha=1}^{N-1}Y_\alpha\f$. Here</span>
-<a name="line-39"></a><span class="cm">    \f$\mathrm{d}W_\alpha(t)\f$ is an isotropic vector-valued [Wiener</span>
-<a name="line-40"></a><span class="cm">    process](http://en.wikipedia.org/wiki/Wiener_process) with independent</span>
-<a name="line-41"></a><span class="cm">    increments. The invariant distribution is the Dirichlet distribution,</span>
-<a name="line-42"></a><span class="cm">    provided the parameters of the drift and diffusion terms satisfy</span>
-<a name="line-43"></a><span class="cm">    \f[</span>
-<a name="line-44"></a><span class="cm">      (1-S_1) b_1 / \kappa_1 = \dots = (1-S_{N-1}) b_{N-1} / \kappa_{N-1}.</span>
-<a name="line-45"></a><span class="cm">    \f]</span>
-<a name="line-46"></a><span class="cm">    To keep the invariant distribution Dirichlet, the above constraint on the</span>
-<a name="line-47"></a><span class="cm">    coefficients must be satisfied. For more details on the Dirichlet SDE, see</span>
-<a name="line-48"></a><span class="cm">    https://doi.org/10.1155/2013/842981.</span>
-<a name="line-49"></a><span class="cm">*/</span>
-<a name="line-50"></a><span class="c1">// *****************************************************************************</span>
-<a name="line-51"></a><span class="cp">#ifndef MixDirichlet_h</span>
-<a name="line-52"></a><span class="cp">#define MixDirichlet_h</span>
-<a name="line-53"></a>
-<a name="line-54"></a><span class="cp">#include</span> <span class="cpf">&lt;vector&gt;</span><span class="cp"></span>
-<a name="line-55"></a><span class="cp">#include</span> <span class="cpf">&lt;cmath&gt;</span><span class="cp"></span>
-<a name="line-56"></a><span class="cp">#include</span> <span class="cpf">&lt;cfenv&gt;</span><span class="cp"></span>
-<a name="line-57"></a>
-<a name="line-58"></a><span class="cp">#include</span> <span class="cpf">&quot;InitPolicy.hpp&quot;</span><span class="cp"></span>
-<a name="line-59"></a><span class="cp">#include</span> <span class="cpf">&quot;MixDirichletCoeffPolicy.hpp&quot;</span><span class="cp"></span>
-<a name="line-60"></a><span class="cp">#include</span> <span class="cpf">&quot;RNG.hpp&quot;</span><span class="cp"></span>
-<a name="line-61"></a><span class="cp">#include</span> <span class="cpf">&quot;Particles.hpp&quot;</span><span class="cp"></span>
-<a name="line-62"></a>
-<a name="line-63"></a><span class="k">namespace</span> <span class="n">walker</span> <span class="p">{</span>
-<a name="line-64"></a>
-<a name="line-65"></a><span class="k">extern</span> <span class="n">ctr</span><span class="o">::</span><span class="n">InputDeck</span> <span class="n">g_inputdeck</span><span class="p">;</span>
-<a name="line-66"></a><span class="k">extern</span> <span class="n">std</span><span class="o">::</span><span class="n">map</span><span class="o">&lt;</span> <span class="n">tk</span><span class="o">::</span><span class="n">ctr</span><span class="o">::</span><span class="n">RawRNGType</span><span class="p">,</span> <span class="n">tk</span><span class="o">::</span><span class="n">RNG</span> <span class="o">&gt;</span> <span class="n">g_rng</span><span class="p">;</span>
-<a name="line-67"></a>
-<a name="line-68"></a><span class="c1">//! \brief MixDirichlet SDE used polymorphically with DiffEq</span>
-<a name="line-69"></a><span class="c1">//! \details The template arguments specify policies and are used to configure</span>
-<a name="line-70"></a><span class="c1">//!   the behavior of the class. The policies are:</span>
-<a name="line-71"></a><span class="c1">//!   - Init - initialization policy, see DiffEq/InitPolicy.h</span>
-<a name="line-72"></a><span class="c1">//!   - Coefficients - coefficients policy, see DiffEq/DirCoeffPolicy.h</span>
-<a name="line-73"></a><span class="k">template</span><span class="o">&lt;</span> <span class="k">class</span> <span class="nc">Init</span><span class="p">,</span> <span class="k">class</span> <span class="nc">Coefficients</span> <span class="o">&gt;</span>
-<a name="line-74"></a><span class="k">class</span> <span class="nc">MixDirichlet</span> <span class="p">{</span>
-<a name="line-75"></a>
-<a name="line-76"></a>  <span class="k">private</span><span class="o">:</span>
-<a name="line-77"></a>    <span class="k">using</span> <span class="n">ncomp_t</span> <span class="o">=</span> <span class="n">tk</span><span class="o">::</span><span class="n">ctr</span><span class="o">::</span><span class="n">ncomp_t</span><span class="p">;</span>
-<a name="line-78"></a>    <span class="k">using</span> <span class="n">eq</span> <span class="o">=</span> <span class="n">tag</span><span class="o">::</span><span class="n">mixdirichlet</span><span class="p">;</span>
-<a name="line-79"></a>
-<a name="line-80"></a>  <span class="k">public</span><span class="o">:</span>
-<a name="line-81"></a>    <span class="c1">//! Number of derived variables computed by the MixDirichlet SDE</span>
-<a name="line-82"></a>    <span class="c1">//! \details Derived variables: Nth scalar, density, specific volume.</span>
-<a name="line-83"></a>    <span class="k">static</span> <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="n">NUMDERIVED</span> <span class="o">=</span> <span class="mi">3</span><span class="p">;</span>
-<a name="line-84"></a>
-<a name="line-85"></a>    <span class="c1">//! \brief Constructor</span>
-<a name="line-86"></a>    <span class="c1">//! \param[in] c Index specifying which MixDirichlet SDE to construct. There</span>
-<a name="line-87"></a>    <span class="c1">//!   can be multiple dirichlet ... end blocks in a control file. This index</span>
-<a name="line-88"></a>    <span class="c1">//!   specifies which MixDirichlet SDE to instantiate. The index corresponds</span>
-<a name="line-89"></a>    <span class="c1">//!   to the order in which the dirichlet ... end blocks are given the</span>
-<a name="line-90"></a>    <span class="c1">//!   control file.</span>
-<a name="line-91"></a>    <span class="k">explicit</span> <span class="nf">MixDirichlet</span><span class="p">(</span> <span class="n">ncomp_t</span> <span class="n">c</span> <span class="p">)</span> <span class="o">:</span>
-<a name="line-92"></a>      <span class="n">m_c</span><span class="p">(</span> <span class="n">c</span> <span class="p">),</span>
-<a name="line-93"></a>      <span class="n">m_depvar</span><span class="p">(</span> <span class="n">g_inputdeck</span><span class="p">.</span><span class="n">get</span><span class="o">&lt;</span> <span class="n">tag</span><span class="o">::</span><span class="n">param</span><span class="p">,</span> <span class="n">eq</span><span class="p">,</span> <span class="n">tag</span><span class="o">::</span><span class="n">depvar</span> <span class="o">&gt;</span><span class="p">().</span><span class="n">at</span><span class="p">(</span><span class="n">c</span><span class="p">)</span> <span class="p">),</span>
-<a name="line-94"></a>      <span class="c1">// subtract the number of derived variables computed, see advance()</span>
-<a name="line-95"></a>      <span class="n">m_ncomp</span><span class="p">(</span> <span class="n">g_inputdeck</span><span class="p">.</span><span class="n">get</span><span class="o">&lt;</span> <span class="n">tag</span><span class="o">::</span><span class="n">component</span> <span class="o">&gt;</span><span class="p">().</span><span class="n">get</span><span class="o">&lt;</span> <span class="n">eq</span> <span class="o">&gt;</span><span class="p">().</span><span class="n">at</span><span class="p">(</span><span class="n">c</span><span class="p">)</span> <span class="o">-</span>
-<a name="line-96"></a>               <span class="n">NUMDERIVED</span> <span class="p">),</span>
-<a name="line-97"></a>      <span class="n">m_offset</span><span class="p">(</span>
-<a name="line-98"></a>        <span class="n">g_inputdeck</span><span class="p">.</span><span class="n">get</span><span class="o">&lt;</span> <span class="n">tag</span><span class="o">::</span><span class="n">component</span> <span class="o">&gt;</span><span class="p">().</span><span class="n">offset</span><span class="o">&lt;</span> <span class="n">eq</span> <span class="o">&gt;</span><span class="p">(</span><span class="n">c</span><span class="p">)</span> <span class="p">),</span>
-<a name="line-99"></a>      <span class="n">m_rng</span><span class="p">(</span> <span class="n">g_rng</span><span class="p">.</span><span class="n">at</span><span class="p">(</span> <span class="n">tk</span><span class="o">::</span><span class="n">ctr</span><span class="o">::</span><span class="n">raw</span><span class="p">(</span>
-<a name="line-100"></a>        <span class="n">g_inputdeck</span><span class="p">.</span><span class="n">get</span><span class="o">&lt;</span> <span class="n">tag</span><span class="o">::</span><span class="n">param</span><span class="p">,</span> <span class="n">eq</span><span class="p">,</span> <span class="n">tag</span><span class="o">::</span><span class="n">rng</span> <span class="o">&gt;</span><span class="p">().</span><span class="n">at</span><span class="p">(</span><span class="n">c</span><span class="p">)</span> <span class="p">)</span> <span class="p">)</span> <span class="p">),</span>
-<a name="line-101"></a>      <span class="n">m_norm</span><span class="p">(</span> <span class="n">g_inputdeck</span><span class="p">.</span><span class="n">get</span><span class="o">&lt;</span> <span class="n">tag</span><span class="o">::</span><span class="n">param</span><span class="p">,</span> <span class="n">eq</span><span class="p">,</span> <span class="n">tag</span><span class="o">::</span><span class="n">normalization</span> <span class="o">&gt;</span><span class="p">().</span><span class="n">at</span><span class="p">(</span><span class="n">c</span><span class="p">)</span> <span class="p">),</span>
-<a name="line-102"></a>      <span class="n">m_b</span><span class="p">(),</span>
-<a name="line-103"></a>      <span class="n">m_S</span><span class="p">(),</span>
-<a name="line-104"></a>      <span class="n">m_kprime</span><span class="p">(),</span>
-<a name="line-105"></a>      <span class="n">m_k</span><span class="p">(),</span>
-<a name="line-106"></a>      <span class="n">m_rho</span><span class="p">(),</span>
-<a name="line-107"></a>      <span class="n">m_r</span><span class="p">(),</span>
-<a name="line-108"></a>      <span class="n">coeff</span><span class="p">(</span> <span class="n">m_ncomp</span><span class="p">,</span>
-<a name="line-109"></a>             <span class="n">m_norm</span><span class="p">,</span>
-<a name="line-110"></a>             <span class="n">g_inputdeck</span><span class="p">.</span><span class="n">get</span><span class="o">&lt;</span> <span class="n">tag</span><span class="o">::</span><span class="n">param</span><span class="p">,</span> <span class="n">eq</span><span class="p">,</span> <span class="n">tag</span><span class="o">::</span><span class="n">b</span> <span class="o">&gt;</span><span class="p">().</span><span class="n">at</span><span class="p">(</span><span class="n">c</span><span class="p">),</span>
-<a name="line-111"></a>             <span class="n">g_inputdeck</span><span class="p">.</span><span class="n">get</span><span class="o">&lt;</span> <span class="n">tag</span><span class="o">::</span><span class="n">param</span><span class="p">,</span> <span class="n">eq</span><span class="p">,</span> <span class="n">tag</span><span class="o">::</span><span class="n">S</span> <span class="o">&gt;</span><span class="p">().</span><span class="n">at</span><span class="p">(</span><span class="n">c</span><span class="p">),</span>
-<a name="line-112"></a>             <span class="n">g_inputdeck</span><span class="p">.</span><span class="n">get</span><span class="o">&lt;</span> <span class="n">tag</span><span class="o">::</span><span class="n">param</span><span class="p">,</span> <span class="n">eq</span><span class="p">,</span> <span class="n">tag</span><span class="o">::</span><span class="n">kappaprime</span> <span class="o">&gt;</span><span class="p">().</span><span class="n">at</span><span class="p">(</span><span class="n">c</span><span class="p">),</span>
-<a name="line-113"></a>             <span class="n">g_inputdeck</span><span class="p">.</span><span class="n">get</span><span class="o">&lt;</span> <span class="n">tag</span><span class="o">::</span><span class="n">param</span><span class="p">,</span> <span class="n">eq</span><span class="p">,</span> <span class="n">tag</span><span class="o">::</span><span class="n">rho</span> <span class="o">&gt;</span><span class="p">().</span><span class="n">at</span><span class="p">(</span><span class="n">c</span><span class="p">),</span>
-<a name="line-114"></a>             <span class="n">m_b</span><span class="p">,</span> <span class="n">m_S</span><span class="p">,</span> <span class="n">m_kprime</span><span class="p">,</span> <span class="n">m_rho</span><span class="p">,</span> <span class="n">m_r</span><span class="p">,</span> <span class="n">m_k</span> <span class="p">)</span> <span class="p">{}</span>
-<a name="line-115"></a>
-<a name="line-116"></a>    <span class="c1">//! Initalize SDE, prepare for time integration</span>
-<a name="line-117"></a>    <span class="c1">//! \param[in] stream Thread (or more precisely stream) ID </span>
-<a name="line-118"></a>    <span class="c1">//! \param[in,out] particles Array of particle properties </span>
-<a name="line-119"></a>    <span class="kt">void</span> <span class="nf">initialize</span><span class="p">(</span> <span class="kt">int</span> <span class="n">stream</span><span class="p">,</span> <span class="n">tk</span><span class="o">::</span><span class="n">Particles</span><span class="o">&amp;</span> <span class="n">particles</span> <span class="p">)</span> <span class="p">{</span>
+<a name="line-37"></a><span class="cm">    \f[ \begin{split}</span>
+<a name="line-38"></a><span class="cm">       \mathrm{d}Y_\alpha(t) = \frac{b_\alpha}{2}\left(S_\alpha - Y_\alpha\right)</span>
+<a name="line-39"></a><span class="cm">       \mathrm{d}t + \sqrt{\kappa_\alpha Y_\alpha(1-Y_\alpha)}</span>
+<a name="line-40"></a><span class="cm">       \mathrm{d}W_\alpha(t), \\ \alpha=1,\dots,N</span>
+<a name="line-41"></a><span class="cm">    \end{split} \f]</span>
+<a name="line-42"></a>
+<a name="line-43"></a><span class="cm">    with parameter vectors \f$b_\alpha = \Theta b&#39;_\alpha &gt; 0\f$, \f$</span>
+<a name="line-44"></a><span class="cm">    \newcommand{\irv}[1]{\langle{#1^2}\rangle} \kappa_\alpha = \kappa&#39; \irv{x} &gt;</span>
+<a name="line-45"></a><span class="cm">    0\f$, and \f$0 &lt; S_\alpha &lt; 1\f$. This is similar to DiffEq/Beta.h, but the</span>
+<a name="line-46"></a><span class="cm">    parameters, \f$b\f$ and \f$\kappa\f$ constrained. Here \f$</span>
+<a name="line-47"></a><span class="cm">    \newcommand{\irv}[1]{\langle{#1^2}\rangle}</span>
+<a name="line-48"></a><span class="cm">    \newcommand{\irmean}[1]{{\langle{#1}\rangle}} \Theta = 1 - \irv{x} /</span>
+<a name="line-49"></a><span class="cm">    [ \irmean{Y} (1-\irmean{Y}) ]\f$. The fluctuation about the mean, \f$</span>
+<a name="line-50"></a><span class="cm">    \newcommand{\irmean}[1]{{\langle{#1}\rangle}} \irmean{Y} \f$, is defined as</span>
+<a name="line-51"></a><span class="cm">    usual: \f$ \newcommand{\irmean}[1]{{\langle{#1}\rangle}} x = Y - \irmean{Y}</span>
+<a name="line-52"></a><span class="cm">    \f$, and \f$b&#39;\f$ and \f$ \kappa&#39;\f$ are user-specified constants. Also,</span>
+<a name="line-53"></a><span class="cm">    \f$\mathrm{d}W_\alpha(t)\f$ is an isotropic vector-valued</span>
+<a name="line-54"></a><span class="cm">    [Wiener process](http://en.wikipedia.org/wiki/Wiener_process) with</span>
+<a name="line-55"></a><span class="cm">    independent increments. The invariant distribution is the joint beta</span>
+<a name="line-56"></a><span class="cm">    distribution. This system of SDEs consists of N independent equations. For</span>
+<a name="line-57"></a><span class="cm">    more on the beta SDE, see https://doi.org/10.1080/14685248.2010.510843.</span>
+<a name="line-58"></a>
+<a name="line-59"></a><span class="cm">    In addition to integrating the above SDE, there are two additional functions</span>
+<a name="line-60"></a><span class="cm">    of \f$ Y_\alpha \f$ are computed as</span>
+<a name="line-61"></a><span class="cm">    \f[ \begin{aligned}</span>
+<a name="line-62"></a><span class="cm">      \rho(Y_\alpha) &amp; = \frac{ \rho_{2\alpha} }{ 1 + r_\alpha Y_\alpha } \\</span>
+<a name="line-63"></a><span class="cm">      V(Y_\alpha) &amp; = \frac{1}{ \rho(Y_\alpha) }</span>
+<a name="line-64"></a><span class="cm">    \end{aligned} \f]</span>
+<a name="line-65"></a><span class="cm">    These equations compute the instantaneous mixture density, \f$ \rho \f$, and</span>
+<a name="line-66"></a><span class="cm">    instantaneous specific volume, \f$ V_\alpha \f$, for equation \f$ \alpha \f$</span>
+<a name="line-67"></a><span class="cm">    in the system. These quantities are used in binary mixing of</span>
+<a name="line-68"></a><span class="cm">    variable-density turbulence between two fluids with constant densities, \f$</span>
+<a name="line-69"></a><span class="cm">    \rho_1, \f$ and \f$ \rho_2 \f$. The additional parameters, \f$ \rho_2 \f$</span>
+<a name="line-70"></a><span class="cm">    and \f$ r \f$ are user input parameters and kept constant during</span>
+<a name="line-71"></a><span class="cm">    integration. Since we compute the above variables, \f$\rho,\f$ and \f$V\f$,</span>
+<a name="line-72"></a><span class="cm">    and call them mixture density and specific volume, respectively, \f$Y\f$,</span>
+<a name="line-73"></a><span class="cm">    governed by the beta SDE is a mass fraction.</span>
+<a name="line-74"></a>
+<a name="line-75"></a><span class="cm">    _All of this is unpublished, but will be linked in here once published_.</span>
+<a name="line-76"></a><span class="cm">*/</span>
+<a name="line-77"></a><span class="c1">// *****************************************************************************</span>
+<a name="line-78"></a><span class="cp">#ifndef MixMassFractionBeta_h</span>
+<a name="line-79"></a><span class="cp">#define MixMassFractionBeta_h</span>
+<a name="line-80"></a>
+<a name="line-81"></a><span class="cp">#include</span> <span class="cpf">&lt;vector&gt;</span><span class="cp"></span>
+<a name="line-82"></a><span class="cp">#include</span> <span class="cpf">&lt;tuple&gt;</span><span class="cp"></span>
+<a name="line-83"></a>
+<a name="line-84"></a><span class="cp">#include</span> <span class="cpf">&quot;InitPolicy.hpp&quot;</span><span class="cp"></span>
+<a name="line-85"></a><span class="cp">#include</span> <span class="cpf">&quot;MixMassFractionBetaCoeffPolicy.hpp&quot;</span><span class="cp"></span>
+<a name="line-86"></a><span class="cp">#include</span> <span class="cpf">&quot;RNG.hpp&quot;</span><span class="cp"></span>
+<a name="line-87"></a><span class="cp">#include</span> <span class="cpf">&quot;Particles.hpp&quot;</span><span class="cp"></span>
+<a name="line-88"></a><span class="cp">#include</span> <span class="cpf">&quot;Table.hpp&quot;</span><span class="cp"></span>
+<a name="line-89"></a><span class="cp">#include</span> <span class="cpf">&quot;CoupledEq.hpp&quot;</span><span class="cp"></span>
+<a name="line-90"></a><span class="cp">#include</span> <span class="cpf">&quot;HydroTimeScales.hpp&quot;</span><span class="cp"></span>
+<a name="line-91"></a><span class="cp">#include</span> <span class="cpf">&quot;HydroProductions.hpp&quot;</span><span class="cp"></span>
+<a name="line-92"></a><span class="cp">#include</span> <span class="cpf">&quot;Walker/Options/HydroTimeScales.hpp&quot;</span><span class="cp"></span>
+<a name="line-93"></a><span class="cp">#include</span> <span class="cpf">&quot;Walker/Options/HydroProductions.hpp&quot;</span><span class="cp"></span>
+<a name="line-94"></a>
+<a name="line-95"></a><span class="k">namespace</span> <span class="n">walker</span> <span class="p">{</span>
+<a name="line-96"></a>
+<a name="line-97"></a><span class="k">extern</span> <span class="n">ctr</span><span class="o">::</span><span class="n">InputDeck</span> <span class="n">g_inputdeck</span><span class="p">;</span>
+<a name="line-98"></a><span class="k">extern</span> <span class="n">std</span><span class="o">::</span><span class="n">map</span><span class="o">&lt;</span> <span class="n">tk</span><span class="o">::</span><span class="n">ctr</span><span class="o">::</span><span class="n">RawRNGType</span><span class="p">,</span> <span class="n">tk</span><span class="o">::</span><span class="n">RNG</span> <span class="o">&gt;</span> <span class="n">g_rng</span><span class="p">;</span>
+<a name="line-99"></a>
+<a name="line-100"></a><span class="c1">//! \brief MixMassFractionBeta SDE used polymorphically with DiffEq</span>
+<a name="line-101"></a><span class="c1">//! \details The template arguments specify policies and are used to configure</span>
+<a name="line-102"></a><span class="c1">//!   the behavior of the class. The policies are:</span>
+<a name="line-103"></a><span class="c1">//!   - Init - initialization policy, see DiffEq/InitPolicy.h</span>
+<a name="line-104"></a><span class="c1">//!   - Coefficients - coefficients policy, see</span>
+<a name="line-105"></a><span class="c1">//!     DiffEq/MixMassFractionBetaCoeffPolicy.h</span>
+<a name="line-106"></a><span class="k">template</span><span class="o">&lt;</span> <span class="k">class</span> <span class="nc">Init</span><span class="p">,</span> <span class="k">class</span> <span class="nc">Coefficients</span> <span class="o">&gt;</span>
+<a name="line-107"></a><span class="k">class</span> <span class="nc">MixMassFractionBeta</span> <span class="p">{</span>
+<a name="line-108"></a>
+<a name="line-109"></a>  <span class="k">private</span><span class="o">:</span>
+<a name="line-110"></a>    <span class="k">using</span> <span class="n">ncomp_t</span> <span class="o">=</span> <span class="n">tk</span><span class="o">::</span><span class="n">ctr</span><span class="o">::</span><span class="n">ncomp_t</span><span class="p">;</span>
+<a name="line-111"></a>    <span class="k">using</span> <span class="n">eq</span> <span class="o">=</span> <span class="n">tag</span><span class="o">::</span><span class="n">mixmassfracbeta</span><span class="p">;</span>
+<a name="line-112"></a>
+<a name="line-113"></a>  <span class="k">public</span><span class="o">:</span>
+<a name="line-114"></a>    <span class="c1">//! Number of derived variables computed by the SDE</span>
+<a name="line-115"></a>    <span class="c1">//! \details Derived variables: density, specific volume, 1 - mass fraction</span>
+<a name="line-116"></a>    <span class="c1">//! \warning If you change this, you must also change the constant in</span>
+<a name="line-117"></a>    <span class="c1">//!   Velocity::m_mixmassfracbeta_ncomp in DiffEq/Velocity/Velocity.hpp.</span>
+<a name="line-118"></a>    <span class="c1">//!   To see where, search for NUMDERIVED there.</span>
+<a name="line-119"></a>    <span class="k">static</span> <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="n">NUMDERIVED</span> <span class="o">=</span> <span class="mi">3</span><span class="p">;</span>
 <a name="line-120"></a>
-<a name="line-121"></a>      <span class="c1">// Ensure the size of the parameter vector holding the pure-fluid</span>
-<a name="line-122"></a>      <span class="c1">// densities is N = K+1 = m_ncomp+1</span>
-<a name="line-123"></a>      <span class="n">Assert</span><span class="p">(</span> <span class="n">m_rho</span><span class="p">.</span><span class="n">size</span><span class="p">()</span> <span class="o">==</span> <span class="n">m_ncomp</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="s">&quot;Size mismatch&quot;</span> <span class="p">);</span>
-<a name="line-124"></a>
-<a name="line-125"></a>      <span class="c1">//! Set initial conditions using initialization policy</span>
-<a name="line-126"></a>      <span class="n">Init</span><span class="o">::</span><span class="k">template</span> <span class="n">init</span><span class="o">&lt;</span> <span class="n">eq</span> <span class="o">&gt;</span><span class="p">(</span> <span class="n">g_inputdeck</span><span class="p">,</span> <span class="n">m_rng</span><span class="p">,</span> <span class="n">stream</span><span class="p">,</span> <span class="n">particles</span><span class="p">,</span> <span class="n">m_c</span><span class="p">,</span>
-<a name="line-127"></a>                                 <span class="n">m_ncomp</span><span class="p">,</span> <span class="n">m_offset</span> <span class="p">);</span>
-<a name="line-128"></a>
-<a name="line-129"></a>      <span class="n">fenv_t</span> <span class="n">fe</span><span class="p">;</span>
-<a name="line-130"></a>      <span class="n">feholdexcept</span><span class="p">(</span> <span class="o">&amp;</span><span class="n">fe</span> <span class="p">);</span>
-<a name="line-131"></a>
-<a name="line-132"></a>      <span class="k">const</span> <span class="k">auto</span> <span class="n">npar</span> <span class="o">=</span> <span class="n">particles</span><span class="p">.</span><span class="n">nunk</span><span class="p">();</span>
-<a name="line-133"></a>      <span class="k">for</span> <span class="p">(</span><span class="k">auto</span> <span class="n">p</span><span class="o">=</span><span class="k">decltype</span><span class="p">(</span><span class="n">npar</span><span class="p">){</span><span class="mi">0</span><span class="p">};</span> <span class="n">p</span><span class="o">&lt;</span><span class="n">npar</span><span class="p">;</span> <span class="o">++</span><span class="n">p</span><span class="p">)</span> <span class="p">{</span>
-<a name="line-134"></a>        <span class="c1">// Violating boundedness here is a hard error as indicates a problem</span>
-<a name="line-135"></a>        <span class="c1">// with the initial conditions</span>
-<a name="line-136"></a>        <span class="k">for</span> <span class="p">(</span><span class="n">ncomp_t</span> <span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">i</span><span class="o">&lt;</span><span class="n">m_ncomp</span><span class="o">+</span><span class="mi">1</span><span class="p">;</span> <span class="o">++</span><span class="n">i</span><span class="p">)</span> <span class="p">{</span>
-<a name="line-137"></a>          <span class="k">auto</span> <span class="n">y</span> <span class="o">=</span> <span class="n">particles</span><span class="p">(</span> <span class="n">p</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">m_offset</span> <span class="p">);</span>
-<a name="line-138"></a>          <span class="k">if</span> <span class="p">(</span><span class="n">y</span> <span class="o">&lt;</span> <span class="mf">0.0</span> <span class="o">||</span> <span class="n">y</span> <span class="o">&gt;</span> <span class="mf">1.0</span><span class="p">)</span> <span class="n">Throw</span><span class="p">(</span> <span class="s">&quot;IC scalar out of bounds&quot;</span> <span class="p">);</span>
-<a name="line-139"></a>        <span class="p">}</span>
-<a name="line-140"></a>        <span class="c1">// Initialize derived instantaneous variables</span>
-<a name="line-141"></a>        <span class="n">derived</span><span class="p">(</span> <span class="n">particles</span><span class="p">,</span> <span class="n">p</span> <span class="p">);</span>
-<a name="line-142"></a>      <span class="p">}</span>
-<a name="line-143"></a>
-<a name="line-144"></a>      <span class="n">feclearexcept</span><span class="p">(</span> <span class="n">FE_UNDERFLOW</span> <span class="p">);</span>
-<a name="line-145"></a>      <span class="n">feupdateenv</span><span class="p">(</span> <span class="o">&amp;</span><span class="n">fe</span> <span class="p">);</span>
-<a name="line-146"></a>    <span class="p">}</span>
-<a name="line-147"></a>
-<a name="line-148"></a>    <span class="c1">//! \brief Advance particles according to the MixDirichlet SDE</span>
-<a name="line-149"></a>    <span class="c1">//! \param[in,out] particles Array of particle properties</span>
-<a name="line-150"></a>    <span class="c1">//! \param[in] stream Thread (or more precisely stream) ID</span>
-<a name="line-151"></a>    <span class="c1">//! \param[in] dt Time step size</span>
-<a name="line-152"></a>    <span class="c1">//! \param[in] moments Map of statistical moments</span>
-<a name="line-153"></a>    <span class="kt">void</span> <span class="nf">advance</span><span class="p">(</span> <span class="n">tk</span><span class="o">::</span><span class="n">Particles</span><span class="o">&amp;</span> <span class="n">particles</span><span class="p">,</span>
-<a name="line-154"></a>                  <span class="kt">int</span> <span class="n">stream</span><span class="p">,</span>
-<a name="line-155"></a>                  <span class="n">tk</span><span class="o">::</span><span class="n">real</span> <span class="n">dt</span><span class="p">,</span>
-<a name="line-156"></a>                  <span class="n">tk</span><span class="o">::</span><span class="n">real</span><span class="p">,</span>
-<a name="line-157"></a>                  <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">map</span><span class="o">&lt;</span> <span class="n">tk</span><span class="o">::</span><span class="n">ctr</span><span class="o">::</span><span class="n">Product</span><span class="p">,</span> <span class="n">tk</span><span class="o">::</span><span class="n">real</span> <span class="o">&gt;&amp;</span> <span class="n">moments</span> <span class="p">)</span>
-<a name="line-158"></a>    <span class="p">{</span>
-<a name="line-159"></a>      <span class="c1">// Update SDE coefficients</span>
-<a name="line-160"></a>      <span class="n">coeff</span><span class="p">.</span><span class="n">update</span><span class="p">(</span> <span class="n">m_depvar</span><span class="p">,</span> <span class="n">m_ncomp</span><span class="p">,</span> <span class="n">m_norm</span><span class="p">,</span> <span class="n">DENSITY_OFFSET</span><span class="p">,</span> <span class="n">VOLUME_OFFSET</span><span class="p">,</span>
-<a name="line-161"></a>                    <span class="n">moments</span><span class="p">,</span> <span class="n">m_rho</span><span class="p">,</span> <span class="n">m_r</span><span class="p">,</span> <span class="n">m_kprime</span><span class="p">,</span> <span class="n">m_b</span><span class="p">,</span> <span class="n">m_k</span><span class="p">,</span> <span class="n">m_S</span> <span class="p">);</span>
-<a name="line-162"></a>
-<a name="line-163"></a>      <span class="n">fenv_t</span> <span class="n">fe</span><span class="p">;</span>
-<a name="line-164"></a>      <span class="n">feholdexcept</span><span class="p">(</span> <span class="o">&amp;</span><span class="n">fe</span> <span class="p">);</span>
-<a name="line-165"></a>
-<a name="line-166"></a>      <span class="c1">// Advance particles</span>
-<a name="line-167"></a>      <span class="k">const</span> <span class="k">auto</span> <span class="n">npar</span> <span class="o">=</span> <span class="n">particles</span><span class="p">.</span><span class="n">nunk</span><span class="p">();</span>
-<a name="line-168"></a>      <span class="k">for</span> <span class="p">(</span><span class="k">auto</span> <span class="n">p</span><span class="o">=</span><span class="k">decltype</span><span class="p">(</span><span class="n">npar</span><span class="p">){</span><span class="mi">0</span><span class="p">};</span> <span class="n">p</span><span class="o">&lt;</span><span class="n">npar</span><span class="p">;</span> <span class="o">++</span><span class="n">p</span><span class="p">)</span> <span class="p">{</span>
-<a name="line-169"></a>        <span class="c1">// Generate Gaussian random numbers with zero mean and unit variance</span>
-<a name="line-170"></a>        <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span> <span class="n">tk</span><span class="o">::</span><span class="n">real</span> <span class="o">&gt;</span> <span class="n">dW</span><span class="p">(</span> <span class="n">m_ncomp</span> <span class="p">);</span>
-<a name="line-171"></a>        <span class="n">m_rng</span><span class="p">.</span><span class="n">gaussian</span><span class="p">(</span> <span class="n">stream</span><span class="p">,</span> <span class="n">m_ncomp</span><span class="p">,</span> <span class="n">dW</span><span class="p">.</span><span class="n">data</span><span class="p">()</span> <span class="p">);</span>
-<a name="line-172"></a>
-<a name="line-173"></a>        <span class="c1">// Advance all m_ncomp (=N=K+1) scalars</span>
-<a name="line-174"></a>        <span class="k">auto</span><span class="o">&amp;</span> <span class="n">yn</span> <span class="o">=</span> <span class="n">particles</span><span class="p">(</span> <span class="n">p</span><span class="p">,</span> <span class="n">m_ncomp</span><span class="p">,</span> <span class="n">m_offset</span> <span class="p">);</span>
-<a name="line-175"></a>        <span class="k">for</span> <span class="p">(</span><span class="n">ncomp_t</span> <span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">i</span><span class="o">&lt;</span><span class="n">m_ncomp</span><span class="p">;</span> <span class="o">++</span><span class="n">i</span><span class="p">)</span> <span class="p">{</span>
-<a name="line-176"></a>          <span class="k">auto</span><span class="o">&amp;</span> <span class="n">y</span> <span class="o">=</span> <span class="n">particles</span><span class="p">(</span> <span class="n">p</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">m_offset</span> <span class="p">);</span>
-<a name="line-177"></a>          <span class="n">tk</span><span class="o">::</span><span class="n">real</span> <span class="n">d</span> <span class="o">=</span> <span class="n">m_k</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">*</span> <span class="n">y</span> <span class="o">*</span> <span class="n">yn</span> <span class="o">*</span> <span class="n">dt</span><span class="p">;</span>
-<a name="line-178"></a>          <span class="k">if</span> <span class="p">(</span><span class="n">d</span> <span class="o">&lt;</span> <span class="mf">0.0</span><span class="p">)</span> <span class="n">d</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">;</span>
-<a name="line-179"></a>          <span class="n">d</span> <span class="o">=</span> <span class="n">std</span><span class="o">::</span><span class="n">sqrt</span><span class="p">(</span> <span class="n">d</span> <span class="p">);</span>
-<a name="line-180"></a>          <span class="k">auto</span> <span class="n">dy</span> <span class="o">=</span> <span class="mf">0.5</span><span class="o">*</span><span class="n">m_b</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">*</span><span class="p">(</span> <span class="n">m_S</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">*</span><span class="n">yn</span> <span class="o">-</span> <span class="p">(</span><span class="mf">1.0</span><span class="o">-</span><span class="n">m_S</span><span class="p">[</span><span class="n">i</span><span class="p">])</span><span class="o">*</span><span class="n">y</span> <span class="p">)</span><span class="o">*</span><span class="n">dt</span> <span class="o">+</span> <span class="n">d</span><span class="o">*</span><span class="n">dW</span><span class="p">[</span><span class="n">i</span><span class="p">];</span>
-<a name="line-181"></a>          <span class="n">y</span> <span class="o">+=</span> <span class="n">dy</span><span class="p">;</span>
-<a name="line-182"></a>          <span class="n">yn</span> <span class="o">-=</span> <span class="n">dy</span><span class="p">;</span>
-<a name="line-183"></a>        <span class="p">}</span>
-<a name="line-184"></a>        <span class="c1">// Compute derived instantaneous variables</span>
-<a name="line-185"></a>        <span class="n">derived</span><span class="p">(</span> <span class="n">particles</span><span class="p">,</span> <span class="n">p</span> <span class="p">);</span>
-<a name="line-186"></a>      <span class="p">}</span>
-<a name="line-187"></a>
-<a name="line-188"></a>      <span class="n">feclearexcept</span><span class="p">(</span> <span class="n">FE_UNDERFLOW</span> <span class="p">);</span>
-<a name="line-189"></a>      <span class="n">feupdateenv</span><span class="p">(</span> <span class="o">&amp;</span><span class="n">fe</span> <span class="p">);</span>
+<a name="line-121"></a>    <span class="c1">//! \brief Constructor</span>
+<a name="line-122"></a>    <span class="c1">//! \param[in] c Index specifying which system of mix mass-fraction beta</span>
+<a name="line-123"></a>    <span class="c1">//!   SDEs to construct. There can be multiple mixmassfracbeta ... end blocks</span>
+<a name="line-124"></a>    <span class="c1">//!   in a control file. This index specifies which mix mass-fraction beta</span>
+<a name="line-125"></a>    <span class="c1">//!   SDE system to instantiate. The index corresponds to the order in which</span>
+<a name="line-126"></a>    <span class="c1">//!   the mixmassfracbeta ... end blocks are given the control file.</span>
+<a name="line-127"></a>    <span class="k">explicit</span> <span class="nf">MixMassFractionBeta</span><span class="p">(</span> <span class="n">ncomp_t</span> <span class="n">c</span> <span class="p">)</span> <span class="o">:</span>
+<a name="line-128"></a>      <span class="n">m_c</span><span class="p">(</span> <span class="n">c</span> <span class="p">),</span>
+<a name="line-129"></a>      <span class="n">m_depvar</span><span class="p">(</span> <span class="n">g_inputdeck</span><span class="p">.</span><span class="n">get</span><span class="o">&lt;</span> <span class="n">tag</span><span class="o">::</span><span class="n">param</span><span class="p">,</span> <span class="n">eq</span><span class="p">,</span> <span class="n">tag</span><span class="o">::</span><span class="n">depvar</span> <span class="o">&gt;</span><span class="p">().</span><span class="n">at</span><span class="p">(</span><span class="n">c</span><span class="p">)</span> <span class="p">),</span>
+<a name="line-130"></a>      <span class="c1">// divide by the number of derived variables computed, see derived()</span>
+<a name="line-131"></a>      <span class="n">m_ncomp</span><span class="p">(</span> <span class="n">g_inputdeck</span><span class="p">.</span><span class="n">get</span><span class="o">&lt;</span> <span class="n">tag</span><span class="o">::</span><span class="n">component</span> <span class="o">&gt;</span><span class="p">().</span><span class="n">get</span><span class="o">&lt;</span> <span class="n">eq</span> <span class="o">&gt;</span><span class="p">().</span><span class="n">at</span><span class="p">(</span><span class="n">c</span><span class="p">)</span> <span class="o">/</span>
+<a name="line-132"></a>               <span class="p">(</span><span class="n">NUMDERIVED</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="p">),</span>
+<a name="line-133"></a>      <span class="n">m_offset</span><span class="p">(</span> <span class="n">g_inputdeck</span><span class="p">.</span><span class="n">get</span><span class="o">&lt;</span> <span class="n">tag</span><span class="o">::</span><span class="n">component</span> <span class="o">&gt;</span><span class="p">().</span><span class="n">offset</span><span class="o">&lt;</span> <span class="n">eq</span> <span class="o">&gt;</span><span class="p">(</span><span class="n">c</span><span class="p">)</span> <span class="p">),</span>
+<a name="line-134"></a>      <span class="n">m_rng</span><span class="p">(</span> <span class="n">g_rng</span><span class="p">.</span><span class="n">at</span><span class="p">(</span> <span class="n">tk</span><span class="o">::</span><span class="n">ctr</span><span class="o">::</span><span class="n">raw</span><span class="p">(</span>
+<a name="line-135"></a>        <span class="n">g_inputdeck</span><span class="p">.</span><span class="n">get</span><span class="o">&lt;</span> <span class="n">tag</span><span class="o">::</span><span class="n">param</span><span class="p">,</span> <span class="n">eq</span><span class="p">,</span> <span class="n">tag</span><span class="o">::</span><span class="n">rng</span> <span class="o">&gt;</span><span class="p">().</span><span class="n">at</span><span class="p">(</span><span class="n">c</span><span class="p">)</span> <span class="p">)</span> <span class="p">)</span> <span class="p">),</span>
+<a name="line-136"></a>      <span class="n">m_solve</span><span class="p">(</span> <span class="n">g_inputdeck</span><span class="p">.</span><span class="n">get</span><span class="o">&lt;</span> <span class="n">tag</span><span class="o">::</span><span class="n">param</span><span class="p">,</span> <span class="n">eq</span><span class="p">,</span> <span class="n">tag</span><span class="o">::</span><span class="n">solve</span> <span class="o">&gt;</span><span class="p">().</span><span class="n">at</span><span class="p">(</span><span class="n">c</span><span class="p">)</span> <span class="p">),</span>
+<a name="line-137"></a>      <span class="n">m_velocity_coupled</span><span class="p">(</span> <span class="n">coupled</span><span class="o">&lt;</span> <span class="n">eq</span><span class="p">,</span> <span class="n">tag</span><span class="o">::</span><span class="n">velocity</span> <span class="o">&gt;</span><span class="p">(</span> <span class="n">c</span> <span class="p">)</span> <span class="p">),</span>
+<a name="line-138"></a>      <span class="n">m_velocity_depvar</span><span class="p">(</span> <span class="n">depvar</span><span class="o">&lt;</span> <span class="n">eq</span><span class="p">,</span> <span class="n">tag</span><span class="o">::</span><span class="n">velocity</span> <span class="o">&gt;</span><span class="p">(</span> <span class="n">c</span> <span class="p">)</span> <span class="p">),</span>
+<a name="line-139"></a>      <span class="n">m_velocity_offset</span><span class="p">(</span> <span class="n">offset</span><span class="o">&lt;</span> <span class="n">eq</span><span class="p">,</span> <span class="n">tag</span><span class="o">::</span><span class="n">velocity</span><span class="p">,</span> <span class="n">tag</span><span class="o">::</span><span class="n">velocity_id</span> <span class="o">&gt;</span><span class="p">(</span> <span class="n">c</span> <span class="p">)</span> <span class="p">),</span>
+<a name="line-140"></a>      <span class="n">m_velocity_solve</span><span class="p">(</span>
+<a name="line-141"></a>        <span class="n">m_velocity_coupled</span> <span class="o">?</span>
+<a name="line-142"></a>          <span class="n">g_inputdeck</span><span class="p">.</span><span class="n">get</span><span class="o">&lt;</span> <span class="n">tag</span><span class="o">::</span><span class="n">param</span><span class="p">,</span> <span class="n">tag</span><span class="o">::</span><span class="n">velocity</span><span class="p">,</span> <span class="n">tag</span><span class="o">::</span><span class="n">solve</span> <span class="o">&gt;</span><span class="p">().</span><span class="n">at</span><span class="p">(</span>
+<a name="line-143"></a>            <span class="n">system_id</span><span class="o">&lt;</span> <span class="n">eq</span><span class="p">,</span> <span class="n">tag</span><span class="o">::</span><span class="n">velocity</span><span class="p">,</span> <span class="n">tag</span><span class="o">::</span><span class="n">velocity_id</span> <span class="o">&gt;</span><span class="p">(</span> <span class="n">c</span> <span class="p">)</span> <span class="p">)</span> <span class="o">:</span>
+<a name="line-144"></a>        <span class="n">ctr</span><span class="o">::</span><span class="n">DepvarType</span><span class="o">::</span><span class="n">FULLVAR</span> <span class="p">),</span>
+<a name="line-145"></a>      <span class="n">m_dissipation_coupled</span><span class="p">(</span> <span class="n">coupled</span><span class="o">&lt;</span> <span class="n">eq</span><span class="p">,</span> <span class="n">tag</span><span class="o">::</span><span class="n">dissipation</span> <span class="o">&gt;</span><span class="p">(</span> <span class="n">c</span> <span class="p">)</span> <span class="p">),</span>
+<a name="line-146"></a>      <span class="n">m_dissipation_depvar</span><span class="p">(</span> <span class="n">depvar</span><span class="o">&lt;</span> <span class="n">eq</span><span class="p">,</span> <span class="n">tag</span><span class="o">::</span><span class="n">dissipation</span> <span class="o">&gt;</span><span class="p">(</span> <span class="n">c</span> <span class="p">)</span> <span class="p">),</span>
+<a name="line-147"></a>      <span class="n">m_dissipation_offset</span><span class="p">(</span>
+<a name="line-148"></a>        <span class="n">offset</span><span class="o">&lt;</span> <span class="n">eq</span><span class="p">,</span> <span class="n">tag</span><span class="o">::</span><span class="n">dissipation</span><span class="p">,</span> <span class="n">tag</span><span class="o">::</span><span class="n">dissipation_id</span> <span class="o">&gt;</span><span class="p">(</span> <span class="n">c</span> <span class="p">)</span> <span class="p">),</span>
+<a name="line-149"></a>      <span class="n">m_dY</span><span class="p">(</span> <span class="n">initScalarGradient</span><span class="p">()</span> <span class="p">),</span>
+<a name="line-150"></a>      <span class="n">m_bprime</span><span class="p">(),</span>
+<a name="line-151"></a>      <span class="n">m_S</span><span class="p">(),</span>
+<a name="line-152"></a>      <span class="n">m_kprime</span><span class="p">(),</span>
+<a name="line-153"></a>      <span class="n">m_rho2</span><span class="p">(),</span>
+<a name="line-154"></a>      <span class="n">m_r</span><span class="p">(),</span>
+<a name="line-155"></a>      <span class="n">m_b</span><span class="p">(),</span>
+<a name="line-156"></a>      <span class="n">m_k</span><span class="p">(),</span>
+<a name="line-157"></a>      <span class="n">coeff</span><span class="p">(</span>
+<a name="line-158"></a>        <span class="n">m_ncomp</span><span class="p">,</span>
+<a name="line-159"></a>        <span class="n">g_inputdeck</span><span class="p">.</span><span class="n">get</span><span class="o">&lt;</span> <span class="n">tag</span><span class="o">::</span><span class="n">param</span><span class="p">,</span> <span class="n">eq</span><span class="p">,</span> <span class="n">tag</span><span class="o">::</span><span class="n">bprime</span> <span class="o">&gt;</span><span class="p">().</span><span class="n">at</span><span class="p">(</span><span class="n">c</span><span class="p">),</span>
+<a name="line-160"></a>        <span class="n">g_inputdeck</span><span class="p">.</span><span class="n">get</span><span class="o">&lt;</span> <span class="n">tag</span><span class="o">::</span><span class="n">param</span><span class="p">,</span> <span class="n">eq</span><span class="p">,</span> <span class="n">tag</span><span class="o">::</span><span class="n">S</span> <span class="o">&gt;</span><span class="p">().</span><span class="n">at</span><span class="p">(</span><span class="n">c</span><span class="p">),</span>
+<a name="line-161"></a>        <span class="n">g_inputdeck</span><span class="p">.</span><span class="n">get</span><span class="o">&lt;</span> <span class="n">tag</span><span class="o">::</span><span class="n">param</span><span class="p">,</span> <span class="n">eq</span><span class="p">,</span> <span class="n">tag</span><span class="o">::</span><span class="n">kappaprime</span> <span class="o">&gt;</span><span class="p">().</span><span class="n">at</span><span class="p">(</span><span class="n">c</span><span class="p">),</span>
+<a name="line-162"></a>        <span class="n">g_inputdeck</span><span class="p">.</span><span class="n">get</span><span class="o">&lt;</span> <span class="n">tag</span><span class="o">::</span><span class="n">param</span><span class="p">,</span> <span class="n">eq</span><span class="p">,</span> <span class="n">tag</span><span class="o">::</span><span class="n">rho2</span> <span class="o">&gt;</span><span class="p">().</span><span class="n">at</span><span class="p">(</span><span class="n">c</span><span class="p">),</span>
+<a name="line-163"></a>        <span class="n">g_inputdeck</span><span class="p">.</span><span class="n">get</span><span class="o">&lt;</span> <span class="n">tag</span><span class="o">::</span><span class="n">param</span><span class="p">,</span> <span class="n">eq</span><span class="p">,</span> <span class="n">tag</span><span class="o">::</span><span class="n">r</span> <span class="o">&gt;</span><span class="p">().</span><span class="n">at</span><span class="p">(</span><span class="n">c</span><span class="p">),</span>
+<a name="line-164"></a>        <span class="n">m_bprime</span><span class="p">,</span> <span class="n">m_S</span><span class="p">,</span> <span class="n">m_kprime</span><span class="p">,</span> <span class="n">m_rho2</span><span class="p">,</span> <span class="n">m_r</span><span class="p">,</span> <span class="n">m_b</span><span class="p">,</span> <span class="n">m_k</span> <span class="p">)</span>
+<a name="line-165"></a>    <span class="p">{</span>
+<a name="line-166"></a>      <span class="c1">// Zero prescribed scalar gradient if full variable is solved for</span>
+<a name="line-167"></a>      <span class="k">if</span> <span class="p">(</span><span class="n">m_solve</span> <span class="o">==</span> <span class="n">ctr</span><span class="o">::</span><span class="n">DepvarType</span><span class="o">::</span><span class="n">FULLVAR</span><span class="p">)</span> <span class="n">m_dY</span><span class="p">.</span><span class="n">fill</span><span class="p">(</span> <span class="mf">0.0</span> <span class="p">);</span>
+<a name="line-168"></a>      <span class="c1">// Populate inverse hydrodynamics time scales and hydrodyanmics</span>
+<a name="line-169"></a>      <span class="c1">// production/dissipation extracted from DNS</span>
+<a name="line-170"></a>      <span class="k">if</span> <span class="p">(</span> <span class="n">Coefficients</span><span class="o">::</span><span class="n">type</span><span class="p">()</span> <span class="o">==</span> <span class="n">ctr</span><span class="o">::</span><span class="n">CoeffPolicyType</span><span class="o">::</span><span class="n">HYDROTIMESCALE</span> <span class="p">)</span> <span class="p">{</span>
+<a name="line-171"></a>        <span class="c1">// Configure inverse hydrodyanmics time scale from DNS</span>
+<a name="line-172"></a>        <span class="k">const</span> <span class="k">auto</span><span class="o">&amp;</span> <span class="n">hts</span> <span class="o">=</span>
+<a name="line-173"></a>          <span class="n">g_inputdeck</span><span class="p">.</span><span class="n">get</span><span class="o">&lt;</span> <span class="n">tag</span><span class="o">::</span><span class="n">param</span><span class="p">,</span> <span class="n">eq</span><span class="p">,</span> <span class="n">tag</span><span class="o">::</span><span class="n">hydrotimescales</span> <span class="o">&gt;</span><span class="p">().</span><span class="n">at</span><span class="p">(</span><span class="n">c</span><span class="p">);</span>
+<a name="line-174"></a>        <span class="n">ctr</span><span class="o">::</span><span class="n">HydroTimeScales</span> <span class="n">ot</span><span class="p">;</span>
+<a name="line-175"></a>        <span class="c1">// cppcheck-suppress useStlAlgorithm</span>
+<a name="line-176"></a>        <span class="k">for</span> <span class="p">(</span><span class="k">auto</span> <span class="nl">t</span> <span class="p">:</span> <span class="n">hts</span><span class="p">)</span> <span class="n">m_hts</span><span class="p">.</span><span class="n">push_back</span><span class="p">(</span> <span class="n">ot</span><span class="p">.</span><span class="n">table</span><span class="p">(</span><span class="n">t</span><span class="p">)</span> <span class="p">);</span>
+<a name="line-177"></a>        <span class="n">Assert</span><span class="p">(</span> <span class="n">m_hts</span><span class="p">.</span><span class="n">size</span><span class="p">()</span> <span class="o">==</span> <span class="n">m_ncomp</span><span class="p">,</span> <span class="s">&quot;Number of inverse hydro time scale &quot;</span>
+<a name="line-178"></a>          <span class="s">&quot;tables associated does not match the components integrated&quot;</span> <span class="p">);</span>
+<a name="line-179"></a>
+<a name="line-180"></a>        <span class="c1">// Configure hydrodyanmics production/dissipation from DNS</span>
+<a name="line-181"></a>        <span class="k">const</span> <span class="k">auto</span><span class="o">&amp;</span> <span class="n">hp</span> <span class="o">=</span>
+<a name="line-182"></a>          <span class="n">g_inputdeck</span><span class="p">.</span><span class="n">get</span><span class="o">&lt;</span> <span class="n">tag</span><span class="o">::</span><span class="n">param</span><span class="p">,</span> <span class="n">eq</span><span class="p">,</span> <span class="n">tag</span><span class="o">::</span><span class="n">hydroproductions</span> <span class="o">&gt;</span><span class="p">().</span><span class="n">at</span><span class="p">(</span><span class="n">c</span><span class="p">);</span>
+<a name="line-183"></a>        <span class="n">ctr</span><span class="o">::</span><span class="n">HydroProductions</span> <span class="n">op</span><span class="p">;</span>
+<a name="line-184"></a>        <span class="c1">// cppcheck-suppress useStlAlgorithm</span>
+<a name="line-185"></a>        <span class="k">for</span> <span class="p">(</span><span class="k">auto</span> <span class="nl">t</span> <span class="p">:</span> <span class="n">hp</span><span class="p">)</span> <span class="n">m_hp</span><span class="p">.</span><span class="n">push_back</span><span class="p">(</span> <span class="n">op</span><span class="p">.</span><span class="n">table</span><span class="p">(</span><span class="n">t</span><span class="p">)</span> <span class="p">);</span>
+<a name="line-186"></a>        <span class="n">Assert</span><span class="p">(</span> <span class="n">m_hp</span><span class="p">.</span><span class="n">size</span><span class="p">()</span> <span class="o">==</span> <span class="n">m_ncomp</span><span class="p">,</span> <span class="s">&quot;Number of hydro &quot;</span>
+<a name="line-187"></a>          <span class="s">&quot;production/dissipation tables associated does not match the &quot;</span>
+<a name="line-188"></a>          <span class="s">&quot;components integrated&quot;</span> <span class="p">);</span>
+<a name="line-189"></a>      <span class="p">}</span>
 <a name="line-190"></a>    <span class="p">}</span>
 <a name="line-191"></a>
-<a name="line-192"></a>  <span class="k">private</span><span class="o">:</span>
-<a name="line-193"></a>    <span class="c1">//! Offset of particle density in solution array relative to YN</span>
-<a name="line-194"></a>    <span class="k">static</span> <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="n">DENSITY_OFFSET</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
-<a name="line-195"></a>    <span class="c1">//! Offset of particle specific volume in solution array relative to YN</span>
-<a name="line-196"></a>    <span class="k">static</span> <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="n">VOLUME_OFFSET</span> <span class="o">=</span> <span class="mi">2</span><span class="p">;</span>
-<a name="line-197"></a>
-<a name="line-198"></a>    <span class="k">const</span> <span class="n">ncomp_t</span> <span class="n">m_c</span><span class="p">;</span>                  <span class="c1">//!&lt; Equation system index</span>
-<a name="line-199"></a>    <span class="k">const</span> <span class="kt">char</span> <span class="n">m_depvar</span><span class="p">;</span>                <span class="c1">//!&lt; Dependent variable</span>
-<a name="line-200"></a>    <span class="k">const</span> <span class="n">ncomp_t</span> <span class="n">m_ncomp</span><span class="p">;</span>              <span class="c1">//!&lt; Number of components, K = N-1</span>
-<a name="line-201"></a>    <span class="k">const</span> <span class="n">ncomp_t</span> <span class="n">m_offset</span><span class="p">;</span>             <span class="c1">//!&lt; Offset SDE operates from</span>
-<a name="line-202"></a>    <span class="k">const</span> <span class="n">tk</span><span class="o">::</span><span class="n">RNG</span><span class="o">&amp;</span> <span class="n">m_rng</span><span class="p">;</span>               <span class="c1">//!&lt; Random number generator</span>
-<a name="line-203"></a>    <span class="k">const</span> <span class="n">ctr</span><span class="o">::</span><span class="n">NormalizationType</span> <span class="n">m_norm</span><span class="p">;</span><span class="c1">//!&lt; Normalization type</span>
-<a name="line-204"></a>
-<a name="line-205"></a>    <span class="c1">//! Coefficients</span>
-<a name="line-206"></a>    <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span> <span class="n">kw</span><span class="o">::</span><span class="n">sde_b</span><span class="o">::</span><span class="n">info</span><span class="o">::</span><span class="n">expect</span><span class="o">::</span><span class="n">type</span> <span class="o">&gt;</span> <span class="n">m_b</span><span class="p">;</span>
-<a name="line-207"></a>    <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span> <span class="n">kw</span><span class="o">::</span><span class="n">sde_S</span><span class="o">::</span><span class="n">info</span><span class="o">::</span><span class="n">expect</span><span class="o">::</span><span class="n">type</span> <span class="o">&gt;</span> <span class="n">m_S</span><span class="p">;</span>
-<a name="line-208"></a>    <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span> <span class="n">kw</span><span class="o">::</span><span class="n">sde_kappa</span><span class="o">::</span><span class="n">info</span><span class="o">::</span><span class="n">expect</span><span class="o">::</span><span class="n">type</span> <span class="o">&gt;</span> <span class="n">m_kprime</span><span class="p">;</span>
-<a name="line-209"></a>    <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span> <span class="n">kw</span><span class="o">::</span><span class="n">sde_kappa</span><span class="o">::</span><span class="n">info</span><span class="o">::</span><span class="n">expect</span><span class="o">::</span><span class="n">type</span> <span class="o">&gt;</span> <span class="n">m_k</span><span class="p">;</span>
-<a name="line-210"></a>    <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span> <span class="n">kw</span><span class="o">::</span><span class="n">sde_rho</span><span class="o">::</span><span class="n">info</span><span class="o">::</span><span class="n">expect</span><span class="o">::</span><span class="n">type</span> <span class="o">&gt;</span> <span class="n">m_rho</span><span class="p">;</span>
-<a name="line-211"></a>    <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span> <span class="n">kw</span><span class="o">::</span><span class="n">sde_r</span><span class="o">::</span><span class="n">info</span><span class="o">::</span><span class="n">expect</span><span class="o">::</span><span class="n">type</span> <span class="o">&gt;</span> <span class="n">m_r</span><span class="p">;</span>
-<a name="line-212"></a>
-<a name="line-213"></a>    <span class="c1">//! Coefficients policy</span>
-<a name="line-214"></a>    <span class="n">Coefficients</span> <span class="n">coeff</span><span class="p">;</span>
-<a name="line-215"></a>
-<a name="line-216"></a>    <span class="c1">//! \brief Return density for mass fractions</span>
-<a name="line-217"></a>    <span class="c1">//! \details This function returns the instantaneous density, rho,</span>
-<a name="line-218"></a>    <span class="c1">//!   based on the multiple mass fractions, Y_c.</span>
-<a name="line-219"></a>    <span class="c1">//! \param[in] particles Array of particle properties</span>
-<a name="line-220"></a>    <span class="c1">//! \param[in] p Particle index</span>
-<a name="line-221"></a>    <span class="c1">//! \return Instantaneous value of the density, rho</span>
-<a name="line-222"></a>    <span class="c1">//! \details This is computed based 1/rho = sum_{i=1}^N Y_i/R_i, where R_i</span>
-<a name="line-223"></a>    <span class="c1">//!   are the constant pure-fluid densities and the Y_i are the mass</span>
-<a name="line-224"></a>    <span class="c1">//!   fractions, of the N materials.</span>
-<a name="line-225"></a>    <span class="n">tk</span><span class="o">::</span><span class="n">real</span> <span class="n">rho</span><span class="p">(</span> <span class="k">const</span> <span class="n">tk</span><span class="o">::</span><span class="n">Particles</span><span class="o">&amp;</span> <span class="n">particles</span><span class="p">,</span> <span class="n">ncomp_t</span> <span class="n">p</span> <span class="p">)</span> <span class="k">const</span> <span class="p">{</span>
-<a name="line-226"></a>      <span class="c1">// start computing density</span>
-<a name="line-227"></a>      <span class="n">tk</span><span class="o">::</span><span class="n">real</span> <span class="n">d</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">;</span>
-<a name="line-228"></a>      <span class="k">for</span> <span class="p">(</span><span class="n">ncomp_t</span> <span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">i</span><span class="o">&lt;</span><span class="n">m_ncomp</span><span class="o">+</span><span class="mi">1</span><span class="p">;</span> <span class="o">++</span><span class="n">i</span><span class="p">)</span>
-<a name="line-229"></a>        <span class="n">d</span> <span class="o">+=</span> <span class="n">particles</span><span class="p">(</span> <span class="n">p</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">m_offset</span> <span class="p">)</span> <span class="o">/</span> <span class="n">m_rho</span><span class="p">[</span><span class="n">i</span><span class="p">];</span>
-<a name="line-230"></a>      <span class="c1">// return particle density</span>
-<a name="line-231"></a>      <span class="k">return</span> <span class="mf">1.0</span><span class="o">/</span><span class="n">d</span><span class="p">;</span>
-<a name="line-232"></a>    <span class="p">}</span>
-<a name="line-233"></a>
-<a name="line-234"></a>    <span class="c1">//! Compute instantaneous values derived from particle mass fractions</span>
-<a name="line-235"></a>    <span class="c1">//! \param[in,out] particles Particle properties array</span>
-<a name="line-236"></a>    <span class="c1">//! \param[in] p Particle index</span>
-<a name="line-237"></a><span class="hll">    <span class="kt">void</span> <span class="n">derived</span><span class="p">(</span> <span class="n">tk</span><span class="o">::</span><span class="n">Particles</span><span class="o">&amp;</span> <span class="n">particles</span><span class="p">,</span> <span class="n">ncomp_t</span> <span class="n">p</span> <span class="p">)</span> <span class="k">const</span> <span class="p">{</span><span class="error2">&lt;--- Parameter 'particles' can be declared with const</span>
-</span><a name="line-238"></a>      <span class="c1">// compute instantaneous fluid-density based on particle mass fractions</span>
-<a name="line-239"></a>      <span class="k">auto</span> <span class="n">density</span> <span class="o">=</span> <span class="n">rho</span><span class="p">(</span> <span class="n">particles</span><span class="p">,</span> <span class="n">p</span> <span class="p">);</span>
-<a name="line-240"></a>      <span class="c1">//// Compute and store instantaneous density</span>
-<a name="line-241"></a>      <span class="n">particles</span><span class="p">(</span> <span class="n">p</span><span class="p">,</span> <span class="n">m_ncomp</span><span class="o">+</span><span class="n">DENSITY_OFFSET</span><span class="p">,</span> <span class="n">m_offset</span> <span class="p">)</span> <span class="o">=</span> <span class="n">density</span><span class="p">;</span>
-<a name="line-242"></a>      <span class="c1">// Store instantaneous specific volume</span>
-<a name="line-243"></a>      <span class="n">particles</span><span class="p">(</span> <span class="n">p</span><span class="p">,</span> <span class="n">m_ncomp</span><span class="o">+</span><span class="n">VOLUME_OFFSET</span><span class="p">,</span> <span class="n">m_offset</span> <span class="p">)</span> <span class="o">=</span> <span class="mf">1.0</span><span class="o">/</span><span class="n">density</span><span class="p">;</span>
-<a name="line-244"></a>    <span class="p">}</span>
-<a name="line-245"></a>
-<a name="line-246"></a><span class="p">};</span>
-<a name="line-247"></a>
-<a name="line-248"></a><span class="p">}</span> <span class="c1">// walker::</span>
-<a name="line-249"></a>
-<a name="line-250"></a><span class="cp">#endif </span><span class="c1">// MixDirichlet_h</span>
+<a name="line-192"></a>    <span class="c1">//! Initalize SDE, prepare for time integration</span>
+<a name="line-193"></a>    <span class="c1">//! \param[in] stream Thread (or more precisely stream) ID </span>
+<a name="line-194"></a>    <span class="c1">//! \param[in,out] particles Array of particle properties </span>
+<a name="line-195"></a>    <span class="kt">void</span> <span class="nf">initialize</span><span class="p">(</span> <span class="kt">int</span> <span class="n">stream</span><span class="p">,</span> <span class="n">tk</span><span class="o">::</span><span class="n">Particles</span><span class="o">&amp;</span> <span class="n">particles</span> <span class="p">)</span> <span class="p">{</span>
+<a name="line-196"></a>      <span class="c1">//! Set initial conditions using initialization policy</span>
+<a name="line-197"></a>      <span class="n">Init</span><span class="o">::</span><span class="k">template</span> <span class="n">init</span><span class="o">&lt;</span> <span class="n">eq</span> <span class="o">&gt;</span>
+<a name="line-198"></a>        <span class="p">(</span> <span class="n">g_inputdeck</span><span class="p">,</span> <span class="n">m_rng</span><span class="p">,</span> <span class="n">stream</span><span class="p">,</span> <span class="n">particles</span><span class="p">,</span> <span class="n">m_c</span><span class="p">,</span> <span class="n">m_ncomp</span><span class="p">,</span> <span class="n">m_offset</span> <span class="p">);</span>
+<a name="line-199"></a>      <span class="c1">// Initialize values derived from primary prognostic variable</span>
+<a name="line-200"></a>      <span class="k">const</span> <span class="k">auto</span> <span class="n">npar</span> <span class="o">=</span> <span class="n">particles</span><span class="p">.</span><span class="n">nunk</span><span class="p">();</span>
+<a name="line-201"></a>      <span class="k">for</span> <span class="p">(</span><span class="k">auto</span> <span class="n">p</span><span class="o">=</span><span class="k">decltype</span><span class="p">(</span><span class="n">npar</span><span class="p">){</span><span class="mi">0</span><span class="p">};</span> <span class="n">p</span><span class="o">&lt;</span><span class="n">npar</span><span class="p">;</span> <span class="o">++</span><span class="n">p</span><span class="p">)</span>
+<a name="line-202"></a>        <span class="k">for</span> <span class="p">(</span><span class="n">ncomp_t</span> <span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">i</span><span class="o">&lt;</span><span class="n">m_ncomp</span><span class="p">;</span> <span class="o">++</span><span class="n">i</span><span class="p">)</span> <span class="p">{</span>
+<a name="line-203"></a>          <span class="n">Assert</span><span class="p">(</span> <span class="n">particles</span><span class="p">(</span> <span class="n">p</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">m_offset</span> <span class="p">)</span> <span class="o">&gt;</span> <span class="mf">0.0</span><span class="p">,</span> <span class="s">&quot;Beta IC out of bounds!&quot;</span> <span class="p">);</span>
+<a name="line-204"></a>          <span class="n">Assert</span><span class="p">(</span> <span class="n">particles</span><span class="p">(</span> <span class="n">p</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">m_offset</span> <span class="p">)</span> <span class="o">&lt;</span> <span class="mf">1.0</span><span class="p">,</span> <span class="s">&quot;Beta IC out of bounds!&quot;</span> <span class="p">);</span>
+<a name="line-205"></a>          <span class="n">derived</span><span class="p">(</span> <span class="n">particles</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">i</span> <span class="p">);</span>
+<a name="line-206"></a>        <span class="p">}</span>
+<a name="line-207"></a>    <span class="p">}</span>
+<a name="line-208"></a>
+<a name="line-209"></a>    <span class="c1">//! \brief Advance particles according to the system of mix mass-fraction</span>
+<a name="line-210"></a>    <span class="c1">//!   beta SDEs</span>
+<a name="line-211"></a>    <span class="c1">//! \param[in,out] particles Array of particle properties</span>
+<a name="line-212"></a>    <span class="c1">//! \param[in] stream Thread (or more precisely stream) ID</span>
+<a name="line-213"></a>    <span class="c1">//! \param[in] dt Time step size</span>
+<a name="line-214"></a>    <span class="c1">//! \param[in] t Physical time of the simulation</span>
+<a name="line-215"></a>    <span class="c1">//! \param[in] moments Map of statistical moments</span>
+<a name="line-216"></a>    <span class="kt">void</span> <span class="nf">advance</span><span class="p">(</span> <span class="n">tk</span><span class="o">::</span><span class="n">Particles</span><span class="o">&amp;</span> <span class="n">particles</span><span class="p">,</span>
+<a name="line-217"></a>                  <span class="kt">int</span> <span class="n">stream</span><span class="p">,</span>
+<a name="line-218"></a>                  <span class="n">tk</span><span class="o">::</span><span class="n">real</span> <span class="n">dt</span><span class="p">,</span>
+<a name="line-219"></a>                  <span class="n">tk</span><span class="o">::</span><span class="n">real</span> <span class="n">t</span><span class="p">,</span>
+<a name="line-220"></a>                  <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">map</span><span class="o">&lt;</span> <span class="n">tk</span><span class="o">::</span><span class="n">ctr</span><span class="o">::</span><span class="n">Product</span><span class="p">,</span> <span class="n">tk</span><span class="o">::</span><span class="n">real</span> <span class="o">&gt;&amp;</span> <span class="n">moments</span> <span class="p">)</span>
+<a name="line-221"></a>    <span class="p">{</span>
+<a name="line-222"></a>      <span class="c1">// Update SDE coefficients</span>
+<a name="line-223"></a>      <span class="n">coeff</span><span class="p">.</span><span class="n">update</span><span class="p">(</span> <span class="n">m_depvar</span><span class="p">,</span> <span class="n">m_dissipation_depvar</span><span class="p">,</span> <span class="n">m_velocity_depvar</span><span class="p">,</span>
+<a name="line-224"></a>                    <span class="n">m_velocity_solve</span><span class="p">,</span> <span class="n">m_solve</span><span class="p">,</span> <span class="n">m_ncomp</span><span class="p">,</span> <span class="n">moments</span><span class="p">,</span> <span class="n">m_bprime</span><span class="p">,</span>
+<a name="line-225"></a>                    <span class="n">m_kprime</span><span class="p">,</span> <span class="n">m_rho2</span><span class="p">,</span> <span class="n">m_r</span><span class="p">,</span> <span class="n">m_hts</span><span class="p">,</span> <span class="n">m_hp</span><span class="p">,</span> <span class="n">m_b</span><span class="p">,</span> <span class="n">m_k</span><span class="p">,</span> <span class="n">m_S</span><span class="p">,</span> <span class="n">t</span> <span class="p">);</span>
+<a name="line-226"></a>
+<a name="line-227"></a>      <span class="k">const</span> <span class="k">auto</span> <span class="n">eps</span> <span class="o">=</span> <span class="n">std</span><span class="o">::</span><span class="n">numeric_limits</span><span class="o">&lt;</span> <span class="n">tk</span><span class="o">::</span><span class="n">real</span> <span class="o">&gt;::</span><span class="n">epsilon</span><span class="p">();</span>
+<a name="line-228"></a>
+<a name="line-229"></a>      <span class="c1">// Advance particles</span>
+<a name="line-230"></a>      <span class="k">const</span> <span class="k">auto</span> <span class="n">npar</span> <span class="o">=</span> <span class="n">particles</span><span class="p">.</span><span class="n">nunk</span><span class="p">();</span>
+<a name="line-231"></a>      <span class="k">for</span> <span class="p">(</span><span class="k">auto</span> <span class="n">p</span><span class="o">=</span><span class="k">decltype</span><span class="p">(</span><span class="n">npar</span><span class="p">){</span><span class="mi">0</span><span class="p">};</span> <span class="n">p</span><span class="o">&lt;</span><span class="n">npar</span><span class="p">;</span> <span class="o">++</span><span class="n">p</span><span class="p">)</span> <span class="p">{</span>
+<a name="line-232"></a>        <span class="c1">// Generate Gaussian random numbers with zero mean and unit variance</span>
+<a name="line-233"></a>        <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span> <span class="n">tk</span><span class="o">::</span><span class="n">real</span> <span class="o">&gt;</span> <span class="n">dW</span><span class="p">(</span> <span class="n">m_ncomp</span> <span class="p">);</span>
+<a name="line-234"></a>        <span class="n">m_rng</span><span class="p">.</span><span class="n">gaussian</span><span class="p">(</span> <span class="n">stream</span><span class="p">,</span> <span class="n">m_ncomp</span><span class="p">,</span> <span class="n">dW</span><span class="p">.</span><span class="n">data</span><span class="p">()</span> <span class="p">);</span>
+<a name="line-235"></a>
+<a name="line-236"></a>        <span class="c1">// Access coupled particle velocity</span>
+<a name="line-237"></a>        <span class="n">tk</span><span class="o">::</span><span class="n">real</span> <span class="n">u</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span> <span class="n">v</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span> <span class="n">w</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">;</span>
+<a name="line-238"></a>        <span class="k">using</span> <span class="n">std</span><span class="o">::</span><span class="n">abs</span><span class="p">;</span>
+<a name="line-239"></a>        <span class="k">if</span> <span class="p">(</span><span class="n">abs</span><span class="p">(</span><span class="n">m_dY</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">&gt;</span> <span class="n">eps</span> <span class="o">||</span> <span class="n">abs</span><span class="p">(</span><span class="n">m_dY</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="o">&gt;</span> <span class="n">eps</span> <span class="o">||</span> <span class="n">abs</span><span class="p">(</span><span class="n">m_dY</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span> <span class="o">&gt;</span> <span class="n">eps</span><span class="p">)</span> <span class="p">{</span>
+<a name="line-240"></a>          <span class="n">u</span> <span class="o">=</span> <span class="n">particles</span><span class="p">(</span> <span class="n">p</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">m_velocity_offset</span> <span class="p">);</span>
+<a name="line-241"></a>          <span class="n">v</span> <span class="o">=</span> <span class="n">particles</span><span class="p">(</span> <span class="n">p</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">m_velocity_offset</span> <span class="p">);</span>
+<a name="line-242"></a>          <span class="n">w</span> <span class="o">=</span> <span class="n">particles</span><span class="p">(</span> <span class="n">p</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">m_velocity_offset</span> <span class="p">);</span>
+<a name="line-243"></a>        <span class="p">}</span>
+<a name="line-244"></a>
+<a name="line-245"></a>        <span class="c1">// Advance all m_ncomp scalars</span>
+<a name="line-246"></a>        <span class="k">for</span> <span class="p">(</span><span class="n">ncomp_t</span> <span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">i</span><span class="o">&lt;</span><span class="n">m_ncomp</span><span class="p">;</span> <span class="o">++</span><span class="n">i</span><span class="p">)</span> <span class="p">{</span>
+<a name="line-247"></a>          <span class="n">tk</span><span class="o">::</span><span class="n">real</span><span class="o">&amp;</span> <span class="n">Y</span> <span class="o">=</span> <span class="n">particles</span><span class="p">(</span> <span class="n">p</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">m_offset</span> <span class="p">);</span>
+<a name="line-248"></a>          <span class="n">tk</span><span class="o">::</span><span class="n">real</span> <span class="n">d</span> <span class="o">=</span> <span class="n">m_k</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">*</span> <span class="n">Y</span> <span class="o">*</span> <span class="p">(</span><span class="mf">1.0</span> <span class="o">-</span> <span class="n">Y</span><span class="p">)</span> <span class="o">*</span> <span class="n">dt</span><span class="p">;</span>
+<a name="line-249"></a>          <span class="n">d</span> <span class="o">=</span> <span class="p">(</span><span class="n">d</span> <span class="o">&gt;</span> <span class="mf">0.0</span> <span class="o">?</span> <span class="n">std</span><span class="o">::</span><span class="n">sqrt</span><span class="p">(</span><span class="n">d</span><span class="p">)</span> <span class="o">:</span> <span class="mf">0.0</span><span class="p">);</span>
+<a name="line-250"></a>          <span class="n">Y</span> <span class="o">+=</span> <span class="mf">0.5</span><span class="o">*</span><span class="n">m_b</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">*</span><span class="p">(</span><span class="n">m_S</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">-</span> <span class="n">Y</span><span class="p">)</span><span class="o">*</span><span class="n">dt</span> <span class="o">+</span> <span class="n">d</span><span class="o">*</span><span class="n">dW</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+<a name="line-251"></a>             <span class="o">-</span> <span class="p">(</span><span class="n">m_dY</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="n">u</span> <span class="o">-</span> <span class="n">m_dY</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">*</span><span class="n">v</span> <span class="o">-</span> <span class="n">m_dY</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">*</span><span class="n">w</span><span class="p">)</span><span class="o">*</span><span class="n">dt</span><span class="p">;</span>
+<a name="line-252"></a>          <span class="c1">// Compute instantaneous values derived from updated Y</span>
+<a name="line-253"></a>          <span class="n">derived</span><span class="p">(</span> <span class="n">particles</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">i</span> <span class="p">);</span>
+<a name="line-254"></a>        <span class="p">}</span>
+<a name="line-255"></a>      <span class="p">}</span>
+<a name="line-256"></a>    <span class="p">}</span>
+<a name="line-257"></a>
+<a name="line-258"></a>  <span class="k">private</span><span class="o">:</span>
+<a name="line-259"></a>    <span class="k">const</span> <span class="n">ncomp_t</span> <span class="n">m_c</span><span class="p">;</span>                  <span class="c1">//!&lt; Equation system index</span>
+<a name="line-260"></a>    <span class="k">const</span> <span class="kt">char</span> <span class="n">m_depvar</span><span class="p">;</span>                <span class="c1">//!&lt; Dependent variable</span>
+<a name="line-261"></a>    <span class="k">const</span> <span class="n">ncomp_t</span> <span class="n">m_ncomp</span><span class="p">;</span>              <span class="c1">//!&lt; Number of components</span>
+<a name="line-262"></a>    <span class="k">const</span> <span class="n">ncomp_t</span> <span class="n">m_offset</span><span class="p">;</span>             <span class="c1">//!&lt; Offset SDE operates from</span>
+<a name="line-263"></a>    <span class="k">const</span> <span class="n">tk</span><span class="o">::</span><span class="n">RNG</span><span class="o">&amp;</span> <span class="n">m_rng</span><span class="p">;</span>               <span class="c1">//!&lt; Random number generator</span>
+<a name="line-264"></a>    <span class="k">const</span> <span class="n">ctr</span><span class="o">::</span><span class="n">DepvarType</span> <span class="n">m_solve</span><span class="p">;</span>      <span class="c1">//!&lt; Depndent variable to solve for</span>
+<a name="line-265"></a>
+<a name="line-266"></a>    <span class="k">const</span> <span class="kt">bool</span> <span class="n">m_velocity_coupled</span><span class="p">;</span>      <span class="c1">//!&lt; True if coupled to velocity</span>
+<a name="line-267"></a>    <span class="k">const</span> <span class="kt">char</span> <span class="n">m_velocity_depvar</span><span class="p">;</span>       <span class="c1">//!&lt; Coupled velocity dependent variable</span>
+<a name="line-268"></a>    <span class="k">const</span> <span class="n">ncomp_t</span> <span class="n">m_velocity_offset</span><span class="p">;</span>    <span class="c1">//!&lt; Offset of coupled velocity eq</span>
+<a name="line-269"></a>    <span class="c1">//! Quantity the coupled velocity eq solves for</span>
+<a name="line-270"></a>    <span class="k">const</span> <span class="n">ctr</span><span class="o">::</span><span class="n">DepvarType</span> <span class="n">m_velocity_solve</span><span class="p">;</span>
+<a name="line-271"></a>
+<a name="line-272"></a>    <span class="k">const</span> <span class="kt">bool</span> <span class="n">m_dissipation_coupled</span><span class="p">;</span>   <span class="c1">//!&lt; True if coupled to dissipation</span>
+<a name="line-273"></a>    <span class="k">const</span> <span class="kt">char</span> <span class="n">m_dissipation_depvar</span><span class="p">;</span>    <span class="c1">//!&lt; Depvar of coupled dissipation eq</span>
+<a name="line-274"></a>    <span class="k">const</span> <span class="n">ncomp_t</span> <span class="n">m_dissipation_offset</span><span class="p">;</span> <span class="c1">//!&lt; Offset of coupled dissipation eq</span>
+<a name="line-275"></a>
+<a name="line-276"></a>    <span class="n">std</span><span class="o">::</span><span class="n">array</span><span class="o">&lt;</span> <span class="n">tk</span><span class="o">::</span><span class="n">real</span><span class="p">,</span> <span class="mi">3</span> <span class="o">&gt;</span> <span class="n">m_dY</span><span class="p">;</span>     <span class="c1">//! Prescribed mean scalar gradient</span>
+<a name="line-277"></a>
+<a name="line-278"></a>    <span class="c1">//! Coefficients</span>
+<a name="line-279"></a>    <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span> <span class="n">kw</span><span class="o">::</span><span class="n">sde_bprime</span><span class="o">::</span><span class="n">info</span><span class="o">::</span><span class="n">expect</span><span class="o">::</span><span class="n">type</span> <span class="o">&gt;</span> <span class="n">m_bprime</span><span class="p">;</span>
+<a name="line-280"></a>    <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span> <span class="n">kw</span><span class="o">::</span><span class="n">sde_S</span><span class="o">::</span><span class="n">info</span><span class="o">::</span><span class="n">expect</span><span class="o">::</span><span class="n">type</span> <span class="o">&gt;</span> <span class="n">m_S</span><span class="p">;</span>
+<a name="line-281"></a>    <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span> <span class="n">kw</span><span class="o">::</span><span class="n">sde_kappaprime</span><span class="o">::</span><span class="n">info</span><span class="o">::</span><span class="n">expect</span><span class="o">::</span><span class="n">type</span> <span class="o">&gt;</span> <span class="n">m_kprime</span><span class="p">;</span>
+<a name="line-282"></a>    <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span> <span class="n">kw</span><span class="o">::</span><span class="n">sde_rho2</span><span class="o">::</span><span class="n">info</span><span class="o">::</span><span class="n">expect</span><span class="o">::</span><span class="n">type</span> <span class="o">&gt;</span> <span class="n">m_rho2</span><span class="p">;</span>
+<a name="line-283"></a>    <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span> <span class="n">kw</span><span class="o">::</span><span class="n">sde_r</span><span class="o">::</span><span class="n">info</span><span class="o">::</span><span class="n">expect</span><span class="o">::</span><span class="n">type</span> <span class="o">&gt;</span> <span class="n">m_r</span><span class="p">;</span>
+<a name="line-284"></a>    <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span> <span class="n">kw</span><span class="o">::</span><span class="n">sde_b</span><span class="o">::</span><span class="n">info</span><span class="o">::</span><span class="n">expect</span><span class="o">::</span><span class="n">type</span> <span class="o">&gt;</span> <span class="n">m_b</span><span class="p">;</span>
+<a name="line-285"></a>    <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span> <span class="n">kw</span><span class="o">::</span><span class="n">sde_kappa</span><span class="o">::</span><span class="n">info</span><span class="o">::</span><span class="n">expect</span><span class="o">::</span><span class="n">type</span> <span class="o">&gt;</span> <span class="n">m_k</span><span class="p">;</span>
+<a name="line-286"></a>
+<a name="line-287"></a>    <span class="c1">//! Coefficients policy</span>
+<a name="line-288"></a>    <span class="n">Coefficients</span> <span class="n">coeff</span><span class="p">;</span>
+<a name="line-289"></a>
+<a name="line-290"></a>    <span class="c1">//! Selected inverse hydrodynamics time scales (if used) for each component</span>
+<a name="line-291"></a>    <span class="c1">//! \details This is only used if the coefficients policy is</span>
+<a name="line-292"></a>    <span class="c1">//!   MixMassFracBetaCoeffHydroTimeScale. See constructor.</span>
+<a name="line-293"></a>    <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span> <span class="n">tk</span><span class="o">::</span><span class="n">Table</span> <span class="o">&gt;</span> <span class="n">m_hts</span><span class="p">;</span>
+<a name="line-294"></a>
+<a name="line-295"></a>    <span class="c1">//! Selected hydrodynamics production/dissipation (if used) for each comp.</span>
+<a name="line-296"></a>    <span class="c1">//! \details This is only used if the coefficients policy is</span>
+<a name="line-297"></a>    <span class="c1">//!   MixMassFracBetaCoeffHydroTimeScale. See constructor.</span>
+<a name="line-298"></a>    <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span> <span class="n">tk</span><span class="o">::</span><span class="n">Table</span> <span class="o">&gt;</span> <span class="n">m_hp</span><span class="p">;</span>
+<a name="line-299"></a>
+<a name="line-300"></a>    <span class="c1">//! \brief Return density for mass fraction</span>
+<a name="line-301"></a>    <span class="c1">//! \details Functional wrapper around the dependent variable of the beta</span>
+<a name="line-302"></a>    <span class="c1">//!   SDE. This function returns the instantaneous density, rho,</span>
+<a name="line-303"></a>    <span class="c1">//!   based on the mass fraction, Y, and parameters rho2 and r&#39;.</span>
+<a name="line-304"></a>    <span class="c1">//! \param[in] Y Instantaneous value of the mass fraction, Y</span>
+<a name="line-305"></a>    <span class="c1">//! \param[in] i Index specifying which (of multiple) parameters to use</span>
+<a name="line-306"></a>    <span class="c1">//! \return Instantaneous value of the density, rho</span>
+<a name="line-307"></a>    <span class="n">tk</span><span class="o">::</span><span class="n">real</span> <span class="n">rho</span><span class="p">(</span> <span class="n">tk</span><span class="o">::</span><span class="n">real</span> <span class="n">Y</span><span class="p">,</span> <span class="n">ncomp_t</span> <span class="n">i</span> <span class="p">)</span> <span class="k">const</span> <span class="p">{</span>
+<a name="line-308"></a>      <span class="k">return</span> <span class="n">m_rho2</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">/</span> <span class="p">(</span> <span class="mf">1.0</span> <span class="o">+</span> <span class="n">m_r</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">*</span> <span class="n">Y</span> <span class="p">);</span>
+<a name="line-309"></a>    <span class="p">}</span>
+<a name="line-310"></a>
+<a name="line-311"></a>    <span class="c1">//! \brief Return specific volume for mass fraction</span>
+<a name="line-312"></a>    <span class="c1">//! \details Functional wrapper around the dependent variable of the beta</span>
+<a name="line-313"></a>    <span class="c1">//!   SDE. This function returns the instantaneous specific volume, V,</span>
+<a name="line-314"></a>    <span class="c1">//!   based on the mass fraction, Y, and parameters rho2 and r&#39;.</span>
+<a name="line-315"></a>    <span class="c1">//! \param[in] Y Instantaneous value of the mass fraction, Y</span>
+<a name="line-316"></a>    <span class="c1">//! \param[in] i Index specifying which (of multiple) parameters to use</span>
+<a name="line-317"></a>    <span class="c1">//! \return Instantaneous value of the specific volume, V</span>
+<a name="line-318"></a>    <span class="n">tk</span><span class="o">::</span><span class="n">real</span> <span class="n">vol</span><span class="p">(</span> <span class="n">tk</span><span class="o">::</span><span class="n">real</span> <span class="n">Y</span><span class="p">,</span> <span class="n">ncomp_t</span> <span class="n">i</span> <span class="p">)</span> <span class="k">const</span> <span class="p">{</span>
+<a name="line-319"></a>      <span class="k">return</span> <span class="p">(</span> <span class="mf">1.0</span> <span class="o">+</span> <span class="n">m_r</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">*</span> <span class="n">Y</span> <span class="p">)</span> <span class="o">/</span> <span class="n">m_rho2</span><span class="p">[</span><span class="n">i</span><span class="p">];</span>
+<a name="line-320"></a>    <span class="p">}</span>
+<a name="line-321"></a>
+<a name="line-322"></a>    <span class="c1">//! Compute instantaneous values derived from updated Y</span>
+<a name="line-323"></a>    <span class="c1">//! \param[in,out] particles Particle properties array</span>
+<a name="line-324"></a>    <span class="c1">//! \param[in] p Particle index</span>
+<a name="line-325"></a>    <span class="c1">//! \param[in] i Component index</span>
+<a name="line-326"></a>    <span class="kt">void</span> <span class="n">derived</span><span class="p">(</span> <span class="n">tk</span><span class="o">::</span><span class="n">Particles</span><span class="o">&amp;</span> <span class="n">particles</span><span class="p">,</span> <span class="n">ncomp_t</span> <span class="n">p</span><span class="p">,</span> <span class="n">ncomp_t</span> <span class="n">i</span> <span class="p">)</span> <span class="k">const</span> <span class="p">{</span>
+<a name="line-327"></a><span class="hll">      <span class="n">tk</span><span class="o">::</span><span class="n">real</span><span class="o">&amp;</span> <span class="n">Y</span> <span class="o">=</span> <span class="n">particles</span><span class="p">(</span> <span class="n">p</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">m_offset</span> <span class="p">);</span><span class="error2">&lt;--- Variable 'Y' can be declared with const</span>
+</span><a name="line-328"></a>      <span class="n">particles</span><span class="p">(</span> <span class="n">p</span><span class="p">,</span> <span class="n">m_ncomp</span><span class="o">+</span><span class="n">i</span><span class="p">,</span> <span class="n">m_offset</span> <span class="p">)</span> <span class="o">=</span> <span class="n">rho</span><span class="p">(</span> <span class="n">Y</span><span class="p">,</span> <span class="n">i</span> <span class="p">);</span>
+<a name="line-329"></a>      <span class="n">particles</span><span class="p">(</span> <span class="n">p</span><span class="p">,</span> <span class="n">m_ncomp</span><span class="o">*</span><span class="mi">2</span><span class="o">+</span><span class="n">i</span><span class="p">,</span> <span class="n">m_offset</span> <span class="p">)</span> <span class="o">=</span> <span class="n">vol</span><span class="p">(</span> <span class="n">Y</span><span class="p">,</span> <span class="n">i</span> <span class="p">);</span>
+<a name="line-330"></a>      <span class="n">particles</span><span class="p">(</span> <span class="n">p</span><span class="p">,</span> <span class="n">m_ncomp</span><span class="o">*</span><span class="mi">3</span><span class="o">+</span><span class="n">i</span><span class="p">,</span> <span class="n">m_offset</span> <span class="p">)</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">-</span> <span class="n">Y</span><span class="p">;</span>
+<a name="line-331"></a>    <span class="p">}</span>
+<a name="line-332"></a>
+<a name="line-333"></a>    <span class="c1">//! Initialize imposed mean scalar gradient from user input</span>
+<a name="line-334"></a>    <span class="n">std</span><span class="o">::</span><span class="n">array</span><span class="o">&lt;</span> <span class="n">tk</span><span class="o">::</span><span class="n">real</span><span class="p">,</span> <span class="mi">3</span> <span class="o">&gt;</span> <span class="n">initScalarGradient</span><span class="p">()</span> <span class="p">{</span>
+<a name="line-335"></a>      <span class="k">const</span> <span class="k">auto</span><span class="o">&amp;</span> <span class="n">mg</span> <span class="o">=</span> <span class="n">g_inputdeck</span><span class="p">.</span><span class="n">get</span><span class="o">&lt;</span> <span class="n">tag</span><span class="o">::</span><span class="n">param</span><span class="p">,</span> <span class="n">eq</span><span class="p">,</span> <span class="n">tag</span><span class="o">::</span><span class="n">mean_gradient</span> <span class="o">&gt;</span><span class="p">();</span>
+<a name="line-336"></a>      <span class="n">std</span><span class="o">::</span><span class="n">array</span><span class="o">&lt;</span> <span class="n">tk</span><span class="o">::</span><span class="n">real</span><span class="p">,</span> <span class="mi">3</span> <span class="o">&gt;</span> <span class="n">dY</span><span class="p">{{</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span> <span class="p">}};</span>
+<a name="line-337"></a>      <span class="k">if</span> <span class="p">(</span><span class="n">mg</span><span class="p">.</span><span class="n">size</span><span class="p">()</span> <span class="o">&gt;</span> <span class="n">m_c</span><span class="p">)</span> <span class="p">{</span>
+<a name="line-338"></a>        <span class="k">const</span> <span class="k">auto</span><span class="o">&amp;</span> <span class="n">g</span> <span class="o">=</span> <span class="n">mg</span><span class="p">[</span> <span class="n">m_c</span> <span class="p">];</span>
+<a name="line-339"></a>        <span class="n">dY</span> <span class="o">=</span> <span class="p">{{</span> <span class="n">g</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">g</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">g</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="p">}};</span>
+<a name="line-340"></a>      <span class="p">}</span>
+<a name="line-341"></a>      <span class="n">Assert</span><span class="p">(</span> <span class="n">dY</span><span class="p">.</span><span class="n">size</span><span class="p">()</span> <span class="o">==</span> <span class="mi">3</span><span class="p">,</span> <span class="s">&quot;Mean scalar gradient vector size must be 3&quot;</span> <span class="p">);</span>
+<a name="line-342"></a>      <span class="k">return</span> <span class="n">dY</span><span class="p">;</span>
+<a name="line-343"></a>    <span class="p">}</span>
+<a name="line-344"></a><span class="p">};</span>
+<a name="line-345"></a>
+<a name="line-346"></a><span class="p">}</span> <span class="c1">// walker::</span>
+<a name="line-347"></a>
+<a name="line-348"></a><span class="cp">#endif </span><span class="c1">// MixMassFractionBeta_h</span>
 </pre></div>
 </td></tr></table>
       </div> <!-- /.wrapper -->
