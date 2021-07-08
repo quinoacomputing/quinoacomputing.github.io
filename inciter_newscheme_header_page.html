@@ -252,6 +252,15 @@
     <span class="c1">//! Resizing data sutrctures after mesh refinement has been completed</span>
     <span class="kt">void</span> <span class="n">resized</span><span class="p">();</span>
 
+    <span class="c1">//! Apply mesh velocity smoother boundary conditions for ALE mesh motion</span>
+    <span class="kt">void</span> <span class="nf">meshvelbc</span><span class="p">();</span>
+
+    <span class="c1">//! Mesh velocity smoother BCs have been applied</span>
+    <span class="kt">void</span> <span class="nf">applied</span><span class="p">(</span> <span class="n">CkDataMsg</span><span class="o">*</span> <span class="n">msg</span> <span class="o">=</span> <span class="k">nullptr</span> <span class="p">);</span>
+
+    <span class="c1">//! Mesh velocity smoother linear solver converged</span>
+    <span class="kt">void</span> <span class="nf">smoothed</span><span class="p">(</span> <span class="n">CkDataMsg</span><span class="o">*</span> <span class="n">msg</span> <span class="o">=</span> <span class="k">nullptr</span> <span class="p">);</span>
+
     <span class="c1">//! Evaluate whether to continue with next time step</span>
     <span class="kt">void</span> <span class="nf">step</span><span class="p">();</span>
 
@@ -288,16 +297,19 @@
       <span class="n">p</span> <span class="o">|</span> <span class="n">m_u</span><span class="p">;</span>
       <span class="n">p</span> <span class="o">|</span> <span class="n">m_un</span><span class="p">;</span>
       <span class="n">p</span> <span class="o">|</span> <span class="n">m_w</span><span class="p">;</span>
+      <span class="n">p</span> <span class="o">|</span> <span class="n">m_vel</span><span class="p">;</span>
       <span class="n">p</span> <span class="o">|</span> <span class="n">m_rhs</span><span class="p">;</span>
       <span class="n">p</span> <span class="o">|</span> <span class="n">m_chBndGrad</span><span class="p">;</span>
-      <span class="n">p</span> <span class="o">|</span> <span class="n">m_bcdir</span><span class="p">;</span>
+      <span class="n">p</span> <span class="o">|</span> <span class="n">m_dirbc</span><span class="p">;</span>
       <span class="n">p</span> <span class="o">|</span> <span class="n">m_chBndGradc</span><span class="p">;</span>
       <span class="n">p</span> <span class="o">|</span> <span class="n">m_rhsc</span><span class="p">;</span>
       <span class="n">p</span> <span class="o">|</span> <span class="n">m_diag</span><span class="p">;</span>
       <span class="n">p</span> <span class="o">|</span> <span class="n">m_bnorm</span><span class="p">;</span>
+      <span class="n">p</span> <span class="o">|</span> <span class="n">m_bnormn</span><span class="p">;</span>
       <span class="n">p</span> <span class="o">|</span> <span class="n">m_bnormc</span><span class="p">;</span>
       <span class="n">p</span> <span class="o">|</span> <span class="n">m_symbcnodes</span><span class="p">;</span>
       <span class="n">p</span> <span class="o">|</span> <span class="n">m_farfieldbcnodes</span><span class="p">;</span>
+      <span class="n">p</span> <span class="o">|</span> <span class="n">m_meshvelbcnodes</span><span class="p">;</span>
       <span class="n">p</span> <span class="o">|</span> <span class="n">m_symbctri</span><span class="p">;</span>
       <span class="n">p</span> <span class="o">|</span> <span class="n">m_spongenodes</span><span class="p">;</span>
       <span class="n">p</span> <span class="o">|</span> <span class="n">m_stage</span><span class="p">;</span>
@@ -359,6 +371,8 @@
     <span class="n">tk</span><span class="o">::</span><span class="n">Fields</span> <span class="n">m_un</span><span class="p">;</span>
     <span class="c1">//! Mesh velocity for ALE mesh motion</span>
     <span class="n">tk</span><span class="o">::</span><span class="n">Fields</span> <span class="n">m_w</span><span class="p">;</span>
+    <span class="c1">//! Fluid velocity for ALE mesh motion</span>
+    <span class="n">tk</span><span class="o">::</span><span class="n">UnsMesh</span><span class="o">::</span><span class="n">Coords</span> <span class="n">m_vel</span><span class="p">;</span>
     <span class="c1">//! Right-hand side vector (for the high order system)</span>
     <span class="n">tk</span><span class="o">::</span><span class="n">Fields</span> <span class="n">m_rhs</span><span class="p">;</span>
     <span class="c1">//! Nodal gradients at chare-boundary nodes</span>
@@ -370,7 +384,7 @@
     <span class="c1">//!   is set at the node for that component the if true, the real value is</span>
     <span class="c1">//!   the increment (from t to dt) in the BC specified for a component.</span>
     <span class="n">std</span><span class="o">::</span><span class="n">unordered_map</span><span class="o">&lt;</span> <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="p">,</span>
-      <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">pair</span><span class="o">&lt;</span> <span class="kt">bool</span><span class="p">,</span> <span class="n">tk</span><span class="o">::</span><span class="n">real</span> <span class="o">&gt;</span> <span class="o">&gt;</span> <span class="o">&gt;</span> <span class="n">m_bcdir</span><span class="p">;</span>
+      <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">pair</span><span class="o">&lt;</span> <span class="kt">bool</span><span class="p">,</span> <span class="n">tk</span><span class="o">::</span><span class="n">real</span> <span class="o">&gt;</span> <span class="o">&gt;</span> <span class="o">&gt;</span> <span class="n">m_dirbc</span><span class="p">;</span>
     <span class="c1">//! Receive buffer for communication of the nodal gradients</span>
     <span class="c1">//! \details Key: chare id, value: gradients for all scalar components per</span>
     <span class="c1">//!   node</span>
@@ -385,6 +399,8 @@
     <span class="c1">//!   square between face centroids and points, outer key: side set id</span>
     <span class="n">std</span><span class="o">::</span><span class="n">unordered_map</span><span class="o">&lt;</span> <span class="kt">int</span><span class="p">,</span>
       <span class="n">std</span><span class="o">::</span><span class="n">unordered_map</span><span class="o">&lt;</span> <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="p">,</span> <span class="n">std</span><span class="o">::</span><span class="n">array</span><span class="o">&lt;</span> <span class="n">tk</span><span class="o">::</span><span class="n">real</span><span class="p">,</span> <span class="mi">4</span> <span class="o">&gt;</span> <span class="o">&gt;</span> <span class="o">&gt;</span> <span class="n">m_bnorm</span><span class="p">;</span>
+    <span class="c1">//! Face normals in boundary points at time n for ALE</span>
+    <span class="k">decltype</span><span class="p">(</span><span class="n">m_bnorm</span><span class="p">)</span> <span class="n">m_bnormn</span><span class="p">;</span>
     <span class="c1">//! \brief Receive buffer for communication of the boundary point normals</span>
     <span class="c1">//!   associated to side sets</span>
     <span class="c1">//! \details Key: global node id, value: normals (first 3 components),</span>
@@ -395,6 +411,8 @@
     <span class="n">std</span><span class="o">::</span><span class="n">unordered_set</span><span class="o">&lt;</span> <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="o">&gt;</span> <span class="n">m_symbcnodes</span><span class="p">;</span>
     <span class="c1">//! Unique set of nodes at which farfield BCs are set</span>
     <span class="n">std</span><span class="o">::</span><span class="n">unordered_set</span><span class="o">&lt;</span> <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="o">&gt;</span> <span class="n">m_farfieldbcnodes</span><span class="p">;</span>
+    <span class="c1">//! Unique set of nodes at which mesh velocity BCs are set for ALE</span>
+    <span class="n">std</span><span class="o">::</span><span class="n">unordered_set</span><span class="o">&lt;</span> <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="o">&gt;</span> <span class="n">m_meshvelbcnodes</span><span class="p">;</span>
     <span class="c1">//! Vector with 1 at symmetry BC boundary triangles</span>
     <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span> <span class="kt">int</span> <span class="o">&gt;</span> <span class="n">m_symbctri</span><span class="p">;</span>
     <span class="c1">//! Unique set of nodes at which sponge parameters are set</span>
@@ -429,7 +447,7 @@
     <span class="n">edfnorm</span><span class="p">(</span> <span class="k">const</span> <span class="n">tk</span><span class="o">::</span><span class="n">UnsMesh</span><span class="o">::</span><span class="n">Edge</span><span class="o">&amp;</span> <span class="n">edge</span><span class="p">,</span>
              <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">unordered_map</span><span class="o">&lt;</span> <span class="n">tk</span><span class="o">::</span><span class="n">UnsMesh</span><span class="o">::</span><span class="n">Edge</span><span class="p">,</span>
                      <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span> <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="o">&gt;</span><span class="p">,</span>
-                     <span class="n">tk</span><span class="o">::</span><span class="n">UnsMesh</span><span class="o">::</span><span class="n">Hash</span><span class="o">&lt;</span><span class="mi">2</span><span class="o">&gt;</span><span class="p">,</span> <span class="n">tk</span><span class="o">::</span><span class="n">UnsMesh</span><span class="o">::</span><span class="n">Eq</span><span class="o">&lt;</span><span class="mi">2</span><span class="o">&gt;</span> <span class="o">&gt;&amp;</span> <span class="n">esued</span> <span class="p">);</span>
+                     <span class="n">tk</span><span class="o">::</span><span class="n">UnsMesh</span><span class="o">::</span><span class="n">Hash</span><span class="o">&lt;</span><span class="mi">2</span><span class="o">&gt;</span><span class="p">,</span> <span class="n">tk</span><span class="o">::</span><span class="n">UnsMesh</span><span class="o">::</span><span class="n">Eq</span><span class="o">&lt;</span><span class="mi">2</span><span class="o">&gt;</span> <span class="o">&gt;&amp;</span> <span class="n">esued</span> <span class="p">)</span> <span class="k">const</span><span class="p">;</span>
 
     <span class="c1">//! Compute chare-boundary edges</span>
     <span class="kt">void</span> <span class="nf">bndEdges</span><span class="p">();</span>
@@ -461,6 +479,12 @@
     <span class="c1">//! Compute gradients</span>
     <span class="kt">void</span> <span class="nf">chBndGrad</span><span class="p">();</span>
 
+    <span class="c1">//! Compute new mesh veloctity for ALE mesh motion</span>
+    <span class="kt">void</span> <span class="nf">meshvel</span><span class="p">();</span>
+
+    <span class="c1">//! Assign new mesh veloctity for ALE mesh motion</span>
+    <span class="kt">void</span> <span class="nf">assignMeshvel</span><span class="p">();</span>
+
     <span class="c1">//! Compute righ-hand side vector of transport equations</span>
     <span class="kt">void</span> <span class="nf">rhs</span><span class="p">();</span>
 
@@ -478,6 +502,9 @@
 
     <span class="c1">//! Evaluate whether to save checkpoint/restart</span>
     <span class="kt">void</span> <span class="nf">evalRestart</span><span class="p">();</span>
+
+    <span class="c1">//! Query boundary conditions from user input</span>
+    <span class="kt">void</span> <span class="nf">queryBC</span><span class="p">();</span>
 
     <span class="c1">//! Apply boundary conditions</span>
     <span class="kt">void</span> <span class="nf">BC</span><span class="p">();</span>
@@ -529,7 +556,7 @@
   <div class="m-container">
     <div class="m-row">
       <div class="m-col-l-10 m-push-l-1">
-        <p>Quinoa docs, part of the <a href="http://quinoacomputing.org/">Quinoa project</a>. Copyright © J. Bakosi 2012&ndash;2015, Los Alamos National Security, LLC, 2016&ndash;2018, <a href="https://www.triadns.org/">Triad National Security, LLC,</a> 2019-2021. Generated on Wednesday, Jun 30, 2021 based on <a href="https://github.com/quinoacomputing/quinoa/commit/a6f98cde5">a6f98cde5</a> by <a href="http://doxygen.org/">Doxygen</a> and <a href="http://mcss.mosra.cz/">m.css</a>. Contact us via <a href="https://github.com/quinoacomputing/quinoa/">GitHub</a>, <a href="https://groups.io/g/quinoa">Email</a> or <a href="https://quinoa.zulipchat.com">Chat</a>.</p>
+        <p>Quinoa docs, part of the <a href="http://quinoacomputing.org/">Quinoa project</a>. Copyright © J. Bakosi 2012&ndash;2015, Los Alamos National Security, LLC, 2016&ndash;2018, <a href="https://www.triadns.org/">Triad National Security, LLC,</a> 2019-2021. Generated on Thursday, Jul 08, 2021 based on <a href="https://github.com/quinoacomputing/quinoa/commit/2cc083c88">2cc083c88</a> by <a href="http://doxygen.org/">Doxygen</a> and <a href="http://mcss.mosra.cz/">m.css</a>. Contact us via <a href="https://github.com/quinoacomputing/quinoa/">GitHub</a>, <a href="https://groups.io/g/quinoa">Email</a> or <a href="https://quinoa.zulipchat.com">Chat</a>.</p>
       </div>
     </div>
   </div>

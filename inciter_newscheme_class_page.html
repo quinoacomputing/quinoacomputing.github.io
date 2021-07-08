@@ -161,16 +161,19 @@
   <span class="n">m_u</span><span class="p">(</span> <span class="n">Disc</span><span class="p">()</span><span class="o">-&gt;</span><span class="n">Gid</span><span class="p">().</span><span class="n">size</span><span class="p">(),</span> <span class="n">g_inputdeck</span><span class="p">.</span><span class="n">get</span><span class="o">&lt;</span> <span class="n">tag</span><span class="o">::</span><span class="n">component</span> <span class="o">&gt;</span><span class="p">().</span><span class="n">nprop</span><span class="p">()</span> <span class="p">),</span>
   <span class="n">m_un</span><span class="p">(</span> <span class="n">m_u</span><span class="p">.</span><span class="n">nunk</span><span class="p">(),</span> <span class="n">m_u</span><span class="p">.</span><span class="n">nprop</span><span class="p">()</span> <span class="p">),</span>
   <span class="n">m_w</span><span class="p">(</span> <span class="n">m_u</span><span class="p">.</span><span class="n">nunk</span><span class="p">(),</span> <span class="mi">3</span> <span class="p">),</span>
+  <span class="n">m_vel</span><span class="p">(),</span>
   <span class="n">m_rhs</span><span class="p">(</span> <span class="n">m_u</span><span class="p">.</span><span class="n">nunk</span><span class="p">(),</span> <span class="n">m_u</span><span class="p">.</span><span class="n">nprop</span><span class="p">()</span> <span class="p">),</span>
   <span class="n">m_chBndGrad</span><span class="p">(</span> <span class="n">Disc</span><span class="p">()</span><span class="o">-&gt;</span><span class="n">Bid</span><span class="p">().</span><span class="n">size</span><span class="p">(),</span> <span class="n">m_u</span><span class="p">.</span><span class="n">nprop</span><span class="p">()</span><span class="o">*</span><span class="mi">3</span> <span class="p">),</span>
-  <span class="n">m_bcdir</span><span class="p">(),</span>
+  <span class="n">m_dirbc</span><span class="p">(),</span>
   <span class="n">m_chBndGradc</span><span class="p">(),</span>
   <span class="n">m_rhsc</span><span class="p">(),</span>
   <span class="n">m_diag</span><span class="p">(),</span>
   <span class="n">m_bnorm</span><span class="p">(),</span>
+  <span class="n">m_bnormn</span><span class="p">(),</span>
   <span class="n">m_bnormc</span><span class="p">(),</span>
   <span class="n">m_symbcnodes</span><span class="p">(),</span>
   <span class="n">m_farfieldbcnodes</span><span class="p">(),</span>
+  <span class="n">m_meshvelbcnodes</span><span class="p">(),</span>
   <span class="n">m_symbctri</span><span class="p">(),</span>
   <span class="n">m_spongenodes</span><span class="p">(),</span>
   <span class="n">m_stage</span><span class="p">(</span> <span class="mi">0</span> <span class="p">),</span>
@@ -198,12 +201,6 @@
   <span class="c1">// Zero ALE mesh velocity by default</span>
   <span class="n">m_w</span><span class="p">.</span><span class="n">fill</span><span class="p">(</span> <span class="mf">0.0</span> <span class="p">);</span>
 
-  <span class="c1">// Assign mesh velocity if configured</span>
-  <span class="k">if</span> <span class="p">(</span><span class="n">d</span><span class="o">-&gt;</span><span class="n">ALE</span><span class="p">())</span>
-    <span class="n">meshvel</span><span class="p">(</span> <span class="n">g_inputdeck</span><span class="p">.</span><span class="n">get</span><span class="o">&lt;</span> <span class="n">tag</span><span class="o">::</span><span class="n">ale</span><span class="p">,</span> <span class="n">tag</span><span class="o">::</span><span class="n">meshvelocity</span> <span class="o">&gt;</span><span class="p">(),</span>
-             <span class="n">d</span><span class="o">-&gt;</span><span class="n">Coord</span><span class="p">(),</span>
-             <span class="n">m_w</span> <span class="p">);</span>
-
   <span class="c1">// Perform optional operator-access-pattern mesh node reordering</span>
   <span class="k">if</span> <span class="p">(</span><span class="n">g_inputdeck</span><span class="p">.</span><span class="n">get</span><span class="o">&lt;</span> <span class="n">tag</span><span class="o">::</span><span class="n">discr</span><span class="p">,</span> <span class="n">tag</span><span class="o">::</span><span class="n">operator_reorder</span> <span class="o">&gt;</span><span class="p">())</span> <span class="p">{</span>
 
@@ -230,6 +227,9 @@
     <span class="n">tk</span><span class="o">::</span><span class="n">remap</span><span class="p">(</span> <span class="n">m_triinpoel</span><span class="p">,</span> <span class="n">map</span> <span class="p">);</span>
   <span class="p">}</span>
 
+  <span class="c1">// Query boundary conditions from user input</span>
+  <span class="n">queryBC</span><span class="p">();</span>
+
   <span class="c1">// Activate SDAG wait for initially computing normals</span>
   <span class="n">thisProxy</span><span class="p">[</span> <span class="n">thisIndex</span> <span class="p">].</span><span class="n">wait4norm</span><span class="p">();</span>
 
@@ -251,6 +251,64 @@
   <span class="n">d</span><span class="o">-&gt;</span><span class="n">transferCallback</span><span class="p">(</span> <span class="n">cb</span> <span class="p">);</span>
 <span class="p">}</span>
 <span class="c1">//! [Constructor]</span>
+
+<span class="kt">void</span>
+<span class="n">ALECG</span><span class="o">::</span><span class="n">queryBC</span><span class="p">()</span>
+<span class="c1">// *****************************************************************************</span>
+<span class="c1">// Query boundary conditions from user input</span>
+<span class="c1">// *****************************************************************************</span>
+<span class="p">{</span>
+  <span class="k">auto</span> <span class="n">d</span> <span class="o">=</span> <span class="n">Disc</span><span class="p">();</span>
+
+  <span class="c1">// Query and match user-specified Dirichlet boundary conditions to side sets</span>
+  <span class="k">const</span> <span class="k">auto</span> <span class="n">steady</span> <span class="o">=</span> <span class="n">g_inputdeck</span><span class="p">.</span><span class="n">get</span><span class="o">&lt;</span> <span class="n">tag</span><span class="o">::</span><span class="n">discr</span><span class="p">,</span> <span class="n">tag</span><span class="o">::</span><span class="n">steady_state</span> <span class="o">&gt;</span><span class="p">();</span>
+  <span class="k">if</span> <span class="p">(</span><span class="n">steady</span><span class="p">)</span> <span class="k">for</span> <span class="p">(</span><span class="k">auto</span><span class="o">&amp;</span> <span class="nl">deltat</span> <span class="p">:</span> <span class="n">m_dtp</span><span class="p">)</span> <span class="n">deltat</span> <span class="o">*=</span> <span class="n">rkcoef</span><span class="p">[</span><span class="n">m_stage</span><span class="p">];</span>
+  <span class="n">m_dirbc</span> <span class="o">=</span> <span class="n">match</span><span class="p">(</span> <span class="n">m_u</span><span class="p">.</span><span class="n">nprop</span><span class="p">(),</span> <span class="n">d</span><span class="o">-&gt;</span><span class="n">T</span><span class="p">(),</span> <span class="n">rkcoef</span><span class="p">[</span><span class="n">m_stage</span><span class="p">]</span> <span class="o">*</span> <span class="n">d</span><span class="o">-&gt;</span><span class="n">Dt</span><span class="p">(),</span>
+                   <span class="n">m_tp</span><span class="p">,</span> <span class="n">m_dtp</span><span class="p">,</span> <span class="n">d</span><span class="o">-&gt;</span><span class="n">Coord</span><span class="p">(),</span> <span class="n">d</span><span class="o">-&gt;</span><span class="n">Lid</span><span class="p">(),</span> <span class="n">m_bnode</span><span class="p">,</span>
+                   <span class="cm">/* increment = */</span> <span class="nb">false</span> <span class="p">);</span>
+  <span class="k">if</span> <span class="p">(</span><span class="n">steady</span><span class="p">)</span> <span class="k">for</span> <span class="p">(</span><span class="k">auto</span><span class="o">&amp;</span> <span class="nl">deltat</span> <span class="p">:</span> <span class="n">m_dtp</span><span class="p">)</span> <span class="n">deltat</span> <span class="o">/=</span> <span class="n">rkcoef</span><span class="p">[</span><span class="n">m_stage</span><span class="p">];</span>
+
+  <span class="c1">// Prepare unique set of symmetry BC nodes</span>
+  <span class="k">auto</span> <span class="n">sym</span> <span class="o">=</span> <span class="n">d</span><span class="o">-&gt;</span><span class="n">bcnodes</span><span class="o">&lt;</span> <span class="n">tag</span><span class="o">::</span><span class="n">bc</span><span class="p">,</span> <span class="n">tag</span><span class="o">::</span><span class="n">bcsym</span> <span class="o">&gt;</span><span class="p">(</span> <span class="n">m_bface</span><span class="p">,</span> <span class="n">m_triinpoel</span> <span class="p">);</span>
+  <span class="k">for</span> <span class="p">(</span><span class="k">const</span> <span class="k">auto</span><span class="o">&amp;</span> <span class="p">[</span><span class="n">s</span><span class="p">,</span><span class="n">nodes</span><span class="p">]</span> <span class="o">:</span> <span class="n">sym</span><span class="p">)</span>
+    <span class="n">m_symbcnodes</span><span class="p">.</span><span class="n">insert</span><span class="p">(</span> <span class="n">begin</span><span class="p">(</span><span class="n">nodes</span><span class="p">),</span> <span class="n">end</span><span class="p">(</span><span class="n">nodes</span><span class="p">)</span> <span class="p">);</span>
+
+  <span class="c1">// Prepare unique set of farfield BC nodes</span>
+  <span class="k">auto</span> <span class="n">far</span> <span class="o">=</span> <span class="n">d</span><span class="o">-&gt;</span><span class="n">bcnodes</span><span class="o">&lt;</span> <span class="n">tag</span><span class="o">::</span><span class="n">bc</span><span class="p">,</span> <span class="n">tag</span><span class="o">::</span><span class="n">bcfarfield</span> <span class="o">&gt;</span><span class="p">(</span> <span class="n">m_bface</span><span class="p">,</span> <span class="n">m_triinpoel</span> <span class="p">);</span>
+  <span class="k">for</span> <span class="p">(</span><span class="k">const</span> <span class="k">auto</span><span class="o">&amp;</span> <span class="p">[</span><span class="n">s</span><span class="p">,</span><span class="n">nodes</span><span class="p">]</span> <span class="o">:</span> <span class="n">far</span><span class="p">)</span>
+    <span class="n">m_farfieldbcnodes</span><span class="p">.</span><span class="n">insert</span><span class="p">(</span> <span class="n">begin</span><span class="p">(</span><span class="n">nodes</span><span class="p">),</span> <span class="n">end</span><span class="p">(</span><span class="n">nodes</span><span class="p">)</span> <span class="p">);</span>
+
+  <span class="c1">// If farfield BC is set on a node, will not also set symmetry BC</span>
+  <span class="k">for</span> <span class="p">(</span><span class="k">auto</span> <span class="nl">fn</span> <span class="p">:</span> <span class="n">m_farfieldbcnodes</span><span class="p">)</span> <span class="n">m_symbcnodes</span><span class="p">.</span><span class="n">erase</span><span class="p">(</span><span class="n">fn</span><span class="p">);</span>
+
+  <span class="c1">// Prepare boundary nodes contiguously accessible from a triangle-face loop</span>
+  <span class="n">m_symbctri</span><span class="p">.</span><span class="n">resize</span><span class="p">(</span> <span class="n">m_triinpoel</span><span class="p">.</span><span class="n">size</span><span class="p">()</span><span class="o">/</span><span class="mi">3</span><span class="p">,</span> <span class="mi">0</span> <span class="p">);</span>
+  <span class="k">for</span> <span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="n">e</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">e</span><span class="o">&lt;</span><span class="n">m_triinpoel</span><span class="p">.</span><span class="n">size</span><span class="p">()</span><span class="o">/</span><span class="mi">3</span><span class="p">;</span> <span class="o">++</span><span class="n">e</span><span class="p">)</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">m_symbcnodes</span><span class="p">.</span><span class="n">find</span><span class="p">(</span><span class="n">m_triinpoel</span><span class="p">[</span><span class="n">e</span><span class="o">*</span><span class="mi">3</span><span class="o">+</span><span class="mi">0</span><span class="p">])</span> <span class="o">!=</span> <span class="n">end</span><span class="p">(</span><span class="n">m_symbcnodes</span><span class="p">))</span>
+      <span class="n">m_symbctri</span><span class="p">[</span><span class="n">e</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+
+  <span class="c1">// Prepare unique set of sponge nodes</span>
+  <span class="k">auto</span> <span class="n">sponge</span> <span class="o">=</span> <span class="n">d</span><span class="o">-&gt;</span><span class="n">bcnodes</span><span class="o">&lt;</span> <span class="n">tag</span><span class="o">::</span><span class="n">sponge</span><span class="p">,</span> <span class="n">tag</span><span class="o">::</span><span class="n">sideset</span> <span class="o">&gt;</span><span class="p">(</span> <span class="n">m_bface</span><span class="p">,</span> <span class="n">m_triinpoel</span> <span class="p">);</span>
+  <span class="k">for</span> <span class="p">(</span><span class="k">const</span> <span class="k">auto</span><span class="o">&amp;</span> <span class="p">[</span><span class="n">s</span><span class="p">,</span><span class="n">nodes</span><span class="p">]</span> <span class="o">:</span> <span class="n">sponge</span><span class="p">)</span>
+    <span class="n">m_spongenodes</span><span class="p">.</span><span class="n">insert</span><span class="p">(</span> <span class="n">begin</span><span class="p">(</span><span class="n">nodes</span><span class="p">),</span> <span class="n">end</span><span class="p">(</span><span class="n">nodes</span><span class="p">)</span> <span class="p">);</span>
+
+  <span class="c1">// Prepare unique set of mesh velocity BC nodes</span>
+  <span class="n">tk</span><span class="o">::</span><span class="n">destroy</span><span class="p">(</span> <span class="n">m_meshvelbcnodes</span> <span class="p">);</span>
+  <span class="n">std</span><span class="o">::</span><span class="n">unordered_map</span><span class="o">&lt;</span> <span class="kt">int</span><span class="p">,</span> <span class="n">std</span><span class="o">::</span><span class="n">unordered_set</span><span class="o">&lt;</span> <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="o">&gt;</span> <span class="o">&gt;</span> <span class="n">meshvelbcnodes</span><span class="p">;</span>
+  <span class="k">for</span> <span class="p">(</span><span class="k">const</span> <span class="k">auto</span><span class="o">&amp;</span> <span class="nl">s</span> <span class="p">:</span> <span class="n">g_inputdeck</span><span class="p">.</span><span class="k">template</span> <span class="n">get</span><span class="o">&lt;</span> <span class="n">tag</span><span class="o">::</span><span class="n">ale</span><span class="p">,</span> <span class="n">tag</span><span class="o">::</span><span class="n">bcdir</span> <span class="o">&gt;</span><span class="p">())</span> <span class="p">{</span>
+    <span class="k">auto</span> <span class="n">k</span> <span class="o">=</span> <span class="n">m_bface</span><span class="p">.</span><span class="n">find</span><span class="p">(</span> <span class="n">std</span><span class="o">::</span><span class="n">stoi</span><span class="p">(</span><span class="n">s</span><span class="p">)</span> <span class="p">);</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">k</span> <span class="o">!=</span> <span class="n">end</span><span class="p">(</span><span class="n">m_bface</span><span class="p">))</span> <span class="p">{</span>
+      <span class="k">auto</span><span class="o">&amp;</span> <span class="n">n</span> <span class="o">=</span> <span class="n">meshvelbcnodes</span><span class="p">[</span> <span class="n">k</span><span class="o">-&gt;</span><span class="n">first</span> <span class="p">];</span>  <span class="c1">// associate set id</span>
+      <span class="k">for</span> <span class="p">(</span><span class="k">auto</span> <span class="nl">f</span> <span class="p">:</span> <span class="n">k</span><span class="o">-&gt;</span><span class="n">second</span><span class="p">)</span> <span class="p">{</span>               <span class="c1">// face ids on side set</span>
+        <span class="n">n</span><span class="p">.</span><span class="n">insert</span><span class="p">(</span> <span class="n">m_triinpoel</span><span class="p">[</span><span class="n">f</span><span class="o">*</span><span class="mi">3</span><span class="o">+</span><span class="mi">0</span><span class="p">]</span> <span class="p">);</span>
+        <span class="n">n</span><span class="p">.</span><span class="n">insert</span><span class="p">(</span> <span class="n">m_triinpoel</span><span class="p">[</span><span class="n">f</span><span class="o">*</span><span class="mi">3</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span> <span class="p">);</span>
+        <span class="n">n</span><span class="p">.</span><span class="n">insert</span><span class="p">(</span> <span class="n">m_triinpoel</span><span class="p">[</span><span class="n">f</span><span class="o">*</span><span class="mi">3</span><span class="o">+</span><span class="mi">2</span><span class="p">]</span> <span class="p">);</span>
+      <span class="p">}</span>
+    <span class="p">}</span>
+  <span class="p">}</span>
+  <span class="k">for</span> <span class="p">(</span><span class="k">const</span> <span class="k">auto</span><span class="o">&amp;</span> <span class="p">[</span><span class="n">s</span><span class="p">,</span><span class="n">nodes</span><span class="p">]</span> <span class="o">:</span> <span class="n">meshvelbcnodes</span><span class="p">)</span>
+    <span class="n">m_meshvelbcnodes</span><span class="p">.</span><span class="n">insert</span><span class="p">(</span> <span class="n">begin</span><span class="p">(</span><span class="n">nodes</span><span class="p">),</span> <span class="n">end</span><span class="p">(</span><span class="n">nodes</span><span class="p">)</span> <span class="p">);</span>
+<span class="p">}</span>
 
 <span class="kt">void</span>
 <span class="n">ALECG</span><span class="o">::</span><span class="n">norm</span><span class="p">()</span>
@@ -280,10 +338,10 @@
                 <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">unordered_map</span><span class="o">&lt;</span> <span class="n">tk</span><span class="o">::</span><span class="n">UnsMesh</span><span class="o">::</span><span class="n">Edge</span><span class="p">,</span>
                         <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span> <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="o">&gt;</span><span class="p">,</span>
                         <span class="n">tk</span><span class="o">::</span><span class="n">UnsMesh</span><span class="o">::</span><span class="n">Hash</span><span class="o">&lt;</span><span class="mi">2</span><span class="o">&gt;</span><span class="p">,</span> <span class="n">tk</span><span class="o">::</span><span class="n">UnsMesh</span><span class="o">::</span><span class="n">Eq</span><span class="o">&lt;</span><span class="mi">2</span><span class="o">&gt;</span> <span class="o">&gt;&amp;</span> <span class="n">esued</span> <span class="p">)</span>
+<span class="k">const</span>
 <span class="c1">// *****************************************************************************</span>
 <span class="c1">//  Compute normal of dual-mesh associated to edge</span>
 <span class="c1">//! \param[in] edge Edge whose dual-face normal to compute given by local ids</span>
-<span class="c1">//! \param[in] inpoel Mesh element connectivity</span>
 <span class="c1">//! \param[in] esued Elements surrounding edges</span>
 <span class="c1">//! \return Dual-face normal for edge</span>
 <span class="c1">// *****************************************************************************</span>
@@ -525,8 +583,9 @@
   <span class="n">Assert</span><span class="p">(</span> <span class="n">Disc</span><span class="p">()</span><span class="o">-&gt;</span><span class="n">Vol</span><span class="p">().</span><span class="n">size</span><span class="p">()</span> <span class="o">==</span> <span class="n">u</span><span class="p">.</span><span class="n">nunk</span><span class="p">(),</span> <span class="s">&quot;Size mismatch&quot;</span> <span class="p">);</span>
 
   <span class="k">for</span> <span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">i</span><span class="o">&lt;</span><span class="n">u</span><span class="p">.</span><span class="n">nunk</span><span class="p">();</span> <span class="o">++</span><span class="n">i</span><span class="p">)</span>
-    <span class="k">for</span> <span class="p">(</span><span class="n">ncomp_t</span> <span class="n">c</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">c</span><span class="o">&lt;</span><span class="n">u</span><span class="p">.</span><span class="n">nprop</span><span class="p">();</span> <span class="o">++</span><span class="n">c</span><span class="p">)</span>
+    <span class="k">for</span> <span class="p">(</span><span class="n">ncomp_t</span> <span class="n">c</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">c</span><span class="o">&lt;</span><span class="n">u</span><span class="p">.</span><span class="n">nprop</span><span class="p">();</span> <span class="o">++</span><span class="n">c</span><span class="p">)</span> <span class="p">{</span>
       <span class="n">u</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="n">c</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span> <span class="o">/=</span> <span class="n">Disc</span><span class="p">()</span><span class="o">-&gt;</span><span class="n">Vol</span><span class="p">()[</span><span class="n">i</span><span class="p">];</span>
+    <span class="p">}</span>
 <span class="p">}</span>
 
 <span class="kt">void</span>
@@ -543,7 +602,10 @@
 
   <span class="c1">// Set initial conditions for all PDEs</span>
   <span class="k">for</span> <span class="p">(</span><span class="k">auto</span><span class="o">&amp;</span> <span class="nl">eq</span> <span class="p">:</span> <span class="n">g_cgpde</span><span class="p">)</span>
-    <span class="n">eq</span><span class="p">.</span><span class="n">initialize</span><span class="p">(</span> <span class="n">d</span><span class="o">-&gt;</span><span class="n">Coord</span><span class="p">(),</span> <span class="n">m_u</span><span class="p">,</span> <span class="n">d</span><span class="o">-&gt;</span><span class="n">T</span><span class="p">(),</span> <span class="n">v</span><span class="p">,</span> <span class="n">m_boxnodes</span> <span class="p">);</span>
+    <span class="n">eq</span><span class="p">.</span><span class="n">initialize</span><span class="p">(</span> <span class="n">d</span><span class="o">-&gt;</span><span class="n">Coord</span><span class="p">(),</span> <span class="n">m_u</span><span class="p">,</span> <span class="n">d</span><span class="o">-&gt;</span><span class="n">T</span><span class="p">(),</span> <span class="n">d</span><span class="o">-&gt;</span><span class="n">Boxvol</span><span class="p">(),</span> <span class="n">m_boxnodes</span> <span class="p">);</span>
+
+  <span class="c1">// query and initialize fluid velocity across all systems integrated</span>
+  <span class="k">if</span> <span class="p">(</span><span class="n">d</span><span class="o">-&gt;</span><span class="n">dynALE</span><span class="p">())</span> <span class="k">for</span> <span class="p">(</span><span class="k">const</span> <span class="k">auto</span><span class="o">&amp;</span> <span class="nl">eq</span> <span class="p">:</span> <span class="n">g_cgpde</span><span class="p">)</span> <span class="n">eq</span><span class="p">.</span><span class="n">velocity</span><span class="p">(</span> <span class="n">m_u</span><span class="p">,</span> <span class="n">m_vel</span> <span class="p">);</span>
 
   <span class="c1">// Multiply conserved variables with mesh volume</span>
   <span class="n">volumetric</span><span class="p">(</span> <span class="n">m_u</span> <span class="p">);</span>
@@ -562,6 +624,8 @@
 <span class="c1">// Start time stepping</span>
 <span class="c1">// *****************************************************************************</span>
 <span class="p">{</span>
+  <span class="c1">// Set flag that indicates that we are now during time stepping</span>
+  <span class="n">m_initial</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
   <span class="c1">// Start timer measuring time stepping wall clock time</span>
   <span class="n">Disc</span><span class="p">()</span><span class="o">-&gt;</span><span class="n">Timer</span><span class="p">().</span><span class="n">zero</span><span class="p">();</span>
   <span class="c1">// Zero grind-timer</span>
@@ -570,8 +634,6 @@
   <span class="n">next</span><span class="p">();</span>
   <span class="c1">// Apply BCs on initial conditions</span>
   <span class="n">BC</span><span class="p">();</span>
-  <span class="c1">// Set flag that indicates that we are during time stepping</span>
-  <span class="n">m_initial</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
 <span class="p">}</span>
 <span class="c1">//! [start]</span>
 
@@ -585,6 +647,9 @@
 <span class="p">{</span>
   <span class="c1">// No need for LHS in ALECG</span>
 
+  <span class="c1">// Compute new mesh velocity</span>
+  <span class="n">meshvel</span><span class="p">();</span>
+
   <span class="c1">// (Re-)compute boundary point-, and dual-face normals</span>
   <span class="n">norm</span><span class="p">();</span>
 <span class="p">}</span>
@@ -597,8 +662,7 @@
 <span class="c1">// The own and communication portion of the left-hand side is complete</span>
 <span class="c1">// *****************************************************************************</span>
 <span class="p">{</span>
-  <span class="c1">// Combine own and communicated contributions of normals and apply boundary</span>
-  <span class="c1">// conditions on the initial conditions</span>
+  <span class="c1">// Combine own and communicated contributions of normals</span>
   <span class="n">normfinal</span><span class="p">();</span>
 
   <span class="k">if</span> <span class="p">(</span><span class="n">m_initial</span><span class="p">)</span> <span class="p">{</span>
@@ -613,8 +677,7 @@
 <span class="kt">void</span>
 <span class="n">ALECG</span><span class="o">::</span><span class="n">normfinal</span><span class="p">()</span>
 <span class="c1">// *****************************************************************************</span>
-<span class="c1">//  Finish computing dual-face and boundary point normals and apply boundary</span>
-<span class="c1">//  conditions on the initial conditions</span>
+<span class="c1">//  Finish computing dual-face and boundary point normals</span>
 <span class="c1">// *****************************************************************************</span>
 <span class="p">{</span>
   <span class="k">auto</span> <span class="n">d</span> <span class="o">=</span> <span class="n">Disc</span><span class="p">();</span>
@@ -652,30 +715,6 @@
       <span class="n">bnorms</span><span class="p">[</span> <span class="n">tk</span><span class="o">::</span><span class="n">cref_find</span><span class="p">(</span><span class="n">lid</span><span class="p">,</span><span class="n">g</span><span class="p">)</span> <span class="p">]</span> <span class="o">=</span> <span class="n">std</span><span class="o">::</span><span class="n">move</span><span class="p">(</span><span class="n">n</span><span class="p">);</span>
   <span class="p">}</span>
   <span class="n">m_bnorm</span> <span class="o">=</span> <span class="n">std</span><span class="o">::</span><span class="n">move</span><span class="p">(</span><span class="n">bnorm</span><span class="p">);</span>
-
-  <span class="c1">// Prepare unique set of symmetry BC nodes</span>
-  <span class="k">auto</span> <span class="n">sym</span> <span class="o">=</span> <span class="n">d</span><span class="o">-&gt;</span><span class="n">bcnodes</span><span class="o">&lt;</span> <span class="n">tag</span><span class="o">::</span><span class="n">bc</span><span class="p">,</span> <span class="n">tag</span><span class="o">::</span><span class="n">bcsym</span> <span class="o">&gt;</span><span class="p">(</span> <span class="n">m_bface</span><span class="p">,</span> <span class="n">m_triinpoel</span> <span class="p">);</span>
-  <span class="k">for</span> <span class="p">(</span><span class="k">const</span> <span class="k">auto</span><span class="o">&amp;</span> <span class="p">[</span><span class="n">s</span><span class="p">,</span><span class="n">nodes</span><span class="p">]</span> <span class="o">:</span> <span class="n">sym</span><span class="p">)</span>
-    <span class="n">m_symbcnodes</span><span class="p">.</span><span class="n">insert</span><span class="p">(</span> <span class="n">begin</span><span class="p">(</span><span class="n">nodes</span><span class="p">),</span> <span class="n">end</span><span class="p">(</span><span class="n">nodes</span><span class="p">)</span> <span class="p">);</span>
-
-  <span class="c1">// Prepare unique set of farfield BC nodes</span>
-  <span class="k">auto</span> <span class="n">far</span> <span class="o">=</span> <span class="n">d</span><span class="o">-&gt;</span><span class="n">bcnodes</span><span class="o">&lt;</span> <span class="n">tag</span><span class="o">::</span><span class="n">bc</span><span class="p">,</span> <span class="n">tag</span><span class="o">::</span><span class="n">bcfarfield</span> <span class="o">&gt;</span><span class="p">(</span> <span class="n">m_bface</span><span class="p">,</span> <span class="n">m_triinpoel</span> <span class="p">);</span>
-  <span class="k">for</span> <span class="p">(</span><span class="k">const</span> <span class="k">auto</span><span class="o">&amp;</span> <span class="p">[</span><span class="n">s</span><span class="p">,</span><span class="n">nodes</span><span class="p">]</span> <span class="o">:</span> <span class="n">far</span><span class="p">)</span>
-    <span class="n">m_farfieldbcnodes</span><span class="p">.</span><span class="n">insert</span><span class="p">(</span> <span class="n">begin</span><span class="p">(</span><span class="n">nodes</span><span class="p">),</span> <span class="n">end</span><span class="p">(</span><span class="n">nodes</span><span class="p">)</span> <span class="p">);</span>
-
-  <span class="c1">// If farfield BC is set on a node, will not also set symmetry BC</span>
-  <span class="k">for</span> <span class="p">(</span><span class="k">auto</span> <span class="nl">fn</span> <span class="p">:</span> <span class="n">m_farfieldbcnodes</span><span class="p">)</span> <span class="n">m_symbcnodes</span><span class="p">.</span><span class="n">erase</span><span class="p">(</span><span class="n">fn</span><span class="p">);</span>
-
-  <span class="c1">// Prepare boundary nodes contiguously accessible from a triangle-face loop</span>
-  <span class="n">m_symbctri</span><span class="p">.</span><span class="n">resize</span><span class="p">(</span> <span class="n">m_triinpoel</span><span class="p">.</span><span class="n">size</span><span class="p">()</span><span class="o">/</span><span class="mi">3</span><span class="p">,</span> <span class="mi">0</span> <span class="p">);</span>
-  <span class="k">for</span> <span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="n">e</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">e</span><span class="o">&lt;</span><span class="n">m_triinpoel</span><span class="p">.</span><span class="n">size</span><span class="p">()</span><span class="o">/</span><span class="mi">3</span><span class="p">;</span> <span class="o">++</span><span class="n">e</span><span class="p">)</span>
-    <span class="k">if</span> <span class="p">(</span><span class="n">m_symbcnodes</span><span class="p">.</span><span class="n">find</span><span class="p">(</span><span class="n">m_triinpoel</span><span class="p">[</span><span class="n">e</span><span class="o">*</span><span class="mi">3</span><span class="o">+</span><span class="mi">0</span><span class="p">])</span> <span class="o">!=</span> <span class="n">end</span><span class="p">(</span><span class="n">m_symbcnodes</span><span class="p">))</span>
-      <span class="n">m_symbctri</span><span class="p">[</span><span class="n">e</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
-
-  <span class="c1">// Prepare unique set of sponge nodes</span>
-  <span class="k">auto</span> <span class="n">sponge</span> <span class="o">=</span> <span class="n">d</span><span class="o">-&gt;</span><span class="n">bcnodes</span><span class="o">&lt;</span> <span class="n">tag</span><span class="o">::</span><span class="n">sponge</span><span class="p">,</span> <span class="n">tag</span><span class="o">::</span><span class="n">sideset</span> <span class="o">&gt;</span><span class="p">(</span> <span class="n">m_bface</span><span class="p">,</span> <span class="n">m_triinpoel</span> <span class="p">);</span>
-  <span class="k">for</span> <span class="p">(</span><span class="k">const</span> <span class="k">auto</span><span class="o">&amp;</span> <span class="p">[</span><span class="n">s</span><span class="p">,</span><span class="n">nodes</span><span class="p">]</span> <span class="o">:</span> <span class="n">sponge</span><span class="p">)</span>
-    <span class="n">m_spongenodes</span><span class="p">.</span><span class="n">insert</span><span class="p">(</span> <span class="n">begin</span><span class="p">(</span><span class="n">nodes</span><span class="p">),</span> <span class="n">end</span><span class="p">(</span><span class="n">nodes</span><span class="p">)</span> <span class="p">);</span>
 
   <span class="c1">// Count contributions to chare-boundary edges</span>
   <span class="n">std</span><span class="o">::</span><span class="n">unordered_map</span><span class="o">&lt;</span> <span class="n">tk</span><span class="o">::</span><span class="n">UnsMesh</span><span class="o">::</span><span class="n">Edge</span><span class="p">,</span> <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="p">,</span>
@@ -766,7 +805,7 @@
   <span class="n">conserved</span><span class="p">(</span> <span class="n">m_u</span> <span class="p">);</span>
 
   <span class="c1">// Apply Dirichlet BCs</span>
-  <span class="k">for</span> <span class="p">(</span><span class="k">const</span> <span class="k">auto</span><span class="o">&amp;</span> <span class="p">[</span><span class="n">b</span><span class="p">,</span><span class="n">bc</span><span class="p">]</span> <span class="o">:</span> <span class="n">m_bcdir</span><span class="p">)</span>
+  <span class="k">for</span> <span class="p">(</span><span class="k">const</span> <span class="k">auto</span><span class="o">&amp;</span> <span class="p">[</span><span class="n">b</span><span class="p">,</span><span class="n">bc</span><span class="p">]</span> <span class="o">:</span> <span class="n">m_dirbc</span><span class="p">)</span>
     <span class="k">for</span> <span class="p">(</span><span class="n">ncomp_t</span> <span class="n">c</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">c</span><span class="o">&lt;</span><span class="n">m_u</span><span class="p">.</span><span class="n">nprop</span><span class="p">();</span> <span class="o">++</span><span class="n">c</span><span class="p">)</span>
       <span class="k">if</span> <span class="p">(</span><span class="n">bc</span><span class="p">[</span><span class="n">c</span><span class="p">].</span><span class="n">first</span><span class="p">)</span> <span class="n">m_u</span><span class="p">(</span><span class="n">b</span><span class="p">,</span><span class="n">c</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span> <span class="o">=</span> <span class="n">bc</span><span class="p">[</span><span class="n">c</span><span class="p">].</span><span class="n">second</span><span class="p">;</span>
 
@@ -830,7 +869,8 @@
 
       <span class="c1">// find the smallest dt of all equations on this chare</span>
       <span class="k">for</span> <span class="p">(</span><span class="k">const</span> <span class="k">auto</span><span class="o">&amp;</span> <span class="nl">eq</span> <span class="p">:</span> <span class="n">g_cgpde</span><span class="p">)</span> <span class="p">{</span>
-        <span class="k">auto</span> <span class="n">eqdt</span> <span class="o">=</span> <span class="n">eq</span><span class="p">.</span><span class="n">dt</span><span class="p">(</span> <span class="n">d</span><span class="o">-&gt;</span><span class="n">Coord</span><span class="p">(),</span> <span class="n">d</span><span class="o">-&gt;</span><span class="n">Inpoel</span><span class="p">(),</span> <span class="n">d</span><span class="o">-&gt;</span><span class="n">T</span><span class="p">(),</span> <span class="n">m_u</span> <span class="p">);</span>
+        <span class="k">auto</span> <span class="n">eqdt</span> <span class="o">=</span> <span class="n">eq</span><span class="p">.</span><span class="n">dt</span><span class="p">(</span> <span class="n">d</span><span class="o">-&gt;</span><span class="n">Coord</span><span class="p">(),</span> <span class="n">d</span><span class="o">-&gt;</span><span class="n">Inpoel</span><span class="p">(),</span> <span class="n">d</span><span class="o">-&gt;</span><span class="n">T</span><span class="p">(),</span> <span class="n">d</span><span class="o">-&gt;</span><span class="n">Dtn</span><span class="p">(),</span> <span class="n">m_u</span><span class="p">,</span>
+                           <span class="n">d</span><span class="o">-&gt;</span><span class="n">Vol</span><span class="p">(),</span> <span class="n">d</span><span class="o">-&gt;</span><span class="n">Voln</span><span class="p">()</span> <span class="p">);</span>
         <span class="k">if</span> <span class="p">(</span><span class="n">eqdt</span> <span class="o">&lt;</span> <span class="n">mindt</span><span class="p">)</span> <span class="n">mindt</span> <span class="o">=</span> <span class="n">eqdt</span><span class="p">;</span>
       <span class="p">}</span>
 
@@ -926,6 +966,141 @@
 <span class="p">}</span>
 
 <span class="kt">void</span>
+<span class="n">ALECG</span><span class="o">::</span><span class="n">meshvel</span><span class="p">()</span>
+<span class="c1">// *****************************************************************************</span>
+<span class="c1">// Assign new mesh velocity for ALE mesh motion</span>
+<span class="c1">// *****************************************************************************</span>
+<span class="p">{</span>
+  <span class="k">auto</span> <span class="n">d</span> <span class="o">=</span> <span class="n">Disc</span><span class="p">();</span>
+
+  <span class="k">if</span> <span class="p">(</span><span class="n">d</span><span class="o">-&gt;</span><span class="n">ALE</span><span class="p">())</span> <span class="p">{</span>
+
+    <span class="c1">// never update static meshvel during timestepping</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">d</span><span class="o">-&gt;</span><span class="n">dynALE</span><span class="p">()</span> <span class="o">||</span> <span class="n">m_initial</span><span class="p">)</span> <span class="p">{</span>
+      <span class="c1">// assign mesh velocity</span>
+      <span class="n">inciter</span><span class="o">::</span><span class="n">meshvel</span><span class="p">(</span> <span class="n">g_inputdeck</span><span class="p">.</span><span class="n">get</span><span class="o">&lt;</span> <span class="n">tag</span><span class="o">::</span><span class="n">ale</span><span class="p">,</span> <span class="n">tag</span><span class="o">::</span><span class="n">meshvelocity</span> <span class="o">&gt;</span><span class="p">(),</span>
+                        <span class="n">d</span><span class="o">-&gt;</span><span class="n">Coord</span><span class="p">(),</span> <span class="n">m_vel</span><span class="p">,</span> <span class="n">m_w</span> <span class="p">);</span>
+      <span class="c1">// scale mesh velocity by a function of the fluid vorticity</span>
+      <span class="c1">//inciter::vortscale( d-&gt;Coord(), d-&gt;Inpoel(), d-&gt;Vol(), m_vel, 0.5, 0.5,</span>
+      <span class="c1">//                    m_w );</span>
+    <span class="p">}</span>
+
+    <span class="c1">// applying mesh velocity smoother BCs</span>
+    <span class="n">meshvelbc</span><span class="p">();</span>
+
+  <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>      <span class="c1">// if ALE is not enabled, skip mesh smoothing</span>
+
+    <span class="n">smoothed</span><span class="p">();</span>
+
+  <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="kt">void</span>
+<span class="n">ALECG</span><span class="o">::</span><span class="n">meshvelbc</span><span class="p">()</span>
+<span class="c1">// *****************************************************************************</span>
+<span class="c1">// Apply mesh velocity smoother boundary conditions for ALE mesh motion</span>
+<span class="c1">// *****************************************************************************</span>
+<span class="p">{</span>
+  <span class="k">auto</span> <span class="n">meshvel</span> <span class="o">=</span> <span class="n">g_inputdeck</span><span class="p">.</span><span class="n">get</span><span class="o">&lt;</span> <span class="n">tag</span><span class="o">::</span><span class="n">ale</span><span class="p">,</span> <span class="n">tag</span><span class="o">::</span><span class="n">meshvelocity</span> <span class="o">&gt;</span><span class="p">();</span>
+
+  <span class="c1">// Smooth mesh velocity if enabled</span>
+  <span class="k">if</span> <span class="p">(</span><span class="n">meshvel</span> <span class="o">==</span> <span class="n">ctr</span><span class="o">::</span><span class="n">MeshVelocityType</span><span class="o">::</span><span class="n">FLUID</span><span class="p">)</span> <span class="p">{</span>
+
+    <span class="k">auto</span> <span class="n">d</span> <span class="o">=</span> <span class="n">Disc</span><span class="p">();</span>
+
+    <span class="c1">// Set mesh velocity smoother linear solve boundary conditions</span>
+    <span class="n">std</span><span class="o">::</span><span class="n">unordered_map</span><span class="o">&lt;</span> <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="p">,</span>
+      <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">pair</span><span class="o">&lt;</span> <span class="kt">bool</span><span class="p">,</span> <span class="n">tk</span><span class="o">::</span><span class="n">real</span> <span class="o">&gt;</span> <span class="o">&gt;</span> <span class="o">&gt;</span> <span class="n">wbc</span><span class="p">;</span>
+
+    <span class="c1">// Dirichlet BCs where user specified mesh velocity BCs</span>
+    <span class="k">for</span> <span class="p">(</span><span class="k">auto</span> <span class="nl">i</span> <span class="p">:</span> <span class="n">m_meshvelbcnodes</span><span class="p">)</span>
+      <span class="n">wbc</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="p">{{</span> <span class="p">{</span><span class="nb">true</span><span class="p">,</span><span class="mi">0</span><span class="p">},</span> <span class="p">{</span><span class="nb">true</span><span class="p">,</span><span class="mi">0</span><span class="p">},</span> <span class="p">{</span><span class="nb">true</span><span class="p">,</span><span class="mi">0</span><span class="p">}</span> <span class="p">}};</span>
+
+    <span class="c1">// Lambda to find a boundary-point normal</span>
+    <span class="k">auto</span> <span class="n">norm</span> <span class="o">=</span> <span class="p">[</span><span class="o">&amp;</span><span class="p">](</span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="n">p</span><span class="p">)</span> <span class="p">{</span>
+      <span class="k">for</span> <span class="p">(</span><span class="k">const</span> <span class="k">auto</span><span class="o">&amp;</span> <span class="p">[</span><span class="n">s</span><span class="p">,</span><span class="n">sn</span><span class="p">]</span> <span class="o">:</span> <span class="n">m_bnormn</span><span class="p">)</span>
+        <span class="k">for</span> <span class="p">(</span><span class="k">const</span> <span class="k">auto</span><span class="o">&amp;</span> <span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="n">n</span><span class="p">]</span> <span class="o">:</span> <span class="n">sn</span><span class="p">)</span>
+          <span class="k">if</span> <span class="p">(</span><span class="n">i</span> <span class="o">==</span> <span class="n">p</span><span class="p">)</span> <span class="k">return</span> <span class="n">n</span><span class="p">;</span>
+      <span class="k">return</span> <span class="n">std</span><span class="o">::</span><span class="n">array</span><span class="o">&lt;</span> <span class="n">tk</span><span class="o">::</span><span class="n">real</span><span class="p">,</span> <span class="mi">4</span> <span class="o">&gt;</span><span class="p">{</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span> <span class="p">};</span>
+    <span class="p">};</span>
+
+    <span class="c1">// Dirichlet BCs on symmetry BCs aligned with coordinate directions</span>
+    <span class="c1">// Note: This will skip aribtrarily-oriented symmetry side sets.</span>
+    <span class="k">for</span> <span class="p">(</span><span class="k">auto</span> <span class="nl">i</span> <span class="p">:</span> <span class="n">m_symbcnodes</span><span class="p">)</span> <span class="p">{</span>
+      <span class="k">auto</span> <span class="n">n</span> <span class="o">=</span> <span class="n">norm</span><span class="p">(</span><span class="n">i</span><span class="p">);</span>
+      <span class="k">if</span> <span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">abs</span><span class="p">(</span><span class="n">n</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">&lt;</span> <span class="mf">1.0e-12</span><span class="p">)</span>
+        <span class="n">wbc</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="p">{{{</span><span class="nb">false</span><span class="p">,</span><span class="mi">0</span><span class="p">},{</span><span class="nb">true</span><span class="p">,</span><span class="mi">0</span><span class="p">},{</span><span class="nb">true</span><span class="p">,</span><span class="mi">0</span><span class="p">}}};</span>
+      <span class="k">else</span> <span class="nf">if</span> <span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">abs</span><span class="p">(</span><span class="n">n</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="o">&lt;</span> <span class="mf">1.0e-12</span><span class="p">)</span>
+        <span class="n">wbc</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="p">{{{</span><span class="nb">true</span><span class="p">,</span><span class="mi">0</span><span class="p">},{</span><span class="nb">false</span><span class="p">,</span><span class="mi">0</span><span class="p">},{</span><span class="nb">true</span><span class="p">,</span><span class="mi">0</span><span class="p">}}};</span>
+      <span class="k">else</span> <span class="nf">if</span> <span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">abs</span><span class="p">(</span><span class="n">n</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span> <span class="o">&lt;</span> <span class="mf">1.0e-12</span><span class="p">)</span>
+        <span class="n">wbc</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="p">{{{</span><span class="nb">true</span><span class="p">,</span><span class="mi">0</span><span class="p">},{</span><span class="nb">true</span><span class="p">,</span><span class="mi">0</span><span class="p">},{</span><span class="nb">false</span><span class="p">,</span><span class="mi">0</span><span class="p">}}};</span>
+    <span class="p">}</span>
+
+    <span class="c1">// initiate setting mesh velocity BCs</span>
+    <span class="n">d</span><span class="o">-&gt;</span><span class="n">meshvelInit</span><span class="p">(</span> <span class="n">m_w</span><span class="p">.</span><span class="n">flat</span><span class="p">(),</span> <span class="n">wbc</span><span class="p">,</span>
+      <span class="n">CkCallback</span><span class="p">(</span><span class="n">CkIndex_ALECG</span><span class="o">::</span><span class="n">applied</span><span class="p">(</span><span class="k">nullptr</span><span class="p">),</span> <span class="n">thisProxy</span><span class="p">[</span><span class="n">thisIndex</span><span class="p">])</span> <span class="p">);</span>
+
+  <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+
+    <span class="n">applied</span><span class="p">();</span>
+
+  <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="kt">void</span>
+<span class="n">ALECG</span><span class="o">::</span><span class="n">applied</span><span class="p">(</span> <span class="p">[[</span><span class="n">maybe_unused</span><span class="p">]]</span> <span class="n">CkDataMsg</span><span class="o">*</span> <span class="n">msg</span> <span class="p">)</span>
+<span class="c1">// *****************************************************************************</span>
+<span class="c1">// Smooth mesh velocity for ALE mesh motion</span>
+<span class="c1">// *****************************************************************************</span>
+<span class="p">{</span>
+  <span class="k">auto</span> <span class="n">meshvel</span> <span class="o">=</span> <span class="n">g_inputdeck</span><span class="p">.</span><span class="n">get</span><span class="o">&lt;</span> <span class="n">tag</span><span class="o">::</span><span class="n">ale</span><span class="p">,</span> <span class="n">tag</span><span class="o">::</span><span class="n">meshvelocity</span> <span class="o">&gt;</span><span class="p">();</span>
+
+  <span class="c1">// Smooth mesh velocity if enabled</span>
+  <span class="k">if</span> <span class="p">(</span><span class="n">meshvel</span> <span class="o">==</span> <span class="n">ctr</span><span class="o">::</span><span class="n">MeshVelocityType</span><span class="o">::</span><span class="n">FLUID</span><span class="p">)</span> <span class="p">{</span>
+
+    <span class="c1">//if (msg != nullptr) {</span>
+    <span class="c1">//  auto *norm = static_cast&lt; tk::real * &gt;( msg-&gt;getData() );</span>
+    <span class="c1">//  std::cout &lt;&lt; &quot;CG BC applied, normb: &quot; &lt;&lt; *norm &lt;&lt; &#39;\n&#39;;</span>
+    <span class="c1">//}</span>
+
+    <span class="n">Disc</span><span class="p">()</span><span class="o">-&gt;</span><span class="n">meshvelSolve</span><span class="p">(</span>
+      <span class="n">CkCallback</span><span class="p">(</span><span class="n">CkIndex_ALECG</span><span class="o">::</span><span class="n">smoothed</span><span class="p">(</span><span class="k">nullptr</span><span class="p">),</span> <span class="n">thisProxy</span><span class="p">[</span><span class="n">thisIndex</span><span class="p">])</span> <span class="p">);</span>
+
+  <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+
+    <span class="n">smoothed</span><span class="p">();</span>
+
+  <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="kt">void</span>
+<span class="n">ALECG</span><span class="o">::</span><span class="n">smoothed</span><span class="p">(</span> <span class="p">[[</span><span class="n">maybe_unused</span><span class="p">]]</span> <span class="n">CkDataMsg</span><span class="o">*</span> <span class="n">msg</span> <span class="p">)</span>
+<span class="c1">// *****************************************************************************</span>
+<span class="c1">//  Mesh smoother linear solver converged</span>
+<span class="c1">// *****************************************************************************</span>
+<span class="p">{</span>
+  <span class="k">auto</span> <span class="n">meshvel</span> <span class="o">=</span> <span class="n">g_inputdeck</span><span class="p">.</span><span class="n">get</span><span class="o">&lt;</span> <span class="n">tag</span><span class="o">::</span><span class="n">ale</span><span class="p">,</span> <span class="n">tag</span><span class="o">::</span><span class="n">meshvelocity</span> <span class="o">&gt;</span><span class="p">();</span>
+
+  <span class="c1">// Smooth mesh velocity if enabled</span>
+  <span class="k">if</span> <span class="p">(</span><span class="n">meshvel</span> <span class="o">==</span> <span class="n">ctr</span><span class="o">::</span><span class="n">MeshVelocityType</span><span class="o">::</span><span class="n">FLUID</span><span class="p">)</span> <span class="p">{</span>
+
+    <span class="c1">//if (msg != nullptr) {</span>
+    <span class="c1">//  auto *normres = static_cast&lt; tk::real * &gt;( msg-&gt;getData() );</span>
+    <span class="c1">//  std::cout &lt;&lt; &quot;smoothed, converged: &quot; &lt;&lt; *normres &lt;&lt; &#39;\n&#39;;</span>
+    <span class="c1">//}</span>
+
+    <span class="c1">// Update mesh velocity from the smoother linear solve</span>
+    <span class="n">m_w</span> <span class="o">=</span> <span class="n">Disc</span><span class="p">()</span><span class="o">-&gt;</span><span class="n">meshvel</span><span class="p">();</span>
+
+  <span class="p">}</span>
+
+  <span class="c1">// Assess and record mesh velocity linear solver conergence</span>
+  <span class="n">Disc</span><span class="p">()</span><span class="o">-&gt;</span><span class="n">meshvelConv</span><span class="p">();</span>
+
+  <span class="n">meshvel_complete</span><span class="p">();</span>
+<span class="p">}</span>
+
+<span class="kt">void</span>
 <span class="n">ALECG</span><span class="o">::</span><span class="n">rhs</span><span class="p">()</span>
 <span class="c1">// *****************************************************************************</span>
 <span class="c1">// Compute right-hand side of transport equations</span>
@@ -960,12 +1135,8 @@
   <span class="k">if</span> <span class="p">(</span><span class="n">steady</span><span class="p">)</span>
     <span class="k">for</span> <span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="n">p</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">p</span><span class="o">&lt;</span><span class="n">m_tp</span><span class="p">.</span><span class="n">size</span><span class="p">();</span> <span class="o">++</span><span class="n">p</span><span class="p">)</span> <span class="n">m_tp</span><span class="p">[</span><span class="n">p</span><span class="p">]</span> <span class="o">-=</span> <span class="n">prev_rkcoef</span> <span class="o">*</span> <span class="n">m_dtp</span><span class="p">[</span><span class="n">p</span><span class="p">];</span>
 
-  <span class="c1">// Query and match user-specified boundary conditions to side sets</span>
-  <span class="k">if</span> <span class="p">(</span><span class="n">steady</span><span class="p">)</span> <span class="k">for</span> <span class="p">(</span><span class="k">auto</span><span class="o">&amp;</span> <span class="nl">deltat</span> <span class="p">:</span> <span class="n">m_dtp</span><span class="p">)</span> <span class="n">deltat</span> <span class="o">*=</span> <span class="n">rkcoef</span><span class="p">[</span><span class="n">m_stage</span><span class="p">];</span>
-  <span class="n">m_bcdir</span> <span class="o">=</span> <span class="n">match</span><span class="p">(</span> <span class="n">m_u</span><span class="p">.</span><span class="n">nprop</span><span class="p">(),</span> <span class="n">d</span><span class="o">-&gt;</span><span class="n">T</span><span class="p">(),</span> <span class="n">rkcoef</span><span class="p">[</span><span class="n">m_stage</span><span class="p">]</span> <span class="o">*</span> <span class="n">d</span><span class="o">-&gt;</span><span class="n">Dt</span><span class="p">(),</span>
-                   <span class="n">m_tp</span><span class="p">,</span> <span class="n">m_dtp</span><span class="p">,</span> <span class="n">d</span><span class="o">-&gt;</span><span class="n">Coord</span><span class="p">(),</span> <span class="n">d</span><span class="o">-&gt;</span><span class="n">Lid</span><span class="p">(),</span> <span class="n">m_bnode</span><span class="p">,</span>
-                   <span class="cm">/* increment = */</span> <span class="nb">false</span> <span class="p">);</span>
-  <span class="k">if</span> <span class="p">(</span><span class="n">steady</span><span class="p">)</span> <span class="k">for</span> <span class="p">(</span><span class="k">auto</span><span class="o">&amp;</span> <span class="nl">deltat</span> <span class="p">:</span> <span class="n">m_dtp</span><span class="p">)</span> <span class="n">deltat</span> <span class="o">/=</span> <span class="n">rkcoef</span><span class="p">[</span><span class="n">m_stage</span><span class="p">];</span>
+  <span class="c1">// Query/update boundary conditions from user input</span>
+  <span class="n">queryBC</span><span class="p">();</span>
 
   <span class="c1">// Communicate rhs to other chares on chare-boundary</span>
   <span class="k">if</span> <span class="p">(</span><span class="n">d</span><span class="o">-&gt;</span><span class="n">NodeCommMap</span><span class="p">().</span><span class="n">empty</span><span class="p">())</span>        <span class="c1">// in serial we are done</span>
@@ -1066,10 +1237,20 @@
 
   <span class="c1">// Recompute mesh volumes if ALE is enabled</span>
   <span class="k">if</span> <span class="p">(</span><span class="n">d</span><span class="o">-&gt;</span><span class="n">ALE</span><span class="p">())</span> <span class="p">{</span>
+
+    <span class="k">if</span> <span class="p">(</span><span class="n">d</span><span class="o">-&gt;</span><span class="n">dynALE</span><span class="p">())</span> <span class="p">{</span>
+      <span class="c1">// query and update fluid velocity across all systems integrated</span>
+      <span class="n">conserved</span><span class="p">(</span> <span class="n">m_u</span> <span class="p">);</span>
+      <span class="k">for</span> <span class="p">(</span><span class="k">const</span> <span class="k">auto</span><span class="o">&amp;</span> <span class="nl">eq</span> <span class="p">:</span> <span class="n">g_cgpde</span><span class="p">)</span> <span class="n">eq</span><span class="p">.</span><span class="n">velocity</span><span class="p">(</span> <span class="n">m_u</span><span class="p">,</span> <span class="n">m_vel</span> <span class="p">);</span>
+      <span class="n">volumetric</span><span class="p">(</span> <span class="n">m_u</span> <span class="p">);</span>
+      <span class="c1">// save current boundary-point normals</span>
+      <span class="n">m_bnormn</span> <span class="o">=</span> <span class="n">m_bnorm</span><span class="p">;</span>
+    <span class="p">}</span>
+
     <span class="n">transfer_complete</span><span class="p">();</span>
     <span class="c1">// Resize mesh data structures after mesh movement</span>
     <span class="n">d</span><span class="o">-&gt;</span><span class="n">resizePostALE</span><span class="p">(</span> <span class="n">d</span><span class="o">-&gt;</span><span class="n">Coord</span><span class="p">()</span> <span class="p">);</span>
-    <span class="n">d</span><span class="o">-&gt;</span><span class="n">startvol</span><span class="p">();</span>
+    <span class="n">d</span><span class="o">-&gt;</span><span class="n">startvol</span><span class="p">(</span> <span class="n">m_stage</span> <span class="o">==</span> <span class="mi">2</span> <span class="p">);</span>
     <span class="k">auto</span> <span class="n">meshid</span> <span class="o">=</span> <span class="n">d</span><span class="o">-&gt;</span><span class="n">MeshId</span><span class="p">();</span>
     <span class="n">contribute</span><span class="p">(</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="p">),</span> <span class="o">&amp;</span><span class="n">meshid</span><span class="p">,</span> <span class="n">CkReduction</span><span class="o">::</span><span class="n">nop</span><span class="p">,</span>
                 <span class="n">CkCallback</span><span class="p">(</span><span class="n">CkReductionTarget</span><span class="p">(</span><span class="n">Transporter</span><span class="p">,</span><span class="n">resized</span><span class="p">),</span> <span class="n">d</span><span class="o">-&gt;</span><span class="n">Tr</span><span class="p">())</span> <span class="p">);</span>
@@ -1298,9 +1479,9 @@
 
     <span class="c1">// Output mesh velocity if ALE is enabled</span>
     <span class="k">if</span> <span class="p">(</span><span class="n">d</span><span class="o">-&gt;</span><span class="n">ALE</span><span class="p">())</span> <span class="p">{</span>
-       <span class="n">nodefieldnames</span><span class="p">.</span><span class="n">push_back</span><span class="p">(</span> <span class="s">&quot;x mesh velocity&quot;</span> <span class="p">);</span>
-       <span class="n">nodefieldnames</span><span class="p">.</span><span class="n">push_back</span><span class="p">(</span> <span class="s">&quot;y mesh velocity&quot;</span> <span class="p">);</span>
-       <span class="n">nodefieldnames</span><span class="p">.</span><span class="n">push_back</span><span class="p">(</span> <span class="s">&quot;z mesh velocity&quot;</span> <span class="p">);</span>
+       <span class="n">nodefieldnames</span><span class="p">.</span><span class="n">push_back</span><span class="p">(</span> <span class="s">&quot;x-mesh-velocity&quot;</span> <span class="p">);</span>
+       <span class="n">nodefieldnames</span><span class="p">.</span><span class="n">push_back</span><span class="p">(</span> <span class="s">&quot;y-mesh-velocity&quot;</span> <span class="p">);</span>
+       <span class="n">nodefieldnames</span><span class="p">.</span><span class="n">push_back</span><span class="p">(</span> <span class="s">&quot;z-mesh-velocity&quot;</span> <span class="p">);</span>
        <span class="n">nodefieldnames</span><span class="p">.</span><span class="n">push_back</span><span class="p">(</span> <span class="s">&quot;volume&quot;</span> <span class="p">);</span>
        <span class="n">nodefields</span><span class="p">.</span><span class="n">push_back</span><span class="p">(</span> <span class="n">m_w</span><span class="p">.</span><span class="n">extract</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span> <span class="p">);</span>
        <span class="n">nodefields</span><span class="p">.</span><span class="n">push_back</span><span class="p">(</span> <span class="n">m_w</span><span class="p">.</span><span class="n">extract</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span> <span class="p">);</span>
@@ -1313,10 +1494,9 @@
       <span class="n">analyticFieldNames</span><span class="p">(</span> <span class="n">eq</span><span class="p">,</span> <span class="n">tk</span><span class="o">::</span><span class="n">Centering</span><span class="o">::</span><span class="n">NODE</span><span class="p">,</span> <span class="n">nodefieldnames</span> <span class="p">);</span>
 
     <span class="c1">// Collect field output from analytical solutions (if exist)</span>
-    <span class="k">auto</span> <span class="n">t</span> <span class="o">=</span> <span class="n">d</span><span class="o">-&gt;</span><span class="n">T</span><span class="p">();</span>
     <span class="k">for</span> <span class="p">(</span><span class="k">const</span> <span class="k">auto</span><span class="o">&amp;</span> <span class="nl">eq</span> <span class="p">:</span> <span class="n">g_cgpde</span><span class="p">)</span>
       <span class="n">analyticFieldOutput</span><span class="p">(</span> <span class="n">eq</span><span class="p">,</span> <span class="n">tk</span><span class="o">::</span><span class="n">Centering</span><span class="o">::</span><span class="n">NODE</span><span class="p">,</span> <span class="n">coord</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">coord</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
-                           <span class="n">coord</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">t</span><span class="p">,</span> <span class="n">nodefields</span> <span class="p">);</span>
+                           <span class="n">coord</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">d</span><span class="o">-&gt;</span><span class="n">T</span><span class="p">(),</span> <span class="n">nodefields</span> <span class="p">);</span>
 
     <span class="c1">// Query and collect block and surface field names from PDEs integrated</span>
     <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="o">&gt;</span> <span class="n">nodesurfnames</span><span class="p">;</span>
@@ -1492,7 +1672,7 @@
   <div class="m-container">
     <div class="m-row">
       <div class="m-col-l-10 m-push-l-1">
-        <p>Quinoa docs, part of the <a href="http://quinoacomputing.org/">Quinoa project</a>. Copyright © J. Bakosi 2012&ndash;2015, Los Alamos National Security, LLC, 2016&ndash;2018, <a href="https://www.triadns.org/">Triad National Security, LLC,</a> 2019-2021. Generated on Wednesday, Jun 30, 2021 based on <a href="https://github.com/quinoacomputing/quinoa/commit/a6f98cde5">a6f98cde5</a> by <a href="http://doxygen.org/">Doxygen</a> and <a href="http://mcss.mosra.cz/">m.css</a>. Contact us via <a href="https://github.com/quinoacomputing/quinoa/">GitHub</a>, <a href="https://groups.io/g/quinoa">Email</a> or <a href="https://quinoa.zulipchat.com">Chat</a>.</p>
+        <p>Quinoa docs, part of the <a href="http://quinoacomputing.org/">Quinoa project</a>. Copyright © J. Bakosi 2012&ndash;2015, Los Alamos National Security, LLC, 2016&ndash;2018, <a href="https://www.triadns.org/">Triad National Security, LLC,</a> 2019-2021. Generated on Thursday, Jul 08, 2021 based on <a href="https://github.com/quinoacomputing/quinoa/commit/2cc083c88">2cc083c88</a> by <a href="http://doxygen.org/">Doxygen</a> and <a href="http://mcss.mosra.cz/">m.css</a>. Contact us via <a href="https://github.com/quinoacomputing/quinoa/">GitHub</a>, <a href="https://groups.io/g/quinoa">Email</a> or <a href="https://quinoa.zulipchat.com">Chat</a>.</p>
       </div>
     </div>
   </div>
