@@ -662,8 +662,6 @@
     <span class="p">}</span>
 
     <span class="c1">//! Reconstruct second-order solution from first-order</span>
-    <span class="c1">//! \param[in] t Physical time</span>
-    <span class="c1">//! \param[in] geoFace Face geometry array</span>
     <span class="c1">//! \param[in] geoElem Element geometry array</span>
     <span class="c1">//! \param[in] fd Face connectivity and boundary conditions object</span>
     <span class="c1">//! \param[in] esup Elements-surrounding-nodes connectivity</span>
@@ -671,8 +669,8 @@
     <span class="c1">//! \param[in] coord Array of nodal coordinates</span>
     <span class="c1">//! \param[in,out] U Solution vector at recent time step</span>
     <span class="c1">//! \param[in,out] P Vector of primitives at recent time step</span>
-    <span class="kt">void</span> <span class="n">reconstruct</span><span class="p">(</span> <span class="n">tk</span><span class="o">::</span><span class="n">real</span> <span class="n">t</span><span class="p">,</span>
-                      <span class="k">const</span> <span class="n">tk</span><span class="o">::</span><span class="n">Fields</span><span class="o">&amp;</span> <span class="n">geoFace</span><span class="p">,</span>
+    <span class="kt">void</span> <span class="n">reconstruct</span><span class="p">(</span> <span class="n">tk</span><span class="o">::</span><span class="n">real</span><span class="p">,</span>
+                      <span class="k">const</span> <span class="n">tk</span><span class="o">::</span><span class="n">Fields</span><span class="o">&amp;</span><span class="p">,</span>
                       <span class="k">const</span> <span class="n">tk</span><span class="o">::</span><span class="n">Fields</span><span class="o">&amp;</span> <span class="n">geoElem</span><span class="p">,</span>
                       <span class="k">const</span> <span class="n">inciter</span><span class="o">::</span><span class="n">FaceData</span><span class="o">&amp;</span> <span class="n">fd</span><span class="p">,</span>
                       <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">map</span><span class="o">&lt;</span> <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="p">,</span> <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span> <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="o">&gt;</span> <span class="o">&gt;&amp;</span>
@@ -681,7 +679,7 @@
                       <span class="k">const</span> <span class="n">tk</span><span class="o">::</span><span class="n">UnsMesh</span><span class="o">::</span><span class="n">Coords</span><span class="o">&amp;</span> <span class="n">coord</span><span class="p">,</span>
                       <span class="n">tk</span><span class="o">::</span><span class="n">Fields</span><span class="o">&amp;</span> <span class="n">U</span><span class="p">,</span>
                       <span class="n">tk</span><span class="o">::</span><span class="n">Fields</span><span class="o">&amp;</span> <span class="n">P</span><span class="p">,</span>
-                      <span class="n">tk</span><span class="o">::</span><span class="n">Fields</span><span class="o">&amp;</span> <span class="n">VolFracMax</span> <span class="p">)</span> <span class="k">const</span>
+                      <span class="n">tk</span><span class="o">::</span><span class="n">Fields</span><span class="o">&amp;</span> <span class="cm">/*VolFracMax*/</span> <span class="p">)</span> <span class="k">const</span>
     <span class="p">{</span>
       <span class="k">const</span> <span class="k">auto</span> <span class="n">rdof</span> <span class="o">=</span> <span class="n">g_inputdeck</span><span class="p">.</span><span class="n">get</span><span class="o">&lt;</span> <span class="n">tag</span><span class="o">::</span><span class="n">discr</span><span class="p">,</span> <span class="n">tag</span><span class="o">::</span><span class="n">rdof</span> <span class="o">&gt;</span><span class="p">();</span>
       <span class="k">const</span> <span class="k">auto</span> <span class="n">intsharp</span> <span class="o">=</span>
@@ -699,20 +697,6 @@
 
         <span class="n">Assert</span><span class="p">(</span> <span class="n">U</span><span class="p">.</span><span class="n">nprop</span><span class="p">()</span> <span class="o">==</span> <span class="n">rdof</span><span class="o">*</span><span class="n">m_ncomp</span><span class="p">,</span> <span class="s">&quot;Number of components in solution &quot;</span>
                 <span class="s">&quot;vector must equal &quot;</span><span class="o">+</span> <span class="n">std</span><span class="o">::</span><span class="n">to_string</span><span class="p">(</span><span class="n">rdof</span><span class="o">*</span><span class="n">m_ncomp</span><span class="p">)</span> <span class="p">);</span>
-        <span class="n">Assert</span><span class="p">(</span> <span class="n">fd</span><span class="p">.</span><span class="n">Inpofa</span><span class="p">().</span><span class="n">size</span><span class="p">()</span><span class="o">/</span><span class="mi">3</span> <span class="o">==</span> <span class="n">fd</span><span class="p">.</span><span class="n">Esuf</span><span class="p">().</span><span class="n">size</span><span class="p">()</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span>
-                <span class="s">&quot;Mismatch in inpofa size&quot;</span> <span class="p">);</span>
-
-        <span class="c1">// allocate and initialize matrix and vector for reconstruction:</span>
-        <span class="c1">// lhs_ls is the left-hand side matrix for solving the least-squares</span>
-        <span class="c1">// system using the normal equation approach, for each mesh element.</span>
-        <span class="c1">// It is indexed as follows:</span>
-        <span class="c1">// The first index is the element id;</span>
-        <span class="c1">// the second index is the row id of the 3-by-3 matrix;</span>
-        <span class="c1">// the third index is the column id of the 3-by-3 matrix.</span>
-        <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">array</span><span class="o">&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">array</span><span class="o">&lt;</span> <span class="n">tk</span><span class="o">::</span><span class="n">real</span><span class="p">,</span> <span class="mi">3</span> <span class="o">&gt;</span><span class="p">,</span> <span class="mi">3</span> <span class="o">&gt;</span> <span class="o">&gt;</span>
-          <span class="n">lhs_ls</span><span class="p">(</span> <span class="n">nelem</span><span class="p">,</span> <span class="p">{{</span> <span class="p">{{</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">}},</span>
-                            <span class="p">{{</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">}},</span>
-                            <span class="p">{{</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">}}</span> <span class="p">}}</span> <span class="p">);</span>
 
         <span class="c1">//----- reconstruction of conserved quantities -----</span>
         <span class="c1">//--------------------------------------------------</span>
@@ -721,87 +705,37 @@
         <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">is_p0p1</span><span class="p">)</span>
           <span class="n">varRange</span> <span class="o">=</span> <span class="p">{{</span><span class="n">volfracIdx</span><span class="p">(</span><span class="n">nmat</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="n">volfracIdx</span><span class="p">(</span><span class="n">nmat</span><span class="p">,</span> <span class="n">nmat</span><span class="mi">-1</span><span class="p">)}};</span>
 
-        <span class="c1">// rhs_ls is the right-hand side vector for solving the least-squares</span>
-        <span class="c1">// system using the normal equation approach, for each element.</span>
-        <span class="c1">// It is indexed as follows:</span>
-        <span class="c1">// The first index is the element id;</span>
-        <span class="c1">// the second index is the scalar equation which is being reconstructed;</span>
-        <span class="c1">// the third index is the row id of the rhs vector.</span>
-        <span class="c1">// two rhs_ls vectors are needed for reconstructing conserved and</span>
-        <span class="c1">// primitive quantites separately</span>
-        <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">array</span><span class="o">&lt;</span> <span class="n">tk</span><span class="o">::</span><span class="n">real</span><span class="p">,</span> <span class="mi">3</span> <span class="o">&gt;</span> <span class="o">&gt;</span> <span class="o">&gt;</span>
-          <span class="n">rhsu_ls</span><span class="p">(</span> <span class="n">nelem</span><span class="p">,</span> <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">array</span><span class="o">&lt;</span> <span class="n">tk</span><span class="o">::</span><span class="n">real</span><span class="p">,</span> <span class="mi">3</span> <span class="o">&gt;</span> <span class="o">&gt;</span>
-            <span class="p">(</span> <span class="n">varRange</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">-</span><span class="n">varRange</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span>
-              <span class="p">{{</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span> <span class="p">}}</span> <span class="p">)</span> <span class="p">);</span>
-
-        <span class="c1">// reconstruct x,y,z-derivatives of unknowns.</span>
-        <span class="c1">// 0. get lhs matrix, which is only geometry dependent</span>
-        <span class="n">tk</span><span class="o">::</span><span class="n">lhsLeastSq_P0P1</span><span class="p">(</span><span class="n">fd</span><span class="p">,</span> <span class="n">geoElem</span><span class="p">,</span> <span class="n">geoFace</span><span class="p">,</span> <span class="n">lhs_ls</span><span class="p">);</span>
-
-        <span class="c1">// 1. internal face contributions</span>
-        <span class="n">tk</span><span class="o">::</span><span class="n">intLeastSq_P0P1</span><span class="p">(</span><span class="n">m_offset</span><span class="p">,</span> <span class="n">rdof</span><span class="p">,</span> <span class="n">fd</span><span class="p">,</span> <span class="n">geoElem</span><span class="p">,</span> <span class="n">U</span><span class="p">,</span> <span class="n">rhsu_ls</span><span class="p">,</span> <span class="n">varRange</span><span class="p">);</span>
-
-        <span class="c1">// 2. boundary face contributions</span>
-        <span class="k">for</span> <span class="p">(</span><span class="k">const</span> <span class="k">auto</span><span class="o">&amp;</span> <span class="nl">b</span> <span class="p">:</span> <span class="n">m_bc</span><span class="p">)</span>
-        <span class="p">{</span>
-          <span class="n">tk</span><span class="o">::</span><span class="n">bndLeastSqConservedVar_P0P1</span><span class="p">(</span> <span class="n">m_system</span><span class="p">,</span> <span class="n">m_ncomp</span><span class="p">,</span> <span class="n">m_offset</span><span class="p">,</span> <span class="n">rdof</span><span class="p">,</span>
-            <span class="n">b</span><span class="p">.</span><span class="n">first</span><span class="p">,</span> <span class="n">fd</span><span class="p">,</span> <span class="n">geoFace</span><span class="p">,</span> <span class="n">geoElem</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">b</span><span class="p">.</span><span class="n">second</span><span class="p">,</span> <span class="n">P</span><span class="p">,</span> <span class="n">U</span><span class="p">,</span> <span class="n">rhsu_ls</span><span class="p">,</span> <span class="n">varRange</span><span class="p">,</span>
-            <span class="n">nprim</span><span class="p">()</span> <span class="p">);</span>
-        <span class="p">}</span>
-
-        <span class="c1">// 3. solve 3x3 least-squares system</span>
-        <span class="n">tk</span><span class="o">::</span><span class="n">solveLeastSq_P0P1</span><span class="p">(</span><span class="n">m_offset</span><span class="p">,</span> <span class="n">rdof</span><span class="p">,</span> <span class="n">lhs_ls</span><span class="p">,</span> <span class="n">rhsu_ls</span><span class="p">,</span> <span class="n">U</span><span class="p">,</span> <span class="n">varRange</span><span class="p">);</span>
-
+        <span class="c1">// 1. solve 3x3 least-squares system</span>
         <span class="k">for</span> <span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="n">e</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">e</span><span class="o">&lt;</span><span class="n">nelem</span><span class="p">;</span> <span class="o">++</span><span class="n">e</span><span class="p">)</span>
         <span class="p">{</span>
-          <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span> <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="o">&gt;</span> <span class="n">matInt</span><span class="p">(</span><span class="n">nmat</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
-          <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span> <span class="n">tk</span><span class="o">::</span><span class="n">real</span> <span class="o">&gt;</span> <span class="n">alAvg</span><span class="p">(</span><span class="n">nmat</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">);</span>
-          <span class="k">for</span> <span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="n">k</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">k</span><span class="o">&lt;</span><span class="n">nmat</span><span class="p">;</span> <span class="o">++</span><span class="n">k</span><span class="p">)</span>
-            <span class="n">alAvg</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">U</span><span class="p">(</span><span class="n">e</span><span class="p">,</span> <span class="n">volfracDofIdx</span><span class="p">(</span><span class="n">nmat</span><span class="p">,</span><span class="n">k</span><span class="p">,</span><span class="n">rdof</span><span class="p">,</span><span class="mi">0</span><span class="p">),</span> <span class="n">m_offset</span><span class="p">);</span>
-          <span class="k">auto</span> <span class="n">intInd</span> <span class="o">=</span> <span class="n">interfaceIndicator</span><span class="p">(</span><span class="n">nmat</span><span class="p">,</span> <span class="n">alAvg</span><span class="p">,</span> <span class="n">matInt</span><span class="p">);</span>
-          <span class="k">if</span> <span class="p">((</span><span class="n">intsharp</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="o">&amp;&amp;</span> <span class="n">intInd</span><span class="p">)</span>
-          <span class="p">{</span>
-            <span class="c1">// Reconstruct second-order dofs of volume-fractions in Taylor space</span>
-            <span class="c1">// using nodal-stencils, for a good interface-normal estimate</span>
-            <span class="n">tk</span><span class="o">::</span><span class="n">recoLeastSqExtStencil</span><span class="p">(</span> <span class="n">rdof</span><span class="p">,</span> <span class="n">m_offset</span><span class="p">,</span> <span class="n">e</span><span class="p">,</span> <span class="n">esup</span><span class="p">,</span> <span class="n">inpoel</span><span class="p">,</span> <span class="n">geoElem</span><span class="p">,</span>
-              <span class="n">U</span><span class="p">,</span> <span class="n">varRange</span> <span class="p">);</span>
-          <span class="p">}</span>
+          <span class="c1">// Reconstruct second-order dofs of volume-fractions in Taylor space</span>
+          <span class="c1">// using nodal-stencils, for a good interface-normal estimate</span>
+          <span class="n">tk</span><span class="o">::</span><span class="n">recoLeastSqExtStencil</span><span class="p">(</span> <span class="n">rdof</span><span class="p">,</span> <span class="n">m_offset</span><span class="p">,</span> <span class="n">e</span><span class="p">,</span> <span class="n">esup</span><span class="p">,</span> <span class="n">inpoel</span><span class="p">,</span> <span class="n">geoElem</span><span class="p">,</span>
+            <span class="n">U</span><span class="p">,</span> <span class="n">varRange</span> <span class="p">);</span>
         <span class="p">}</span>
 
-        <span class="c1">// 4. transform reconstructed derivatives to Dubiner dofs</span>
+        <span class="c1">// 2. transform reconstructed derivatives to Dubiner dofs</span>
         <span class="n">tk</span><span class="o">::</span><span class="n">transform_P0P1</span><span class="p">(</span><span class="n">m_offset</span><span class="p">,</span> <span class="n">rdof</span><span class="p">,</span> <span class="n">nelem</span><span class="p">,</span> <span class="n">inpoel</span><span class="p">,</span> <span class="n">coord</span><span class="p">,</span> <span class="n">U</span><span class="p">,</span> <span class="n">varRange</span><span class="p">);</span>
 
-        <span class="c1">// 5. Find the maximum volume fraction in the neighborhood of each cell</span>
-        <span class="n">tk</span><span class="o">::</span><span class="n">findMaxVolfrac</span><span class="p">(</span> <span class="n">m_offset</span><span class="p">,</span> <span class="n">rdof</span><span class="p">,</span> <span class="n">nmat</span><span class="p">,</span> <span class="n">nelem</span><span class="p">,</span> <span class="n">fd</span><span class="p">.</span><span class="n">Esuel</span><span class="p">(),</span> <span class="n">esup</span><span class="p">,</span> <span class="n">inpoel</span><span class="p">,</span>
-          <span class="n">U</span><span class="p">,</span> <span class="n">VolFracMax</span> <span class="p">);</span>
+        <span class="c1">//// 3. Find the maximum volume fraction in the neighborhood of each cell</span>
+        <span class="c1">//tk::findMaxVolfrac( m_offset, rdof, nmat, nelem, fd.Esuel(), esup,</span>
+        <span class="c1">//  inpoel, U, VolFracMax );</span>
 
         <span class="c1">//----- reconstruction of primitive quantities -----</span>
         <span class="c1">//--------------------------------------------------</span>
         <span class="c1">// For multimat, conserved and primitive quantities are reconstructed</span>
         <span class="c1">// separately.</span>
         <span class="k">if</span> <span class="p">(</span><span class="n">is_p0p1</span><span class="p">)</span> <span class="p">{</span>
-          <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">array</span><span class="o">&lt;</span> <span class="n">tk</span><span class="o">::</span><span class="n">real</span><span class="p">,</span> <span class="mi">3</span> <span class="o">&gt;</span> <span class="o">&gt;</span> <span class="o">&gt;</span>
-            <span class="n">rhsp_ls</span><span class="p">(</span> <span class="n">nelem</span><span class="p">,</span> <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">array</span><span class="o">&lt;</span> <span class="n">tk</span><span class="o">::</span><span class="n">real</span><span class="p">,</span> <span class="mi">3</span> <span class="o">&gt;</span> <span class="o">&gt;</span>
-              <span class="p">(</span> <span class="n">nprim</span><span class="p">(),</span>
-                <span class="p">{{</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span> <span class="p">}}</span> <span class="p">)</span> <span class="p">);</span>
-
           <span class="c1">// 1.</span>
-          <span class="n">tk</span><span class="o">::</span><span class="n">intLeastSq_P0P1</span><span class="p">(</span><span class="n">m_offset</span><span class="p">,</span> <span class="n">rdof</span><span class="p">,</span> <span class="n">fd</span><span class="p">,</span> <span class="n">geoElem</span><span class="p">,</span> <span class="n">P</span><span class="p">,</span> <span class="n">rhsp_ls</span><span class="p">,</span>
-            <span class="p">{</span><span class="mi">0</span><span class="p">,</span> <span class="n">nprim</span><span class="p">()</span><span class="mi">-1</span><span class="p">});</span>
-
-          <span class="c1">// 2.</span>
-          <span class="k">for</span> <span class="p">(</span><span class="k">const</span> <span class="k">auto</span><span class="o">&amp;</span> <span class="nl">b</span> <span class="p">:</span> <span class="n">m_bc</span><span class="p">)</span>
+          <span class="k">for</span> <span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="n">e</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">e</span><span class="o">&lt;</span><span class="n">nelem</span><span class="p">;</span> <span class="o">++</span><span class="n">e</span><span class="p">)</span>
           <span class="p">{</span>
-            <span class="n">tk</span><span class="o">::</span><span class="n">bndLeastSqPrimitiveVar_P0P1</span><span class="p">(</span><span class="n">m_system</span><span class="p">,</span> <span class="n">nprim</span><span class="p">(),</span> <span class="n">m_offset</span><span class="p">,</span> <span class="n">rdof</span><span class="p">,</span>
-              <span class="n">b</span><span class="p">.</span><span class="n">first</span><span class="p">,</span> <span class="n">fd</span><span class="p">,</span> <span class="n">geoFace</span><span class="p">,</span> <span class="n">geoElem</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">b</span><span class="p">.</span><span class="n">second</span><span class="p">,</span> <span class="n">P</span><span class="p">,</span> <span class="n">U</span><span class="p">,</span> <span class="n">rhsp_ls</span><span class="p">,</span>
-              <span class="n">m_ncomp</span><span class="p">);</span>
+            <span class="c1">// Reconstruct second-order dofs of volume-fractions in Taylor space</span>
+            <span class="c1">// using nodal-stencils, for a good interface-normal estimate</span>
+            <span class="n">tk</span><span class="o">::</span><span class="n">recoLeastSqExtStencil</span><span class="p">(</span> <span class="n">rdof</span><span class="p">,</span> <span class="n">m_offset</span><span class="p">,</span> <span class="n">e</span><span class="p">,</span> <span class="n">esup</span><span class="p">,</span> <span class="n">inpoel</span><span class="p">,</span> <span class="n">geoElem</span><span class="p">,</span>
+              <span class="n">P</span><span class="p">,</span> <span class="p">{</span><span class="mi">0</span><span class="p">,</span> <span class="n">nprim</span><span class="p">()</span><span class="mi">-1</span><span class="p">}</span> <span class="p">);</span>
           <span class="p">}</span>
 
-          <span class="c1">// 3.</span>
-          <span class="n">tk</span><span class="o">::</span><span class="n">solveLeastSq_P0P1</span><span class="p">(</span><span class="n">m_offset</span><span class="p">,</span> <span class="n">rdof</span><span class="p">,</span> <span class="n">lhs_ls</span><span class="p">,</span> <span class="n">rhsp_ls</span><span class="p">,</span> <span class="n">P</span><span class="p">,</span>
-            <span class="p">{</span><span class="mi">0</span><span class="p">,</span> <span class="n">nprim</span><span class="p">()</span><span class="mi">-1</span><span class="p">});</span>
-
-          <span class="c1">// 4.</span>
+          <span class="c1">// 2.</span>
           <span class="n">tk</span><span class="o">::</span><span class="n">transform_P0P1</span><span class="p">(</span><span class="n">m_offset</span><span class="p">,</span> <span class="n">rdof</span><span class="p">,</span> <span class="n">nelem</span><span class="p">,</span> <span class="n">inpoel</span><span class="p">,</span> <span class="n">coord</span><span class="p">,</span> <span class="n">P</span><span class="p">,</span>
             <span class="p">{</span><span class="mi">0</span><span class="p">,</span> <span class="n">nprim</span><span class="p">()</span><span class="mi">-1</span><span class="p">});</span>
         <span class="p">}</span>
@@ -860,9 +794,9 @@
           <span class="n">m_system</span><span class="p">,</span> <span class="n">m_offset</span><span class="p">,</span> <span class="n">coord</span><span class="p">,</span> <span class="n">gid</span><span class="p">,</span> <span class="n">bid</span><span class="p">,</span> <span class="n">uNodalExtrm</span><span class="p">,</span> <span class="n">pNodalExtrm</span><span class="p">,</span> <span class="n">U</span><span class="p">,</span> <span class="n">P</span><span class="p">,</span>
           <span class="n">nmat</span> <span class="p">);</span>
       <span class="p">}</span>
-      <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="n">limiter</span> <span class="o">==</span> <span class="n">ctr</span><span class="o">::</span><span class="n">LimiterType</span><span class="o">::</span><span class="n">WENOP1</span><span class="p">)</span>
+      <span class="k">else</span>
       <span class="p">{</span>
-        <span class="n">WENOMultiMat_P1</span><span class="p">(</span> <span class="n">fd</span><span class="p">.</span><span class="n">Esuel</span><span class="p">(),</span> <span class="n">m_offset</span><span class="p">,</span> <span class="n">U</span><span class="p">,</span> <span class="n">P</span><span class="p">,</span> <span class="n">nmat</span> <span class="p">);</span>
+        <span class="n">Throw</span><span class="p">(</span><span class="s">&quot;Limiter type not configured for multimat.&quot;</span><span class="p">);</span>
       <span class="p">}</span>
     <span class="p">}</span>
 
@@ -1649,7 +1583,7 @@
   <div class="m-container">
     <div class="m-row">
       <div class="m-col-l-10 m-push-l-1">
-        <p>Quinoa docs, part of the <a href="http://quinoacomputing.org/">Quinoa project</a>. Copyright © J. Bakosi 2012&ndash;2015, Los Alamos National Security, LLC, 2016&ndash;2018, <a href="https://www.triadns.org/">Triad National Security, LLC,</a> 2019-2021. Generated on Thursday, Jul 08, 2021 based on <a href="https://github.com/quinoacomputing/quinoa/commit/2cc083c88">2cc083c88</a> by <a href="http://doxygen.org/">Doxygen</a> and <a href="http://mcss.mosra.cz/">m.css</a>. Contact us via <a href="https://github.com/quinoacomputing/quinoa/">GitHub</a>, <a href="https://groups.io/g/quinoa">Email</a> or <a href="https://quinoa.zulipchat.com">Chat</a>.</p>
+        <p>Quinoa docs, part of the <a href="http://quinoacomputing.org/">Quinoa project</a>. Copyright © J. Bakosi 2012&ndash;2015, Los Alamos National Security, LLC, 2016&ndash;2018, <a href="https://www.triadns.org/">Triad National Security, LLC,</a> 2019-2021. Generated on Monday, Jul 12, 2021 based on <a href="https://github.com/quinoacomputing/quinoa/commit/d710a0e29">d710a0e29</a> by <a href="http://doxygen.org/">Doxygen</a> and <a href="http://mcss.mosra.cz/">m.css</a>. Contact us via <a href="https://github.com/quinoacomputing/quinoa/">GitHub</a>, <a href="https://groups.io/g/quinoa">Email</a> or <a href="https://quinoa.zulipchat.com">Chat</a>.</p>
       </div>
     </div>
   </div>
