@@ -281,11 +281,13 @@
 
     <span class="c1">//! Update the primitives for this PDE system</span>
     <span class="c1">//! \param[in] unk Array of unknowns</span>
+    <span class="c1">//! \param[in] L The left hand side block-diagonal mass matrix</span>
+    <span class="c1">//! \param[in] geoElem Element geometry array</span>
     <span class="c1">//! \param[in,out] prim Array of primitives</span>
     <span class="c1">//! \param[in] nielem Number of internal elements</span>
     <span class="c1">//! \details This function computes and stores the dofs for primitive</span>
     <span class="c1">//!   quantities, which are required for obtaining reconstructed states used</span>
-    <span class="c1">//!   in the Riemann solver. See /PDE/Integrate/Riemann/AUSM.hpp, where the</span>
+    <span class="c1">//!   in the Riemann solver. See /PDE/Riemann/AUSM.hpp, where the</span>
     <span class="c1">//!   normal velocity for advection is calculated from independently</span>
     <span class="c1">//!   reconstructed velocities.</span>
     <span class="kt">void</span> <span class="n">updatePrimitives</span><span class="p">(</span> <span class="k">const</span> <span class="n">tk</span><span class="o">::</span><span class="n">Fields</span><span class="o">&amp;</span> <span class="n">unk</span><span class="p">,</span>
@@ -408,7 +410,7 @@
     <span class="c1">//!   becomes necessary when shocks pass through cells which contain a very</span>
     <span class="c1">//!   small amount of material. The state of that tiny material might</span>
     <span class="c1">//!   become unphysical and cause solution to diverge; thus requiring such</span>
-    <span class="c1">//!   a ``reset&#39;&#39;.</span>
+    <span class="c1">//!   a &quot;reset&quot;.</span>
     <span class="kt">void</span> <span class="n">cleanTraceMaterial</span><span class="p">(</span> <span class="k">const</span> <span class="n">tk</span><span class="o">::</span><span class="n">Fields</span><span class="o">&amp;</span> <span class="n">geoElem</span><span class="p">,</span>
                              <span class="n">tk</span><span class="o">::</span><span class="n">Fields</span><span class="o">&amp;</span> <span class="n">unk</span><span class="p">,</span>
                              <span class="n">tk</span><span class="o">::</span><span class="n">Fields</span><span class="o">&amp;</span> <span class="n">prim</span><span class="p">,</span>
@@ -678,8 +680,7 @@
                       <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span> <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="o">&gt;&amp;</span> <span class="n">inpoel</span><span class="p">,</span>
                       <span class="k">const</span> <span class="n">tk</span><span class="o">::</span><span class="n">UnsMesh</span><span class="o">::</span><span class="n">Coords</span><span class="o">&amp;</span> <span class="n">coord</span><span class="p">,</span>
                       <span class="n">tk</span><span class="o">::</span><span class="n">Fields</span><span class="o">&amp;</span> <span class="n">U</span><span class="p">,</span>
-                      <span class="n">tk</span><span class="o">::</span><span class="n">Fields</span><span class="o">&amp;</span> <span class="n">P</span><span class="p">,</span>
-                      <span class="n">tk</span><span class="o">::</span><span class="n">Fields</span><span class="o">&amp;</span> <span class="cm">/*VolFracMax*/</span> <span class="p">)</span> <span class="k">const</span>
+                      <span class="n">tk</span><span class="o">::</span><span class="n">Fields</span><span class="o">&amp;</span> <span class="n">P</span> <span class="p">)</span> <span class="k">const</span>
     <span class="p">{</span>
       <span class="k">const</span> <span class="k">auto</span> <span class="n">rdof</span> <span class="o">=</span> <span class="n">g_inputdeck</span><span class="p">.</span><span class="n">get</span><span class="o">&lt;</span> <span class="n">tag</span><span class="o">::</span><span class="n">discr</span><span class="p">,</span> <span class="n">tag</span><span class="o">::</span><span class="n">rdof</span> <span class="o">&gt;</span><span class="p">();</span>
       <span class="k">const</span> <span class="k">auto</span> <span class="n">intsharp</span> <span class="o">=</span>
@@ -716,10 +717,6 @@
 
         <span class="c1">// 2. transform reconstructed derivatives to Dubiner dofs</span>
         <span class="n">tk</span><span class="o">::</span><span class="n">transform_P0P1</span><span class="p">(</span><span class="n">m_offset</span><span class="p">,</span> <span class="n">rdof</span><span class="p">,</span> <span class="n">nelem</span><span class="p">,</span> <span class="n">inpoel</span><span class="p">,</span> <span class="n">coord</span><span class="p">,</span> <span class="n">U</span><span class="p">,</span> <span class="n">varRange</span><span class="p">);</span>
-
-        <span class="c1">//// 3. Find the maximum volume fraction in the neighborhood of each cell</span>
-        <span class="c1">//tk::findMaxVolfrac( m_offset, rdof, nmat, nelem, fd.Esuel(), esup,</span>
-        <span class="c1">//  inpoel, U, VolFracMax );</span>
 
         <span class="c1">//----- reconstruction of primitive quantities -----</span>
         <span class="c1">//--------------------------------------------------</span>
@@ -820,7 +817,6 @@
               <span class="k">const</span> <span class="n">tk</span><span class="o">::</span><span class="n">UnsMesh</span><span class="o">::</span><span class="n">Coords</span><span class="o">&amp;</span> <span class="n">coord</span><span class="p">,</span>
               <span class="k">const</span> <span class="n">tk</span><span class="o">::</span><span class="n">Fields</span><span class="o">&amp;</span> <span class="n">U</span><span class="p">,</span>
               <span class="k">const</span> <span class="n">tk</span><span class="o">::</span><span class="n">Fields</span><span class="o">&amp;</span> <span class="n">P</span><span class="p">,</span>
-              <span class="k">const</span> <span class="n">tk</span><span class="o">::</span><span class="n">Fields</span><span class="o">&amp;</span> <span class="n">VolFracMax</span><span class="p">,</span>
               <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span> <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="o">&gt;&amp;</span> <span class="n">ndofel</span><span class="p">,</span>
               <span class="n">tk</span><span class="o">::</span><span class="n">Fields</span><span class="o">&amp;</span> <span class="n">R</span> <span class="p">)</span> <span class="k">const</span>
     <span class="p">{</span>
@@ -837,16 +833,12 @@
               <span class="s">&quot;vector and primitive vector at recent time step incorrect&quot;</span> <span class="p">);</span>
       <span class="n">Assert</span><span class="p">(</span> <span class="n">U</span><span class="p">.</span><span class="n">nunk</span><span class="p">()</span> <span class="o">==</span> <span class="n">R</span><span class="p">.</span><span class="n">nunk</span><span class="p">(),</span> <span class="s">&quot;Number of unknowns in solution &quot;</span>
               <span class="s">&quot;vector and right-hand side at recent time step incorrect&quot;</span> <span class="p">);</span>
-      <span class="n">Assert</span><span class="p">(</span> <span class="n">VolFracMax</span><span class="p">.</span><span class="n">nunk</span><span class="p">()</span> <span class="o">==</span> <span class="n">P</span><span class="p">.</span><span class="n">nunk</span><span class="p">(),</span> <span class="s">&quot;Number of unknowns in volfracmax &quot;</span>
-              <span class="s">&quot;vector and primitive vector at recent time step incorrect&quot;</span> <span class="p">);</span>
       <span class="n">Assert</span><span class="p">(</span> <span class="n">U</span><span class="p">.</span><span class="n">nprop</span><span class="p">()</span> <span class="o">==</span> <span class="n">rdof</span><span class="o">*</span><span class="n">m_ncomp</span><span class="p">,</span> <span class="s">&quot;Number of components in solution &quot;</span>
               <span class="s">&quot;vector must equal &quot;</span><span class="o">+</span> <span class="n">std</span><span class="o">::</span><span class="n">to_string</span><span class="p">(</span><span class="n">rdof</span><span class="o">*</span><span class="n">m_ncomp</span><span class="p">)</span> <span class="p">);</span>
       <span class="n">Assert</span><span class="p">(</span> <span class="n">P</span><span class="p">.</span><span class="n">nprop</span><span class="p">()</span> <span class="o">==</span> <span class="n">rdof</span><span class="o">*</span><span class="n">nprim</span><span class="p">(),</span> <span class="s">&quot;Number of components in primitive &quot;</span>
               <span class="s">&quot;vector must equal &quot;</span><span class="o">+</span> <span class="n">std</span><span class="o">::</span><span class="n">to_string</span><span class="p">(</span><span class="n">rdof</span><span class="o">*</span><span class="n">nprim</span><span class="p">())</span> <span class="p">);</span>
       <span class="n">Assert</span><span class="p">(</span> <span class="n">R</span><span class="p">.</span><span class="n">nprop</span><span class="p">()</span> <span class="o">==</span> <span class="n">ndof</span><span class="o">*</span><span class="n">m_ncomp</span><span class="p">,</span> <span class="s">&quot;Number of components in right-hand &quot;</span>
               <span class="s">&quot;side vector must equal &quot;</span><span class="o">+</span> <span class="n">std</span><span class="o">::</span><span class="n">to_string</span><span class="p">(</span><span class="n">ndof</span><span class="o">*</span><span class="n">m_ncomp</span><span class="p">)</span> <span class="p">);</span>
-      <span class="n">Assert</span><span class="p">(</span> <span class="n">VolFracMax</span><span class="p">.</span><span class="n">nprop</span><span class="p">()</span> <span class="o">==</span> <span class="mi">2</span><span class="o">*</span><span class="n">nmat</span><span class="p">,</span> <span class="s">&quot;Number of components in &quot;</span>
-              <span class="s">&quot;volfracmax vector incorrect&quot;</span> <span class="p">);</span>
       <span class="n">Assert</span><span class="p">(</span> <span class="n">fd</span><span class="p">.</span><span class="n">Inpofa</span><span class="p">().</span><span class="n">size</span><span class="p">()</span><span class="o">/</span><span class="mi">3</span> <span class="o">==</span> <span class="n">fd</span><span class="p">.</span><span class="n">Esuf</span><span class="p">().</span><span class="n">size</span><span class="p">()</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span>
               <span class="s">&quot;Mismatch in inpofa size&quot;</span> <span class="p">);</span>
       <span class="n">Assert</span><span class="p">(</span> <span class="n">ndof</span> <span class="o">&lt;=</span> <span class="mi">4</span><span class="p">,</span> <span class="s">&quot;DGP2 not set up for multi-material&quot;</span> <span class="p">);</span>
@@ -877,8 +869,8 @@
 
       <span class="c1">// compute internal surface flux integrals</span>
       <span class="n">tk</span><span class="o">::</span><span class="n">surfInt</span><span class="p">(</span> <span class="n">m_system</span><span class="p">,</span> <span class="n">nmat</span><span class="p">,</span> <span class="n">m_offset</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">ndof</span><span class="p">,</span> <span class="n">rdof</span><span class="p">,</span> <span class="n">inpoel</span><span class="p">,</span> <span class="n">coord</span><span class="p">,</span>
-                   <span class="n">fd</span><span class="p">,</span> <span class="n">geoFace</span><span class="p">,</span> <span class="n">geoElem</span><span class="p">,</span> <span class="n">rieflxfn</span><span class="p">,</span> <span class="n">velfn</span><span class="p">,</span> <span class="n">U</span><span class="p">,</span> <span class="n">P</span><span class="p">,</span> <span class="n">VolFracMax</span><span class="p">,</span>
-                   <span class="n">ndofel</span><span class="p">,</span> <span class="n">R</span><span class="p">,</span> <span class="n">vriem</span><span class="p">,</span> <span class="n">riemannLoc</span><span class="p">,</span> <span class="n">riemannDeriv</span><span class="p">,</span> <span class="n">intsharp</span> <span class="p">);</span>
+                   <span class="n">fd</span><span class="p">,</span> <span class="n">geoFace</span><span class="p">,</span> <span class="n">geoElem</span><span class="p">,</span> <span class="n">rieflxfn</span><span class="p">,</span> <span class="n">velfn</span><span class="p">,</span> <span class="n">U</span><span class="p">,</span> <span class="n">P</span><span class="p">,</span> <span class="n">ndofel</span><span class="p">,</span> <span class="n">R</span><span class="p">,</span>
+                   <span class="n">vriem</span><span class="p">,</span> <span class="n">riemannLoc</span><span class="p">,</span> <span class="n">riemannDeriv</span><span class="p">,</span> <span class="n">intsharp</span> <span class="p">);</span>
 
       <span class="k">if</span><span class="p">(</span><span class="n">ndof</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">)</span>
         <span class="c1">// compute volume integrals</span>
@@ -889,8 +881,8 @@
       <span class="k">for</span> <span class="p">(</span><span class="k">const</span> <span class="k">auto</span><span class="o">&amp;</span> <span class="nl">b</span> <span class="p">:</span> <span class="n">m_bc</span><span class="p">)</span>
         <span class="n">tk</span><span class="o">::</span><span class="n">bndSurfInt</span><span class="p">(</span> <span class="n">m_system</span><span class="p">,</span> <span class="n">nmat</span><span class="p">,</span> <span class="n">m_offset</span><span class="p">,</span> <span class="n">ndof</span><span class="p">,</span> <span class="n">rdof</span><span class="p">,</span> <span class="n">b</span><span class="p">.</span><span class="n">first</span><span class="p">,</span>
                         <span class="n">fd</span><span class="p">,</span> <span class="n">geoFace</span><span class="p">,</span> <span class="n">geoElem</span><span class="p">,</span> <span class="n">inpoel</span><span class="p">,</span> <span class="n">coord</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">rieflxfn</span><span class="p">,</span> <span class="n">velfn</span><span class="p">,</span>
-                        <span class="n">b</span><span class="p">.</span><span class="n">second</span><span class="p">,</span> <span class="n">U</span><span class="p">,</span> <span class="n">P</span><span class="p">,</span> <span class="n">VolFracMax</span><span class="p">,</span> <span class="n">ndofel</span><span class="p">,</span> <span class="n">R</span><span class="p">,</span> <span class="n">vriem</span><span class="p">,</span>
-                        <span class="n">riemannLoc</span><span class="p">,</span> <span class="n">riemannDeriv</span><span class="p">,</span> <span class="n">intsharp</span> <span class="p">);</span>
+                        <span class="n">b</span><span class="p">.</span><span class="n">second</span><span class="p">,</span> <span class="n">U</span><span class="p">,</span> <span class="n">P</span><span class="p">,</span> <span class="n">ndofel</span><span class="p">,</span> <span class="n">R</span><span class="p">,</span> <span class="n">vriem</span><span class="p">,</span> <span class="n">riemannLoc</span><span class="p">,</span>
+                        <span class="n">riemannDeriv</span><span class="p">,</span> <span class="n">intsharp</span> <span class="p">);</span>
 
       <span class="n">Assert</span><span class="p">(</span> <span class="n">riemannDeriv</span><span class="p">.</span><span class="n">size</span><span class="p">()</span> <span class="o">==</span> <span class="mi">3</span><span class="o">*</span><span class="n">nmat</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="s">&quot;Size of Riemann derivative &quot;</span>
               <span class="s">&quot;vector incorrect&quot;</span> <span class="p">);</span>
@@ -1468,6 +1460,8 @@
 
     <span class="c1">//! \brief Boundary state function providing the left and right state of a</span>
     <span class="c1">//!   face at subsonic outlet boundaries</span>
+    <span class="c1">//! \param[in] system Equation system index</span>
+    <span class="c1">//! \param[in] ncomp Number of scalar components in this PDE system</span>
     <span class="c1">//! \param[in] ul Left (domain-internal) state</span>
     <span class="c1">//! \return Left and right states for all scalar components in this PDE</span>
     <span class="c1">//!   system</span>
@@ -1478,7 +1472,8 @@
     <span class="c1">//!   pressure from the outside and other quantities from the internal cell.</span>
     <span class="c1">//! \note The function signature must follow tk::StateFn</span>
     <span class="k">static</span> <span class="n">tk</span><span class="o">::</span><span class="n">StateFn</span><span class="o">::</span><span class="n">result_type</span>
-    <span class="n">subsonicOutlet</span><span class="p">(</span> <span class="n">ncomp_t</span> <span class="n">system</span><span class="p">,</span> <span class="n">ncomp_t</span> <span class="n">ncomp</span><span class="p">,</span>
+    <span class="n">subsonicOutlet</span><span class="p">(</span> <span class="n">ncomp_t</span> <span class="n">system</span><span class="p">,</span>
+                    <span class="n">ncomp_t</span> <span class="n">ncomp</span><span class="p">,</span>
                     <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span> <span class="n">tk</span><span class="o">::</span><span class="n">real</span> <span class="o">&gt;&amp;</span> <span class="n">ul</span><span class="p">,</span>
                     <span class="n">tk</span><span class="o">::</span><span class="n">real</span><span class="p">,</span> <span class="n">tk</span><span class="o">::</span><span class="n">real</span><span class="p">,</span> <span class="n">tk</span><span class="o">::</span><span class="n">real</span><span class="p">,</span> <span class="n">tk</span><span class="o">::</span><span class="n">real</span><span class="p">,</span>
                     <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">array</span><span class="o">&lt;</span> <span class="n">tk</span><span class="o">::</span><span class="n">real</span><span class="p">,</span> <span class="mi">3</span> <span class="o">&gt;&amp;</span> <span class="p">)</span>
@@ -1583,7 +1578,7 @@
   <div class="m-container">
     <div class="m-row">
       <div class="m-col-l-10 m-push-l-1">
-        <p>Quinoa docs, part of the <a href="http://quinoacomputing.org/">Quinoa project</a>. Copyright © J. Bakosi 2012&ndash;2015, Los Alamos National Security, LLC, 2016&ndash;2018, <a href="https://www.triadns.org/">Triad National Security, LLC,</a> 2019-2021. Generated on Thursday, Jul 22, 2021 based on <a href="https://github.com/quinoacomputing/quinoa/commit/237032928">237032928</a> by <a href="http://doxygen.org/">Doxygen</a> and <a href="http://mcss.mosra.cz/">m.css</a>. Contact us via <a href="https://github.com/quinoacomputing/quinoa/">GitHub</a>, <a href="https://groups.io/g/quinoa">Email</a> or <a href="https://quinoa.zulipchat.com">Chat</a>.</p>
+        <p>Quinoa docs, part of the <a href="http://quinoacomputing.org/">Quinoa project</a>. Copyright © J. Bakosi 2012&ndash;2015, Los Alamos National Security, LLC, 2016&ndash;2018, <a href="https://www.triadns.org/">Triad National Security, LLC,</a> 2019-2021. Generated on Friday, Jul 23, 2021 based on <a href="https://github.com/quinoacomputing/quinoa/commit/66c115baf">66c115baf</a> by <a href="http://doxygen.org/">Doxygen</a> and <a href="http://mcss.mosra.cz/">m.css</a>. Contact us via <a href="https://github.com/quinoacomputing/quinoa/">GitHub</a>, <a href="https://groups.io/g/quinoa">Email</a> or <a href="https://quinoa.zulipchat.com">Chat</a>.</p>
       </div>
     </div>
   </div>
