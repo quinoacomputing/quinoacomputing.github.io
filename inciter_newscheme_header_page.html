@@ -101,6 +101,12 @@
 <span class="cm">    Transporter. Each ALECG gets a chunk of the full load (part of the mesh)</span>
 <span class="cm">    and does the same: initializes and advances a number of PDE systems in time.</span>
 
+<span class="cm">    ALE time-stepping is performed in an unsplit fashion, as opposed to</span>
+<span class="cm">    Lagrange + remap. See also J. Waltz, N.R. Morgan, T.R. Canfield, M.R.J.</span>
+<span class="cm">    Charest, L.D. Risinger, J.G. Wohlbier, A three-dimensional finite element</span>
+<span class="cm">    arbitrary Lagrangian–Eulerian method for shock hydrodynamics on unstructured</span>
+<span class="cm">    grids, Computers &amp; Fluids, 92: 172-187, 2014.</span>
+
 <span class="cm">    The implementation uses the Charm++ runtime system and is fully</span>
 <span class="cm">    asynchronous, overlapping computation and communication. The algorithm</span>
 <span class="cm">    utilizes the structured dagger (SDAG) Charm++ functionality.</span>
@@ -193,6 +199,9 @@
     <span class="c1">//! Advance equations to next time step</span>
     <span class="kt">void</span> <span class="nf">advance</span><span class="p">(</span> <span class="n">tk</span><span class="o">::</span><span class="n">real</span> <span class="n">newdt</span> <span class="p">);</span>
 
+    <span class="c1">//! Apply mesh velocity smoother boundary conditions for ALE mesh motion</span>
+    <span class="kt">void</span> <span class="nf">meshvelbc</span><span class="p">(</span> <span class="n">tk</span><span class="o">::</span><span class="n">real</span> <span class="n">maxv</span> <span class="o">=</span> <span class="mf">0.0</span> <span class="p">);</span>
+
     <span class="c1">//! Compute left-hand side of transport equations</span>
     <span class="kt">void</span> <span class="nf">lhs</span><span class="p">();</span>
 
@@ -213,6 +222,22 @@
     <span class="c1">//! Receive contributions to right-hand side vector on chare-boundaries</span>
     <span class="kt">void</span> <span class="nf">comrhs</span><span class="p">(</span> <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span> <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="o">&gt;&amp;</span> <span class="n">gid</span><span class="p">,</span>
                  <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span> <span class="n">tk</span><span class="o">::</span><span class="n">real</span> <span class="o">&gt;</span> <span class="o">&gt;&amp;</span> <span class="n">R</span> <span class="p">);</span>
+
+    <span class="c1">//! Receive contributions to vorticity on chare-boundaries</span>
+    <span class="kt">void</span> <span class="nf">comvort</span><span class="p">(</span> <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span> <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="o">&gt;&amp;</span> <span class="n">gid</span><span class="p">,</span>
+                  <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">array</span><span class="o">&lt;</span> <span class="n">tk</span><span class="o">::</span><span class="n">real</span><span class="p">,</span> <span class="mi">3</span> <span class="o">&gt;</span> <span class="o">&gt;&amp;</span> <span class="n">v</span> <span class="p">);</span>
+
+    <span class="c1">//! Receive contributions to velocity divergence on chare-boundaries</span>
+    <span class="kt">void</span> <span class="nf">comdiv</span><span class="p">(</span> <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span> <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="o">&gt;&amp;</span> <span class="n">gid</span><span class="p">,</span>
+                 <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span> <span class="n">tk</span><span class="o">::</span><span class="n">real</span> <span class="o">&gt;&amp;</span> <span class="n">v</span> <span class="p">);</span>
+
+    <span class="c1">//! Receive contributions to scalar potential gradient on chare-boundaries</span>
+    <span class="kt">void</span> <span class="nf">compot</span><span class="p">(</span> <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span> <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="o">&gt;&amp;</span> <span class="n">gid</span><span class="p">,</span>
+                 <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">array</span><span class="o">&lt;</span> <span class="n">tk</span><span class="o">::</span><span class="n">real</span><span class="p">,</span> <span class="mi">3</span> <span class="o">&gt;</span> <span class="o">&gt;&amp;</span> <span class="n">v</span> <span class="p">);</span>
+
+    <span class="c1">//! Receive contributions to ALE mesh force on chare-boundaries</span>
+    <span class="kt">void</span> <span class="nf">comfor</span><span class="p">(</span> <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span> <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="o">&gt;&amp;</span> <span class="n">gid</span><span class="p">,</span>
+                 <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">array</span><span class="o">&lt;</span> <span class="n">tk</span><span class="o">::</span><span class="n">real</span><span class="p">,</span> <span class="mi">3</span> <span class="o">&gt;</span> <span class="o">&gt;&amp;</span> <span class="n">w</span> <span class="p">);</span>
 
     <span class="c1">//! Update solution at the end of time step</span>
     <span class="kt">void</span> <span class="nf">update</span><span class="p">(</span> <span class="k">const</span> <span class="n">tk</span><span class="o">::</span><span class="n">Fields</span><span class="o">&amp;</span> <span class="n">a</span> <span class="p">);</span>
@@ -253,14 +278,14 @@
     <span class="c1">//! Resizing data sutrctures after mesh refinement has been completed</span>
     <span class="kt">void</span> <span class="n">resized</span><span class="p">();</span>
 
-    <span class="c1">//! Apply mesh velocity smoother boundary conditions for ALE mesh motion</span>
-    <span class="kt">void</span> <span class="nf">meshvelbc</span><span class="p">();</span>
-
-    <span class="c1">//! Mesh velocity smoother BCs have been applied</span>
+    <span class="c1">//! Solve mesh velocity linear solve for ALE mesh motion</span>
     <span class="kt">void</span> <span class="nf">applied</span><span class="p">(</span> <span class="n">CkDataMsg</span><span class="o">*</span> <span class="n">msg</span> <span class="o">=</span> <span class="k">nullptr</span> <span class="p">);</span>
 
     <span class="c1">//! Mesh velocity smoother linear solver converged</span>
-    <span class="kt">void</span> <span class="nf">smoothed</span><span class="p">(</span> <span class="n">CkDataMsg</span><span class="o">*</span> <span class="n">msg</span> <span class="o">=</span> <span class="k">nullptr</span> <span class="p">);</span>
+    <span class="kt">void</span> <span class="nf">meshvelsolved</span><span class="p">(</span> <span class="n">CkDataMsg</span><span class="o">*</span> <span class="n">msg</span> <span class="o">=</span> <span class="k">nullptr</span> <span class="p">);</span>
+
+    <span class="c1">//! Compute the gradient of the scalar potential for ALE</span>
+    <span class="kt">void</span> <span class="nf">helmholtz</span><span class="p">(</span> <span class="n">CkDataMsg</span><span class="o">*</span> <span class="n">msg</span> <span class="o">=</span> <span class="k">nullptr</span> <span class="p">);</span>
 
     <span class="c1">//! Evaluate whether to continue with next time step</span>
     <span class="kt">void</span> <span class="nf">step</span><span class="p">();</span>
@@ -280,10 +305,13 @@
     <span class="c1">//! \param[in,out] p Charm++&#39;s PUP::er serializer object reference</span>
     <span class="kt">void</span> <span class="nf">pup</span><span class="p">(</span> <span class="n">PUP</span><span class="o">::</span><span class="n">er</span> <span class="o">&amp;</span><span class="n">p</span> <span class="p">)</span> <span class="k">override</span> <span class="p">{</span>
       <span class="n">p</span> <span class="o">|</span> <span class="n">m_disc</span><span class="p">;</span>
-      <span class="n">p</span> <span class="o">|</span> <span class="n">m_initial</span><span class="p">;</span>
       <span class="n">p</span> <span class="o">|</span> <span class="n">m_nsol</span><span class="p">;</span>
       <span class="n">p</span> <span class="o">|</span> <span class="n">m_ngrad</span><span class="p">;</span>
       <span class="n">p</span> <span class="o">|</span> <span class="n">m_nrhs</span><span class="p">;</span>
+      <span class="n">p</span> <span class="o">|</span> <span class="n">m_nvort</span><span class="p">;</span>
+      <span class="n">p</span> <span class="o">|</span> <span class="n">m_ndiv</span><span class="p">;</span>
+      <span class="n">p</span> <span class="o">|</span> <span class="n">m_npot</span><span class="p">;</span>
+      <span class="n">p</span> <span class="o">|</span> <span class="n">m_nwf</span><span class="p">;</span>
       <span class="n">p</span> <span class="o">|</span> <span class="n">m_nbnorm</span><span class="p">;</span>
       <span class="n">p</span> <span class="o">|</span> <span class="n">m_ndfnorm</span><span class="p">;</span>
       <span class="n">p</span> <span class="o">|</span> <span class="n">m_bnode</span><span class="p">;</span>
@@ -298,19 +326,25 @@
       <span class="n">p</span> <span class="o">|</span> <span class="n">m_u</span><span class="p">;</span>
       <span class="n">p</span> <span class="o">|</span> <span class="n">m_un</span><span class="p">;</span>
       <span class="n">p</span> <span class="o">|</span> <span class="n">m_w</span><span class="p">;</span>
-      <span class="n">p</span> <span class="o">|</span> <span class="n">m_vel</span><span class="p">;</span>
+      <span class="n">p</span> <span class="o">|</span> <span class="n">m_wf</span><span class="p">;</span>
+      <span class="n">p</span> <span class="o">|</span> <span class="n">mp</span><span class="p">;</span>
+      <span class="n">p</span> <span class="o">|</span> <span class="n">m_veldiv</span><span class="p">;</span>
+      <span class="n">p</span> <span class="o">|</span> <span class="n">m_veldivc</span><span class="p">;</span>
+      <span class="n">p</span> <span class="o">|</span> <span class="n">m_gradpot</span><span class="p">;</span>
+      <span class="n">p</span> <span class="o">|</span> <span class="n">m_gradpotc</span><span class="p">;</span>
+      <span class="n">p</span> <span class="o">|</span> <span class="n">m_wfc</span><span class="p">;</span>
       <span class="n">p</span> <span class="o">|</span> <span class="n">m_rhs</span><span class="p">;</span>
+      <span class="n">p</span> <span class="o">|</span> <span class="n">m_rhsc</span><span class="p">;</span>
       <span class="n">p</span> <span class="o">|</span> <span class="n">m_chBndGrad</span><span class="p">;</span>
       <span class="n">p</span> <span class="o">|</span> <span class="n">m_dirbc</span><span class="p">;</span>
       <span class="n">p</span> <span class="o">|</span> <span class="n">m_chBndGradc</span><span class="p">;</span>
-      <span class="n">p</span> <span class="o">|</span> <span class="n">m_rhsc</span><span class="p">;</span>
       <span class="n">p</span> <span class="o">|</span> <span class="n">m_diag</span><span class="p">;</span>
       <span class="n">p</span> <span class="o">|</span> <span class="n">m_bnorm</span><span class="p">;</span>
-      <span class="n">p</span> <span class="o">|</span> <span class="n">m_bnormn</span><span class="p">;</span>
       <span class="n">p</span> <span class="o">|</span> <span class="n">m_bnormc</span><span class="p">;</span>
       <span class="n">p</span> <span class="o">|</span> <span class="n">m_symbcnodes</span><span class="p">;</span>
       <span class="n">p</span> <span class="o">|</span> <span class="n">m_farfieldbcnodes</span><span class="p">;</span>
-      <span class="n">p</span> <span class="o">|</span> <span class="n">m_meshvelbcnodes</span><span class="p">;</span>
+      <span class="n">p</span> <span class="o">|</span> <span class="n">m_meshveldirbcnodes</span><span class="p">;</span>
+      <span class="n">p</span> <span class="o">|</span> <span class="n">m_meshvelsymbcnodes</span><span class="p">;</span>
       <span class="n">p</span> <span class="o">|</span> <span class="n">m_symbctri</span><span class="p">;</span>
       <span class="n">p</span> <span class="o">|</span> <span class="n">m_spongenodes</span><span class="p">;</span>
       <span class="n">p</span> <span class="o">|</span> <span class="n">m_stage</span><span class="p">;</span>
@@ -322,6 +356,8 @@
       <span class="n">p</span> <span class="o">|</span> <span class="n">m_finished</span><span class="p">;</span>
       <span class="n">p</span> <span class="o">|</span> <span class="n">m_newmesh</span><span class="p">;</span>
       <span class="n">p</span> <span class="o">|</span> <span class="n">m_coordn</span><span class="p">;</span>
+      <span class="n">p</span> <span class="o">|</span> <span class="n">m_vorticity</span><span class="p">;</span>
+      <span class="n">p</span> <span class="o">|</span> <span class="n">m_vorticityc</span><span class="p">;</span>
     <span class="p">}</span>
     <span class="c1">//! \brief Pack/Unpack serialize operator|</span>
     <span class="c1">//! \param[in,out] p Charm++&#39;s PUP::er serializer object reference</span>
@@ -334,14 +370,20 @@
 
     <span class="c1">//! Discretization proxy</span>
     <span class="n">CProxy_Discretization</span> <span class="n">m_disc</span><span class="p">;</span>
-    <span class="c1">//! 1 if starting time stepping, 0 if during time stepping</span>
-    <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="n">m_initial</span><span class="p">;</span>
     <span class="c1">//! Counter for high order solution vector nodes updated</span>
     <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="n">m_nsol</span><span class="p">;</span>
     <span class="c1">//! Counter for nodal gradients updated</span>
     <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="n">m_ngrad</span><span class="p">;</span>
     <span class="c1">//! Counter for right-hand side vector nodes updated</span>
     <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="n">m_nrhs</span><span class="p">;</span>
+    <span class="c1">//! Counter for communicating the vorticity for ALE</span>
+    <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="n">m_nvort</span><span class="p">;</span>
+    <span class="c1">//! Counter for communicating the velocity divergence for ALE</span>
+    <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="n">m_ndiv</span><span class="p">;</span>
+    <span class="c1">//! Counter for communicating the gradient of the scalar potential for ALE</span>
+    <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="n">m_npot</span><span class="p">;</span>
+    <span class="c1">//! Counter for communicating the mesh force for ALE</span>
+    <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="n">m_nwf</span><span class="p">;</span>
     <span class="c1">//! Counter for receiving boundary point normals</span>
     <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="n">m_nbnorm</span><span class="p">;</span>
     <span class="c1">//! Counter for receiving dual-face normals on chare-boundary edges</span>
@@ -372,10 +414,28 @@
     <span class="n">tk</span><span class="o">::</span><span class="n">Fields</span> <span class="n">m_un</span><span class="p">;</span>
     <span class="c1">//! Mesh velocity for ALE mesh motion</span>
     <span class="n">tk</span><span class="o">::</span><span class="n">Fields</span> <span class="n">m_w</span><span class="p">;</span>
-    <span class="c1">//! Fluid velocity for ALE mesh motion</span>
-    <span class="n">tk</span><span class="o">::</span><span class="n">UnsMesh</span><span class="o">::</span><span class="n">Coords</span> <span class="n">m_vel</span><span class="p">;</span>
+    <span class="c1">//! Mesh force for ALE mesh motion</span>
+    <span class="n">tk</span><span class="o">::</span><span class="n">Fields</span> <span class="n">m_wf</span><span class="p">;</span>
+    <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span> <span class="n">tk</span><span class="o">::</span><span class="n">real</span> <span class="o">&gt;</span> <span class="n">mp</span><span class="p">;</span>
+    <span class="c1">//! Fluid velocity divergence for ALE mesh motion</span>
+    <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span> <span class="n">tk</span><span class="o">::</span><span class="n">real</span> <span class="o">&gt;</span> <span class="n">m_veldiv</span><span class="p">;</span>
+    <span class="c1">//! Receive buffer for communication of the velocity divergence for ALE</span>
+    <span class="c1">//! \details Key: global node id, value: divergence in nodes</span>
+    <span class="n">std</span><span class="o">::</span><span class="n">unordered_map</span><span class="o">&lt;</span> <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="p">,</span> <span class="n">tk</span><span class="o">::</span><span class="n">real</span> <span class="o">&gt;</span> <span class="n">m_veldivc</span><span class="p">;</span>
+    <span class="c1">//! Gradient of the scalar potentinal for ALE mesh motion</span>
+    <span class="n">tk</span><span class="o">::</span><span class="n">UnsMesh</span><span class="o">::</span><span class="n">Coords</span> <span class="n">m_gradpot</span><span class="p">;</span>
+    <span class="c1">//! Receive buffer for the gradient of the scalar potential for ALE</span>
+    <span class="c1">//! \details Key: global node id, value: scalar potential gradient in nodes</span>
+    <span class="n">std</span><span class="o">::</span><span class="n">unordered_map</span><span class="o">&lt;</span> <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="p">,</span> <span class="n">std</span><span class="o">::</span><span class="n">array</span><span class="o">&lt;</span> <span class="n">tk</span><span class="o">::</span><span class="n">real</span><span class="p">,</span> <span class="mi">3</span> <span class="o">&gt;</span> <span class="o">&gt;</span> <span class="n">m_gradpotc</span><span class="p">;</span>
+    <span class="c1">//! Receive buffer for the mesh force for ALE</span>
+    <span class="c1">//! \details Key: global node id, value: mesh force in nodes</span>
+    <span class="n">std</span><span class="o">::</span><span class="n">unordered_map</span><span class="o">&lt;</span> <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="p">,</span> <span class="n">std</span><span class="o">::</span><span class="n">array</span><span class="o">&lt;</span> <span class="n">tk</span><span class="o">::</span><span class="n">real</span><span class="p">,</span> <span class="mi">3</span> <span class="o">&gt;</span> <span class="o">&gt;</span> <span class="n">m_wfc</span><span class="p">;</span>
     <span class="c1">//! Right-hand side vector (for the high order system)</span>
     <span class="n">tk</span><span class="o">::</span><span class="n">Fields</span> <span class="n">m_rhs</span><span class="p">;</span>
+    <span class="c1">//! Receive buffer for communication of the right hand side</span>
+    <span class="c1">//! \details Key: global node id, value: rhs for all scalar components per</span>
+    <span class="c1">//!   node.</span>
+    <span class="n">std</span><span class="o">::</span><span class="n">unordered_map</span><span class="o">&lt;</span> <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="p">,</span> <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span> <span class="n">tk</span><span class="o">::</span><span class="n">real</span> <span class="o">&gt;</span> <span class="o">&gt;</span> <span class="n">m_rhsc</span><span class="p">;</span>
     <span class="c1">//! Nodal gradients at chare-boundary nodes</span>
     <span class="n">tk</span><span class="o">::</span><span class="n">Fields</span> <span class="n">m_chBndGrad</span><span class="p">;</span>
     <span class="c1">//! Boundary conditions evaluated and assigned to local mesh node IDs</span>
@@ -390,9 +450,6 @@
     <span class="c1">//! \details Key: chare id, value: gradients for all scalar components per</span>
     <span class="c1">//!   node</span>
     <span class="n">std</span><span class="o">::</span><span class="n">unordered_map</span><span class="o">&lt;</span> <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="p">,</span> <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span> <span class="n">tk</span><span class="o">::</span><span class="n">real</span> <span class="o">&gt;</span> <span class="o">&gt;</span> <span class="n">m_chBndGradc</span><span class="p">;</span>
-    <span class="c1">//! Receive buffer for communication of the right hand side</span>
-    <span class="c1">//! \details Key: chare id, value: rhs for all scalar components per node</span>
-    <span class="n">std</span><span class="o">::</span><span class="n">unordered_map</span><span class="o">&lt;</span> <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="p">,</span> <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span> <span class="n">tk</span><span class="o">::</span><span class="n">real</span> <span class="o">&gt;</span> <span class="o">&gt;</span> <span class="n">m_rhsc</span><span class="p">;</span>
     <span class="c1">//! Diagnostics object</span>
     <span class="n">NodeDiagnostics</span> <span class="n">m_diag</span><span class="p">;</span>
     <span class="c1">//! Face normals in boundary points associated to side sets</span>
@@ -400,8 +457,6 @@
     <span class="c1">//!   square between face centroids and points, outer key: side set id</span>
     <span class="n">std</span><span class="o">::</span><span class="n">unordered_map</span><span class="o">&lt;</span> <span class="kt">int</span><span class="p">,</span>
       <span class="n">std</span><span class="o">::</span><span class="n">unordered_map</span><span class="o">&lt;</span> <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="p">,</span> <span class="n">std</span><span class="o">::</span><span class="n">array</span><span class="o">&lt;</span> <span class="n">tk</span><span class="o">::</span><span class="n">real</span><span class="p">,</span> <span class="mi">4</span> <span class="o">&gt;</span> <span class="o">&gt;</span> <span class="o">&gt;</span> <span class="n">m_bnorm</span><span class="p">;</span>
-    <span class="c1">//! Face normals in boundary points at time n for ALE</span>
-    <span class="k">decltype</span><span class="p">(</span><span class="n">m_bnorm</span><span class="p">)</span> <span class="n">m_bnormn</span><span class="p">;</span>
     <span class="c1">//! \brief Receive buffer for communication of the boundary point normals</span>
     <span class="c1">//!   associated to side sets</span>
     <span class="c1">//! \details Key: global node id, value: normals (first 3 components),</span>
@@ -412,8 +467,10 @@
     <span class="n">std</span><span class="o">::</span><span class="n">unordered_set</span><span class="o">&lt;</span> <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="o">&gt;</span> <span class="n">m_symbcnodes</span><span class="p">;</span>
     <span class="c1">//! Unique set of nodes at which farfield BCs are set</span>
     <span class="n">std</span><span class="o">::</span><span class="n">unordered_set</span><span class="o">&lt;</span> <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="o">&gt;</span> <span class="n">m_farfieldbcnodes</span><span class="p">;</span>
-    <span class="c1">//! Unique set of nodes at which mesh velocity BCs are set for ALE</span>
-    <span class="n">std</span><span class="o">::</span><span class="n">unordered_set</span><span class="o">&lt;</span> <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="o">&gt;</span> <span class="n">m_meshvelbcnodes</span><span class="p">;</span>
+    <span class="c1">//! Unique set of nodes at which ALE mesh velocity Dirichlet BCs are set</span>
+    <span class="n">std</span><span class="o">::</span><span class="n">unordered_set</span><span class="o">&lt;</span> <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="o">&gt;</span> <span class="n">m_meshveldirbcnodes</span><span class="p">;</span>
+    <span class="c1">//! Unique set of nodes at which ALE mesh velocity symmetry BCs are set</span>
+    <span class="n">std</span><span class="o">::</span><span class="n">unordered_set</span><span class="o">&lt;</span> <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="o">&gt;</span> <span class="n">m_meshvelsymbcnodes</span><span class="p">;</span>
     <span class="c1">//! Vector with 1 at symmetry BC boundary triangles</span>
     <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span> <span class="kt">int</span> <span class="o">&gt;</span> <span class="n">m_symbctri</span><span class="p">;</span>
     <span class="c1">//! Unique set of nodes at which sponge parameters are set</span>
@@ -436,6 +493,11 @@
     <span class="kt">int</span> <span class="n">m_newmesh</span><span class="p">;</span>
     <span class="c1">//! Mesh coordinates at the time n for ALE</span>
     <span class="n">tk</span><span class="o">::</span><span class="n">UnsMesh</span><span class="o">::</span><span class="n">Coords</span> <span class="n">m_coordn</span><span class="p">;</span>
+    <span class="c1">//! Vorticity for ALE</span>
+    <span class="n">tk</span><span class="o">::</span><span class="n">UnsMesh</span><span class="o">::</span><span class="n">Coords</span> <span class="n">m_vorticity</span><span class="p">;</span>
+    <span class="c1">//! Receive buffer for communication of the vorticity for ALE</span>
+    <span class="c1">//! \details Key: global node id, value: vorticity in nodes</span>
+    <span class="n">std</span><span class="o">::</span><span class="n">unordered_map</span><span class="o">&lt;</span> <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="p">,</span> <span class="n">std</span><span class="o">::</span><span class="n">array</span><span class="o">&lt;</span> <span class="n">tk</span><span class="o">::</span><span class="n">real</span><span class="p">,</span> <span class="mi">3</span> <span class="o">&gt;</span> <span class="o">&gt;</span> <span class="n">m_vorticityc</span><span class="p">;</span>
 
     <span class="c1">//! Access bound Discretization class pointer</span>
     <span class="n">Discretization</span><span class="o">*</span> <span class="nf">Disc</span><span class="p">()</span> <span class="k">const</span> <span class="p">{</span>
@@ -475,25 +537,16 @@
     <span class="kt">void</span> <span class="nf">writeFields</span><span class="p">(</span> <span class="n">CkCallback</span> <span class="n">c</span> <span class="p">);</span>
 
     <span class="c1">//! Combine own and communicated contributions to normals</span>
-    <span class="kt">void</span> <span class="nf">merge</span><span class="p">();</span>
+    <span class="kt">void</span> <span class="nf">mergelhs</span><span class="p">();</span>
 
     <span class="c1">//! Compute gradients</span>
     <span class="kt">void</span> <span class="nf">chBndGrad</span><span class="p">();</span>
-
-    <span class="c1">//! Compute new mesh veloctity for ALE mesh motion</span>
-    <span class="kt">void</span> <span class="nf">meshvel</span><span class="p">();</span>
-
-    <span class="c1">//! Assign new mesh veloctity for ALE mesh motion</span>
-    <span class="kt">void</span> <span class="nf">assignMeshvel</span><span class="p">();</span>
 
     <span class="c1">//! Compute righ-hand side vector of transport equations</span>
     <span class="kt">void</span> <span class="nf">rhs</span><span class="p">();</span>
 
     <span class="c1">//! Advance systems of equations</span>
     <span class="kt">void</span> <span class="nf">solve</span><span class="p">();</span>
-
-    <span class="c1">//! Continue after ALE mesh movement</span>
-    <span class="kt">void</span> <span class="nf">ale</span><span class="p">();</span>
 
     <span class="c1">//! Compute time step size</span>
     <span class="kt">void</span> <span class="nf">dt</span><span class="p">();</span>
@@ -511,10 +564,31 @@
     <span class="kt">void</span> <span class="nf">BC</span><span class="p">();</span>
 
     <span class="c1">//! Multiply solution with mesh volume</span>
-    <span class="kt">void</span> <span class="nf">volumetric</span><span class="p">(</span> <span class="n">tk</span><span class="o">::</span><span class="n">Fields</span><span class="o">&amp;</span> <span class="n">u</span> <span class="p">);</span>
+    <span class="kt">void</span> <span class="nf">volumetric</span><span class="p">(</span> <span class="n">tk</span><span class="o">::</span><span class="n">Fields</span><span class="o">&amp;</span> <span class="n">u</span><span class="p">,</span> <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span> <span class="n">tk</span><span class="o">::</span><span class="n">real</span> <span class="o">&gt;&amp;</span> <span class="n">v</span> <span class="p">);</span>
 
     <span class="c1">//! Divide solution with mesh volume</span>
-    <span class="kt">void</span> <span class="nf">conserved</span><span class="p">(</span> <span class="n">tk</span><span class="o">::</span><span class="n">Fields</span><span class="o">&amp;</span> <span class="n">u</span> <span class="p">);</span>
+    <span class="kt">void</span> <span class="nf">conserved</span><span class="p">(</span> <span class="n">tk</span><span class="o">::</span><span class="n">Fields</span><span class="o">&amp;</span> <span class="n">u</span><span class="p">,</span> <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span> <span class="n">tk</span><span class="o">::</span><span class="n">real</span> <span class="o">&gt;&amp;</span> <span class="n">v</span> <span class="p">);</span>
+
+    <span class="c1">//! Start computing new mesh veloctity for ALE mesh motion</span>
+    <span class="kt">void</span> <span class="nf">meshvelstart</span><span class="p">();</span>
+
+    <span class="c1">//! Finalize computing fluid vorticity and velocity divergence for ALE</span>
+    <span class="kt">void</span> <span class="nf">mergevel</span><span class="p">();</span>
+
+    <span class="c1">//! Finalize computing the scalar potential gradient for ALE</span>
+    <span class="kt">void</span> <span class="nf">gradpot</span><span class="p">();</span>
+
+    <span class="c1">//! Compute mesh force for the ALE mesh velocity</span>
+    <span class="kt">void</span> <span class="nf">startforce</span><span class="p">();</span>
+
+    <span class="c1">//! Apply mesh force</span>
+    <span class="kt">void</span> <span class="nf">meshforce</span><span class="p">();</span>
+
+    <span class="c1">//! Done with computing the mesh velocity for ALE mesh motion</span>
+    <span class="kt">void</span> <span class="nf">meshveldone</span><span class="p">();</span>
+
+    <span class="c1">//! Continue after computing the new mesh velocity for ALE</span>
+    <span class="kt">void</span> <span class="nf">ale</span><span class="p">();</span>
 <span class="p">};</span>
 
 <span class="p">}</span> <span class="c1">// inciter::</span>
@@ -557,7 +631,7 @@
   <div class="m-container">
     <div class="m-row">
       <div class="m-col-l-10 m-push-l-1">
-        <p>Quinoa docs, part of the <a href="http://quinoacomputing.org/">Quinoa project</a>. Copyright © J. Bakosi 2012&ndash;2015, Los Alamos National Security, LLC, 2016&ndash;2018, <a href="https://www.triadns.org/">Triad National Security, LLC,</a> 2019-2021. Generated on Wednesday, Sep 08, 2021 based on <a href="https://github.com/quinoacomputing/quinoa/commit/3bda95b30">3bda95b30</a> by <a href="http://doxygen.org/">Doxygen</a> and <a href="http://mcss.mosra.cz/">m.css</a>. Contact us via <a href="https://github.com/quinoacomputing/quinoa/">GitHub</a>, <a href="https://groups.io/g/quinoa">Email</a> or <a href="https://quinoa.zulipchat.com">Chat</a>.</p>
+        <p>Quinoa docs, part of the <a href="http://quinoacomputing.org/">Quinoa project</a>. Copyright © J. Bakosi 2012&ndash;2015, Los Alamos National Security, LLC, 2016&ndash;2018, <a href="https://www.triadns.org/">Triad National Security, LLC,</a> 2019-2021. Generated on Thursday, Sep 09, 2021 based on <a href="https://github.com/quinoacomputing/quinoa/commit/b8d17afca">b8d17afca</a> by <a href="http://doxygen.org/">Doxygen</a> and <a href="http://mcss.mosra.cz/">m.css</a>. Contact us via <a href="https://github.com/quinoacomputing/quinoa/">GitHub</a>, <a href="https://groups.io/g/quinoa">Email</a> or <a href="https://quinoa.zulipchat.com">Chat</a>.</p>
       </div>
     </div>
   </div>
