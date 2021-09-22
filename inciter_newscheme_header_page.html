@@ -120,6 +120,7 @@
 
 <span class="cp">#include</span> <span class="cpf">&quot;Types.hpp&quot;</span><span class="cp"></span>
 <span class="cp">#include</span> <span class="cpf">&quot;Fields.hpp&quot;</span><span class="cp"></span>
+<span class="cp">#include</span> <span class="cpf">&quot;Table.hpp&quot;</span><span class="cp"></span>
 <span class="cp">#include</span> <span class="cpf">&quot;DerivedData.hpp&quot;</span><span class="cp"></span>
 <span class="cp">#include</span> <span class="cpf">&quot;FluxCorrector.hpp&quot;</span><span class="cp"></span>
 <span class="cp">#include</span> <span class="cpf">&quot;NodeDiagnostics.hpp&quot;</span><span class="cp"></span>
@@ -356,8 +357,10 @@
       <span class="n">p</span> <span class="o">|</span> <span class="n">m_finished</span><span class="p">;</span>
       <span class="n">p</span> <span class="o">|</span> <span class="n">m_newmesh</span><span class="p">;</span>
       <span class="n">p</span> <span class="o">|</span> <span class="n">m_coordn</span><span class="p">;</span>
+      <span class="n">p</span> <span class="o">|</span> <span class="n">m_coord0</span><span class="p">;</span>
       <span class="n">p</span> <span class="o">|</span> <span class="n">m_vorticity</span><span class="p">;</span>
       <span class="n">p</span> <span class="o">|</span> <span class="n">m_vorticityc</span><span class="p">;</span>
+      <span class="n">p</span> <span class="o">|</span> <span class="n">m_move</span><span class="p">;</span>
     <span class="p">}</span>
     <span class="c1">//! \brief Pack/Unpack serialize operator|</span>
     <span class="c1">//! \param[in,out] p Charm++&#39;s PUP::er serializer object reference</span>
@@ -493,11 +496,22 @@
     <span class="kt">int</span> <span class="n">m_newmesh</span><span class="p">;</span>
     <span class="c1">//! Mesh coordinates at the time n for ALE</span>
     <span class="n">tk</span><span class="o">::</span><span class="n">UnsMesh</span><span class="o">::</span><span class="n">Coords</span> <span class="n">m_coordn</span><span class="p">;</span>
+    <span class="c1">//! Mesh coordinates at the time 0 for ALE</span>
+    <span class="n">tk</span><span class="o">::</span><span class="n">UnsMesh</span><span class="o">::</span><span class="n">Coords</span> <span class="n">m_coord0</span><span class="p">;</span>
     <span class="c1">//! Vorticity for ALE</span>
     <span class="n">tk</span><span class="o">::</span><span class="n">UnsMesh</span><span class="o">::</span><span class="n">Coords</span> <span class="n">m_vorticity</span><span class="p">;</span>
     <span class="c1">//! Receive buffer for communication of the vorticity for ALE</span>
     <span class="c1">//! \details Key: global node id, value: vorticity in nodes</span>
     <span class="n">std</span><span class="o">::</span><span class="n">unordered_map</span><span class="o">&lt;</span> <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="p">,</span> <span class="n">std</span><span class="o">::</span><span class="n">array</span><span class="o">&lt;</span> <span class="n">tk</span><span class="o">::</span><span class="n">real</span><span class="p">,</span> <span class="mi">3</span> <span class="o">&gt;</span> <span class="o">&gt;</span> <span class="n">m_vorticityc</span><span class="p">;</span>
+    <span class="c1">//! Data structure storing configuration for moving boundaries with ALE</span>
+    <span class="c1">//! \details Tuple: 0: user-defined function type (i.e., how it should be</span>
+    <span class="c1">//!    interpreted), (2) user-defined function for, and (2) unique set of</span>
+    <span class="c1">//!    boundary nodes for each move ... end input file block (vector).</span>
+    <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span>
+      <span class="n">std</span><span class="o">::</span><span class="n">tuple</span><span class="o">&lt;</span> <span class="n">tk</span><span class="o">::</span><span class="n">ctr</span><span class="o">::</span><span class="n">UserTableType</span><span class="p">,</span>
+                  <span class="n">tk</span><span class="o">::</span><span class="n">Table3</span><span class="p">,</span>
+                  <span class="n">std</span><span class="o">::</span><span class="n">unordered_set</span><span class="o">&lt;</span> <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="o">&gt;</span> <span class="o">&gt;</span>
+    <span class="o">&gt;</span> <span class="n">m_move</span><span class="p">;</span>
 
     <span class="c1">//! Access bound Discretization class pointer</span>
     <span class="n">Discretization</span><span class="o">*</span> <span class="nf">Disc</span><span class="p">()</span> <span class="k">const</span> <span class="p">{</span>
@@ -511,6 +525,9 @@
              <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">unordered_map</span><span class="o">&lt;</span> <span class="n">tk</span><span class="o">::</span><span class="n">UnsMesh</span><span class="o">::</span><span class="n">Edge</span><span class="p">,</span>
                      <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span> <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="o">&gt;</span><span class="p">,</span>
                      <span class="n">tk</span><span class="o">::</span><span class="n">UnsMesh</span><span class="o">::</span><span class="n">Hash</span><span class="o">&lt;</span><span class="mi">2</span><span class="o">&gt;</span><span class="p">,</span> <span class="n">tk</span><span class="o">::</span><span class="n">UnsMesh</span><span class="o">::</span><span class="n">Eq</span><span class="o">&lt;</span><span class="mi">2</span><span class="o">&gt;</span> <span class="o">&gt;&amp;</span> <span class="n">esued</span> <span class="p">)</span> <span class="k">const</span><span class="p">;</span>
+
+    <span class="c1">//! Find Dirichlet BCs on mesh velocity with prescribed movement</span>
+    <span class="kt">bool</span> <span class="nf">move</span><span class="p">(</span> <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="n">i</span> <span class="p">)</span> <span class="k">const</span><span class="p">;</span>
 
     <span class="c1">//! Compute chare-boundary edges</span>
     <span class="kt">void</span> <span class="nf">bndEdges</span><span class="p">();</span>
@@ -557,8 +574,8 @@
     <span class="c1">//! Evaluate whether to save checkpoint/restart</span>
     <span class="kt">void</span> <span class="nf">evalRestart</span><span class="p">();</span>
 
-    <span class="c1">//! Query boundary conditions from user input</span>
-    <span class="kt">void</span> <span class="nf">queryBC</span><span class="p">();</span>
+    <span class="c1">//! Query/update boundary-conditions-related data structures from user input</span>
+    <span class="kt">void</span> <span class="nf">queryBnd</span><span class="p">();</span>
 
     <span class="c1">//! Apply boundary conditions</span>
     <span class="kt">void</span> <span class="nf">BC</span><span class="p">();</span>
@@ -589,6 +606,9 @@
 
     <span class="c1">//! Continue after computing the new mesh velocity for ALE</span>
     <span class="kt">void</span> <span class="nf">ale</span><span class="p">();</span>
+
+    <span class="c1">//! Initialize user-defined functions for ALE moving sides</span>
+    <span class="k">decltype</span><span class="p">(</span><span class="n">m_move</span><span class="p">)</span> <span class="n">moveCfg</span><span class="p">();</span>
 <span class="p">};</span>
 
 <span class="p">}</span> <span class="c1">// inciter::</span>
@@ -631,7 +651,7 @@
   <div class="m-container">
     <div class="m-row">
       <div class="m-col-l-10 m-push-l-1">
-        <p>Quinoa docs, part of the <a href="http://quinoacomputing.org/">Quinoa project</a>. Copyright © J. Bakosi 2012&ndash;2015, Los Alamos National Security, LLC, 2016&ndash;2018, <a href="https://www.triadns.org/">Triad National Security, LLC,</a> 2019-2021. Generated on Thursday, Sep 09, 2021 based on <a href="https://github.com/quinoacomputing/quinoa/commit/b8d17afca">b8d17afca</a> by <a href="http://doxygen.org/">Doxygen</a> and <a href="http://mcss.mosra.cz/">m.css</a>. Contact us via <a href="https://github.com/quinoacomputing/quinoa/">GitHub</a>, <a href="https://groups.io/g/quinoa">Email</a> or <a href="https://quinoa.zulipchat.com">Chat</a>.</p>
+        <p>Quinoa docs, part of the <a href="http://quinoacomputing.org/">Quinoa project</a>. Copyright © J. Bakosi 2012&ndash;2015, Los Alamos National Security, LLC, 2016&ndash;2018, <a href="https://www.triadns.org/">Triad National Security, LLC,</a> 2019-2021. Generated on Wednesday, Sep 22, 2021 based on <a href="https://github.com/quinoacomputing/quinoa/commit/6f511e210">6f511e210</a> by <a href="http://doxygen.org/">Doxygen</a> and <a href="http://mcss.mosra.cz/">m.css</a>. Contact us via <a href="https://github.com/quinoacomputing/quinoa/">GitHub</a>, <a href="https://groups.io/g/quinoa">Email</a> or <a href="https://quinoa.zulipchat.com">Chat</a>.</p>
       </div>
     </div>
   </div>
