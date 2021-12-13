@@ -92,17 +92,11 @@
 
               </ul>
             </li>
-            <li>
-              <a href="#inciter_newscheme_option">2. Add new option switch</a>
-              <ul>
-                <li><a href="#inciter_newscheme_option_Scheme">Control/Inciter/Options/Scheme.hpp</a></li>
-
-              </ul>
-            </li>
+            <li><a href="#inciter_newscheme_option">2. Add new option switch</a></li>
             <li>
               <a href="#inciter_newscheme_proxy">3. Add new Charm++ chare proxy in Scheme</a>
               <ul>
-                <li><a href="#inciter_newscheme_proxy_SchemeBase">Inciter/SchemeBase.hpp</a></li>
+                <li><a href="#inciter_newscheme_proxy_Scheme">Inciter/Scheme.hpp</a></li>
 
               </ul>
             </li>
@@ -205,51 +199,11 @@ inciter control file keyword &#39;alecg&#39;
    in the arbitrary Lagrangian-Eulerian (ALE) reference frame combined with
    Runge-Kutta (RK) time stepping. See Control/Inciter/Options/Scheme.hpp for other
    valid options.</pre></section></section><section id="inciter_newscheme_option"><h2><a href="#inciter_newscheme_option">2. Add new option switch</a></h2><p>Next is to add a new state to the existing <a href="classinciter_1_1_scheme.html" class="m-dox">Scheme</a> option switch. This &quot;option
-switch&quot; is really only a fancy enum, used to store the user&#x27;s choice of the discretization scheme after parsing the control file in a type-safe manner. This fancy enum is an option switch because it inherits from <a href="classtk_1_1_toggle.html" class="m-dox">tk::<wbr />Toggle</a>, defined in <a href="_toggle_8hpp.html" class="m-dox">Control/<wbr />Toggle.hpp</a>, which is a generic switch (or option), that helps associating enum values to keywords and querying one based on the other. Extending the existing <a href="classinciter_1_1_scheme.html" class="m-dox">Scheme</a> option switch is done by extending the list of schemes in <code><a href="_control_2_inciter_2_options_2_scheme_8hpp.html" class="m-dox">src/<wbr />Control/<wbr />Inciter/<wbr />Options/<wbr />Scheme.hpp</a></code>:</p><section id="inciter_newscheme_option_Scheme"><h3><a href="#inciter_newscheme_option_Scheme">Control/Inciter/Options/Scheme.hpp</a></h3><pre class="m-code">$ git diff src/Control/Inciter/Options/Scheme.hpp
-<span class="gh">diff --git a/src/Inciter/SchemeBase.hpp b/src/Inciter/SchemeBase.hpp</span>
-<span class="gh">index 61510d01..0cb3e9e8 100644</span>
-<span class="gd">--- a/src/Inciter/SchemeBase.hpp</span>
-<span class="gi">+++ b/src/Inciter/SchemeBase.hpp</span>
-<span class="gu">@@ -22,6 +22,7 @@</span>
-
- #include &quot;NoWarning/matcg.decl.h&quot;
- #include &quot;NoWarning/diagcg.decl.h&quot;
-<span class="gi">+#include &quot;NoWarning/alecg.decl.h&quot;</span>
- #include &quot;NoWarning/distfct.decl.h&quot;
- #include &quot;NoWarning/dg.decl.h&quot;
- #include &quot;NoWarning/discretization.decl.h&quot;
-<span class="gu">@@ -52,8 +53,11 @@ class SchemeBase {</span>
-         proxy = static_cast&lt; CProxy_DiagCG &gt;( CProxy_DiagCG::ckNew(m_bound) );
-         fctproxy= CProxy_DistFCT::ckNew(m_bound);
-       } else if (scheme == ctr::SchemeType::DG ||
-<span class="gd">-                 scheme == ctr::SchemeType::DGP1) {</span>
-<span class="gi">+                 scheme == ctr::SchemeType::DGP1)</span>
-<span class="gi">+      {</span>
-         proxy = static_cast&lt; CProxy_DG &gt;( CProxy_DG::ckNew(m_bound) );
-<span class="gi">+      } else if (scheme == ctr::SchemeType::ALECG) {</span>
-<span class="gi">+        proxy = static_cast&lt; CProxy_ALECG &gt;( CProxy_ALECG::ckNew(m_bound) );</span>
-       } else Throw( &quot;Unknown discretization scheme&quot; );
-     }
-
-<span class="gu">@@ -75,11 +79,12 @@ class SchemeBase {</span>
-     const CkArrayOptions&amp; arrayoptions() { return m_bound; }
-
-     //! Variant type listing all chare proxy types modeling the same concept
-<span class="gd">-    using Proxy = boost::variant&lt; CProxy_DiagCG, CProxy_DG &gt;;</span>
-<span class="gi">+    using Proxy =</span>
-<span class="gi">+      boost::variant&lt; CProxy_DiagCG, CProxy_DG, CProxy_ALECG &gt;;</span>
-     //! Variant type listing all chare element proxy types (behind operator[])
-     using ProxyElem =
-       boost::variant&lt; CProxy_DiagCG::element_t,
-<span class="gd">-                      CProxy_DG::element_t &gt;;</span>
-<span class="gi">+                      CProxy_DG::element_t, CProxy_ALECG::element_t &gt;;</span>
-
-   protected:
-     //! Variant storing one proxy to which this class is configured for</pre></section></section><section id="inciter_newscheme_proxy"><h2><a href="#inciter_newscheme_proxy">3. Add new Charm++ chare proxy in Scheme</a></h2><p><code><a href="classinciter_1_1_scheme.html" class="m-dox">Scheme</a></code> is a class that, together with its base, <code>SchemeBase</code>, implements concept-based runtime polymorphism for migratable Charm++ chare arrays using value semantics. Client code, e.g., <code><a href="classinciter_1_1_transporter.html" class="m-dox">Transporter</a></code>, interacts with <code><a href="classinciter_1_1_discretization.html" class="m-dox">Discretization</a></code> and its children via a uniform interface provided by <code><a href="classinciter_1_1_scheme.html" class="m-dox">Scheme</a></code>, which dispatches entry method calls to the correct class instance, the base or the child, and is capable of performing broadcasts as well as addressing a particular chare array element. Read more details at <a href="_inciter_2_scheme_8hpp.html" class="m-dox">src/<wbr />Inciter/<wbr />Scheme.hpp</a>. To teach it to dispatch to our new <code><a href="classinciter_1_1_a_l_e_c_g.html" class="m-dox">ALECG</a></code> scheme, besides the existing ones, we make the following changes:</p><section id="inciter_newscheme_proxy_SchemeBase"><h3><a href="#inciter_newscheme_proxy_SchemeBase">Inciter/SchemeBase.hpp</a></h3><pre class="m-code">$ git diff src/Inciter/SchemeBase.hpp
-<span class="gh">diff --git a/src/Inciter/SchemeBase.hpp b/src/Inciter/SchemeBase.hpp</span>
+switch&quot; is really only a fancy enum, used to store the user&#x27;s choice of the discretization scheme after parsing the control file in a type-safe manner. This fancy enum is an option switch because it inherits from <a href="classtk_1_1_toggle.html" class="m-dox">tk::<wbr />Toggle</a>, defined in <a href="_toggle_8hpp.html" class="m-dox">Control/<wbr />Toggle.hpp</a>, which is a generic switch (or option), that helps associating enum values to keywords and querying one based on the other. Extending the existing <a href="classinciter_1_1_scheme.html" class="m-dox">Scheme</a> option switch is done by extending the list of schemes in <code><a href="_control_2_inciter_2_options_2_scheme_8hpp.html" class="m-dox">src/<wbr />Control/<wbr />Inciter/<wbr />Options/<wbr />Scheme.hpp</a></code>.</p></section><section id="inciter_newscheme_proxy"><h2><a href="#inciter_newscheme_proxy">3. Add new Charm++ chare proxy in Scheme</a></h2><p><code><a href="classinciter_1_1_scheme.html" class="m-dox">Scheme</a></code> is a class that implements concept-based runtime polymorphism for migratable Charm++ chare arrays using value semantics. Client code, e.g., <code><a href="classinciter_1_1_transporter.html" class="m-dox">Transporter</a></code>, interacts with <code><a href="classinciter_1_1_discretization.html" class="m-dox">Discretization</a></code> and its children via a uniform interface provided by <code><a href="classinciter_1_1_scheme.html" class="m-dox">Scheme</a></code>, which dispatches entry method calls to the correct class instance, the base or the child, and is capable of performing broadcasts as well as addressing a particular chare array element. Read more details at <a href="_inciter_2_scheme_8hpp.html" class="m-dox">src/<wbr />Inciter/<wbr />Scheme.hpp</a>. To teach it to dispatch to our new <code><a href="classinciter_1_1_a_l_e_c_g.html" class="m-dox">ALECG</a></code> scheme, besides the existing ones, we make the following changes:</p><section id="inciter_newscheme_proxy_Scheme"><h3><a href="#inciter_newscheme_proxy_Scheme">Inciter/Scheme.hpp</a></h3><pre class="m-code">$ git diff src/Inciter/Scheme.hpp
+<span class="gh">diff --git a/src/Inciter/Scheme.hpp b/src/Inciter/Scheme.hpp</span>
 <span class="gh">index 61510d01..dea3d78a 100644</span>
-<span class="gd">--- a/src/Inciter/SchemeBase.hpp</span>
-<span class="gi">+++ b/src/Inciter/SchemeBase.hpp</span>
+<span class="gd">--- a/src/Inciter/Scheme.hpp</span>
+<span class="gi">+++ b/src/Inciter/Scheme.hpp</span>
 <span class="gu">@@ -22,6 +22,7 @@</span>
 
  #include &quot;NoWarning/matcg.decl.h&quot;
@@ -258,7 +212,7 @@ switch&quot; is really only a fancy enum, used to store the user&#x27;s choice o
  #include &quot;NoWarning/distfct.decl.h&quot;
  #include &quot;NoWarning/dg.decl.h&quot;
  #include &quot;NoWarning/discretization.decl.h&quot;
-<span class="gu">@@ -51,6 +52,8 @@ class SchemeBase {</span>
+<span class="gu">@@ -51,6 +52,8 @@ class Scheme {</span>
        } else if (scheme == ctr::SchemeType::DiagCG) {
          proxy = static_cast&lt; CProxy_DiagCG &gt;( CProxy_DiagCG::ckNew(m_bound) );
          fctproxy= CProxy_DistFCT::ckNew(m_bound);
@@ -267,7 +221,7 @@ switch&quot; is really only a fancy enum, used to store the user&#x27;s choice o
        } else if (scheme == ctr::SchemeType::DG ||
                   scheme == ctr::SchemeType::DGP1) {
          proxy = static_cast&lt; CProxy_DG &gt;( CProxy_DG::ckNew(m_bound) );
-<span class="gu">@@ -75,11 +78,12 @@ class SchemeBase {</span>
+<span class="gu">@@ -75,11 +78,12 @@ class Scheme {</span>
      const CkArrayOptions&amp; arrayoptions() { return m_bound; }
 
      //! Variant type listing all chare proxy types modeling the same concept
@@ -312,9 +266,11 @@ switch&quot; is really only a fancy enum, used to store the user&#x27;s choice o
  addCharmModule( &quot;distfct&quot; &quot;Inciter&quot; )
  addCharmModule( &quot;dg&quot; &quot;Inciter&quot; )</pre><p>The <code>addCharmModule</code> cmake macro above, defined in <code>cmake/charm.cmake</code>, ensures that build target <code>Inciter</code> will properly depend on our new <code>alecg</code> Charm++ module, defined in <code><a href="alecg_8ci.html" class="m-dox">Inciter/<wbr />alecg.ci</a></code>. The macro also tells cmake how the two files, <code><a href="alecg_8decl_8h.html" class="m-dox">alecg.decl.h</a></code> and <code><a href="alecg_8def_8h.html" class="m-dox">alecg.def.h</a></code>, are generated from <code><a href="alecg_8ci.html" class="m-dox">alecg.ci</a></code>: using <code>charmc</code>, a compiler wrapper that generates Charm++-code to make the <code><a href="classinciter_1_1_a_l_e_c_g.html" class="m-dox">ALECG</a></code> from an ordinary C++ class into a Charm++ chare array, with <em>entry</em> methods callable across the network, make it migratable, enable its structured DAGger, etc. See also the <a href="http://charm.cs.illinois.edu/manuals/html/charm++/manual.html">Charm++ manual</a>.</p><p>Now to the new files. First is the new Charm++ interface file, <a href="alecg_8ci.html" class="m-dox">Inciter/<wbr />alecg.ci</a>:</p></section><section id="inciter_newscheme_chare_alecg"><h3><a href="#inciter_newscheme_chare_alecg">Inciter/alecg.ci</a></h3><p>This is the file that is parsed by Charm++&#x27;s compiler which then generates additional code that makes <a href="classinciter_1_1_a_l_e_c_g.html" class="m-dox">ALECG</a> a Charm++ chare array, makes it migratable, etc. The full listing is at <a href="inciter_newscheme_alecg_ci.html" class="m-dox">Inciter/<wbr />alecg.ci</a> some of whose details are discussed below.</p><section id="inciter_newscheme_chare_alecg_headers"><h4><a href="#inciter_newscheme_chare_alecg_headers">Inciter/alecg.ci – External modules and header includes</a></h4><pre class="m-code">  <span class="k">extern</span> <span class="k">module</span> <span class="nc">transporter</span><span class="p">;</span>
   <span class="k">extern</span> <span class="k">module</span> <span class="nc">discretization</span><span class="p">;</span>
+  <span class="k">extern</span> <span class="k">module</span> <span class="nc">ghosts</span><span class="p">;</span>
 
   <span class="n">include</span> <span class="s">&quot;UnsMesh.hpp&quot;</span><span class="p">;</span>
   <span class="n">include</span> <span class="s">&quot;PUPUtil.hpp&quot;</span><span class="p">;</span></pre><p>First we declare some external Charm++ modules that <a href="classinciter_1_1_a_l_e_c_g.html" class="m-dox">ALECG</a> needs to interact with and thus from where we need type information. The <code>extern module</code> statements are followed by some usual C++ <code>include</code>s (without the <code>#</code>): these are in the Charm++ interface file because the Charm++ code below requires type information from them.</p></section><section id="inciter_newscheme_chare_alecg_array"><h4><a href="#inciter_newscheme_chare_alecg_array">Inciter/alecg.ci – 1D Charm++ chare array</a></h4><pre class="m-code">    <span class="k">array</span> <span class="p">[</span><span class="mi">1</span><span class="n">D</span><span class="p">]</span> <span class="n">ALECG</span> <span class="p">{</span></pre><p>Next comes the specification of the <a href="classinciter_1_1_a_l_e_c_g.html" class="m-dox">ALECG</a> Charm++ chare array. This is a 1D array whose elements at runtime will be distributed across the available processing elements and compute nodes. If load balancing is enabled, the array elements (C++ objects) are migrated to homogenize load across a simulation. Because the array is 1D, we use a single integer index to address a particular array element. Charm++ also allows multi-dimensional arrays which can be useful if the problem naturally maps to a multi-dimensional notion, e.g., partitioning a 3D Cartesian mesh, so index calculations to address array elements (and thus work-units) become cleaner.</p></section><section id="inciter_newscheme_chare_alecg_entry"><h4><a href="#inciter_newscheme_chare_alecg_entry">Inciter/alecg.ci – Entry methods</a></h4><pre class="m-code">      <span class="k">entry</span> <span class="nf">ALECG</span><span class="p">(</span> <span class="k">const</span> <span class="n">CProxy_Discretization</span><span class="o">&amp;</span> <span class="n">disc</span><span class="p">,</span>
+                   <span class="k">const</span> <span class="n">CProxy_Ghosts</span><span class="o">&amp;</span> <span class="n">ghostsproxy</span><span class="p">,</span>
                    <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">map</span><span class="o">&lt;</span> <span class="kt">int</span><span class="p">,</span> <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span> <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="o">&gt;</span> <span class="o">&gt;&amp;</span> <span class="n">bface</span><span class="p">,</span>
                    <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">map</span><span class="o">&lt;</span> <span class="kt">int</span><span class="p">,</span> <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span> <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="o">&gt;</span> <span class="o">&gt;&amp;</span> <span class="n">bnode</span><span class="p">,</span>
                    <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span> <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="o">&gt;&amp;</span> <span class="n">triinpoel</span> <span class="p">);</span>
@@ -681,7 +637,7 @@ switch&quot; is really only a fancy enum, used to store the user&#x27;s choice o
        else Throw( &quot;Can&#39;t find selected CGPDE&quot; );
      }
 
-   }</pre></section></section><section id="inciter_newscheme_unittest"><h2><a href="#inciter_newscheme_unittest">7. Augment unit tests for Scheme</a></h2><p>Though this is not strictly necessary, we also augment the unit tests of <a href="classinciter_1_1_scheme.html" class="m-dox">Scheme</a> exercising our new discretization scheme:</p><pre class="m-code">$ git diff develop src/UnitTest/TUTSuite.hpp src/UnitTest/tests/Inciter/TestScheme.cpp
+   }</pre></section></section><section id="inciter_newscheme_unittest"><h2><a href="#inciter_newscheme_unittest">7. Augment unit tests for Scheme</a></h2><p>Though this is not strictly necessary, we also augment the unit tests of <a href="classinciter_1_1_scheme.html" class="m-dox">Scheme</a> exercising our new discretization scheme:</p><pre class="m-code">$ git diff develop src/UnitTest/TUTSuite.hpp tests/unit/Inciter/TestScheme.cpp
 <span class="gh">diff --git a/src/UnitTest/TUTSuite.hpp b/src/UnitTest/TUTSuite.hpp</span>
 <span class="gh">index 191b3972..dd904b02 100644</span>
 <span class="gd">--- a/src/UnitTest/TUTSuite.hpp</span>
@@ -695,7 +651,7 @@ switch&quot; is really only a fancy enum, used to store the user&#x27;s choice o
      };
 
      // Tests that must be run on PE 0
-<span class="gh">diff --git a/src/UnitTest/tests/Inciter/TestScheme.cpp b/src/UnitTest/tests/Inciter/TestScheme.cpp</span>
+<span class="gh">diff --git a/tests/unit/Inciter/TestScheme.cpp b/tests/unit/Inciter/TestScheme.cpp</span>
 <span class="gh">index 6dc48c75..e4acfce4 100644</span>
 <span class="gd">--- a/src/UnitTest/tests/Inciter/TestScheme.cpp</span>
 <span class="gi">+++ b/src/UnitTest/tests/Inciter/TestScheme.cpp</span>
@@ -801,7 +757,7 @@ switch&quot; is really only a fancy enum, used to store the user&#x27;s choice o
   <div class="m-container">
     <div class="m-row">
       <div class="m-col-l-10 m-push-l-1">
-        <p>Quinoa docs, part of the <a href="http://quinoacomputing.org/">Quinoa project</a>. Copyright © J. Bakosi 2012&ndash;2015, Los Alamos National Security, LLC, 2016&ndash;2018, <a href="https://www.triadns.org/">Triad National Security, LLC,</a> 2019-2021. Generated on Thursday, Dec 02, 2021 based on <a href="https://github.com/quinoacomputing/quinoa/commit/80ef9e568">80ef9e568</a> by <a href="http://doxygen.org/">Doxygen</a> and <a href="http://mcss.mosra.cz/">m.css</a>. Contact us via <a href="https://github.com/quinoacomputing/quinoa/">GitHub</a>, <a href="https://groups.io/g/quinoa">Email</a> or <a href="https://quinoa.zulipchat.com">Chat</a>.</p>
+        <p>Quinoa docs, part of the <a href="http://quinoacomputing.org/">Quinoa project</a>. Copyright © J. Bakosi 2012&ndash;2015, Los Alamos National Security, LLC, 2016&ndash;2018, <a href="https://www.triadns.org/">Triad National Security, LLC,</a> 2019-2021. Generated on Monday, Dec 13, 2021 based on <a href="https://github.com/quinoacomputing/quinoa/commit/2f9558bc5">2f9558bc5</a> by <a href="http://doxygen.org/">Doxygen</a> and <a href="http://mcss.mosra.cz/">m.css</a>. Contact us via <a href="https://github.com/quinoacomputing/quinoa/">GitHub</a>, <a href="https://groups.io/g/quinoa">Email</a> or <a href="https://quinoa.zulipchat.com">Chat</a>.</p>
       </div>
     </div>
   </div>
