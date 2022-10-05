@@ -118,8 +118,6 @@
 <span class="cp">#include</span> <span class="cpf">&quot;Integrate/MultiMatTerms.hpp&quot;</span><span class="cp"></span>
 <span class="cp">#include</span> <span class="cpf">&quot;Integrate/Source.hpp&quot;</span><span class="cp"></span>
 <span class="cp">#include</span> <span class="cpf">&quot;RiemannChoice.hpp&quot;</span><span class="cp"></span>
-<span class="cp">#include</span> <span class="cpf">&quot;EoS/EoS.hpp&quot;</span><span class="cp"></span>
-<span class="cp">#include</span> <span class="cpf">&quot;EoS/StiffenedGas.hpp&quot;</span><span class="cp"></span>
 <span class="cp">#include</span> <span class="cpf">&quot;MultiMat/MultiMatIndexing.hpp&quot;</span><span class="cp"></span>
 <span class="cp">#include</span> <span class="cpf">&quot;Reconstruction.hpp&quot;</span><span class="cp"></span>
 <span class="cp">#include</span> <span class="cpf">&quot;Limiter.hpp&quot;</span><span class="cp"></span>
@@ -127,6 +125,7 @@
 <span class="cp">#include</span> <span class="cpf">&quot;Problem/BoxInitialization.hpp&quot;</span><span class="cp"></span>
 <span class="cp">#include</span> <span class="cpf">&quot;PrefIndicator.hpp&quot;</span><span class="cp"></span>
 <span class="cp">#include</span> <span class="cpf">&quot;MultiMat/BCFunctions.hpp&quot;</span><span class="cp"></span>
+<span class="cp">#include</span> <span class="cpf">&quot;MultiMat/MiscMultiMatFns.hpp&quot;</span><span class="cp"></span>
 
 <span class="k">namespace</span> <span class="n">inciter</span> <span class="p">{</span>
 
@@ -166,16 +165,7 @@
         <span class="p">,</span> <span class="n">extrapolate</span> <span class="p">}</span> <span class="p">)</span> <span class="p">);</span>
 
       <span class="c1">// EoS initialization</span>
-      <span class="k">auto</span> <span class="n">nmat</span> <span class="o">=</span>
-        <span class="n">g_inputdeck</span><span class="p">.</span><span class="n">get</span><span class="o">&lt;</span> <span class="n">tag</span><span class="o">::</span><span class="n">param</span><span class="p">,</span> <span class="n">tag</span><span class="o">::</span><span class="n">multimat</span><span class="p">,</span> <span class="n">tag</span><span class="o">::</span><span class="n">nmat</span> <span class="o">&gt;</span><span class="p">()[</span><span class="n">m_system</span><span class="p">];</span>
-      <span class="k">for</span> <span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="n">k</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">k</span><span class="o">&lt;</span><span class="n">nmat</span><span class="p">;</span> <span class="o">++</span><span class="n">k</span><span class="p">)</span> <span class="p">{</span>
-        <span class="c1">// query input deck to get gamma, p_c, cv</span>
-        <span class="k">auto</span> <span class="n">g</span> <span class="o">=</span> <span class="n">gamma</span><span class="o">&lt;</span> <span class="n">eq</span> <span class="o">&gt;</span><span class="p">(</span><span class="n">m_system</span><span class="p">,</span> <span class="n">k</span><span class="p">);</span>
-        <span class="k">auto</span> <span class="n">ps</span> <span class="o">=</span> <span class="n">pstiff</span><span class="o">&lt;</span> <span class="n">eq</span> <span class="o">&gt;</span><span class="p">(</span><span class="n">m_system</span><span class="p">,</span> <span class="n">k</span><span class="p">);</span>
-        <span class="k">auto</span> <span class="n">c_v</span> <span class="o">=</span> <span class="n">cv</span><span class="o">&lt;</span> <span class="n">eq</span> <span class="o">&gt;</span><span class="p">(</span><span class="n">m_system</span><span class="p">,</span> <span class="n">k</span><span class="p">);</span>
-        <span class="n">m_mat_blk</span><span class="p">.</span><span class="n">push_back</span><span class="p">(</span><span class="k">new</span> <span class="n">StiffenedGas</span><span class="p">(</span><span class="n">g</span><span class="p">,</span> <span class="n">ps</span><span class="p">,</span> <span class="n">c_v</span><span class="p">));</span>
-        <span class="p">}</span>
-
+      <span class="n">initializeMaterialEoS</span><span class="p">(</span> <span class="n">m_system</span><span class="p">,</span> <span class="n">m_mat_blk</span> <span class="p">);</span>
     <span class="p">}</span>
 
     <span class="c1">//! Find the number of primitive quantities required for this PDE system</span>
@@ -452,8 +442,8 @@
             <span class="n">pri</span><span class="p">[</span><span class="n">pressureIdx</span><span class="p">(</span><span class="n">nmat</span><span class="p">,</span><span class="n">imat</span><span class="p">)]</span> <span class="o">=</span> <span class="n">m_mat_blk</span><span class="p">[</span><span class="n">imat</span><span class="p">]</span><span class="o">-&gt;</span><span class="n">eos_pressure</span><span class="p">(</span>
               <span class="n">arhomat</span><span class="p">,</span> <span class="n">vel</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">vel</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">vel</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">arhoemat</span><span class="p">,</span> <span class="n">alphamat</span> <span class="p">);</span>
 
-            <span class="n">pri</span><span class="p">[</span><span class="n">pressureIdx</span><span class="p">(</span><span class="n">nmat</span><span class="p">,</span><span class="n">imat</span><span class="p">)]</span> <span class="o">=</span> <span class="n">constrain_pressure</span><span class="o">&lt;</span> <span class="n">tag</span><span class="o">::</span><span class="n">multimat</span> <span class="o">&gt;</span><span class="p">(</span>
-              <span class="n">m_system</span><span class="p">,</span> <span class="n">pri</span><span class="p">[</span><span class="n">pressureIdx</span><span class="p">(</span><span class="n">nmat</span><span class="p">,</span><span class="n">imat</span><span class="p">)],</span> <span class="n">alphamat</span><span class="p">,</span> <span class="n">imat</span><span class="p">);</span>
+            <span class="n">pri</span><span class="p">[</span><span class="n">pressureIdx</span><span class="p">(</span><span class="n">nmat</span><span class="p">,</span><span class="n">imat</span><span class="p">)]</span> <span class="o">=</span> <span class="n">constrain_pressure</span><span class="p">(</span> <span class="n">m_mat_blk</span><span class="p">,</span>
+              <span class="n">pri</span><span class="p">[</span><span class="n">pressureIdx</span><span class="p">(</span><span class="n">nmat</span><span class="p">,</span><span class="n">imat</span><span class="p">)],</span> <span class="n">alphamat</span><span class="p">,</span> <span class="n">imat</span><span class="p">);</span>
           <span class="p">}</span>
 
           <span class="c1">// Evaluate bulk velocity at quadrature point</span>
@@ -791,7 +781,7 @@
       <span class="p">}</span>
 
       <span class="c1">// compute volume integrals of non-conservative terms</span>
-      <span class="n">tk</span><span class="o">::</span><span class="n">nonConservativeInt</span><span class="p">(</span> <span class="n">m_system</span><span class="p">,</span> <span class="n">nmat</span><span class="p">,</span> <span class="n">ndof</span><span class="p">,</span> <span class="n">rdof</span><span class="p">,</span> <span class="n">nelem</span><span class="p">,</span>
+      <span class="n">tk</span><span class="o">::</span><span class="n">nonConservativeInt</span><span class="p">(</span> <span class="n">m_system</span><span class="p">,</span> <span class="n">nmat</span><span class="p">,</span> <span class="n">m_mat_blk</span><span class="p">,</span> <span class="n">ndof</span><span class="p">,</span> <span class="n">rdof</span><span class="p">,</span> <span class="n">nelem</span><span class="p">,</span>
                               <span class="n">inpoel</span><span class="p">,</span> <span class="n">coord</span><span class="p">,</span> <span class="n">geoElem</span><span class="p">,</span> <span class="n">U</span><span class="p">,</span> <span class="n">P</span><span class="p">,</span> <span class="n">riemannDeriv</span><span class="p">,</span>
                               <span class="n">ndofel</span><span class="p">,</span> <span class="n">R</span><span class="p">,</span> <span class="n">intsharp</span> <span class="p">);</span>
 
@@ -1204,7 +1194,7 @@
   <div class="m-container">
     <div class="m-row">
       <div class="m-col-l-10 m-push-l-1">
-        <p>Quinoa docs, part of the <a href="http://quinoacomputing.github.io/">Quinoa project</a>. Copyright © J. Bakosi 2012&ndash;2015, Los Alamos National Security, LLC, 2016&ndash;2018, <a href="https://www.triadns.org/">Triad National Security, LLC,</a> 2019-2021. Generated on Wednesday, Sep 28, 2022 based on <a href="https://github.com/quinoacomputing/quinoa/commit/-128-NOTFOUND">-128-NOTFOUND</a> by <a href="http://doxygen.org/">Doxygen</a> and <a href="http://mcss.mosra.cz/">m.css</a>. Contact us via <a href="https://github.com/quinoacomputing/quinoa/">GitHub</a>, <a href="https://groups.io/g/quinoa">Email</a> or <a href="https://quinoa.zulipchat.com">Chat</a>.</p>
+        <p>Quinoa docs, part of the <a href="http://quinoacomputing.github.io/">Quinoa project</a>. Copyright © J. Bakosi 2012&ndash;2015, Los Alamos National Security, LLC, 2016&ndash;2018, <a href="https://www.triadns.org/">Triad National Security, LLC,</a> 2019-2021. Generated on Wednesday, Oct 05, 2022 based on <a href="https://github.com/quinoacomputing/quinoa/commit/-128-NOTFOUND">-128-NOTFOUND</a> by <a href="http://doxygen.org/">Doxygen</a> and <a href="http://mcss.mosra.cz/">m.css</a>. Contact us via <a href="https://github.com/quinoacomputing/quinoa/">GitHub</a>, <a href="https://groups.io/g/quinoa">Email</a> or <a href="https://quinoa.zulipchat.com">Chat</a>.</p>
       </div>
     </div>
   </div>
