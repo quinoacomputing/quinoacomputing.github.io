@@ -693,6 +693,44 @@
         <span class="n">coord</span><span class="p">,</span> <span class="n">geoElem</span><span class="p">,</span> <span class="n">prim</span><span class="p">,</span> <span class="n">unk</span><span class="p">);</span>
     <span class="p">}</span>
 
+    <span class="c1">//! Return cell-average deformation gradient tensor</span>
+    <span class="c1">//! \param[in] unk Solution vector at recent time step</span>
+    <span class="c1">//! \param[in] nielem Number of internal elements</span>
+    <span class="c1">//! \details This function returns the bulk cell-average inverse</span>
+    <span class="c1">//!   deformation gradient tensor</span>
+    <span class="n">std</span><span class="o">::</span><span class="n">array</span><span class="o">&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span> <span class="n">tk</span><span class="o">::</span><span class="n">real</span> <span class="o">&gt;</span><span class="p">,</span> <span class="mi">9</span> <span class="o">&gt;</span> <span class="n">cellAvgDeformGrad</span><span class="p">(</span>
+      <span class="k">const</span> <span class="n">tk</span><span class="o">::</span><span class="n">Fields</span><span class="o">&amp;</span> <span class="n">unk</span><span class="p">,</span>
+      <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="n">nielem</span> <span class="p">)</span> <span class="k">const</span>
+    <span class="p">{</span>
+      <span class="k">const</span> <span class="k">auto</span> <span class="n">rdof</span> <span class="o">=</span> <span class="n">g_inputdeck</span><span class="p">.</span><span class="n">get</span><span class="o">&lt;</span> <span class="n">tag</span><span class="o">::</span><span class="n">discr</span><span class="p">,</span> <span class="n">tag</span><span class="o">::</span><span class="n">rdof</span> <span class="o">&gt;</span><span class="p">();</span>
+      <span class="k">const</span> <span class="k">auto</span> <span class="n">nmat</span> <span class="o">=</span>
+        <span class="n">g_inputdeck</span><span class="p">.</span><span class="n">get</span><span class="o">&lt;</span> <span class="n">tag</span><span class="o">::</span><span class="n">param</span><span class="p">,</span> <span class="n">tag</span><span class="o">::</span><span class="n">multimat</span><span class="p">,</span> <span class="n">tag</span><span class="o">::</span><span class="n">nmat</span> <span class="o">&gt;</span><span class="p">()[</span><span class="n">m_system</span><span class="p">];</span>
+      <span class="k">const</span> <span class="k">auto</span><span class="o">&amp;</span> <span class="n">solidx</span> <span class="o">=</span> <span class="n">g_inputdeck</span><span class="p">.</span><span class="n">get</span><span class="o">&lt;</span> <span class="n">tag</span><span class="o">::</span><span class="n">param</span><span class="p">,</span> <span class="n">tag</span><span class="o">::</span><span class="n">multimat</span><span class="p">,</span>
+        <span class="n">tag</span><span class="o">::</span><span class="n">matidxmap</span> <span class="o">&gt;</span><span class="p">().</span><span class="k">template</span> <span class="n">get</span><span class="o">&lt;</span> <span class="n">tag</span><span class="o">::</span><span class="n">solidx</span> <span class="o">&gt;</span><span class="p">();</span>
+
+      <span class="kt">bool</span> <span class="nf">has_solid</span><span class="p">(</span><span class="nb">false</span><span class="p">);</span>
+      <span class="k">for</span> <span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="n">k</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">k</span><span class="o">&lt;</span><span class="n">nmat</span><span class="p">;</span> <span class="o">++</span><span class="n">k</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">solidx</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="n">has_solid</span><span class="o">=</span><span class="nb">true</span><span class="p">;</span>
+      <span class="p">}</span>
+
+      <span class="n">std</span><span class="o">::</span><span class="n">array</span><span class="o">&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span> <span class="n">tk</span><span class="o">::</span><span class="n">real</span> <span class="o">&gt;</span><span class="p">,</span> <span class="mi">9</span> <span class="o">&gt;</span> <span class="n">gb</span><span class="p">;</span>
+      <span class="k">if</span> <span class="p">(</span><span class="n">has_solid</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">for</span> <span class="p">(</span><span class="k">auto</span><span class="o">&amp;</span> <span class="nl">gij</span> <span class="p">:</span> <span class="n">gb</span><span class="p">)</span>
+          <span class="n">gij</span><span class="p">.</span><span class="n">resize</span><span class="p">(</span><span class="n">nielem</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">);</span>
+        <span class="k">for</span> <span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="n">e</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">e</span><span class="o">&lt;</span><span class="n">nielem</span><span class="p">;</span> <span class="o">++</span><span class="n">e</span><span class="p">)</span> <span class="p">{</span>
+          <span class="k">for</span> <span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="n">k</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">k</span><span class="o">&lt;</span><span class="n">nmat</span><span class="p">;</span> <span class="o">++</span><span class="n">k</span><span class="p">)</span> <span class="p">{</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">solidx</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+              <span class="k">for</span> <span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">i</span><span class="o">&lt;</span><span class="mi">3</span><span class="p">;</span> <span class="o">++</span><span class="n">i</span><span class="p">)</span>
+                <span class="k">for</span> <span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="n">j</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">j</span><span class="o">&lt;</span><span class="mi">3</span><span class="p">;</span> <span class="o">++</span><span class="n">j</span><span class="p">)</span>
+                  <span class="n">gb</span><span class="p">[</span><span class="mi">3</span><span class="o">*</span><span class="n">i</span><span class="o">+</span><span class="n">j</span><span class="p">][</span><span class="n">e</span><span class="p">]</span> <span class="o">+=</span> <span class="n">unk</span><span class="p">(</span><span class="n">e</span><span class="p">,</span><span class="n">deformDofIdx</span><span class="p">(</span><span class="n">nmat</span><span class="p">,</span><span class="n">solidx</span><span class="p">[</span><span class="n">k</span><span class="p">],</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">,</span><span class="n">rdof</span><span class="p">,</span><span class="mi">0</span><span class="p">));</span>
+            <span class="p">}</span>
+          <span class="p">}</span>
+        <span class="p">}</span>
+      <span class="p">}</span>
+
+      <span class="k">return</span> <span class="n">gb</span><span class="p">;</span>
+    <span class="p">}</span>
+
 
     <span class="c1">//! Compute right hand side</span>
     <span class="c1">//! \param[in] t Physical time</span>
@@ -1199,7 +1237,7 @@
   <div class="m-container">
     <div class="m-row">
       <div class="m-col-l-10 m-push-l-1">
-        <p>Quinoa docs, part of the <a href="http://quinoacomputing.github.io/">Quinoa project</a>. Copyright © J. Bakosi 2012&ndash;2015, Los Alamos National Security, LLC, 2016&ndash;2018, <a href="https://www.triadns.org/">Triad National Security, LLC,</a> 2019-2021. Generated on Wednesday, Jun 28, 2023 based on <a href="https://github.com/quinoacomputing/quinoa/commit/-128-NOTFOUND">-128-NOTFOUND</a> by <a href="http://doxygen.org/">Doxygen</a> and <a href="http://mcss.mosra.cz/">m.css</a>. Contact us via <a href="https://github.com/quinoacomputing/quinoa/issues">GitHub</a>.</p>
+        <p>Quinoa docs, part of the <a href="http://quinoacomputing.github.io/">Quinoa project</a>. Copyright © J. Bakosi 2012&ndash;2015, Los Alamos National Security, LLC, 2016&ndash;2018, <a href="https://www.triadns.org/">Triad National Security, LLC,</a> 2019-2021. Generated on Wednesday, Jul 05, 2023 based on <a href="https://github.com/quinoacomputing/quinoa/commit/-128-NOTFOUND">-128-NOTFOUND</a> by <a href="http://doxygen.org/">Doxygen</a> and <a href="http://mcss.mosra.cz/">m.css</a>. Contact us via <a href="https://github.com/quinoacomputing/quinoa/issues">GitHub</a>.</p>
       </div>
     </div>
   </div>
