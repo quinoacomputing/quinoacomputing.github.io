@@ -72,7 +72,50 @@
         <h1>
           How to parse a new block in the control file
         </h1>
-<p>Under construction.</p>
+<p>This page describes the basic steps required to add parsing for a new control file keyword or block.</p><p>This example adds a keyword <code>rho0</code> to the inputdeck:</p><ol><li><p>Add a tag in <code><a href="_tags_8hpp_source.html" class="m-dox">Control/<wbr />Tags.hpp</a></code>. This will be used to address <code>rho0</code>.</p><pre class="m-code"><span class="gd">--- a/src/Control/Tags.hpp</span>
+<span class="gi">+++ b/src/Control/Tags.hpp</span>
+<span class="gu">@@ -201,6 +201,7 @@ DEFTAG(rhor_jwl);</span>
+ DEFTAG(Tr_jwl);
+ DEFTAG(Pr_jwl);
+ DEFTAG(mu);
+<span class="gi">+DEFTAG(rho0);</span>
+ DEFTAG(cv);
+ DEFTAG(k);
+ DEFTAG(matidxmap);</pre></li><li><p>Add storage for <code>rho0</code> in the InputDeck. The InputDeck is defined in <code><a href="_input_deck_8hpp_source.html" class="m-dox">Control/<wbr />Inciter/<wbr />InputDeck/<wbr />InputDeck.hpp</a></code>. The storage (tag and type) are added in the required location.</p><pre class="m-code"><span class="gd">--- a/src/Control/Inciter/InputDeck/InputDeck.hpp</span>
+<span class="gi">+++ b/src/Control/Inciter/InputDeck/InputDeck.hpp</span>
+<span class="gu">@@ -109,6 +109,7 @@ using materialList = tk::TaggedTuple&lt; brigand::list&lt;</span>
+   tag::Tr_jwl,   std::vector&lt; tk::real &gt;,
+   tag::Pr_jwl,   std::vector&lt; tk::real &gt;,
+   tag::mu,       std::vector&lt; tk::real &gt;,
+<span class="gi">+  tag::rho0,     std::vector&lt; tk::real &gt;,</span>
+   tag::cv,       std::vector&lt; tk::real &gt;,
+   tag::k,        std::vector&lt; tk::real &gt;
+ &gt; &gt;;</pre></li><li><p>Add entry in the set of keywords in <code><a href="_input_deck_8hpp_source.html" class="m-dox">Control/<wbr />Inciter/<wbr />InputDeck/<wbr />InputDeck.hpp</a></code> for documentation and user-help purposes.</p><pre class="m-code"><span class="gd">--- a/src/Control/Inciter/InputDeck/InputDeck.hpp</span>
+<span class="gi">+++ b/src/Control/Inciter/InputDeck/InputDeck.hpp</span>
+<span class="gu">@@ -913,6 +914,11 @@ class InputDeck : public tk::TaggedTuple&lt; ConfigMembers &gt; {</span>
+         R&quot;(This keyword is used to specify the material property, shear modulus
+         for solids, or dynamic viscosity for fluids.)&quot;, &quot;vector of reals&quot;});
+
+<span class="gi">+      keywords.insert({&quot;rho0&quot;, &quot;EoS rho0 parameter&quot;,</span>
+<span class="gi">+        R&quot;(This keyword is used to specify the material property rho0, which is</span>
+<span class="gi">+        the density of initial state (units: kg/m3) of the material.)&quot;,</span>
+<span class="gi">+        &quot;vector of reals&quot;});</span>
+<span class="gi">+</span>
+       keywords.insert({&quot;cv&quot;, &quot;specific heat at constant volume&quot;,
+         R&quot;(This keyword is used to specify the material property, specific heat at
+         constant volume.)&quot;, &quot;vector of reals&quot;})</pre></li><li>Store lua-parsed value of <code>rho0</code> into the InputDeck. This is done in <code>Control/Inciter/InputDeck/LuaParsing.cpp</code>. Use appropriate functions for this purpose:<ul><li><code>checkStoreMatProp()</code></li><li><code>storeIfSpecd()</code></li><li><code>storeOptIfSpecd()</code></li><li><code>storeVecIfSpecd()</code></li><li><code>storeOptVecIfSpecd()</code></li></ul><p>These functions provide basic error-checking. For this example we will use <code>checkStoreMatProp()</code></p><pre class="m-code"><span class="gd">--- a/src/Control/Inciter/InputDeck/LuaParser.cpp</span>
+<span class="gi">+++ b/src/Control/Inciter/InputDeck/LuaParser.cpp</span>
+<span class="gu">@@ -420,6 +420,10 @@ LuaParser::storeInputDeck(</span>
+         checkStoreMatProp(sol_mat[i+1], &quot;mu&quot;, ntype,
+           mati_deck.get&lt; tag::mu &gt;());
+
+<span class="gi">+        // rho0</span>
+<span class="gi">+        checkStoreMatProp(sol_mat[i+1], &quot;rho0&quot;, ntype,</span>
+<span class="gi">+          mati_deck.get&lt; tag::rho0 &gt;());</span>
+<span class="gi">+</span>
+         // assign solid
+         is_solid = true;
+       }</pre></li><li>Add further error-handling if required. This example does not require any error-handling in addition to what is provided by <code>checkStoreMatProp()</code>.</li></ol>
       </div>
     </div>
   </div>
@@ -110,7 +153,7 @@
   <div class="m-container">
     <div class="m-row">
       <div class="m-col-l-10 m-push-l-1">
-        <p>Quinoa docs, part of the <a href="https://github.com/quinoacomputing/">Quinoa project</a>. Copyright © J. Bakosi 2012&ndash;2015, Los Alamos National Security, LLC, 2016&ndash;2018, <a href="https://www.triadns.org/">Triad National Security, LLC,</a> 2019-2023. Generated on Wednesday, Apr 17, 2024 using <a href="http://doxygen.org/">Doxygen</a> and <a href="http://mcss.mosra.cz/">m.css</a>. Contact us via <a href="https://github.com/quinoacomputing/quinoa/issues">GitHub</a>.</p>
+        <p>Quinoa docs, part of the <a href="https://github.com/quinoacomputing/">Quinoa project</a>. Copyright © J. Bakosi 2012&ndash;2015, Los Alamos National Security, LLC, 2016&ndash;2018, <a href="https://www.triadns.org/">Triad National Security, LLC,</a> 2019-2023. Generated on Monday, Apr 22, 2024 using <a href="http://doxygen.org/">Doxygen</a> and <a href="http://mcss.mosra.cz/">m.css</a>. Contact us via <a href="https://github.com/quinoacomputing/quinoa/issues">GitHub</a>.</p>
       </div>
     </div>
   </div>
