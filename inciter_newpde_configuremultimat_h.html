@@ -202,6 +202,67 @@
   <span class="k">return</span> <span class="n">m</span><span class="p">;</span>
 <span class="p">}</span>
 
+<span class="c1">//! Compute Cauchy stress component for output to file</span>
+<span class="c1">//! \note Must follow the signature in tk::GetVarFn</span>
+<span class="c1">//! \tparam idir Physical direction, encoded as 0:x, 1:y, 2:z</span>
+<span class="c1">//! \tparam jdir Physical direction, encoded as 0:x, 1:y, 2:z</span>
+<span class="c1">//! \param[in] U Numerical solution</span>
+<span class="c1">//! \param[in] rdof Number of reconstructed solution DOFs</span>
+<span class="c1">//! \return Cauchy stress component ready to be output to file</span>
+<span class="k">template</span><span class="o">&lt;</span> <span class="n">tk</span><span class="o">::</span><span class="n">ncomp_t</span> <span class="n">idir</span><span class="p">,</span> <span class="n">tk</span><span class="o">::</span><span class="n">ncomp_t</span> <span class="n">jdir</span> <span class="o">&gt;</span>
+<span class="n">tk</span><span class="o">::</span><span class="n">GetVarFn</span><span class="o">::</span><span class="n">result_type</span>
+<span class="n">stressOutVar</span><span class="p">(</span> <span class="k">const</span> <span class="n">tk</span><span class="o">::</span><span class="n">Fields</span><span class="o">&amp;</span> <span class="n">U</span><span class="p">,</span> <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="n">rdof</span> <span class="p">)</span>
+<span class="p">{</span>
+  <span class="k">const</span> <span class="k">auto</span><span class="o">&amp;</span> <span class="n">solidx</span> <span class="o">=</span> <span class="n">g_inputdeck</span><span class="p">.</span><span class="n">get</span><span class="o">&lt;</span> <span class="n">tag</span><span class="o">::</span><span class="n">matidxmap</span><span class="p">,</span> <span class="n">tag</span><span class="o">::</span><span class="n">solidx</span> <span class="o">&gt;</span><span class="p">();</span>
+  <span class="k">auto</span> <span class="n">nmat</span> <span class="o">=</span> <span class="n">g_inputdeck</span><span class="p">.</span><span class="n">get</span><span class="o">&lt;</span> <span class="n">tag</span><span class="o">::</span><span class="n">multimat</span><span class="p">,</span> <span class="n">tag</span><span class="o">::</span><span class="n">nmat</span> <span class="o">&gt;</span><span class="p">();</span>
+
+  <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span> <span class="n">tk</span><span class="o">::</span><span class="n">real</span> <span class="o">&gt;</span> <span class="n">cs</span><span class="p">(</span><span class="n">U</span><span class="p">.</span><span class="n">nunk</span><span class="p">(),</span> <span class="mf">0.0</span><span class="p">);</span>
+  <span class="k">for</span> <span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="n">e</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">e</span><span class="o">&lt;</span><span class="n">cs</span><span class="p">.</span><span class="n">size</span><span class="p">();</span> <span class="o">++</span><span class="n">e</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">for</span> <span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="n">k</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">k</span><span class="o">&lt;</span><span class="n">nmat</span><span class="p">;</span> <span class="o">++</span><span class="n">k</span><span class="p">)</span> <span class="p">{</span>
+      <span class="n">tk</span><span class="o">::</span><span class="n">real</span> <span class="n">asigij</span><span class="p">(</span><span class="mf">0.0</span><span class="p">);</span>
+
+      <span class="k">if</span> <span class="p">(</span><span class="n">solidx</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="n">asigij</span> <span class="o">=</span>
+        <span class="n">U</span><span class="p">(</span><span class="n">e</span><span class="p">,</span> <span class="n">stressDofIdx</span><span class="p">(</span><span class="n">nmat</span><span class="p">,</span><span class="n">solidx</span><span class="p">[</span><span class="n">k</span><span class="p">],</span><span class="n">stressCmp</span><span class="p">[</span><span class="n">idir</span><span class="p">][</span><span class="n">jdir</span><span class="p">],</span><span class="n">rdof</span><span class="p">,</span><span class="mi">0</span><span class="p">));</span>
+
+      <span class="k">if</span> <span class="p">(</span><span class="n">idir</span> <span class="o">==</span> <span class="n">jdir</span><span class="p">)</span>
+        <span class="n">asigij</span> <span class="o">-=</span> <span class="n">U</span><span class="p">(</span><span class="n">e</span><span class="p">,</span> <span class="n">pressureDofIdx</span><span class="p">(</span><span class="n">nmat</span><span class="p">,</span><span class="n">k</span><span class="p">,</span><span class="n">rdof</span><span class="p">,</span><span class="mi">0</span><span class="p">));</span>
+
+      <span class="n">cs</span><span class="p">[</span><span class="n">e</span><span class="p">]</span> <span class="o">+=</span> <span class="n">asigij</span><span class="p">;</span>
+    <span class="p">}</span>
+  <span class="p">}</span>
+
+  <span class="k">return</span> <span class="n">cs</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="c1">//! Compute inverse deformation gradient tensor component for output to file</span>
+<span class="c1">//! \note Must follow the signature in tk::GetVarFn</span>
+<span class="c1">//! \tparam idir Physical direction, encoded as 0:x, 1:y, 2:z</span>
+<span class="c1">//! \tparam jdir Physical direction, encoded as 0:x, 1:y, 2:z</span>
+<span class="c1">//! \param[in] U Numerical solution</span>
+<span class="c1">//! \param[in] rdof Number of reconstructed solution DOFs</span>
+<span class="c1">//! \return Inverse deformation gradient tensor component to be output to file</span>
+<span class="k">template</span><span class="o">&lt;</span> <span class="n">tk</span><span class="o">::</span><span class="n">ncomp_t</span> <span class="n">idir</span><span class="p">,</span> <span class="n">tk</span><span class="o">::</span><span class="n">ncomp_t</span> <span class="n">jdir</span> <span class="o">&gt;</span>
+<span class="n">tk</span><span class="o">::</span><span class="n">GetVarFn</span><span class="o">::</span><span class="n">result_type</span>
+<span class="n">defGradOutVar</span><span class="p">(</span> <span class="k">const</span> <span class="n">tk</span><span class="o">::</span><span class="n">Fields</span><span class="o">&amp;</span> <span class="n">U</span><span class="p">,</span> <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="n">rdof</span> <span class="p">)</span>
+<span class="p">{</span>
+  <span class="k">const</span> <span class="k">auto</span><span class="o">&amp;</span> <span class="n">solidx</span> <span class="o">=</span> <span class="n">g_inputdeck</span><span class="p">.</span><span class="n">get</span><span class="o">&lt;</span> <span class="n">tag</span><span class="o">::</span><span class="n">matidxmap</span><span class="p">,</span> <span class="n">tag</span><span class="o">::</span><span class="n">solidx</span> <span class="o">&gt;</span><span class="p">();</span>
+  <span class="k">auto</span> <span class="n">nmat</span> <span class="o">=</span> <span class="n">g_inputdeck</span><span class="p">.</span><span class="n">get</span><span class="o">&lt;</span> <span class="n">tag</span><span class="o">::</span><span class="n">multimat</span><span class="p">,</span> <span class="n">tag</span><span class="o">::</span><span class="n">nmat</span> <span class="o">&gt;</span><span class="p">();</span>
+
+  <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span> <span class="n">tk</span><span class="o">::</span><span class="n">real</span> <span class="o">&gt;</span> <span class="n">g</span><span class="p">(</span><span class="n">U</span><span class="p">.</span><span class="n">nunk</span><span class="p">(),</span> <span class="mf">0.0</span><span class="p">);</span>
+  <span class="k">for</span> <span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="n">e</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">e</span><span class="o">&lt;</span><span class="n">g</span><span class="p">.</span><span class="n">size</span><span class="p">();</span> <span class="o">++</span><span class="n">e</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">for</span> <span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="n">k</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">k</span><span class="o">&lt;</span><span class="n">nmat</span><span class="p">;</span> <span class="o">++</span><span class="n">k</span><span class="p">)</span> <span class="p">{</span>
+      <span class="n">tk</span><span class="o">::</span><span class="n">real</span> <span class="n">agij</span><span class="p">(</span><span class="mf">0.0</span><span class="p">);</span>
+
+      <span class="k">if</span> <span class="p">(</span><span class="n">solidx</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="n">agij</span> <span class="o">=</span> <span class="n">U</span><span class="p">(</span><span class="n">e</span><span class="p">,</span> <span class="n">volfracDofIdx</span><span class="p">(</span><span class="n">nmat</span><span class="p">,</span><span class="n">k</span><span class="p">,</span><span class="n">rdof</span><span class="p">,</span><span class="mi">0</span><span class="p">))</span> <span class="o">*</span>
+        <span class="n">U</span><span class="p">(</span><span class="n">e</span><span class="p">,</span> <span class="n">deformDofIdx</span><span class="p">(</span><span class="n">nmat</span><span class="p">,</span><span class="n">solidx</span><span class="p">[</span><span class="n">k</span><span class="p">],</span><span class="n">idir</span><span class="p">,</span><span class="n">jdir</span><span class="p">,</span><span class="n">rdof</span><span class="p">,</span><span class="mi">0</span><span class="p">));</span>
+
+      <span class="n">g</span><span class="p">[</span><span class="n">e</span><span class="p">]</span> <span class="o">+=</span> <span class="n">agij</span><span class="p">;</span>
+    <span class="p">}</span>
+  <span class="p">}</span>
+
+  <span class="k">return</span> <span class="n">g</span><span class="p">;</span>
+<span class="p">}</span>
+
 <span class="p">}</span> <span class="c1">// multimat::</span>
 
 <span class="cp">#if defined(__clang__)</span>
@@ -250,7 +311,7 @@
   <div class="m-container">
     <div class="m-row">
       <div class="m-col-l-10 m-push-l-1">
-        <p>Quinoa docs, part of the <a href="https://github.com/quinoacomputing/">Quinoa project</a>. Copyright © J. Bakosi 2012&ndash;2015, Los Alamos National Security, LLC, 2016&ndash;2018, <a href="https://www.triadns.org/">Triad National Security, LLC,</a> 2019-2023. Generated on Monday, Apr 22, 2024 using <a href="http://doxygen.org/">Doxygen</a> and <a href="http://mcss.mosra.cz/">m.css</a>. Contact us via <a href="https://github.com/quinoacomputing/quinoa/issues">GitHub</a>.</p>
+        <p>Quinoa docs, part of the <a href="https://github.com/quinoacomputing/">Quinoa project</a>. Copyright © J. Bakosi 2012&ndash;2015, Los Alamos National Security, LLC, 2016&ndash;2018, <a href="https://www.triadns.org/">Triad National Security, LLC,</a> 2019-2023. Generated on Monday, Apr 29, 2024 using <a href="http://doxygen.org/">Doxygen</a> and <a href="http://mcss.mosra.cz/">m.css</a>. Contact us via <a href="https://github.com/quinoacomputing/quinoa/issues">GitHub</a>.</p>
       </div>
     </div>
   </div>
