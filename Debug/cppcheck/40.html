@@ -152,12 +152,12 @@ span.linenos.special { color: #000000; background-color: #ffffc0; padding: 0 5px
   </head>
   <body>
     <div id="header" class="header">
-      <h1>Cppcheck report - [<a href=https://github.com/quinoacomputing/quinoa/commit/-128-NOTFOUND>-128-NOTFOUND</a>]: /tmp/TeamCity-2/work/5ad443c8abe7fc0a/src/Control/Inciter/InputDeck/LuaParser.hpp</h1>
+      <h1>Cppcheck report - [<a href=https://github.com/quinoacomputing/quinoa/commit/-128-NOTFOUND>-128-NOTFOUND</a>]: /tmp/TeamCity-1/work/5ad443c8abe7fc0a/src/Inciter/Ghosts.hpp</h1>
     </div>
     <div class="wrapper">
       <div id="menu">
-       <p id="filename"><a href="index.html">Defects:</a> LuaParser.hpp</p>
-<a href="40.html#line-43"> passedByValue 43</a><a href="40.html#line-70"> passedByValue 70</a><a href="40.html#line-92"> passedByValue 92</a><a href="40.html#line-114"> passedByValue 114</a><a href="40.html#line-138"> passedByValue 138</a>
+       <p id="filename"><a href="index.html">Defects:</a> Ghosts.hpp</p>
+<a href="40.html#line-101"> constParameter 101</a>
     </div>
     <div id="content">
 <table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>  1
@@ -350,197 +350,419 @@ span.linenos.special { color: #000000; background-color: #ffffc0; padding: 0 5px
 188
 189
 190
-191</pre></div></td><td class="code"><div class="highlight"><pre><span></span><a name="line-1"></a><span class="c1">// *****************************************************************************</span>
+191
+192
+193
+194
+195
+196
+197
+198
+199
+200
+201
+202
+203
+204
+205
+206
+207
+208
+209
+210
+211
+212
+213
+214
+215
+216
+217
+218
+219
+220
+221
+222
+223
+224
+225
+226
+227
+228
+229
+230
+231
+232
+233
+234
+235
+236
+237
+238
+239
+240
+241
+242
+243
+244
+245
+246
+247
+248
+249
+250
+251
+252
+253
+254
+255
+256
+257
+258
+259
+260
+261
+262
+263
+264
+265
+266
+267
+268
+269
+270
+271
+272
+273
+274
+275
+276
+277
+278
+279
+280
+281
+282
+283
+284
+285
+286
+287
+288
+289
+290
+291
+292
+293
+294
+295
+296
+297
+298
+299
+300
+301
+302</pre></div></td><td class="code"><div class="highlight"><pre><span></span><a name="line-1"></a><span class="c1">// *****************************************************************************</span>
 <a name="line-2"></a><span class="cm">/*!</span>
-<a name="line-3"></a><span class="cm">  \file      src/Control/Inciter/InputDeck/LuaParser.hpp</span>
-<a name="line-4"></a><span class="cm">  \copyright 2019-2023 Triad National Security, LLC.</span>
-<a name="line-5"></a><span class="cm">             All rights reserved. See the LICENSE file for details.</span>
-<a name="line-6"></a><span class="cm">  \brief     Inciter&#39;s lua input deck file parser</span>
-<a name="line-7"></a><span class="cm">  \details   This file declares the input deck, i.e., control file, parser for</span>
-<a name="line-8"></a><span class="cm">    the computational shock hydrodynamics tool, Inciter.</span>
-<a name="line-9"></a><span class="cm">*/</span>
-<a name="line-10"></a><span class="c1">// *****************************************************************************</span>
-<a name="line-11"></a><span class="cp">#ifndef InciterLuaParser_h</span>
-<a name="line-12"></a><span class="cp">#define InciterLuaParser_h</span>
-<a name="line-13"></a>
-<a name="line-14"></a><span class="cp">#include</span> <span class="cpf">&quot;NoWarning/sol.hpp&quot;</span><span class="cp"></span>
-<a name="line-15"></a>
-<a name="line-16"></a><span class="cp">#include</span> <span class="cpf">&quot;Inciter/CmdLine/CmdLine.hpp&quot;</span><span class="cp"></span>
-<a name="line-17"></a><span class="cp">#include</span> <span class="cpf">&quot;InputDeck.hpp&quot;</span><span class="cp"></span>
-<a name="line-18"></a>
-<a name="line-19"></a><span class="k">namespace</span> <span class="n">tk</span> <span class="p">{</span> <span class="k">class</span> <span class="nc">Print</span><span class="p">;</span> <span class="p">}</span>
-<a name="line-20"></a>
-<a name="line-21"></a><span class="k">namespace</span> <span class="n">inciter</span> <span class="p">{</span>
+<a name="line-3"></a><span class="cm">  \file      src/Inciter/Ghosts.hpp</span>
+<a name="line-4"></a><span class="cm">  \copyright 2012-2015 J. Bakosi,</span>
+<a name="line-5"></a><span class="cm">             2016-2018 Los Alamos National Security, LLC.,</span>
+<a name="line-6"></a><span class="cm">             2019-2021 Triad National Security, LLC.</span>
+<a name="line-7"></a><span class="cm">             All rights reserved. See the LICENSE file for details.</span>
+<a name="line-8"></a><span class="cm">  \brief     Declarations file for generating ghost data structures</span>
+<a name="line-9"></a><span class="cm">  \details   Declarations file for asynchronous distributed</span>
+<a name="line-10"></a><span class="cm">             ghost data structures using Charm++.</span>
+<a name="line-11"></a>
+<a name="line-12"></a><span class="cm">    There are a potentially large number of Ghosts Charm++ chares.</span>
+<a name="line-13"></a><span class="cm">    Each Ghosts chare gets a chunk of the full load, due to partiting the mesh.</span>
+<a name="line-14"></a>
+<a name="line-15"></a><span class="cm">    The implementation uses the Charm++ runtime system and is fully</span>
+<a name="line-16"></a><span class="cm">    asynchronous, overlapping computation and communication. The algorithm</span>
+<a name="line-17"></a><span class="cm">    utilizes the structured dagger (SDAG) Charm++ functionality.</span>
+<a name="line-18"></a><span class="cm">*/</span>
+<a name="line-19"></a><span class="c1">// *****************************************************************************</span>
+<a name="line-20"></a><span class="cp">#ifndef Ghosts_h</span>
+<a name="line-21"></a><span class="cp">#define Ghosts_h</span>
 <a name="line-22"></a>
-<a name="line-23"></a><span class="c1">//! \brief Control file lua-parser for Inciter.</span>
-<a name="line-24"></a><span class="c1">//! \details This class is used to interface with sol2, for the purpose of</span>
-<a name="line-25"></a><span class="c1">//!   parsing the control file for the computational shock hydrodynamics tool,</span>
-<a name="line-26"></a><span class="c1">//!   Inciter.</span>
-<a name="line-27"></a><span class="k">class</span> <span class="nc">LuaParser</span> <span class="p">{</span>
+<a name="line-23"></a><span class="cp">#include</span> <span class="cpf">&quot;Fields.hpp&quot;</span><span class="cp"></span>
+<a name="line-24"></a><span class="cp">#include</span> <span class="cpf">&quot;FaceData.hpp&quot;</span><span class="cp"></span>
+<a name="line-25"></a><span class="cp">#include</span> <span class="cpf">&quot;Discretization.hpp&quot;</span><span class="cp"></span>
+<a name="line-26"></a>
+<a name="line-27"></a><span class="cp">#include</span> <span class="cpf">&quot;NoWarning/ghosts.decl.h&quot;</span><span class="cp"></span>
 <a name="line-28"></a>
-<a name="line-29"></a>  <span class="k">public</span><span class="o">:</span>
-<a name="line-30"></a>    <span class="c1">//! Constructor</span>
-<a name="line-31"></a>    <span class="k">explicit</span> <span class="n">LuaParser</span><span class="p">(</span> <span class="k">const</span> <span class="n">tk</span><span class="o">::</span><span class="n">Print</span><span class="o">&amp;</span> <span class="n">print</span><span class="p">,</span>
-<a name="line-32"></a>                              <span class="k">const</span> <span class="n">ctr</span><span class="o">::</span><span class="n">CmdLine</span><span class="o">&amp;</span> <span class="n">cmdline</span><span class="p">,</span>
-<a name="line-33"></a>                              <span class="n">ctr</span><span class="o">::</span><span class="n">InputDeck</span><span class="o">&amp;</span> <span class="n">inputdeck</span> <span class="p">);</span>
-<a name="line-34"></a>
-<a name="line-35"></a>    <span class="c1">//! Store lua inputdeck in custom struct</span>
-<a name="line-36"></a>    <span class="kt">void</span> <span class="nf">storeInputDeck</span><span class="p">(</span>
-<a name="line-37"></a>      <span class="k">const</span> <span class="n">sol</span><span class="o">::</span><span class="n">table</span><span class="o">&amp;</span> <span class="n">lua_ideck</span><span class="p">,</span>
-<a name="line-38"></a>      <span class="n">ctr</span><span class="o">::</span><span class="n">InputDeck</span><span class="o">&amp;</span> <span class="n">gideck</span> <span class="p">);</span>
-<a name="line-39"></a>
-<a name="line-40"></a>    <span class="c1">//! Check and store material property into inpudeck storage</span>
-<a name="line-41"></a>    <span class="kt">void</span> <span class="nf">checkStoreMatProp</span><span class="p">(</span>
-<a name="line-42"></a>      <span class="k">const</span> <span class="n">sol</span><span class="o">::</span><span class="n">table</span> <span class="n">table</span><span class="p">,</span>
-<a name="line-43"></a><span class="hll">      <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="n">key</span><span class="p">,</span><div class="verbose expandable"><span class="error2">&lt;--- Function parameter 'key' should be passed by const reference. <span class="marker">[+]</span></span><div class="content">Parameter &apos;key&apos; is passed by value. It could be passed as a const reference which is usually faster and recommended in C++.</div></div>
-</span><a name="line-44"></a>      <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="n">vecsize</span><span class="p">,</span>
-<a name="line-45"></a>      <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span> <span class="n">tk</span><span class="o">::</span><span class="n">real</span> <span class="o">&gt;&amp;</span> <span class="n">storage</span> <span class="p">);</span>
-<a name="line-46"></a>
-<a name="line-47"></a>    <span class="c1">//! Check and store field output variables</span>
-<a name="line-48"></a>    <span class="kt">void</span> <span class="nf">addOutVar</span><span class="p">(</span>
-<a name="line-49"></a>      <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&amp;</span> <span class="n">varname</span><span class="p">,</span>
-<a name="line-50"></a>      <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&amp;</span> <span class="n">alias</span><span class="p">,</span>
-<a name="line-51"></a>      <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span> <span class="kt">char</span> <span class="o">&gt;&amp;</span> <span class="n">depv</span><span class="p">,</span>
-<a name="line-52"></a>      <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="n">nmat</span><span class="p">,</span>
-<a name="line-53"></a>      <span class="n">inciter</span><span class="o">::</span><span class="n">ctr</span><span class="o">::</span><span class="n">PDEType</span> <span class="n">pde</span><span class="p">,</span>
-<a name="line-54"></a>      <span class="n">tk</span><span class="o">::</span><span class="n">Centering</span> <span class="n">c</span><span class="p">,</span>
-<a name="line-55"></a>      <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span> <span class="n">inciter</span><span class="o">::</span><span class="n">ctr</span><span class="o">::</span><span class="n">OutVar</span> <span class="o">&gt;&amp;</span> <span class="n">foutvar</span> <span class="p">);</span>
-<a name="line-56"></a>
-<a name="line-57"></a>  <span class="k">private</span><span class="o">:</span>
-<a name="line-58"></a>    <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="n">m_filename</span><span class="p">;</span>             <span class="c1">//!&lt; Name of file to parse</span>
-<a name="line-59"></a>
-<a name="line-60"></a>    <span class="c1">//! Assign parameter to inputdeck entry if specified, else default</span>
-<a name="line-61"></a>    <span class="c1">//! \tparam N Type of parameter being read/assigned</span>
-<a name="line-62"></a>    <span class="c1">//! \param[in] table Sol-table which contains said parameter</span>
-<a name="line-63"></a>    <span class="c1">//! \param[in] key Key for said parameter in Sol-table</span>
-<a name="line-64"></a>    <span class="c1">//! \param[in,out] storage Storage space in inputdeck where said parameter</span>
-<a name="line-65"></a>    <span class="c1">//!   is to be stored</span>
-<a name="line-66"></a>    <span class="c1">//! \param[in] dflt Default value of said parameter, if unspecified</span>
-<a name="line-67"></a>    <span class="k">template</span><span class="o">&lt;</span> <span class="k">typename</span> <span class="nc">N</span> <span class="o">&gt;</span> <span class="kt">void</span>
-<a name="line-68"></a>    <span class="n">storeIfSpecd</span><span class="p">(</span>
-<a name="line-69"></a>      <span class="k">const</span> <span class="n">sol</span><span class="o">::</span><span class="n">table</span> <span class="n">table</span><span class="p">,</span>
-<a name="line-70"></a><span class="hll">      <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="n">key</span><span class="p">,</span><div class="verbose expandable"><span class="error2">&lt;--- Function parameter 'key' should be passed by const reference. <span class="marker">[+]</span></span><div class="content">Parameter &apos;key&apos; is passed by value. It could be passed as a const reference which is usually faster and recommended in C++.</div></div>
-</span><a name="line-71"></a>      <span class="n">N</span><span class="o">&amp;</span> <span class="n">storage</span><span class="p">,</span>
-<a name="line-72"></a>      <span class="k">const</span> <span class="n">N</span> <span class="n">dflt</span> <span class="p">)</span>
-<a name="line-73"></a>    <span class="p">{</span>
-<a name="line-74"></a>      <span class="k">auto</span> <span class="n">sol_var</span> <span class="o">=</span> <span class="n">table</span><span class="p">[</span><span class="n">key</span><span class="p">];</span>
-<a name="line-75"></a>      <span class="k">if</span> <span class="p">(</span><span class="n">sol_var</span><span class="p">.</span><span class="n">valid</span><span class="p">())</span>
-<a name="line-76"></a>        <span class="n">storage</span> <span class="o">=</span> <span class="n">sol_var</span><span class="p">;</span>
-<a name="line-77"></a>      <span class="k">else</span>
-<a name="line-78"></a>        <span class="n">storage</span> <span class="o">=</span> <span class="n">dflt</span><span class="p">;</span>
-<a name="line-79"></a>    <span class="p">}</span>
-<a name="line-80"></a>
-<a name="line-81"></a>    <span class="c1">//! Assign Option to inputdeck entry if specified, else default</span>
-<a name="line-82"></a>    <span class="c1">//! \tparam Op Option-Type of parameter being read/assigned</span>
-<a name="line-83"></a>    <span class="c1">//! \tparam OpClass Option-class of parameter being read/assigned</span>
-<a name="line-84"></a>    <span class="c1">//! \param[in] table Sol-table which contains said parameter</span>
-<a name="line-85"></a>    <span class="c1">//! \param[in] key Key for said parameter in Sol-table</span>
-<a name="line-86"></a>    <span class="c1">//! \param[in,out] storage Storage space in inputdeck where said parameter</span>
-<a name="line-87"></a>    <span class="c1">//!   is to be stored</span>
-<a name="line-88"></a>    <span class="c1">//! \param[in] dflt Default value of said parameter, if unspecified</span>
-<a name="line-89"></a>    <span class="k">template</span><span class="o">&lt;</span> <span class="k">typename</span> <span class="nc">Op</span><span class="p">,</span> <span class="k">class</span> <span class="nc">OpClass</span> <span class="o">&gt;</span> <span class="kt">void</span>
-<a name="line-90"></a>    <span class="n">storeOptIfSpecd</span><span class="p">(</span>
-<a name="line-91"></a>      <span class="k">const</span> <span class="n">sol</span><span class="o">::</span><span class="n">table</span> <span class="n">table</span><span class="p">,</span>
-<a name="line-92"></a><span class="hll">      <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="n">key</span><span class="p">,</span><div class="verbose expandable"><span class="error2">&lt;--- Function parameter 'key' should be passed by const reference. <span class="marker">[+]</span></span><div class="content">Parameter &apos;key&apos; is passed by value. It could be passed as a const reference which is usually faster and recommended in C++.</div></div>
-</span><a name="line-93"></a>      <span class="n">Op</span><span class="o">&amp;</span> <span class="n">storage</span><span class="p">,</span>
-<a name="line-94"></a>      <span class="k">const</span> <span class="n">Op</span> <span class="n">dflt</span> <span class="p">)</span>
-<a name="line-95"></a>    <span class="p">{</span>
-<a name="line-96"></a>      <span class="n">OpClass</span> <span class="n">opt</span><span class="p">;</span>
-<a name="line-97"></a>      <span class="k">auto</span> <span class="n">sol_var</span> <span class="o">=</span> <span class="n">table</span><span class="p">[</span><span class="n">key</span><span class="p">];</span>
-<a name="line-98"></a>      <span class="k">if</span> <span class="p">(</span><span class="n">sol_var</span><span class="p">.</span><span class="n">valid</span><span class="p">())</span>
-<a name="line-99"></a>        <span class="n">storage</span> <span class="o">=</span> <span class="n">opt</span><span class="p">.</span><span class="n">value</span><span class="p">(</span><span class="n">sol_var</span><span class="p">);</span>
-<a name="line-100"></a>      <span class="k">else</span>
-<a name="line-101"></a>        <span class="n">storage</span> <span class="o">=</span> <span class="n">dflt</span><span class="p">;</span>
-<a name="line-102"></a>    <span class="p">}</span>
-<a name="line-103"></a>
-<a name="line-104"></a>    <span class="c1">//! Assign vector parameter to inputdeck entry if specified, else default</span>
-<a name="line-105"></a>    <span class="c1">//! \tparam N Type of parameter vector being read/assigned</span>
-<a name="line-106"></a>    <span class="c1">//! \param[in] table Sol-table which contains said parameter</span>
-<a name="line-107"></a>    <span class="c1">//! \param[in] key Key for said parameter in Sol-table</span>
-<a name="line-108"></a>    <span class="c1">//! \param[in,out] storage Storage space in inputdeck where said parameter</span>
-<a name="line-109"></a>    <span class="c1">//!   is to be stored</span>
-<a name="line-110"></a>    <span class="c1">//! \param[in] dflt Default value of said parameter, if unspecified</span>
-<a name="line-111"></a>    <span class="k">template</span><span class="o">&lt;</span> <span class="k">typename</span> <span class="nc">N</span> <span class="o">&gt;</span> <span class="kt">void</span>
-<a name="line-112"></a>    <span class="n">storeVecIfSpecd</span><span class="p">(</span>
-<a name="line-113"></a>      <span class="k">const</span> <span class="n">sol</span><span class="o">::</span><span class="n">table</span> <span class="n">table</span><span class="p">,</span>
-<a name="line-114"></a><span class="hll">      <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="n">key</span><span class="p">,</span><div class="verbose expandable"><span class="error2">&lt;--- Function parameter 'key' should be passed by const reference. <span class="marker">[+]</span></span><div class="content">Parameter &apos;key&apos; is passed by value. It could be passed as a const reference which is usually faster and recommended in C++.</div></div>
-</span><a name="line-115"></a>      <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span> <span class="n">N</span> <span class="o">&gt;&amp;</span> <span class="n">storage</span><span class="p">,</span>
-<a name="line-116"></a>      <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span> <span class="n">N</span> <span class="o">&gt;&amp;</span> <span class="n">dflt</span> <span class="p">)</span>
-<a name="line-117"></a>    <span class="p">{</span>
-<a name="line-118"></a>      <span class="k">auto</span> <span class="n">sol_vec</span> <span class="o">=</span> <span class="n">table</span><span class="p">[</span><span class="n">key</span><span class="p">];</span>
-<a name="line-119"></a>      <span class="k">if</span> <span class="p">(</span><span class="n">sol_vec</span><span class="p">.</span><span class="n">valid</span><span class="p">())</span> <span class="p">{</span>
-<a name="line-120"></a>        <span class="k">for</span> <span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">i</span><span class="o">&lt;</span><span class="n">sol</span><span class="o">::</span><span class="n">table</span><span class="p">(</span><span class="n">sol_vec</span><span class="p">).</span><span class="n">size</span><span class="p">();</span> <span class="o">++</span><span class="n">i</span><span class="p">)</span>
-<a name="line-121"></a>          <span class="n">storage</span><span class="p">.</span><span class="n">push_back</span><span class="p">(</span><span class="n">sol_vec</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">]);</span>
-<a name="line-122"></a>      <span class="p">}</span>
-<a name="line-123"></a>      <span class="k">else</span>
-<a name="line-124"></a>        <span class="n">storage</span> <span class="o">=</span> <span class="n">dflt</span><span class="p">;</span>
-<a name="line-125"></a>    <span class="p">}</span>
-<a name="line-126"></a>
-<a name="line-127"></a>    <span class="c1">//! Assign vector of Options to inputdeck entry if specified, else default</span>
-<a name="line-128"></a>    <span class="c1">//! \tparam Op Option-Type of parameter being read/assigned</span>
-<a name="line-129"></a>    <span class="c1">//! \tparam OpClass Option-class of parameter being read/assigned</span>
-<a name="line-130"></a>    <span class="c1">//! \param[in] table Sol-table which contains said parameter</span>
-<a name="line-131"></a>    <span class="c1">//! \param[in] key Key for said parameter in Sol-table</span>
-<a name="line-132"></a>    <span class="c1">//! \param[in,out] storage Storage space in inputdeck where said parameter</span>
-<a name="line-133"></a>    <span class="c1">//!   is to be stored</span>
-<a name="line-134"></a>    <span class="c1">//! \param[in] dflt Default value of said parameter, if unspecified</span>
-<a name="line-135"></a>    <span class="k">template</span><span class="o">&lt;</span> <span class="k">typename</span> <span class="nc">Op</span><span class="p">,</span> <span class="k">class</span> <span class="nc">OpClass</span> <span class="o">&gt;</span> <span class="kt">void</span>
-<a name="line-136"></a>    <span class="n">storeOptVecIfSpecd</span><span class="p">(</span>
-<a name="line-137"></a>      <span class="k">const</span> <span class="n">sol</span><span class="o">::</span><span class="n">table</span> <span class="n">table</span><span class="p">,</span>
-<a name="line-138"></a><span class="hll">      <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="n">key</span><span class="p">,</span><div class="verbose expandable"><span class="error2">&lt;--- Function parameter 'key' should be passed by const reference. <span class="marker">[+]</span></span><div class="content">Parameter &apos;key&apos; is passed by value. It could be passed as a const reference which is usually faster and recommended in C++.</div></div>
-</span><a name="line-139"></a>      <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span> <span class="n">Op</span> <span class="o">&gt;&amp;</span> <span class="n">storage</span><span class="p">,</span>
-<a name="line-140"></a>      <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span> <span class="n">Op</span> <span class="o">&gt;&amp;</span> <span class="n">dflt</span> <span class="p">)</span>
-<a name="line-141"></a>    <span class="p">{</span>
-<a name="line-142"></a>      <span class="n">OpClass</span> <span class="n">opt</span><span class="p">;</span>
-<a name="line-143"></a>      <span class="k">auto</span> <span class="n">sol_vec</span> <span class="o">=</span> <span class="n">table</span><span class="p">[</span><span class="n">key</span><span class="p">];</span>
-<a name="line-144"></a>      <span class="k">if</span> <span class="p">(</span><span class="n">sol_vec</span><span class="p">.</span><span class="n">valid</span><span class="p">())</span> <span class="p">{</span>
-<a name="line-145"></a>        <span class="k">for</span> <span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">i</span><span class="o">&lt;</span><span class="n">sol</span><span class="o">::</span><span class="n">table</span><span class="p">(</span><span class="n">sol_vec</span><span class="p">).</span><span class="n">size</span><span class="p">();</span> <span class="o">++</span><span class="n">i</span><span class="p">)</span>
-<a name="line-146"></a>          <span class="n">storage</span><span class="p">.</span><span class="n">push_back</span><span class="p">(</span><span class="n">opt</span><span class="p">.</span><span class="n">value</span><span class="p">(</span><span class="n">sol_vec</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">]));</span>
-<a name="line-147"></a>      <span class="p">}</span>
-<a name="line-148"></a>      <span class="k">else</span>
-<a name="line-149"></a>        <span class="n">storage</span> <span class="o">=</span> <span class="n">dflt</span><span class="p">;</span>
-<a name="line-150"></a>    <span class="p">}</span>
-<a name="line-151"></a>
-<a name="line-152"></a>    <span class="c1">//! \brief Check validity of keywords within a particular block</span>
-<a name="line-153"></a>    <span class="c1">//! \tparam tags Tags addressing the said block in the input deck</span>
-<a name="line-154"></a>    <span class="c1">//! \param[in] block Sol table of the input deck block read in from the</span>
-<a name="line-155"></a>    <span class="c1">//!   lua file</span>
-<a name="line-156"></a>    <span class="c1">//! \param[in] blk_name Name of the block, for error clarity</span>
-<a name="line-157"></a>    <span class="k">template</span><span class="o">&lt;</span> <span class="k">typename</span><span class="p">...</span> <span class="n">tags</span> <span class="o">&gt;</span>
-<a name="line-158"></a>    <span class="kt">void</span> <span class="n">checkBlock</span><span class="p">(</span><span class="k">const</span> <span class="n">sol</span><span class="o">::</span><span class="n">table</span><span class="o">&amp;</span> <span class="n">block</span><span class="p">,</span> <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&amp;</span> <span class="n">blk_name</span><span class="p">)</span> <span class="k">const</span>
-<a name="line-159"></a>    <span class="p">{</span>
-<a name="line-160"></a>      <span class="k">for</span> <span class="p">(</span><span class="k">const</span> <span class="k">auto</span><span class="o">&amp;</span> <span class="nl">kvp</span> <span class="p">:</span> <span class="n">block</span><span class="p">)</span> <span class="p">{</span>
-<a name="line-161"></a>        <span class="kt">bool</span> <span class="nf">is_valid</span><span class="p">(</span><span class="nb">false</span><span class="p">);</span>
-<a name="line-162"></a>        <span class="k">auto</span> <span class="n">ukw</span> <span class="o">=</span> <span class="n">kvp</span><span class="p">.</span><span class="n">first</span><span class="p">.</span><span class="n">as</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&gt;</span><span class="p">();</span>
-<a name="line-163"></a>        <span class="n">brigand</span><span class="o">::</span><span class="n">for_each</span><span class="o">&lt;</span> <span class="n">tags</span><span class="p">...</span> <span class="o">&gt;</span><span class="p">(</span> <span class="n">checkKw</span><span class="p">(</span><span class="n">ukw</span><span class="p">,</span> <span class="n">is_valid</span><span class="p">)</span> <span class="p">);</span>
-<a name="line-164"></a>        <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">is_valid</span><span class="p">)</span>
-<a name="line-165"></a>          <span class="n">Throw</span><span class="p">(</span><span class="s">&quot;Invalid keyword &#39;&quot;</span> <span class="o">+</span> <span class="n">ukw</span> <span class="o">+</span> <span class="s">&quot;&#39; in &#39;&quot;</span> <span class="o">+</span> <span class="n">blk_name</span> <span class="o">+</span> <span class="s">&quot;&#39; block.&quot;</span><span class="p">);</span>
-<a name="line-166"></a>      <span class="p">}</span>
-<a name="line-167"></a>    <span class="p">}</span>
-<a name="line-168"></a>
-<a name="line-169"></a>    <span class="c1">// Check if a keyword matches the existing ones</span>
-<a name="line-170"></a>    <span class="k">struct</span> <span class="nc">checkKw</span> <span class="p">{</span>
-<a name="line-171"></a>      <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="n">user_kw</span><span class="p">;</span>
-<a name="line-172"></a>      <span class="c1">// reference to bool keeping track of kw-match</span>
-<a name="line-173"></a>      <span class="kt">bool</span><span class="o">&amp;</span> <span class="n">is_valid</span><span class="p">;</span>
-<a name="line-174"></a>      <span class="c1">// Constructor</span>
-<a name="line-175"></a>      <span class="n">checkKw</span><span class="p">(</span> <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&amp;</span> <span class="n">ukw</span><span class="p">,</span> <span class="kt">bool</span><span class="o">&amp;</span> <span class="n">isv</span> <span class="p">)</span> <span class="o">:</span>
-<a name="line-176"></a>        <span class="n">user_kw</span><span class="p">(</span><span class="n">ukw</span><span class="p">),</span> <span class="n">is_valid</span><span class="p">(</span><span class="n">isv</span><span class="p">)</span> <span class="p">{}</span>
-<a name="line-177"></a>      <span class="c1">//! Function to call for each keyword type</span>
-<a name="line-178"></a>      <span class="k">template</span><span class="o">&lt;</span> <span class="k">typename</span> <span class="nc">U</span> <span class="o">&gt;</span> <span class="kt">void</span> <span class="k">operator</span><span class="p">()(</span> <span class="n">brigand</span><span class="o">::</span><span class="n">type_</span><span class="o">&lt;</span><span class="n">U</span><span class="o">&gt;</span> <span class="p">)</span> <span class="p">{</span>
-<a name="line-179"></a>        <span class="k">auto</span> <span class="n">spec_key</span> <span class="o">=</span> <span class="n">U</span><span class="o">::</span><span class="n">name</span><span class="p">();</span>
-<a name="line-180"></a>        <span class="c1">// only check if not previously matched</span>
-<a name="line-181"></a>        <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">is_valid</span><span class="p">)</span> <span class="p">{</span>
-<a name="line-182"></a>          <span class="k">if</span> <span class="p">(</span><span class="n">user_kw</span> <span class="o">==</span> <span class="n">spec_key</span><span class="p">)</span> <span class="n">is_valid</span> <span class="o">=</span> <span class="nb">true</span><span class="p">;</span>
-<a name="line-183"></a>          <span class="k">else</span> <span class="n">is_valid</span> <span class="o">=</span> <span class="nb">false</span><span class="p">;</span>
-<a name="line-184"></a>        <span class="p">}</span>
-<a name="line-185"></a>      <span class="p">}</span>
-<a name="line-186"></a>    <span class="p">};</span>
-<a name="line-187"></a><span class="p">};</span>
-<a name="line-188"></a>
-<a name="line-189"></a><span class="p">}</span> <span class="c1">// namespace inciter</span>
-<a name="line-190"></a>
-<a name="line-191"></a><span class="cp">#endif </span><span class="c1">// InciterLuaParser_h</span>
+<a name="line-29"></a><span class="k">namespace</span> <span class="n">inciter</span> <span class="p">{</span>
+<a name="line-30"></a>
+<a name="line-31"></a><span class="c1">//! Ghosts Charm++ chare array used to determine ghost data structures</span>
+<a name="line-32"></a><span class="k">class</span> <span class="nc">Ghosts</span> <span class="o">:</span> <span class="k">public</span> <span class="n">CBase_Ghosts</span> <span class="p">{</span>
+<a name="line-33"></a>
+<a name="line-34"></a>  <span class="k">public</span><span class="o">:</span>
+<a name="line-35"></a>    <span class="cp">#if defined(__clang__)</span>
+<a name="line-36"></a>      <span class="cp">#pragma clang diagnostic push</span>
+<a name="line-37"></a>      <span class="cp">#pragma clang diagnostic ignored &quot;-Wunused-parameter&quot;</span>
+<a name="line-38"></a>      <span class="cp">#pragma clang diagnostic ignored &quot;-Wdeprecated-declarations&quot;</span>
+<a name="line-39"></a>    <span class="cp">#elif defined(STRICT_GNUC)</span>
+<a name="line-40"></a>      <span class="cp">#pragma GCC diagnostic push</span>
+<a name="line-41"></a>      <span class="cp">#pragma GCC diagnostic ignored &quot;-Wunused-parameter&quot;</span>
+<a name="line-42"></a>      <span class="cp">#pragma GCC diagnostic ignored &quot;-Wdeprecated-declarations&quot;</span>
+<a name="line-43"></a>    <span class="cp">#elif defined(__INTEL_COMPILER)</span>
+<a name="line-44"></a>      <span class="cp">#pragma warning( push )</span>
+<a name="line-45"></a>      <span class="cp">#pragma warning( disable: 1478 )</span>
+<a name="line-46"></a>    <span class="cp">#endif</span>
+<a name="line-47"></a>    <span class="c1">// Include Charm++ SDAG code. See http://charm.cs.illinois.edu/manuals/html/</span>
+<a name="line-48"></a>    <span class="c1">// charm++/manual.html, Sec. &quot;Structured Control Flow: Structured Dagger&quot;.</span>
+<a name="line-49"></a>    <span class="n">Ghosts_SDAG_CODE</span>
+<a name="line-50"></a>    <span class="cp">#if defined(__clang__)</span>
+<a name="line-51"></a>      <span class="cp">#pragma clang diagnostic pop</span>
+<a name="line-52"></a>    <span class="cp">#elif defined(STRICT_GNUC)</span>
+<a name="line-53"></a>      <span class="cp">#pragma GCC diagnostic pop</span>
+<a name="line-54"></a>    <span class="cp">#elif defined(__INTEL_COMPILER)</span>
+<a name="line-55"></a>      <span class="cp">#pragma warning( pop )</span>
+<a name="line-56"></a>    <span class="cp">#endif</span>
+<a name="line-57"></a>
+<a name="line-58"></a>    <span class="c1">//! Constructor</span>
+<a name="line-59"></a>    <span class="k">explicit</span>
+<a name="line-60"></a>    <span class="n">Ghosts</span><span class="p">(</span> <span class="k">const</span> <span class="n">CProxy_Discretization</span><span class="o">&amp;</span> <span class="n">disc</span><span class="p">,</span>
+<a name="line-61"></a>      <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">map</span><span class="o">&lt;</span> <span class="kt">int</span><span class="p">,</span> <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span> <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="o">&gt;</span> <span class="o">&gt;&amp;</span> <span class="n">bface</span><span class="p">,</span>
+<a name="line-62"></a>      <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span> <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="o">&gt;&amp;</span> <span class="n">triinpoel</span><span class="p">,</span>
+<a name="line-63"></a>      <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="n">nunk</span><span class="p">,</span>
+<a name="line-64"></a>      <span class="n">CkCallback</span> <span class="n">cbDone</span> <span class="p">);</span>
+<a name="line-65"></a>
+<a name="line-66"></a>    <span class="cp">#if defined(__clang__)</span>
+<a name="line-67"></a>      <span class="cp">#pragma clang diagnostic push</span>
+<a name="line-68"></a>      <span class="cp">#pragma clang diagnostic ignored &quot;-Wundefined-func-template&quot;</span>
+<a name="line-69"></a>    <span class="cp">#endif</span>
+<a name="line-70"></a>    <span class="c1">//! Migrate constructor</span>
+<a name="line-71"></a>    <span class="c1">// cppcheck-suppress uninitMemberVar</span>
+<a name="line-72"></a>    <span class="k">explicit</span> <span class="nf">Ghosts</span><span class="p">(</span> <span class="n">CkMigrateMessage</span><span class="o">*</span> <span class="p">)</span> <span class="p">{}</span>
+<a name="line-73"></a>    <span class="cp">#if defined(__clang__)</span>
+<a name="line-74"></a>      <span class="cp">#pragma clang diagnostic pop</span>
+<a name="line-75"></a>    <span class="cp">#endif</span>
+<a name="line-76"></a>
+<a name="line-77"></a>    <span class="c1">//! Local face &amp; tet IDs associated to 3 global node IDs</span>
+<a name="line-78"></a>    <span class="c1">//! \details This map stores tetrahedron cell faces (map key) and their</span>
+<a name="line-79"></a>    <span class="c1">//!   associated local face ID and inner local tet id adjacent to the face</span>
+<a name="line-80"></a>    <span class="c1">//!   (map value). A face is given by 3 global node IDs.</span>
+<a name="line-81"></a>    <span class="k">using</span> <span class="n">FaceMap</span> <span class="o">=</span>
+<a name="line-82"></a>      <span class="n">std</span><span class="o">::</span><span class="n">unordered_map</span><span class="o">&lt;</span> <span class="n">tk</span><span class="o">::</span><span class="n">UnsMesh</span><span class="o">::</span><span class="n">Face</span><span class="p">,</span>  <span class="c1">// 3 global node IDs</span>
+<a name="line-83"></a>                          <span class="n">std</span><span class="o">::</span><span class="n">array</span><span class="o">&lt;</span> <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="p">,</span> <span class="mi">2</span> <span class="o">&gt;</span><span class="p">,</span> <span class="c1">// local face &amp; tet ID</span>
+<a name="line-84"></a>                          <span class="n">tk</span><span class="o">::</span><span class="n">UnsMesh</span><span class="o">::</span><span class="n">Hash</span><span class="o">&lt;</span><span class="mi">3</span><span class="o">&gt;</span><span class="p">,</span>
+<a name="line-85"></a>                          <span class="n">tk</span><span class="o">::</span><span class="n">UnsMesh</span><span class="o">::</span><span class="n">Eq</span><span class="o">&lt;</span><span class="mi">3</span><span class="o">&gt;</span> <span class="o">&gt;</span><span class="p">;</span>
+<a name="line-86"></a>
+<a name="line-87"></a>    <span class="c1">//! Storage type for refined mesh used for field output</span>
+<a name="line-88"></a>    <span class="k">struct</span> <span class="nc">OutMesh</span> <span class="p">{</span>
+<a name="line-89"></a>      <span class="c1">//! Element connectivity, local-&gt;global node ids, global-&gt;local nodes ids</span>
+<a name="line-90"></a>      <span class="n">tk</span><span class="o">::</span><span class="n">UnsMesh</span><span class="o">::</span><span class="n">Chunk</span> <span class="n">chunk</span><span class="p">;</span>
+<a name="line-91"></a>      <span class="c1">//! Node coordinates</span>
+<a name="line-92"></a>      <span class="n">tk</span><span class="o">::</span><span class="n">UnsMesh</span><span class="o">::</span><span class="n">Coords</span> <span class="n">coord</span><span class="p">;</span>
+<a name="line-93"></a>      <span class="c1">//! Triangle element connectivity</span>
+<a name="line-94"></a>      <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span> <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="o">&gt;</span> <span class="n">triinpoel</span><span class="p">;</span>
+<a name="line-95"></a>      <span class="c1">//! Boundary-face connectivity</span>
+<a name="line-96"></a>      <span class="n">std</span><span class="o">::</span><span class="n">map</span><span class="o">&lt;</span> <span class="kt">int</span><span class="p">,</span> <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span> <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="o">&gt;</span> <span class="o">&gt;</span> <span class="n">bface</span><span class="p">;</span>
+<a name="line-97"></a>      <span class="c1">//! Node communinaction map</span>
+<a name="line-98"></a>      <span class="n">tk</span><span class="o">::</span><span class="n">NodeCommMap</span> <span class="n">nodeCommMap</span><span class="p">;</span>
+<a name="line-99"></a>      <span class="c1">//! \brief Pack/Unpack serialize member function</span>
+<a name="line-100"></a>      <span class="c1">//! \param[in,out] p Charm++&#39;s PUP::er serializer object reference</span>
+<a name="line-101"></a><span class="hll">      <span class="kt">void</span> <span class="nf">pup</span><span class="p">(</span> <span class="n">PUP</span><span class="o">::</span><span class="n">er</span><span class="o">&amp;</span> <span class="n">p</span> <span class="p">)</span> <span class="p">{</span><span class="error2">&lt;--- Parameter 'p' can be declared with const</span>
+</span><a name="line-102"></a>        <span class="n">p</span><span class="o">|</span><span class="n">chunk</span><span class="p">;</span> <span class="n">p</span><span class="o">|</span><span class="n">coord</span><span class="p">;</span> <span class="n">p</span><span class="o">|</span><span class="n">triinpoel</span><span class="p">;</span> <span class="n">p</span><span class="o">|</span><span class="n">bface</span><span class="p">;</span> <span class="n">p</span><span class="o">|</span><span class="n">nodeCommMap</span><span class="p">;</span>
+<a name="line-103"></a>      <span class="p">}</span>
+<a name="line-104"></a>      <span class="c1">//! Destroyer</span>
+<a name="line-105"></a>      <span class="kt">void</span> <span class="nf">destroy</span><span class="p">()</span> <span class="p">{</span>
+<a name="line-106"></a>        <span class="n">tk</span><span class="o">::</span><span class="n">destroy</span><span class="p">(</span> <span class="n">std</span><span class="o">::</span><span class="n">get</span><span class="o">&lt;</span><span class="mi">0</span><span class="o">&gt;</span><span class="p">(</span><span class="n">chunk</span><span class="p">)</span> <span class="p">);</span>
+<a name="line-107"></a>        <span class="n">tk</span><span class="o">::</span><span class="n">destroy</span><span class="p">(</span> <span class="n">std</span><span class="o">::</span><span class="n">get</span><span class="o">&lt;</span><span class="mi">1</span><span class="o">&gt;</span><span class="p">(</span><span class="n">chunk</span><span class="p">)</span> <span class="p">);</span>
+<a name="line-108"></a>        <span class="n">tk</span><span class="o">::</span><span class="n">destroy</span><span class="p">(</span> <span class="n">std</span><span class="o">::</span><span class="n">get</span><span class="o">&lt;</span><span class="mi">2</span><span class="o">&gt;</span><span class="p">(</span><span class="n">chunk</span><span class="p">)</span> <span class="p">);</span>
+<a name="line-109"></a>        <span class="n">tk</span><span class="o">::</span><span class="n">destroy</span><span class="p">(</span> <span class="n">coord</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="p">);</span>
+<a name="line-110"></a>        <span class="n">tk</span><span class="o">::</span><span class="n">destroy</span><span class="p">(</span> <span class="n">coord</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="p">);</span>
+<a name="line-111"></a>        <span class="n">tk</span><span class="o">::</span><span class="n">destroy</span><span class="p">(</span> <span class="n">coord</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="p">);</span>
+<a name="line-112"></a>        <span class="n">tk</span><span class="o">::</span><span class="n">destroy</span><span class="p">(</span> <span class="n">triinpoel</span> <span class="p">);</span>
+<a name="line-113"></a>        <span class="n">tk</span><span class="o">::</span><span class="n">destroy</span><span class="p">(</span> <span class="n">bface</span> <span class="p">);</span>
+<a name="line-114"></a>        <span class="n">tk</span><span class="o">::</span><span class="n">destroy</span><span class="p">(</span> <span class="n">nodeCommMap</span> <span class="p">);</span>
+<a name="line-115"></a>      <span class="p">}</span>
+<a name="line-116"></a>    <span class="p">};</span>
+<a name="line-117"></a>
+<a name="line-118"></a>    <span class="c1">//! Discretization proxy</span>
+<a name="line-119"></a>    <span class="n">CProxy_Discretization</span> <span class="n">m_disc</span><span class="p">;</span>
+<a name="line-120"></a>    <span class="c1">//! Counter for number of unknowns on this chare (including ghosts)</span>
+<a name="line-121"></a>    <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="n">m_nunk</span><span class="p">;</span>
+<a name="line-122"></a>    <span class="c1">//! Mesh connectivity extended</span>
+<a name="line-123"></a>    <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span> <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="o">&gt;</span> <span class="n">m_inpoel</span><span class="p">;</span>
+<a name="line-124"></a>    <span class="c1">//! Node coordinates extended</span>
+<a name="line-125"></a>    <span class="n">tk</span><span class="o">::</span><span class="n">UnsMesh</span><span class="o">::</span><span class="n">Coords</span> <span class="n">m_coord</span><span class="p">;</span>
+<a name="line-126"></a>    <span class="c1">//! Face data</span>
+<a name="line-127"></a>    <span class="n">FaceData</span> <span class="n">m_fd</span><span class="p">;</span>
+<a name="line-128"></a>    <span class="c1">//! Face geometry</span>
+<a name="line-129"></a>    <span class="n">tk</span><span class="o">::</span><span class="n">Fields</span> <span class="n">m_geoFace</span><span class="p">;</span>
+<a name="line-130"></a>    <span class="c1">//! Element geometry</span>
+<a name="line-131"></a>    <span class="n">tk</span><span class="o">::</span><span class="n">Fields</span> <span class="n">m_geoElem</span><span class="p">;</span>
+<a name="line-132"></a>    <span class="c1">//! Counter for number of faces on this chare (including chare boundaries)</span>
+<a name="line-133"></a>    <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="n">m_nfac</span><span class="p">;</span>
+<a name="line-134"></a>    <span class="c1">//! Face &amp; tet IDs associated to global node IDs of the face for each chare</span>
+<a name="line-135"></a>    <span class="c1">//! \details This map stores not only the unique faces associated to</span>
+<a name="line-136"></a>    <span class="c1">//!   fellow chares, but also a newly assigned local face ID and adjacent</span>
+<a name="line-137"></a>    <span class="c1">//!   local tet ID.</span>
+<a name="line-138"></a>    <span class="n">std</span><span class="o">::</span><span class="n">unordered_map</span><span class="o">&lt;</span> <span class="kt">int</span><span class="p">,</span> <span class="n">FaceMap</span> <span class="o">&gt;</span> <span class="n">m_bndFace</span><span class="p">;</span>
+<a name="line-139"></a>    <span class="c1">//! Elements which are ghosts for other chares associated to those chare IDs</span>
+<a name="line-140"></a>    <span class="n">std</span><span class="o">::</span><span class="n">unordered_map</span><span class="o">&lt;</span> <span class="kt">int</span><span class="p">,</span> <span class="n">std</span><span class="o">::</span><span class="n">unordered_set</span><span class="o">&lt;</span> <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="o">&gt;</span> <span class="o">&gt;</span> <span class="n">m_sendGhost</span><span class="p">;</span>
+<a name="line-141"></a>    <span class="c1">//! Local element id associated to ghost remote id charewise</span>
+<a name="line-142"></a>    <span class="c1">//! \details This map associates the local element id (inner map value) to</span>
+<a name="line-143"></a>    <span class="c1">//!    the (remote) element id of the ghost (inner map key) based on the</span>
+<a name="line-144"></a>    <span class="c1">//!    chare id (outer map key) this remote element lies in.</span>
+<a name="line-145"></a>    <span class="n">std</span><span class="o">::</span><span class="n">unordered_map</span><span class="o">&lt;</span> <span class="kt">int</span><span class="p">,</span>
+<a name="line-146"></a>      <span class="n">std</span><span class="o">::</span><span class="n">unordered_map</span><span class="o">&lt;</span> <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="p">,</span> <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="o">&gt;</span> <span class="o">&gt;</span> <span class="n">m_ghost</span><span class="p">;</span>
+<a name="line-147"></a>    <span class="c1">//! Expected ghost tet ids (used only in DEBUG)</span>
+<a name="line-148"></a>    <span class="n">std</span><span class="o">::</span><span class="n">set</span><span class="o">&lt;</span> <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="o">&gt;</span> <span class="n">m_exptGhost</span><span class="p">;</span>
+<a name="line-149"></a>    <span class="c1">//! Map local ghost tet ids (value) and zero-based boundary ids (key)</span>
+<a name="line-150"></a>    <span class="n">std</span><span class="o">::</span><span class="n">unordered_map</span><span class="o">&lt;</span> <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="p">,</span> <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="o">&gt;</span> <span class="n">m_bid</span><span class="p">;</span>
+<a name="line-151"></a>    <span class="c1">//! Elements (value) surrounding point (key) data-structure</span>
+<a name="line-152"></a>    <span class="n">std</span><span class="o">::</span><span class="n">map</span><span class="o">&lt;</span> <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="p">,</span> <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span> <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="o">&gt;</span> <span class="o">&gt;</span> <span class="n">m_esup</span><span class="p">;</span>
+<a name="line-153"></a>    <span class="c1">//! 1 if starting time stepping, 0 if during time stepping</span>
+<a name="line-154"></a>    <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="n">m_initial</span><span class="p">;</span>
+<a name="line-155"></a>
+<a name="line-156"></a>    <span class="c1">//1 Start setup of communication maps for cell-centered schemes</span>
+<a name="line-157"></a>    <span class="kt">void</span> <span class="nf">startCommSetup</span><span class="p">();</span>
+<a name="line-158"></a>
+<a name="line-159"></a>    <span class="c1">//! Start sizing communication buffers and setting up ghost data</span>
+<a name="line-160"></a>    <span class="kt">void</span> <span class="nf">resizeComm</span><span class="p">();</span>
+<a name="line-161"></a>
+<a name="line-162"></a>    <span class="c1">//! Receive unique set of faces we potentially share with/from another chare</span>
+<a name="line-163"></a>    <span class="kt">void</span> <span class="nf">comfac</span><span class="p">(</span> <span class="kt">int</span> <span class="n">fromch</span><span class="p">,</span> <span class="k">const</span> <span class="n">tk</span><span class="o">::</span><span class="n">UnsMesh</span><span class="o">::</span><span class="n">FaceSet</span><span class="o">&amp;</span> <span class="n">infaces</span> <span class="p">);</span>
+<a name="line-164"></a>
+<a name="line-165"></a>    <span class="c1">//! Receive ghost data on chare boundaries from fellow chare</span>
+<a name="line-166"></a>    <span class="kt">void</span> <span class="nf">comGhost</span><span class="p">(</span> <span class="kt">int</span> <span class="n">fromch</span><span class="p">,</span> <span class="k">const</span> <span class="n">GhostData</span><span class="o">&amp;</span> <span class="n">ghost</span> <span class="p">);</span>
+<a name="line-167"></a>
+<a name="line-168"></a>    <span class="c1">//! Receive requests for ghost data</span>
+<a name="line-169"></a>    <span class="kt">void</span> <span class="nf">reqGhost</span><span class="p">();</span>
+<a name="line-170"></a>
+<a name="line-171"></a>    <span class="c1">//! Send all of our ghost data to fellow chares</span>
+<a name="line-172"></a>    <span class="kt">void</span> <span class="nf">sendGhost</span><span class="p">();</span>
+<a name="line-173"></a>
+<a name="line-174"></a>    <span class="c1">//! Setup node-neighborhood (esup)</span>
+<a name="line-175"></a>    <span class="kt">void</span> <span class="nf">nodeNeighSetup</span><span class="p">();</span>
+<a name="line-176"></a>
+<a name="line-177"></a>    <span class="c1">//! Receive element-surr-points data on chare boundaries from fellow chare</span>
+<a name="line-178"></a>    <span class="kt">void</span> <span class="nf">comEsup</span><span class="p">(</span> <span class="kt">int</span> <span class="n">fromch</span><span class="p">,</span>
+<a name="line-179"></a>      <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">unordered_map</span><span class="o">&lt;</span> <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="p">,</span> <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span> <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="o">&gt;</span> <span class="o">&gt;&amp;</span>
+<a name="line-180"></a>        <span class="n">bndEsup</span><span class="p">,</span>
+<a name="line-181"></a>      <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">unordered_map</span><span class="o">&lt;</span> <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="p">,</span> <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span> <span class="n">tk</span><span class="o">::</span><span class="n">real</span> <span class="o">&gt;</span> <span class="o">&gt;&amp;</span>
+<a name="line-182"></a>        <span class="n">nodeBndCells</span> <span class="p">);</span>
+<a name="line-183"></a>
+<a name="line-184"></a>    <span class="cm">/** @name Pack/unpack (Charm++ serialization) routines */</span>
+<a name="line-185"></a>    <span class="c1">///@{</span>
+<a name="line-186"></a>    <span class="c1">//! \brief Pack/Unpack serialize member function</span>
+<a name="line-187"></a>    <span class="c1">//! \param[in,out] p Charm++&#39;s PUP::er serializer object reference</span>
+<a name="line-188"></a>    <span class="kt">void</span> <span class="nf">pup</span><span class="p">(</span> <span class="n">PUP</span><span class="o">::</span><span class="n">er</span> <span class="o">&amp;</span><span class="n">p</span> <span class="p">)</span> <span class="k">override</span> <span class="p">{</span>
+<a name="line-189"></a>      <span class="n">p</span> <span class="o">|</span> <span class="n">m_disc</span><span class="p">;</span>
+<a name="line-190"></a>      <span class="n">p</span> <span class="o">|</span> <span class="n">m_nunk</span><span class="p">;</span>
+<a name="line-191"></a>      <span class="n">p</span> <span class="o">|</span> <span class="n">m_inpoel</span><span class="p">;</span>
+<a name="line-192"></a>      <span class="n">p</span> <span class="o">|</span> <span class="n">m_coord</span><span class="p">;</span>
+<a name="line-193"></a>      <span class="n">p</span> <span class="o">|</span> <span class="n">m_fd</span><span class="p">;</span>
+<a name="line-194"></a>      <span class="n">p</span> <span class="o">|</span> <span class="n">m_geoFace</span><span class="p">;</span>
+<a name="line-195"></a>      <span class="n">p</span> <span class="o">|</span> <span class="n">m_geoElem</span><span class="p">;</span>
+<a name="line-196"></a>      <span class="n">p</span> <span class="o">|</span> <span class="n">m_nfac</span><span class="p">;</span>
+<a name="line-197"></a>      <span class="n">p</span> <span class="o">|</span> <span class="n">m_bndFace</span><span class="p">;</span>
+<a name="line-198"></a>      <span class="n">p</span> <span class="o">|</span> <span class="n">m_sendGhost</span><span class="p">;</span>
+<a name="line-199"></a>      <span class="n">p</span> <span class="o">|</span> <span class="n">m_ghost</span><span class="p">;</span>
+<a name="line-200"></a>      <span class="n">p</span> <span class="o">|</span> <span class="n">m_exptGhost</span><span class="p">;</span>
+<a name="line-201"></a>      <span class="n">p</span> <span class="o">|</span> <span class="n">m_bid</span><span class="p">;</span>
+<a name="line-202"></a>      <span class="n">p</span> <span class="o">|</span> <span class="n">m_esup</span><span class="p">;</span>
+<a name="line-203"></a>      <span class="n">p</span> <span class="o">|</span> <span class="n">m_initial</span><span class="p">;</span>
+<a name="line-204"></a>      <span class="n">p</span> <span class="o">|</span> <span class="n">m_ncomfac</span><span class="p">;</span>
+<a name="line-205"></a>      <span class="n">p</span> <span class="o">|</span> <span class="n">m_nadj</span><span class="p">;</span>
+<a name="line-206"></a>      <span class="n">p</span> <span class="o">|</span> <span class="n">m_ncomEsup</span><span class="p">;</span>
+<a name="line-207"></a>      <span class="n">p</span> <span class="o">|</span> <span class="n">m_ipface</span><span class="p">;</span>
+<a name="line-208"></a>      <span class="n">p</span> <span class="o">|</span> <span class="n">m_ghostData</span><span class="p">;</span>
+<a name="line-209"></a>      <span class="n">p</span> <span class="o">|</span> <span class="n">m_ghostReq</span><span class="p">;</span>
+<a name="line-210"></a>      <span class="n">p</span> <span class="o">|</span> <span class="n">m_expChBndFace</span><span class="p">;</span>
+<a name="line-211"></a>      <span class="n">p</span> <span class="o">|</span> <span class="n">m_infaces</span><span class="p">;</span>
+<a name="line-212"></a>      <span class="n">p</span> <span class="o">|</span> <span class="n">m_esupc</span><span class="p">;</span>
+<a name="line-213"></a>      <span class="n">p</span> <span class="o">|</span> <span class="n">m_cbAfterDone</span><span class="p">;</span>
+<a name="line-214"></a>    <span class="p">}</span>
+<a name="line-215"></a>    <span class="c1">//! \brief Pack/Unpack serialize operator|</span>
+<a name="line-216"></a>    <span class="c1">//! \param[in,out] p Charm++&#39;s PUP::er serializer object reference</span>
+<a name="line-217"></a>    <span class="c1">//! \param[in,out] a Ghosts object reference</span>
+<a name="line-218"></a>    <span class="k">friend</span> <span class="kt">void</span> <span class="k">operator</span><span class="o">|</span><span class="p">(</span> <span class="n">PUP</span><span class="o">::</span><span class="n">er</span><span class="o">&amp;</span> <span class="n">p</span><span class="p">,</span> <span class="n">Ghosts</span><span class="o">&amp;</span> <span class="n">a</span> <span class="p">)</span> <span class="p">{</span> <span class="n">a</span><span class="p">.</span><span class="n">pup</span><span class="p">(</span><span class="n">p</span><span class="p">);</span> <span class="p">}</span>
+<a name="line-219"></a>    <span class="c1">///@}</span>
+<a name="line-220"></a>
+<a name="line-221"></a>  <span class="k">private</span><span class="o">:</span>
+<a name="line-222"></a>    <span class="k">using</span> <span class="n">ncomp_t</span> <span class="o">=</span> <span class="n">tk</span><span class="o">::</span><span class="n">ncomp_t</span><span class="p">;</span>
+<a name="line-223"></a>
+<a name="line-224"></a>    <span class="c1">//! Counter for face adjacency communication map</span>
+<a name="line-225"></a>    <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="n">m_ncomfac</span><span class="p">;</span>
+<a name="line-226"></a>    <span class="c1">//! Counter signaling that all ghost data have been received</span>
+<a name="line-227"></a>    <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="n">m_nadj</span><span class="p">;</span>
+<a name="line-228"></a>    <span class="c1">//! Counter for element-surr-node adjacency communication map</span>
+<a name="line-229"></a>    <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="n">m_ncomEsup</span><span class="p">;</span>
+<a name="line-230"></a>    <span class="c1">//! Internal + physical boundary faces (inverse of inpofa)</span>
+<a name="line-231"></a>    <span class="n">tk</span><span class="o">::</span><span class="n">UnsMesh</span><span class="o">::</span><span class="n">FaceSet</span> <span class="n">m_ipface</span><span class="p">;</span>
+<a name="line-232"></a>    <span class="c1">//! Ghost data associated to chare IDs we communicate with</span>
+<a name="line-233"></a>    <span class="n">std</span><span class="o">::</span><span class="n">unordered_map</span><span class="o">&lt;</span> <span class="kt">int</span><span class="p">,</span> <span class="n">GhostData</span> <span class="o">&gt;</span> <span class="n">m_ghostData</span><span class="p">;</span>
+<a name="line-234"></a>    <span class="c1">//! Number of chares requesting ghost data</span>
+<a name="line-235"></a>    <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="n">m_ghostReq</span><span class="p">;</span>
+<a name="line-236"></a>    <span class="c1">//! Unique set of chare-boundary faces this chare is expected to receive</span>
+<a name="line-237"></a>    <span class="n">tk</span><span class="o">::</span><span class="n">UnsMesh</span><span class="o">::</span><span class="n">FaceSet</span> <span class="n">m_expChBndFace</span><span class="p">;</span>
+<a name="line-238"></a>    <span class="c1">//! Incoming communication buffer during chare-boundary face communication</span>
+<a name="line-239"></a>    <span class="n">std</span><span class="o">::</span><span class="n">unordered_map</span><span class="o">&lt;</span> <span class="kt">int</span><span class="p">,</span> <span class="n">tk</span><span class="o">::</span><span class="n">UnsMesh</span><span class="o">::</span><span class="n">FaceSet</span> <span class="o">&gt;</span> <span class="n">m_infaces</span><span class="p">;</span>
+<a name="line-240"></a>    <span class="c1">//! Communication buffer for esup data-structure</span>
+<a name="line-241"></a>    <span class="n">std</span><span class="o">::</span><span class="n">map</span><span class="o">&lt;</span> <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="p">,</span> <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span> <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="o">&gt;</span> <span class="o">&gt;</span> <span class="n">m_esupc</span><span class="p">;</span>
+<a name="line-242"></a>    <span class="c1">//! Function call to continue with in Scheme when Ghosts is done</span>
+<a name="line-243"></a>    <span class="n">CkCallback</span> <span class="n">m_cbAfterDone</span><span class="p">;</span>
+<a name="line-244"></a>
+<a name="line-245"></a>    <span class="c1">//! Access bound Discretization class pointer</span>
+<a name="line-246"></a>    <span class="n">Discretization</span><span class="o">*</span> <span class="nf">Disc</span><span class="p">()</span> <span class="k">const</span> <span class="p">{</span>
+<a name="line-247"></a>      <span class="n">Assert</span><span class="p">(</span> <span class="n">m_disc</span><span class="p">[</span> <span class="n">thisIndex</span> <span class="p">].</span><span class="n">ckLocal</span><span class="p">()</span> <span class="o">!=</span> <span class="k">nullptr</span><span class="p">,</span> <span class="s">&quot;ckLocal() null&quot;</span> <span class="p">);</span>
+<a name="line-248"></a>      <span class="k">return</span> <span class="n">m_disc</span><span class="p">[</span> <span class="n">thisIndex</span> <span class="p">].</span><span class="n">ckLocal</span><span class="p">();</span>
+<a name="line-249"></a>    <span class="p">}</span>
+<a name="line-250"></a>
+<a name="line-251"></a>    <span class="c1">//! Compute chare-boundary faces</span>
+<a name="line-252"></a>    <span class="kt">void</span> <span class="nf">bndFaces</span><span class="p">();</span>
+<a name="line-253"></a>
+<a name="line-254"></a>    <span class="c1">//! Setup own ghost data on this chare</span>
+<a name="line-255"></a>    <span class="kt">void</span> <span class="nf">setupGhost</span><span class="p">();</span>
+<a name="line-256"></a>
+<a name="line-257"></a>    <span class="c1">//! Continue after face adjacency communication map completed on this chare</span>
+<a name="line-258"></a>    <span class="kt">void</span> <span class="nf">faceAdj</span><span class="p">();</span>
+<a name="line-259"></a>
+<a name="line-260"></a>    <span class="c1">//! Compute partial boundary surface integral and sum across all chares</span>
+<a name="line-261"></a>    <span class="kt">void</span> <span class="nf">bndIntegral</span><span class="p">();</span>
+<a name="line-262"></a>
+<a name="line-263"></a>    <span class="c1">//! Continue after node adjacency communication map completed on this chare</span>
+<a name="line-264"></a>    <span class="kt">void</span> <span class="nf">adj</span><span class="p">();</span>
+<a name="line-265"></a>
+<a name="line-266"></a>    <span class="c1">//! Perform leak-test on chare boundary faces</span>
+<a name="line-267"></a>    <span class="kt">bool</span> <span class="nf">leakyAdjacency</span><span class="p">();</span>
+<a name="line-268"></a>
+<a name="line-269"></a>    <span class="c1">//! Check if esuf of chare-boundary faces matches</span>
+<a name="line-270"></a>    <span class="kt">bool</span> <span class="nf">faceMatch</span><span class="p">();</span>
+<a name="line-271"></a>
+<a name="line-272"></a>    <span class="c1">//! Verify that all chare-boundary faces have been received</span>
+<a name="line-273"></a>    <span class="kt">bool</span> <span class="nf">receivedChBndFaces</span><span class="p">();</span>
+<a name="line-274"></a>
+<a name="line-275"></a>    <span class="c1">//! Find any chare for face (given by 3 global node IDs)</span>
+<a name="line-276"></a>    <span class="kt">int</span> <span class="nf">findchare</span><span class="p">(</span> <span class="k">const</span> <span class="n">tk</span><span class="o">::</span><span class="n">UnsMesh</span><span class="o">::</span><span class="n">Face</span><span class="o">&amp;</span> <span class="n">t</span> <span class="p">);</span>
+<a name="line-277"></a>
+<a name="line-278"></a>    <span class="c1">//! Check if entries in inpoel, inpofa and node-triplet are consistent</span>
+<a name="line-279"></a>    <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="n">nodetripletMatch</span><span class="p">(</span>
+<a name="line-280"></a>      <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">array</span><span class="o">&lt;</span> <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="p">,</span> <span class="mi">2</span> <span class="o">&gt;&amp;</span> <span class="n">id</span><span class="p">,</span>
+<a name="line-281"></a>      <span class="k">const</span> <span class="n">tk</span><span class="o">::</span><span class="n">UnsMesh</span><span class="o">::</span><span class="n">Face</span><span class="o">&amp;</span> <span class="n">t</span> <span class="p">);</span>
+<a name="line-282"></a>
+<a name="line-283"></a>    <span class="c1">//! Fill elements surrounding a face along chare boundary</span>
+<a name="line-284"></a>    <span class="kt">void</span> <span class="nf">addEsuf</span><span class="p">(</span>
+<a name="line-285"></a>      <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">array</span><span class="o">&lt;</span> <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="p">,</span> <span class="mi">2</span> <span class="o">&gt;&amp;</span> <span class="n">id</span><span class="p">,</span>
+<a name="line-286"></a>      <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="n">ghostid</span> <span class="p">);</span>
+<a name="line-287"></a>
+<a name="line-288"></a>    <span class="c1">//! Fill elements surrounding a element along chare boundary</span>
+<a name="line-289"></a>    <span class="kt">void</span> <span class="nf">addEsuel</span><span class="p">(</span>
+<a name="line-290"></a>      <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">array</span><span class="o">&lt;</span> <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="p">,</span> <span class="mi">2</span> <span class="o">&gt;&amp;</span> <span class="n">id</span><span class="p">,</span>
+<a name="line-291"></a>      <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="n">ghostid</span><span class="p">,</span>
+<a name="line-292"></a>      <span class="k">const</span> <span class="n">tk</span><span class="o">::</span><span class="n">UnsMesh</span><span class="o">::</span><span class="n">Face</span><span class="o">&amp;</span> <span class="n">t</span> <span class="p">);</span>
+<a name="line-293"></a>
+<a name="line-294"></a>    <span class="c1">//! Fill face-geometry data along chare boundary</span>
+<a name="line-295"></a>    <span class="kt">void</span> <span class="nf">addGeoFace</span><span class="p">(</span>
+<a name="line-296"></a>      <span class="k">const</span> <span class="n">tk</span><span class="o">::</span><span class="n">UnsMesh</span><span class="o">::</span><span class="n">Face</span><span class="o">&amp;</span> <span class="n">t</span><span class="p">,</span>
+<a name="line-297"></a>      <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">array</span><span class="o">&lt;</span> <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="p">,</span> <span class="mi">2</span> <span class="o">&gt;&amp;</span> <span class="n">id</span> <span class="p">);</span>
+<a name="line-298"></a><span class="p">};</span>
+<a name="line-299"></a>
+<a name="line-300"></a><span class="p">}</span> <span class="c1">// inciter::</span>
+<a name="line-301"></a>
+<a name="line-302"></a><span class="cp">#endif </span><span class="c1">// Ghosts_h</span>
 </pre></div>
 </td></tr></table>
       </div> <!-- /.wrapper -->
