@@ -267,7 +267,7 @@
         <span class="n">nonStiffEqIdx</span><span class="p">[</span><span class="n">icomp</span><span class="p">]</span> <span class="o">=</span> <span class="n">icomp</span><span class="p">;</span>
     <span class="p">}</span>
 
-    <span class="c1">//! Initalize the compressible flow equations, prepare for time integration</span>
+    <span class="c1">//! Initialize the compressible flow equations, prepare for time integration</span>
     <span class="c1">//! \param[in] L Block diagonal mass matrix</span>
     <span class="c1">//! \param[in] inpoel Element-node connectivity</span>
     <span class="c1">//! \param[in] coord Array of nodal coordinates</span>
@@ -350,6 +350,44 @@
               <span class="p">}</span>
             <span class="p">}</span>
           <span class="p">}</span>
+        <span class="p">}</span>
+      <span class="p">}</span>
+    <span class="p">}</span>
+
+    <span class="c1">//! Save initial densities for all materials</span>
+    <span class="c1">//! \param[out] rho0mat List of initial densities</span>
+    <span class="kt">void</span> <span class="n">setRho0mat</span><span class="p">(</span> <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span> <span class="n">tk</span><span class="o">::</span><span class="n">real</span> <span class="o">&gt;&amp;</span> <span class="n">rho0mat</span> <span class="p">)</span> <span class="k">const</span>
+    <span class="p">{</span>
+      <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="n">nmat</span> <span class="o">=</span> <span class="n">g_inputdeck</span><span class="p">.</span><span class="n">get</span><span class="o">&lt;</span> <span class="n">tag</span><span class="o">::</span><span class="n">multimat</span><span class="p">,</span> <span class="n">tag</span><span class="o">::</span><span class="n">nmat</span> <span class="o">&gt;</span><span class="p">();</span>
+      <span class="n">rho0mat</span><span class="p">.</span><span class="n">resize</span><span class="p">(</span> <span class="n">nmat</span><span class="p">,</span> <span class="mf">0.0</span> <span class="p">);</span>
+      <span class="k">const</span> <span class="k">auto</span><span class="o">&amp;</span> <span class="n">ic</span> <span class="o">=</span> <span class="n">g_inputdeck</span><span class="p">.</span><span class="n">get</span><span class="o">&lt;</span> <span class="n">tag</span><span class="o">::</span><span class="n">ic</span> <span class="o">&gt;</span><span class="p">();</span>
+      <span class="k">const</span> <span class="k">auto</span><span class="o">&amp;</span> <span class="n">icbox</span> <span class="o">=</span> <span class="n">ic</span><span class="p">.</span><span class="n">get</span><span class="o">&lt;</span> <span class="n">tag</span><span class="o">::</span><span class="n">box</span> <span class="o">&gt;</span><span class="p">();</span>
+      <span class="k">const</span> <span class="k">auto</span><span class="o">&amp;</span> <span class="n">icmbk</span> <span class="o">=</span> <span class="n">ic</span><span class="p">.</span><span class="n">get</span><span class="o">&lt;</span> <span class="n">tag</span><span class="o">::</span><span class="n">meshblock</span> <span class="o">&gt;</span><span class="p">();</span>
+      <span class="c1">// Get background properties</span>
+      <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="n">k</span> <span class="o">=</span> <span class="n">ic</span><span class="p">.</span><span class="n">get</span><span class="o">&lt;</span> <span class="n">tag</span><span class="o">::</span><span class="n">materialid</span> <span class="o">&gt;</span><span class="p">()</span> <span class="o">-</span> <span class="mi">1</span><span class="p">;</span>
+      <span class="n">tk</span><span class="o">::</span><span class="n">real</span> <span class="n">pr</span> <span class="o">=</span> <span class="n">ic</span><span class="p">.</span><span class="n">get</span><span class="o">&lt;</span> <span class="n">tag</span><span class="o">::</span><span class="n">pressure</span> <span class="o">&gt;</span><span class="p">();</span>
+      <span class="n">tk</span><span class="o">::</span><span class="n">real</span> <span class="n">tmp</span> <span class="o">=</span> <span class="n">ic</span><span class="p">.</span><span class="n">get</span><span class="o">&lt;</span> <span class="n">tag</span><span class="o">::</span><span class="n">temperature</span> <span class="o">&gt;</span><span class="p">();</span>
+      <span class="n">rho0mat</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">m_mat_blk</span><span class="p">[</span><span class="n">k</span><span class="p">].</span><span class="n">compute</span><span class="o">&lt;</span> <span class="n">EOS</span><span class="o">::</span><span class="n">density</span> <span class="o">&gt;</span><span class="p">(</span><span class="n">pr</span><span class="p">,</span> <span class="n">tmp</span><span class="p">);</span>
+
+      <span class="c1">// Check inside used defined box</span>
+      <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">icbox</span><span class="p">.</span><span class="n">empty</span><span class="p">())</span>
+      <span class="p">{</span>
+        <span class="k">for</span> <span class="p">(</span><span class="k">const</span> <span class="k">auto</span><span class="o">&amp;</span> <span class="nl">b</span> <span class="p">:</span> <span class="n">icbox</span><span class="p">)</span> <span class="p">{</span>   <span class="c1">// for all boxes</span>
+          <span class="n">k</span> <span class="o">=</span> <span class="n">b</span><span class="p">.</span><span class="k">template</span> <span class="n">get</span><span class="o">&lt;</span> <span class="n">tag</span><span class="o">::</span><span class="n">materialid</span> <span class="o">&gt;</span><span class="p">()</span> <span class="o">-</span> <span class="mi">1</span><span class="p">;</span>
+          <span class="n">pr</span> <span class="o">=</span> <span class="n">b</span><span class="p">.</span><span class="k">template</span> <span class="n">get</span><span class="o">&lt;</span> <span class="n">tag</span><span class="o">::</span><span class="n">pressure</span> <span class="o">&gt;</span><span class="p">();</span>
+          <span class="n">tmp</span> <span class="o">=</span> <span class="n">b</span><span class="p">.</span><span class="k">template</span> <span class="n">get</span><span class="o">&lt;</span> <span class="n">tag</span><span class="o">::</span><span class="n">temperature</span> <span class="o">&gt;</span><span class="p">();</span>
+          <span class="n">rho0mat</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">m_mat_blk</span><span class="p">[</span><span class="n">k</span><span class="p">].</span><span class="n">compute</span><span class="o">&lt;</span> <span class="n">EOS</span><span class="o">::</span><span class="n">density</span> <span class="o">&gt;</span><span class="p">(</span><span class="n">pr</span><span class="p">,</span> <span class="n">tmp</span><span class="p">);</span>
+        <span class="p">}</span>
+      <span class="p">}</span>
+
+      <span class="c1">// Check inside user-specified mesh blocks</span>
+      <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">icmbk</span><span class="p">.</span><span class="n">empty</span><span class="p">())</span>
+      <span class="p">{</span>
+        <span class="k">for</span> <span class="p">(</span><span class="k">const</span> <span class="k">auto</span><span class="o">&amp;</span> <span class="nl">b</span> <span class="p">:</span> <span class="n">icmbk</span><span class="p">)</span> <span class="p">{</span> <span class="c1">// for all blocks</span>
+          <span class="n">k</span> <span class="o">=</span> <span class="n">b</span><span class="p">.</span><span class="k">template</span> <span class="n">get</span><span class="o">&lt;</span> <span class="n">tag</span><span class="o">::</span><span class="n">materialid</span> <span class="o">&gt;</span><span class="p">()</span> <span class="o">-</span> <span class="mi">1</span><span class="p">;</span>
+          <span class="n">pr</span> <span class="o">=</span> <span class="n">b</span><span class="p">.</span><span class="k">template</span> <span class="n">get</span><span class="o">&lt;</span> <span class="n">tag</span><span class="o">::</span><span class="n">pressure</span> <span class="o">&gt;</span><span class="p">();</span>
+          <span class="n">tmp</span> <span class="o">=</span> <span class="n">b</span><span class="p">.</span><span class="k">template</span> <span class="n">get</span><span class="o">&lt;</span> <span class="n">tag</span><span class="o">::</span><span class="n">temperature</span> <span class="o">&gt;</span><span class="p">();</span>
+          <span class="n">rho0mat</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">m_mat_blk</span><span class="p">[</span><span class="n">k</span><span class="p">].</span><span class="n">compute</span><span class="o">&lt;</span> <span class="n">EOS</span><span class="o">::</span><span class="n">density</span> <span class="o">&gt;</span><span class="p">(</span><span class="n">pr</span><span class="p">,</span> <span class="n">tmp</span><span class="p">);</span>
         <span class="p">}</span>
       <span class="p">}</span>
     <span class="p">}</span>
@@ -1507,7 +1545,7 @@
   <div class="m-container">
     <div class="m-row">
       <div class="m-col-l-10 m-push-l-1">
-        <p>Quinoa docs, part of the <a href="https://github.com/quinoacomputing/">Quinoa project</a>. Copyright © J. Bakosi 2012&ndash;2015, Los Alamos National Security, LLC, 2016&ndash;2018, <a href="https://www.triadns.org/">Triad National Security, LLC,</a> 2019-2023. Generated on Monday, Jul 01, 2024 using <a href="http://doxygen.org/">Doxygen</a> and <a href="http://mcss.mosra.cz/">m.css</a>. Contact us via <a href="https://github.com/quinoacomputing/quinoa/issues">GitHub</a>.</p>
+        <p>Quinoa docs, part of the <a href="https://github.com/quinoacomputing/">Quinoa project</a>. Copyright © J. Bakosi 2012&ndash;2015, Los Alamos National Security, LLC, 2016&ndash;2018, <a href="https://www.triadns.org/">Triad National Security, LLC,</a> 2019-2023. Generated on Monday, Jul 08, 2024 using <a href="http://doxygen.org/">Doxygen</a> and <a href="http://mcss.mosra.cz/">m.css</a>. Contact us via <a href="https://github.com/quinoacomputing/quinoa/issues">GitHub</a>.</p>
       </div>
     </div>
   </div>
