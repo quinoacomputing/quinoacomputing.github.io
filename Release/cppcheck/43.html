@@ -152,12 +152,12 @@ span.linenos.special { color: #000000; background-color: #ffffc0; padding: 0 5px
   </head>
   <body>
     <div id="header" class="header">
-      <h1>Cppcheck report - [<a href=https://github.com/quinoacomputing/quinoa/commit/-128-NOTFOUND>-128-NOTFOUND</a>]: /tmp/TeamCity-1/work/5ad443c8abe7fc0a/src/Control/Inciter/InputDeck/LuaParser.hpp</h1>
+      <h1>Cppcheck report - [<a href=https://github.com/quinoacomputing/quinoa/commit/-128-NOTFOUND>-128-NOTFOUND</a>]: /tmp/TeamCity-1/work/5ad443c8abe7fc0a/src/PDE/MultiMat/Problem/BoxInitialization.hpp</h1>
     </div>
     <div class="wrapper">
       <div id="menu">
-       <p id="filename"><a href="index.html">Defects:</a> LuaParser.hpp</p>
-<a href="43.html#line-43"> passedByValue 43</a><a href="43.html#line-70"> passedByValue 70</a><a href="43.html#line-92"> passedByValue 92</a><a href="43.html#line-114"> passedByValue 114</a><a href="43.html#line-138"> passedByValue 138</a>
+       <p id="filename"><a href="index.html">Defects:</a> BoxInitialization.hpp</p>
+<a href="43.html#line-89"> identicalConditionAfterEarlyExit 89</a><a href="43.html#line-102"> identicalConditionAfterEarlyExit 102</a>
     </div>
     <div id="content">
 <table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>  1
@@ -350,197 +350,209 @@ span.linenos.special { color: #000000; background-color: #ffffc0; padding: 0 5px
 188
 189
 190
-191</pre></div></td><td class="code"><div class="highlight"><pre><span></span><a name="line-1"></a><span class="c1">// *****************************************************************************</span>
+191
+192
+193
+194
+195
+196
+197</pre></div></td><td class="code"><div class="highlight"><pre><span></span><a name="line-1"></a><span class="c1">// *****************************************************************************</span>
 <a name="line-2"></a><span class="cm">/*!</span>
-<a name="line-3"></a><span class="cm">  \file      src/Control/Inciter/InputDeck/LuaParser.hpp</span>
-<a name="line-4"></a><span class="cm">  \copyright 2019-2023 Triad National Security, LLC.</span>
-<a name="line-5"></a><span class="cm">             All rights reserved. See the LICENSE file for details.</span>
-<a name="line-6"></a><span class="cm">  \brief     Inciter&#39;s lua input deck file parser</span>
-<a name="line-7"></a><span class="cm">  \details   This file declares the input deck, i.e., control file, parser for</span>
-<a name="line-8"></a><span class="cm">    the computational shock hydrodynamics tool, Inciter.</span>
-<a name="line-9"></a><span class="cm">*/</span>
-<a name="line-10"></a><span class="c1">// *****************************************************************************</span>
-<a name="line-11"></a><span class="cp">#ifndef InciterLuaParser_h</span>
-<a name="line-12"></a><span class="cp">#define InciterLuaParser_h</span>
-<a name="line-13"></a>
-<a name="line-14"></a><span class="cp">#include</span> <span class="cpf">&quot;NoWarning/sol.hpp&quot;</span><span class="cp"></span>
+<a name="line-3"></a><span class="cm">  \file      src/PDE/MultiMat/Problem/BoxInitialization.hpp</span>
+<a name="line-4"></a><span class="cm">  \copyright 2012-2015 J. Bakosi,</span>
+<a name="line-5"></a><span class="cm">             2016-2018 Los Alamos National Security, LLC.,</span>
+<a name="line-6"></a><span class="cm">             2019-2021 Triad National Security, LLC.</span>
+<a name="line-7"></a><span class="cm">             All rights reserved. See the LICENSE file for details.</span>
+<a name="line-8"></a><span class="cm">  \brief     User-defined box initialization</span>
+<a name="line-9"></a><span class="cm">  \details   This file defines functions for initializing solutions for</span>
+<a name="line-10"></a><span class="cm">    compressible multi-material equations inside the user-defined box.</span>
+<a name="line-11"></a><span class="cm">*/</span>
+<a name="line-12"></a><span class="c1">// *****************************************************************************</span>
+<a name="line-13"></a><span class="cp">#ifndef MultiMatBoxInitialization_h</span>
+<a name="line-14"></a><span class="cp">#define MultiMatBoxInitialization_h</span>
 <a name="line-15"></a>
-<a name="line-16"></a><span class="cp">#include</span> <span class="cpf">&quot;Inciter/CmdLine/CmdLine.hpp&quot;</span><span class="cp"></span>
-<a name="line-17"></a><span class="cp">#include</span> <span class="cpf">&quot;InputDeck.hpp&quot;</span><span class="cp"></span>
-<a name="line-18"></a>
-<a name="line-19"></a><span class="k">namespace</span> <span class="n">tk</span> <span class="p">{</span> <span class="k">class</span> <span class="nc">Print</span><span class="p">;</span> <span class="p">}</span>
+<a name="line-16"></a><span class="cp">#include</span> <span class="cpf">&quot;Fields.hpp&quot;</span><span class="cp"></span>
+<a name="line-17"></a><span class="cp">#include</span> <span class="cpf">&quot;EoS/EOS.hpp&quot;</span><span class="cp"></span>
+<a name="line-18"></a><span class="cp">#include</span> <span class="cpf">&quot;ContainerUtil.hpp&quot;</span><span class="cp"></span>
+<a name="line-19"></a><span class="cp">#include</span> <span class="cpf">&quot;MultiMat/MultiMatIndexing.hpp&quot;</span><span class="cp"></span>
 <a name="line-20"></a>
 <a name="line-21"></a><span class="k">namespace</span> <span class="n">inciter</span> <span class="p">{</span>
 <a name="line-22"></a>
-<a name="line-23"></a><span class="c1">//! \brief Control file lua-parser for Inciter.</span>
-<a name="line-24"></a><span class="c1">//! \details This class is used to interface with sol2, for the purpose of</span>
-<a name="line-25"></a><span class="c1">//!   parsing the control file for the computational shock hydrodynamics tool,</span>
-<a name="line-26"></a><span class="c1">//!   Inciter.</span>
-<a name="line-27"></a><span class="k">class</span> <span class="nc">LuaParser</span> <span class="p">{</span>
-<a name="line-28"></a>
-<a name="line-29"></a>  <span class="k">public</span><span class="o">:</span>
-<a name="line-30"></a>    <span class="c1">//! Constructor</span>
-<a name="line-31"></a>    <span class="k">explicit</span> <span class="n">LuaParser</span><span class="p">(</span> <span class="k">const</span> <span class="n">tk</span><span class="o">::</span><span class="n">Print</span><span class="o">&amp;</span> <span class="n">print</span><span class="p">,</span>
-<a name="line-32"></a>                              <span class="k">const</span> <span class="n">ctr</span><span class="o">::</span><span class="n">CmdLine</span><span class="o">&amp;</span> <span class="n">cmdline</span><span class="p">,</span>
-<a name="line-33"></a>                              <span class="n">ctr</span><span class="o">::</span><span class="n">InputDeck</span><span class="o">&amp;</span> <span class="n">inputdeck</span> <span class="p">);</span>
-<a name="line-34"></a>
-<a name="line-35"></a>    <span class="c1">//! Store lua inputdeck in custom struct</span>
-<a name="line-36"></a>    <span class="kt">void</span> <span class="nf">storeInputDeck</span><span class="p">(</span>
-<a name="line-37"></a>      <span class="k">const</span> <span class="n">sol</span><span class="o">::</span><span class="n">table</span><span class="o">&amp;</span> <span class="n">lua_ideck</span><span class="p">,</span>
-<a name="line-38"></a>      <span class="n">ctr</span><span class="o">::</span><span class="n">InputDeck</span><span class="o">&amp;</span> <span class="n">gideck</span> <span class="p">);</span>
-<a name="line-39"></a>
-<a name="line-40"></a>    <span class="c1">//! Check and store material property into inpudeck storage</span>
-<a name="line-41"></a>    <span class="kt">void</span> <span class="nf">checkStoreMatProp</span><span class="p">(</span>
-<a name="line-42"></a>      <span class="k">const</span> <span class="n">sol</span><span class="o">::</span><span class="n">table</span> <span class="n">table</span><span class="p">,</span>
-<a name="line-43"></a><span class="hll">      <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="n">key</span><span class="p">,</span><div class="verbose expandable"><span class="error2">&lt;--- Function parameter 'key' should be passed by const reference. <span class="marker">[+]</span></span><div class="content">Parameter &apos;key&apos; is passed by value. It could be passed as a const reference which is usually faster and recommended in C++.</div></div>
-</span><a name="line-44"></a>      <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="n">vecsize</span><span class="p">,</span>
-<a name="line-45"></a>      <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span> <span class="n">tk</span><span class="o">::</span><span class="n">real</span> <span class="o">&gt;&amp;</span> <span class="n">storage</span> <span class="p">);</span>
-<a name="line-46"></a>
-<a name="line-47"></a>    <span class="c1">//! Check and store field output variables</span>
-<a name="line-48"></a>    <span class="kt">void</span> <span class="nf">addOutVar</span><span class="p">(</span>
-<a name="line-49"></a>      <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&amp;</span> <span class="n">varname</span><span class="p">,</span>
-<a name="line-50"></a>      <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&amp;</span> <span class="n">alias</span><span class="p">,</span>
-<a name="line-51"></a>      <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span> <span class="kt">char</span> <span class="o">&gt;&amp;</span> <span class="n">depv</span><span class="p">,</span>
-<a name="line-52"></a>      <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="n">nmat</span><span class="p">,</span>
-<a name="line-53"></a>      <span class="n">inciter</span><span class="o">::</span><span class="n">ctr</span><span class="o">::</span><span class="n">PDEType</span> <span class="n">pde</span><span class="p">,</span>
-<a name="line-54"></a>      <span class="n">tk</span><span class="o">::</span><span class="n">Centering</span> <span class="n">c</span><span class="p">,</span>
-<a name="line-55"></a>      <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span> <span class="n">inciter</span><span class="o">::</span><span class="n">ctr</span><span class="o">::</span><span class="n">OutVar</span> <span class="o">&gt;&amp;</span> <span class="n">foutvar</span> <span class="p">);</span>
+<a name="line-23"></a><span class="k">using</span> <span class="n">ncomp_t</span> <span class="o">=</span> <span class="n">tk</span><span class="o">::</span><span class="n">ncomp_t</span><span class="p">;</span>
+<a name="line-24"></a>
+<a name="line-25"></a><span class="k">template</span><span class="o">&lt;</span> <span class="k">class</span> <span class="nc">B</span> <span class="o">&gt;</span>
+<a name="line-26"></a><span class="kt">void</span> <span class="n">initializeBox</span><span class="p">(</span> <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span> <span class="n">EOS</span> <span class="o">&gt;&amp;</span> <span class="n">mat_blk</span><span class="p">,</span>
+<a name="line-27"></a>                    <span class="n">tk</span><span class="o">::</span><span class="n">real</span> <span class="n">V_ex</span><span class="p">,</span>
+<a name="line-28"></a>                    <span class="n">tk</span><span class="o">::</span><span class="n">real</span> <span class="n">t</span><span class="p">,</span>
+<a name="line-29"></a>                    <span class="k">const</span> <span class="n">B</span><span class="o">&amp;</span> <span class="n">b</span><span class="p">,</span>
+<a name="line-30"></a>                    <span class="n">tk</span><span class="o">::</span><span class="n">real</span> <span class="n">bgpreic</span><span class="p">,</span>
+<a name="line-31"></a>                    <span class="n">tk</span><span class="o">::</span><span class="n">real</span> <span class="n">bgtempic</span><span class="p">,</span>
+<a name="line-32"></a>                    <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span> <span class="n">tk</span><span class="o">::</span><span class="n">real</span> <span class="o">&gt;&amp;</span> <span class="n">s</span> <span class="p">)</span>
+<a name="line-33"></a><span class="c1">// *****************************************************************************</span>
+<a name="line-34"></a><span class="c1">// Set the solution in the user-defined IC box/mesh block</span>
+<a name="line-35"></a><span class="c1">//! \tparam B IC-block type to operate, ctr::box, or ctr::meshblock</span>
+<a name="line-36"></a><span class="c1">//! \param[in] V_ex Exact box volume</span>
+<a name="line-37"></a><span class="c1">//! \param[in] t Physical time</span>
+<a name="line-38"></a><span class="c1">//! \param[in] b IC box configuration to use</span>
+<a name="line-39"></a><span class="c1">//! \param[in] bgpreic Background pressure user input</span>
+<a name="line-40"></a><span class="c1">//! \param[in] bgtempic Background temperature user input</span>
+<a name="line-41"></a><span class="c1">//! \param[in,out] s Solution vector that is set to box ICs</span>
+<a name="line-42"></a><span class="c1">//! \details This function sets the fluid density and total specific energy</span>
+<a name="line-43"></a><span class="c1">//!   within a box initial condition, configured by the user. If the user</span>
+<a name="line-44"></a><span class="c1">//!   is specified a box where mass is specified, we also assume here that</span>
+<a name="line-45"></a><span class="c1">//!   internal energy content (energy per unit volume) is also</span>
+<a name="line-46"></a><span class="c1">//!   specified. Specific internal energy (energy per unit mass) is then</span>
+<a name="line-47"></a><span class="c1">//!   computed here (and added to the kinetic energy) from the internal</span>
+<a name="line-48"></a><span class="c1">//!   energy per unit volume by multiplying it with the total box volume</span>
+<a name="line-49"></a><span class="c1">//!   and dividing it by the total mass of the material in the box.</span>
+<a name="line-50"></a><span class="c1">//!   Example (SI) units of the quantities involved:</span>
+<a name="line-51"></a><span class="c1">//!    * internal energy content (energy per unit volume): J/m^3</span>
+<a name="line-52"></a><span class="c1">//!    * specific energy (internal energy per unit mass): J/kg</span>
+<a name="line-53"></a><span class="c1">// *****************************************************************************</span>
+<a name="line-54"></a><span class="p">{</span>
+<a name="line-55"></a>  <span class="k">auto</span> <span class="n">nmat</span> <span class="o">=</span> <span class="n">g_inputdeck</span><span class="p">.</span><span class="n">get</span><span class="o">&lt;</span> <span class="n">tag</span><span class="o">::</span><span class="n">multimat</span><span class="p">,</span> <span class="n">tag</span><span class="o">::</span><span class="n">nmat</span> <span class="o">&gt;</span><span class="p">();</span>
 <a name="line-56"></a>
-<a name="line-57"></a>  <span class="k">private</span><span class="o">:</span>
-<a name="line-58"></a>    <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="n">m_filename</span><span class="p">;</span>             <span class="c1">//!&lt; Name of file to parse</span>
-<a name="line-59"></a>
-<a name="line-60"></a>    <span class="c1">//! Assign parameter to inputdeck entry if specified, else default</span>
-<a name="line-61"></a>    <span class="c1">//! \tparam N Type of parameter being read/assigned</span>
-<a name="line-62"></a>    <span class="c1">//! \param[in] table Sol-table which contains said parameter</span>
-<a name="line-63"></a>    <span class="c1">//! \param[in] key Key for said parameter in Sol-table</span>
-<a name="line-64"></a>    <span class="c1">//! \param[in,out] storage Storage space in inputdeck where said parameter</span>
-<a name="line-65"></a>    <span class="c1">//!   is to be stored</span>
-<a name="line-66"></a>    <span class="c1">//! \param[in] dflt Default value of said parameter, if unspecified</span>
-<a name="line-67"></a>    <span class="k">template</span><span class="o">&lt;</span> <span class="k">typename</span> <span class="nc">N</span> <span class="o">&gt;</span> <span class="kt">void</span>
-<a name="line-68"></a>    <span class="n">storeIfSpecd</span><span class="p">(</span>
-<a name="line-69"></a>      <span class="k">const</span> <span class="n">sol</span><span class="o">::</span><span class="n">table</span> <span class="n">table</span><span class="p">,</span>
-<a name="line-70"></a><span class="hll">      <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="n">key</span><span class="p">,</span><div class="verbose expandable"><span class="error2">&lt;--- Function parameter 'key' should be passed by const reference. <span class="marker">[+]</span></span><div class="content">Parameter &apos;key&apos; is passed by value. It could be passed as a const reference which is usually faster and recommended in C++.</div></div>
-</span><a name="line-71"></a>      <span class="n">N</span><span class="o">&amp;</span> <span class="n">storage</span><span class="p">,</span>
-<a name="line-72"></a>      <span class="k">const</span> <span class="n">N</span> <span class="n">dflt</span> <span class="p">)</span>
-<a name="line-73"></a>    <span class="p">{</span>
-<a name="line-74"></a>      <span class="k">auto</span> <span class="n">sol_var</span> <span class="o">=</span> <span class="n">table</span><span class="p">[</span><span class="n">key</span><span class="p">];</span>
-<a name="line-75"></a>      <span class="k">if</span> <span class="p">(</span><span class="n">sol_var</span><span class="p">.</span><span class="n">valid</span><span class="p">())</span>
-<a name="line-76"></a>        <span class="n">storage</span> <span class="o">=</span> <span class="n">sol_var</span><span class="p">;</span>
-<a name="line-77"></a>      <span class="k">else</span>
-<a name="line-78"></a>        <span class="n">storage</span> <span class="o">=</span> <span class="n">dflt</span><span class="p">;</span>
+<a name="line-57"></a>  <span class="k">const</span> <span class="k">auto</span><span class="o">&amp;</span> <span class="n">solidx</span> <span class="o">=</span> <span class="n">g_inputdeck</span><span class="p">.</span><span class="n">get</span><span class="o">&lt;</span> <span class="n">tag</span><span class="o">::</span><span class="n">matidxmap</span><span class="p">,</span> <span class="n">tag</span><span class="o">::</span><span class="n">solidx</span> <span class="o">&gt;</span><span class="p">();</span>
+<a name="line-58"></a>
+<a name="line-59"></a>  <span class="k">const</span> <span class="k">auto</span><span class="o">&amp;</span> <span class="n">initiate</span> <span class="o">=</span> <span class="n">b</span><span class="p">.</span><span class="k">template</span> <span class="n">get</span><span class="o">&lt;</span> <span class="n">tag</span><span class="o">::</span><span class="n">initiate</span> <span class="o">&gt;</span><span class="p">();</span>
+<a name="line-60"></a>
+<a name="line-61"></a>  <span class="c1">// get material id in box (offset by 1, since input deck uses 1-based ids)</span>
+<a name="line-62"></a>  <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="n">boxmatid</span> <span class="o">=</span> <span class="n">b</span><span class="p">.</span><span class="k">template</span> <span class="n">get</span><span class="o">&lt;</span> <span class="n">tag</span><span class="o">::</span><span class="n">materialid</span> <span class="o">&gt;</span><span class="p">()</span> <span class="o">-</span> <span class="mi">1</span><span class="p">;</span>
+<a name="line-63"></a>  <span class="k">const</span> <span class="k">auto</span><span class="o">&amp;</span> <span class="n">boxvel</span> <span class="o">=</span> <span class="n">b</span><span class="p">.</span><span class="k">template</span> <span class="n">get</span><span class="o">&lt;</span> <span class="n">tag</span><span class="o">::</span><span class="n">velocity</span> <span class="o">&gt;</span><span class="p">();</span>
+<a name="line-64"></a>  <span class="k">auto</span> <span class="n">boxpre</span> <span class="o">=</span> <span class="n">b</span><span class="p">.</span><span class="k">template</span> <span class="n">get</span><span class="o">&lt;</span> <span class="n">tag</span><span class="o">::</span><span class="n">pressure</span> <span class="o">&gt;</span><span class="p">();</span>
+<a name="line-65"></a>  <span class="k">auto</span> <span class="n">boxene</span> <span class="o">=</span> <span class="n">b</span><span class="p">.</span><span class="k">template</span> <span class="n">get</span><span class="o">&lt;</span> <span class="n">tag</span><span class="o">::</span><span class="n">energy</span> <span class="o">&gt;</span><span class="p">();</span>
+<a name="line-66"></a>  <span class="k">auto</span> <span class="n">boxtemp</span> <span class="o">=</span> <span class="n">b</span><span class="p">.</span><span class="k">template</span> <span class="n">get</span><span class="o">&lt;</span> <span class="n">tag</span><span class="o">::</span><span class="n">temperature</span> <span class="o">&gt;</span><span class="p">();</span>
+<a name="line-67"></a>  <span class="k">auto</span> <span class="n">boxmas</span> <span class="o">=</span> <span class="n">b</span><span class="p">.</span><span class="k">template</span> <span class="n">get</span><span class="o">&lt;</span> <span class="n">tag</span><span class="o">::</span><span class="n">mass</span> <span class="o">&gt;</span><span class="p">();</span>
+<a name="line-68"></a>  <span class="k">auto</span> <span class="n">boxenc</span> <span class="o">=</span> <span class="n">b</span><span class="p">.</span><span class="k">template</span> <span class="n">get</span><span class="o">&lt;</span> <span class="n">tag</span><span class="o">::</span><span class="n">energy_content</span> <span class="o">&gt;</span><span class="p">();</span>
+<a name="line-69"></a>
+<a name="line-70"></a>  <span class="k">auto</span> <span class="n">alphamin</span> <span class="o">=</span> <span class="mf">1.0e-12</span><span class="p">;</span>
+<a name="line-71"></a>
+<a name="line-72"></a>  <span class="c1">// [I] Compute the states inside the IC box/block based on the type of user</span>
+<a name="line-73"></a>  <span class="c1">// input.</span>
+<a name="line-74"></a>
+<a name="line-75"></a>  <span class="c1">// material volume fractions</span>
+<a name="line-76"></a>  <span class="k">for</span> <span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="n">k</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">k</span><span class="o">&lt;</span><span class="n">nmat</span><span class="p">;</span> <span class="o">++</span><span class="n">k</span><span class="p">)</span> <span class="p">{</span>
+<a name="line-77"></a>    <span class="k">if</span> <span class="p">(</span><span class="n">k</span> <span class="o">==</span> <span class="n">boxmatid</span><span class="p">)</span> <span class="p">{</span>
+<a name="line-78"></a>      <span class="n">s</span><span class="p">[</span><span class="n">volfracIdx</span><span class="p">(</span><span class="n">nmat</span><span class="p">,</span><span class="n">k</span><span class="p">)]</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">-</span> <span class="p">(</span><span class="k">static_cast</span><span class="o">&lt;</span> <span class="n">tk</span><span class="o">::</span><span class="n">real</span> <span class="o">&gt;</span><span class="p">(</span><span class="n">nmat</span><span class="mi">-1</span><span class="p">))</span><span class="o">*</span><span class="n">alphamin</span><span class="p">;</span>
 <a name="line-79"></a>    <span class="p">}</span>
-<a name="line-80"></a>
-<a name="line-81"></a>    <span class="c1">//! Assign Option to inputdeck entry if specified, else default</span>
-<a name="line-82"></a>    <span class="c1">//! \tparam Op Option-Type of parameter being read/assigned</span>
-<a name="line-83"></a>    <span class="c1">//! \tparam OpClass Option-class of parameter being read/assigned</span>
-<a name="line-84"></a>    <span class="c1">//! \param[in] table Sol-table which contains said parameter</span>
-<a name="line-85"></a>    <span class="c1">//! \param[in] key Key for said parameter in Sol-table</span>
-<a name="line-86"></a>    <span class="c1">//! \param[in,out] storage Storage space in inputdeck where said parameter</span>
-<a name="line-87"></a>    <span class="c1">//!   is to be stored</span>
-<a name="line-88"></a>    <span class="c1">//! \param[in] dflt Default value of said parameter, if unspecified</span>
-<a name="line-89"></a>    <span class="k">template</span><span class="o">&lt;</span> <span class="k">typename</span> <span class="nc">Op</span><span class="p">,</span> <span class="k">class</span> <span class="nc">OpClass</span> <span class="o">&gt;</span> <span class="kt">void</span>
-<a name="line-90"></a>    <span class="n">storeOptIfSpecd</span><span class="p">(</span>
-<a name="line-91"></a>      <span class="k">const</span> <span class="n">sol</span><span class="o">::</span><span class="n">table</span> <span class="n">table</span><span class="p">,</span>
-<a name="line-92"></a><span class="hll">      <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="n">key</span><span class="p">,</span><div class="verbose expandable"><span class="error2">&lt;--- Function parameter 'key' should be passed by const reference. <span class="marker">[+]</span></span><div class="content">Parameter &apos;key&apos; is passed by value. It could be passed as a const reference which is usually faster and recommended in C++.</div></div>
-</span><a name="line-93"></a>      <span class="n">Op</span><span class="o">&amp;</span> <span class="n">storage</span><span class="p">,</span>
-<a name="line-94"></a>      <span class="k">const</span> <span class="n">Op</span> <span class="n">dflt</span> <span class="p">)</span>
-<a name="line-95"></a>    <span class="p">{</span>
-<a name="line-96"></a>      <span class="n">OpClass</span> <span class="n">opt</span><span class="p">;</span>
-<a name="line-97"></a>      <span class="k">auto</span> <span class="n">sol_var</span> <span class="o">=</span> <span class="n">table</span><span class="p">[</span><span class="n">key</span><span class="p">];</span>
-<a name="line-98"></a>      <span class="k">if</span> <span class="p">(</span><span class="n">sol_var</span><span class="p">.</span><span class="n">valid</span><span class="p">())</span>
-<a name="line-99"></a>        <span class="n">storage</span> <span class="o">=</span> <span class="n">opt</span><span class="p">.</span><span class="n">value</span><span class="p">(</span><span class="n">sol_var</span><span class="p">);</span>
-<a name="line-100"></a>      <span class="k">else</span>
-<a name="line-101"></a>        <span class="n">storage</span> <span class="o">=</span> <span class="n">dflt</span><span class="p">;</span>
-<a name="line-102"></a>    <span class="p">}</span>
-<a name="line-103"></a>
-<a name="line-104"></a>    <span class="c1">//! Assign vector parameter to inputdeck entry if specified, else default</span>
-<a name="line-105"></a>    <span class="c1">//! \tparam N Type of parameter vector being read/assigned</span>
-<a name="line-106"></a>    <span class="c1">//! \param[in] table Sol-table which contains said parameter</span>
-<a name="line-107"></a>    <span class="c1">//! \param[in] key Key for said parameter in Sol-table</span>
-<a name="line-108"></a>    <span class="c1">//! \param[in,out] storage Storage space in inputdeck where said parameter</span>
-<a name="line-109"></a>    <span class="c1">//!   is to be stored</span>
-<a name="line-110"></a>    <span class="c1">//! \param[in] dflt Default value of said parameter, if unspecified</span>
-<a name="line-111"></a>    <span class="k">template</span><span class="o">&lt;</span> <span class="k">typename</span> <span class="nc">N</span> <span class="o">&gt;</span> <span class="kt">void</span>
-<a name="line-112"></a>    <span class="n">storeVecIfSpecd</span><span class="p">(</span>
-<a name="line-113"></a>      <span class="k">const</span> <span class="n">sol</span><span class="o">::</span><span class="n">table</span> <span class="n">table</span><span class="p">,</span>
-<a name="line-114"></a><span class="hll">      <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="n">key</span><span class="p">,</span><div class="verbose expandable"><span class="error2">&lt;--- Function parameter 'key' should be passed by const reference. <span class="marker">[+]</span></span><div class="content">Parameter &apos;key&apos; is passed by value. It could be passed as a const reference which is usually faster and recommended in C++.</div></div>
-</span><a name="line-115"></a>      <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span> <span class="n">N</span> <span class="o">&gt;&amp;</span> <span class="n">storage</span><span class="p">,</span>
-<a name="line-116"></a>      <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span> <span class="n">N</span> <span class="o">&gt;&amp;</span> <span class="n">dflt</span> <span class="p">)</span>
-<a name="line-117"></a>    <span class="p">{</span>
-<a name="line-118"></a>      <span class="k">auto</span> <span class="n">sol_vec</span> <span class="o">=</span> <span class="n">table</span><span class="p">[</span><span class="n">key</span><span class="p">];</span>
-<a name="line-119"></a>      <span class="k">if</span> <span class="p">(</span><span class="n">sol_vec</span><span class="p">.</span><span class="n">valid</span><span class="p">())</span> <span class="p">{</span>
-<a name="line-120"></a>        <span class="k">for</span> <span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">i</span><span class="o">&lt;</span><span class="n">sol</span><span class="o">::</span><span class="n">table</span><span class="p">(</span><span class="n">sol_vec</span><span class="p">).</span><span class="n">size</span><span class="p">();</span> <span class="o">++</span><span class="n">i</span><span class="p">)</span>
-<a name="line-121"></a>          <span class="n">storage</span><span class="p">.</span><span class="n">push_back</span><span class="p">(</span><span class="n">sol_vec</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">]);</span>
-<a name="line-122"></a>      <span class="p">}</span>
-<a name="line-123"></a>      <span class="k">else</span>
-<a name="line-124"></a>        <span class="n">storage</span> <span class="o">=</span> <span class="n">dflt</span><span class="p">;</span>
-<a name="line-125"></a>    <span class="p">}</span>
-<a name="line-126"></a>
-<a name="line-127"></a>    <span class="c1">//! Assign vector of Options to inputdeck entry if specified, else default</span>
-<a name="line-128"></a>    <span class="c1">//! \tparam Op Option-Type of parameter being read/assigned</span>
-<a name="line-129"></a>    <span class="c1">//! \tparam OpClass Option-class of parameter being read/assigned</span>
-<a name="line-130"></a>    <span class="c1">//! \param[in] table Sol-table which contains said parameter</span>
-<a name="line-131"></a>    <span class="c1">//! \param[in] key Key for said parameter in Sol-table</span>
-<a name="line-132"></a>    <span class="c1">//! \param[in,out] storage Storage space in inputdeck where said parameter</span>
-<a name="line-133"></a>    <span class="c1">//!   is to be stored</span>
-<a name="line-134"></a>    <span class="c1">//! \param[in] dflt Default value of said parameter, if unspecified</span>
-<a name="line-135"></a>    <span class="k">template</span><span class="o">&lt;</span> <span class="k">typename</span> <span class="nc">Op</span><span class="p">,</span> <span class="k">class</span> <span class="nc">OpClass</span> <span class="o">&gt;</span> <span class="kt">void</span>
-<a name="line-136"></a>    <span class="n">storeOptVecIfSpecd</span><span class="p">(</span>
-<a name="line-137"></a>      <span class="k">const</span> <span class="n">sol</span><span class="o">::</span><span class="n">table</span> <span class="n">table</span><span class="p">,</span>
-<a name="line-138"></a><span class="hll">      <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="n">key</span><span class="p">,</span><div class="verbose expandable"><span class="error2">&lt;--- Function parameter 'key' should be passed by const reference. <span class="marker">[+]</span></span><div class="content">Parameter &apos;key&apos; is passed by value. It could be passed as a const reference which is usually faster and recommended in C++.</div></div>
-</span><a name="line-139"></a>      <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span> <span class="n">Op</span> <span class="o">&gt;&amp;</span> <span class="n">storage</span><span class="p">,</span>
-<a name="line-140"></a>      <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span> <span class="n">Op</span> <span class="o">&gt;&amp;</span> <span class="n">dflt</span> <span class="p">)</span>
-<a name="line-141"></a>    <span class="p">{</span>
-<a name="line-142"></a>      <span class="n">OpClass</span> <span class="n">opt</span><span class="p">;</span>
-<a name="line-143"></a>      <span class="k">auto</span> <span class="n">sol_vec</span> <span class="o">=</span> <span class="n">table</span><span class="p">[</span><span class="n">key</span><span class="p">];</span>
-<a name="line-144"></a>      <span class="k">if</span> <span class="p">(</span><span class="n">sol_vec</span><span class="p">.</span><span class="n">valid</span><span class="p">())</span> <span class="p">{</span>
-<a name="line-145"></a>        <span class="k">for</span> <span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">i</span><span class="o">&lt;</span><span class="n">sol</span><span class="o">::</span><span class="n">table</span><span class="p">(</span><span class="n">sol_vec</span><span class="p">).</span><span class="n">size</span><span class="p">();</span> <span class="o">++</span><span class="n">i</span><span class="p">)</span>
-<a name="line-146"></a>          <span class="n">storage</span><span class="p">.</span><span class="n">push_back</span><span class="p">(</span><span class="n">opt</span><span class="p">.</span><span class="n">value</span><span class="p">(</span><span class="n">sol_vec</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">]));</span>
-<a name="line-147"></a>      <span class="p">}</span>
-<a name="line-148"></a>      <span class="k">else</span>
-<a name="line-149"></a>        <span class="n">storage</span> <span class="o">=</span> <span class="n">dflt</span><span class="p">;</span>
+<a name="line-80"></a>    <span class="k">else</span> <span class="p">{</span>
+<a name="line-81"></a>      <span class="n">s</span><span class="p">[</span><span class="n">volfracIdx</span><span class="p">(</span><span class="n">nmat</span><span class="p">,</span><span class="n">k</span><span class="p">)]</span> <span class="o">=</span> <span class="n">alphamin</span><span class="p">;</span>
+<a name="line-82"></a>    <span class="p">}</span>
+<a name="line-83"></a>  <span class="p">}</span>
+<a name="line-84"></a>  <span class="c1">// material states (density, pressure, velocity)</span>
+<a name="line-85"></a>  <span class="n">tk</span><span class="o">::</span><span class="n">real</span> <span class="n">u</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span> <span class="n">v</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span> <span class="n">w</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span> <span class="n">spi</span><span class="p">(</span><span class="mf">0.0</span><span class="p">),</span> <span class="n">pr</span><span class="p">(</span><span class="mf">0.0</span><span class="p">),</span> <span class="n">tmp</span><span class="p">(</span><span class="mf">0.0</span><span class="p">),</span> <span class="n">rbulk</span><span class="p">(</span><span class="mf">0.0</span><span class="p">);</span>
+<a name="line-86"></a>  <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span> <span class="n">tk</span><span class="o">::</span><span class="n">real</span> <span class="o">&gt;</span> <span class="n">rhok</span><span class="p">(</span><span class="n">nmat</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">);</span>
+<a name="line-87"></a>  <span class="c1">// 1. User-specified mass, specific energy (J/m^3) and volume of box</span>
+<a name="line-88"></a>  <span class="k">if</span> <span class="p">(</span><span class="n">boxmas</span> <span class="o">&gt;</span> <span class="mf">0.0</span><span class="p">)</span> <span class="p">{</span>
+<a name="line-89"></a><span class="hll">    <span class="k">if</span> <span class="p">(</span><span class="n">boxenc</span> <span class="o">&lt;=</span> <span class="mf">1e-12</span><span class="p">)</span> <span class="n">Throw</span><span class="p">(</span> <span class="s">&quot;Box energy content must be nonzero&quot;</span> <span class="p">);</span><span class="error2">&lt;--- If condition 'boxenc<=1e-12' is true, the function will return/exit</span>
+</span><a name="line-90"></a>    <span class="c1">// determine density and energy of material in the box</span>
+<a name="line-91"></a>    <span class="n">rhok</span><span class="p">[</span><span class="n">boxmatid</span><span class="p">]</span> <span class="o">=</span> <span class="n">boxmas</span> <span class="o">/</span> <span class="n">V_ex</span><span class="p">;</span>
+<a name="line-92"></a>    <span class="n">spi</span> <span class="o">=</span> <span class="n">boxenc</span> <span class="o">/</span> <span class="n">rhok</span><span class="p">[</span><span class="n">boxmatid</span><span class="p">];</span>
+<a name="line-93"></a>
+<a name="line-94"></a>    <span class="c1">// Determine pressure and temperature</span>
+<a name="line-95"></a>    <span class="k">auto</span> <span class="n">boxmat_vf</span> <span class="o">=</span> <span class="n">s</span><span class="p">[</span><span class="n">volfracIdx</span><span class="p">(</span><span class="n">nmat</span><span class="p">,</span><span class="n">boxmatid</span><span class="p">)];</span>
+<a name="line-96"></a>
+<a name="line-97"></a>    <span class="c1">// Since initiate type &#39;linear&#39; assigns the background IC values to all</span>
+<a name="line-98"></a>    <span class="c1">// nodes within a box at initialization (followed by adding a time-dependent</span>
+<a name="line-99"></a>    <span class="c1">// energy source term representing a propagating wave-front), the pressure</span>
+<a name="line-100"></a>    <span class="c1">// in the box needs to be set to background pressure.</span>
+<a name="line-101"></a>    <span class="k">if</span> <span class="p">(</span><span class="n">initiate</span> <span class="o">==</span> <span class="n">ctr</span><span class="o">::</span><span class="n">InitiateType</span><span class="o">::</span><span class="n">LINEAR</span> <span class="o">&amp;&amp;</span> <span class="n">t</span> <span class="o">&lt;</span> <span class="mf">1e-12</span><span class="p">)</span> <span class="p">{</span>
+<a name="line-102"></a><span class="hll">      <span class="k">if</span> <span class="p">(</span><span class="n">boxmas</span> <span class="o">&lt;=</span> <span class="mf">1e-12</span> <span class="o">||</span> <span class="n">boxenc</span> <span class="o">&lt;=</span> <span class="mf">1e-12</span> <span class="o">||</span> <span class="n">bgpreic</span> <span class="o">&lt;=</span> <span class="mf">1e-12</span> <span class="o">||</span><span class="error2">&lt;--- Testing identical condition 'boxenc<=1e-12'</span>
+</span><a name="line-103"></a>        <span class="n">bgtempic</span> <span class="o">&lt;=</span> <span class="mf">1e-12</span><span class="p">)</span>
+<a name="line-104"></a>        <span class="n">Throw</span><span class="p">(</span><span class="s">&quot;Box mass, energy content, background pressure and background &quot;</span>
+<a name="line-105"></a>          <span class="s">&quot;temperature must be specified for IC with linear propagating source&quot;</span><span class="p">);</span>
+<a name="line-106"></a>
+<a name="line-107"></a>      <span class="n">pr</span> <span class="o">=</span> <span class="n">bgpreic</span><span class="p">;</span>
+<a name="line-108"></a>      <span class="k">auto</span> <span class="n">te</span> <span class="o">=</span> <span class="n">mat_blk</span><span class="p">[</span><span class="n">boxmatid</span><span class="p">].</span><span class="n">compute</span><span class="o">&lt;</span> <span class="n">EOS</span><span class="o">::</span><span class="n">totalenergy</span> <span class="o">&gt;</span><span class="p">(</span>
+<a name="line-109"></a>        <span class="n">rhok</span><span class="p">[</span><span class="n">boxmatid</span><span class="p">],</span> <span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">pr</span><span class="p">);</span>
+<a name="line-110"></a>      <span class="n">tmp</span> <span class="o">=</span> <span class="n">mat_blk</span><span class="p">[</span><span class="n">boxmatid</span><span class="p">].</span><span class="n">compute</span><span class="o">&lt;</span> <span class="n">EOS</span><span class="o">::</span><span class="n">temperature</span> <span class="o">&gt;</span><span class="p">(</span>
+<a name="line-111"></a>        <span class="n">boxmat_vf</span><span class="o">*</span><span class="n">rhok</span><span class="p">[</span><span class="n">boxmatid</span><span class="p">],</span> <span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">boxmat_vf</span><span class="o">*</span><span class="n">te</span><span class="p">,</span> <span class="n">boxmat_vf</span> <span class="p">);</span>
+<a name="line-112"></a>
+<a name="line-113"></a>      <span class="c1">// if the above density and pressure lead to an invalid thermodynamic</span>
+<a name="line-114"></a>      <span class="c1">// state (negative temperature/energy), change temperature to background</span>
+<a name="line-115"></a>      <span class="c1">// temperature and use corresponding density.</span>
+<a name="line-116"></a>      <span class="k">if</span> <span class="p">(</span><span class="n">tmp</span> <span class="o">&lt;</span> <span class="mf">0.0</span> <span class="o">||</span> <span class="n">te</span> <span class="o">&lt;</span> <span class="mf">0.0</span><span class="p">)</span> <span class="p">{</span>
+<a name="line-117"></a>        <span class="n">tmp</span> <span class="o">=</span> <span class="n">bgtempic</span><span class="p">;</span>
+<a name="line-118"></a>        <span class="n">rhok</span><span class="p">[</span><span class="n">boxmatid</span><span class="p">]</span> <span class="o">=</span> <span class="n">mat_blk</span><span class="p">[</span><span class="n">boxmatid</span><span class="p">].</span><span class="n">compute</span><span class="o">&lt;</span> <span class="n">EOS</span><span class="o">::</span><span class="n">density</span> <span class="o">&gt;</span><span class="p">(</span><span class="n">pr</span><span class="p">,</span> <span class="n">tmp</span><span class="p">);</span>
+<a name="line-119"></a>        <span class="n">spi</span> <span class="o">=</span> <span class="n">boxenc</span> <span class="o">/</span> <span class="n">rhok</span><span class="p">[</span><span class="n">boxmatid</span><span class="p">];</span>
+<a name="line-120"></a>      <span class="p">}</span>
+<a name="line-121"></a>    <span class="p">}</span>
+<a name="line-122"></a>    <span class="c1">// For initiate type &#39;impulse&#39;, pressure and temperature are determined from</span>
+<a name="line-123"></a>    <span class="c1">// energy content that needs to be dumped into the box at IC.</span>
+<a name="line-124"></a>    <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="n">initiate</span> <span class="o">==</span> <span class="n">ctr</span><span class="o">::</span><span class="n">InitiateType</span><span class="o">::</span><span class="n">IMPULSE</span><span class="p">)</span> <span class="p">{</span>
+<a name="line-125"></a>      <span class="n">pr</span> <span class="o">=</span> <span class="n">mat_blk</span><span class="p">[</span><span class="n">boxmatid</span><span class="p">].</span><span class="n">compute</span><span class="o">&lt;</span> <span class="n">EOS</span><span class="o">::</span><span class="n">pressure</span> <span class="o">&gt;</span><span class="p">(</span>
+<a name="line-126"></a>        <span class="n">boxmat_vf</span><span class="o">*</span><span class="n">rhok</span><span class="p">[</span><span class="n">boxmatid</span><span class="p">],</span> <span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">boxmat_vf</span><span class="o">*</span><span class="n">rhok</span><span class="p">[</span><span class="n">boxmatid</span><span class="p">]</span><span class="o">*</span><span class="n">spi</span><span class="p">,</span>
+<a name="line-127"></a>        <span class="n">boxmat_vf</span><span class="p">,</span> <span class="n">boxmatid</span> <span class="p">);</span>
+<a name="line-128"></a>      <span class="n">tmp</span> <span class="o">=</span> <span class="n">mat_blk</span><span class="p">[</span><span class="n">boxmatid</span><span class="p">].</span><span class="n">compute</span><span class="o">&lt;</span> <span class="n">EOS</span><span class="o">::</span><span class="n">temperature</span> <span class="o">&gt;</span><span class="p">(</span>
+<a name="line-129"></a>        <span class="n">boxmat_vf</span><span class="o">*</span><span class="n">rhok</span><span class="p">[</span><span class="n">boxmatid</span><span class="p">],</span> <span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">boxmat_vf</span><span class="o">*</span><span class="n">rhok</span><span class="p">[</span><span class="n">boxmatid</span><span class="p">]</span><span class="o">*</span><span class="n">spi</span><span class="p">,</span>
+<a name="line-130"></a>        <span class="n">boxmat_vf</span> <span class="p">);</span>
+<a name="line-131"></a>    <span class="p">}</span>
+<a name="line-132"></a>    <span class="k">else</span> <span class="n">Throw</span><span class="p">(</span> <span class="s">&quot;IC box initiate type not implemented for multimat&quot;</span> <span class="p">);</span>
+<a name="line-133"></a>
+<a name="line-134"></a>    <span class="c1">// find density of trace material quantities in the box based on pressure</span>
+<a name="line-135"></a>    <span class="k">for</span> <span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="n">k</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">k</span><span class="o">&lt;</span><span class="n">nmat</span><span class="p">;</span> <span class="o">++</span><span class="n">k</span><span class="p">)</span> <span class="p">{</span>
+<a name="line-136"></a>      <span class="k">if</span> <span class="p">(</span><span class="n">k</span> <span class="o">!=</span> <span class="n">boxmatid</span><span class="p">)</span> <span class="p">{</span>
+<a name="line-137"></a>        <span class="n">rhok</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">mat_blk</span><span class="p">[</span><span class="n">k</span><span class="p">].</span><span class="n">compute</span><span class="o">&lt;</span> <span class="n">EOS</span><span class="o">::</span><span class="n">density</span> <span class="o">&gt;</span><span class="p">(</span><span class="n">pr</span><span class="p">,</span> <span class="n">tmp</span><span class="p">);</span>
+<a name="line-138"></a>      <span class="p">}</span>
+<a name="line-139"></a>    <span class="p">}</span>
+<a name="line-140"></a>  <span class="p">}</span>
+<a name="line-141"></a>  <span class="c1">// 2. User-specified temperature, pressure and velocity in box</span>
+<a name="line-142"></a>  <span class="k">else</span> <span class="p">{</span>
+<a name="line-143"></a>    <span class="k">for</span> <span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="n">k</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">k</span><span class="o">&lt;</span><span class="n">nmat</span><span class="p">;</span> <span class="o">++</span><span class="n">k</span><span class="p">)</span> <span class="p">{</span>
+<a name="line-144"></a>      <span class="n">rhok</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">mat_blk</span><span class="p">[</span><span class="n">k</span><span class="p">].</span><span class="n">compute</span><span class="o">&lt;</span> <span class="n">EOS</span><span class="o">::</span><span class="n">density</span> <span class="o">&gt;</span><span class="p">(</span><span class="n">boxpre</span><span class="p">,</span> <span class="n">boxtemp</span><span class="p">);</span>
+<a name="line-145"></a>    <span class="p">}</span>
+<a name="line-146"></a>    <span class="k">if</span> <span class="p">(</span><span class="n">boxvel</span><span class="p">.</span><span class="n">size</span><span class="p">()</span> <span class="o">==</span> <span class="mi">3</span><span class="p">)</span> <span class="p">{</span>
+<a name="line-147"></a>      <span class="n">u</span> <span class="o">=</span> <span class="n">boxvel</span><span class="p">[</span><span class="mi">0</span><span class="p">];</span>
+<a name="line-148"></a>      <span class="n">v</span> <span class="o">=</span> <span class="n">boxvel</span><span class="p">[</span><span class="mi">1</span><span class="p">];</span>
+<a name="line-149"></a>      <span class="n">w</span> <span class="o">=</span> <span class="n">boxvel</span><span class="p">[</span><span class="mi">2</span><span class="p">];</span>
 <a name="line-150"></a>    <span class="p">}</span>
-<a name="line-151"></a>
-<a name="line-152"></a>    <span class="c1">//! \brief Check validity of keywords within a particular block</span>
-<a name="line-153"></a>    <span class="c1">//! \tparam tags Tags addressing the said block in the input deck</span>
-<a name="line-154"></a>    <span class="c1">//! \param[in] block Sol table of the input deck block read in from the</span>
-<a name="line-155"></a>    <span class="c1">//!   lua file</span>
-<a name="line-156"></a>    <span class="c1">//! \param[in] blk_name Name of the block, for error clarity</span>
-<a name="line-157"></a>    <span class="k">template</span><span class="o">&lt;</span> <span class="k">typename</span><span class="p">...</span> <span class="n">tags</span> <span class="o">&gt;</span>
-<a name="line-158"></a>    <span class="kt">void</span> <span class="n">checkBlock</span><span class="p">(</span><span class="k">const</span> <span class="n">sol</span><span class="o">::</span><span class="n">table</span><span class="o">&amp;</span> <span class="n">block</span><span class="p">,</span> <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&amp;</span> <span class="n">blk_name</span><span class="p">)</span> <span class="k">const</span>
-<a name="line-159"></a>    <span class="p">{</span>
-<a name="line-160"></a>      <span class="k">for</span> <span class="p">(</span><span class="k">const</span> <span class="k">auto</span><span class="o">&amp;</span> <span class="nl">kvp</span> <span class="p">:</span> <span class="n">block</span><span class="p">)</span> <span class="p">{</span>
-<a name="line-161"></a>        <span class="kt">bool</span> <span class="nf">is_valid</span><span class="p">(</span><span class="nb">false</span><span class="p">);</span>
-<a name="line-162"></a>        <span class="k">auto</span> <span class="n">ukw</span> <span class="o">=</span> <span class="n">kvp</span><span class="p">.</span><span class="n">first</span><span class="p">.</span><span class="n">as</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&gt;</span><span class="p">();</span>
-<a name="line-163"></a>        <span class="n">brigand</span><span class="o">::</span><span class="n">for_each</span><span class="o">&lt;</span> <span class="n">tags</span><span class="p">...</span> <span class="o">&gt;</span><span class="p">(</span> <span class="n">checkKw</span><span class="p">(</span><span class="n">ukw</span><span class="p">,</span> <span class="n">is_valid</span><span class="p">)</span> <span class="p">);</span>
-<a name="line-164"></a>        <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">is_valid</span><span class="p">)</span>
-<a name="line-165"></a>          <span class="n">Throw</span><span class="p">(</span><span class="s">&quot;Invalid keyword &#39;&quot;</span> <span class="o">+</span> <span class="n">ukw</span> <span class="o">+</span> <span class="s">&quot;&#39; in &#39;&quot;</span> <span class="o">+</span> <span class="n">blk_name</span> <span class="o">+</span> <span class="s">&quot;&#39; block.&quot;</span><span class="p">);</span>
-<a name="line-166"></a>      <span class="p">}</span>
-<a name="line-167"></a>    <span class="p">}</span>
-<a name="line-168"></a>
-<a name="line-169"></a>    <span class="c1">// Check if a keyword matches the existing ones</span>
-<a name="line-170"></a>    <span class="k">struct</span> <span class="nc">checkKw</span> <span class="p">{</span>
-<a name="line-171"></a>      <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="n">user_kw</span><span class="p">;</span>
-<a name="line-172"></a>      <span class="c1">// reference to bool keeping track of kw-match</span>
-<a name="line-173"></a>      <span class="kt">bool</span><span class="o">&amp;</span> <span class="n">is_valid</span><span class="p">;</span>
-<a name="line-174"></a>      <span class="c1">// Constructor</span>
-<a name="line-175"></a>      <span class="n">checkKw</span><span class="p">(</span> <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&amp;</span> <span class="n">ukw</span><span class="p">,</span> <span class="kt">bool</span><span class="o">&amp;</span> <span class="n">isv</span> <span class="p">)</span> <span class="o">:</span>
-<a name="line-176"></a>        <span class="n">user_kw</span><span class="p">(</span><span class="n">ukw</span><span class="p">),</span> <span class="n">is_valid</span><span class="p">(</span><span class="n">isv</span><span class="p">)</span> <span class="p">{}</span>
-<a name="line-177"></a>      <span class="c1">//! Function to call for each keyword type</span>
-<a name="line-178"></a>      <span class="k">template</span><span class="o">&lt;</span> <span class="k">typename</span> <span class="nc">U</span> <span class="o">&gt;</span> <span class="kt">void</span> <span class="k">operator</span><span class="p">()(</span> <span class="n">brigand</span><span class="o">::</span><span class="n">type_</span><span class="o">&lt;</span><span class="n">U</span><span class="o">&gt;</span> <span class="p">)</span> <span class="p">{</span>
-<a name="line-179"></a>        <span class="k">auto</span> <span class="n">spec_key</span> <span class="o">=</span> <span class="n">U</span><span class="o">::</span><span class="n">name</span><span class="p">();</span>
-<a name="line-180"></a>        <span class="c1">// only check if not previously matched</span>
-<a name="line-181"></a>        <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">is_valid</span><span class="p">)</span> <span class="p">{</span>
-<a name="line-182"></a>          <span class="k">if</span> <span class="p">(</span><span class="n">user_kw</span> <span class="o">==</span> <span class="n">spec_key</span><span class="p">)</span> <span class="n">is_valid</span> <span class="o">=</span> <span class="nb">true</span><span class="p">;</span>
-<a name="line-183"></a>          <span class="k">else</span> <span class="n">is_valid</span> <span class="o">=</span> <span class="nb">false</span><span class="p">;</span>
-<a name="line-184"></a>        <span class="p">}</span>
-<a name="line-185"></a>      <span class="p">}</span>
-<a name="line-186"></a>    <span class="p">};</span>
-<a name="line-187"></a><span class="p">};</span>
-<a name="line-188"></a>
-<a name="line-189"></a><span class="p">}</span> <span class="c1">// namespace inciter</span>
-<a name="line-190"></a>
-<a name="line-191"></a><span class="cp">#endif </span><span class="c1">// InciterLuaParser_h</span>
+<a name="line-151"></a>    <span class="k">if</span> <span class="p">(</span><span class="n">boxpre</span> <span class="o">&gt;</span> <span class="mf">0.0</span><span class="p">)</span> <span class="p">{</span>
+<a name="line-152"></a>      <span class="n">pr</span> <span class="o">=</span> <span class="n">boxpre</span><span class="p">;</span>
+<a name="line-153"></a>    <span class="p">}</span>
+<a name="line-154"></a>    <span class="k">if</span> <span class="p">(</span><span class="n">boxene</span> <span class="o">&gt;</span> <span class="mf">0.0</span><span class="p">)</span> <span class="p">{</span>
+<a name="line-155"></a>      <span class="n">Throw</span><span class="p">(</span><span class="s">&quot;IC-box with specified energy not set up for multimat&quot;</span><span class="p">);</span>
+<a name="line-156"></a>    <span class="p">}</span>
+<a name="line-157"></a>  <span class="p">}</span>
+<a name="line-158"></a>  <span class="c1">// bulk density</span>
+<a name="line-159"></a>  <span class="k">for</span> <span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="n">k</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">k</span><span class="o">&lt;</span><span class="n">nmat</span><span class="p">;</span> <span class="o">++</span><span class="n">k</span><span class="p">)</span> <span class="n">rbulk</span> <span class="o">+=</span> <span class="n">s</span><span class="p">[</span><span class="n">volfracIdx</span><span class="p">(</span><span class="n">nmat</span><span class="p">,</span><span class="n">k</span><span class="p">)]</span><span class="o">*</span><span class="n">rhok</span><span class="p">[</span><span class="n">k</span><span class="p">];</span>
+<a name="line-160"></a>
+<a name="line-161"></a>  <span class="c1">// [II] Finally initialize the solution vector</span>
+<a name="line-162"></a>  <span class="k">for</span> <span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="n">k</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">k</span><span class="o">&lt;</span><span class="n">nmat</span><span class="p">;</span> <span class="o">++</span><span class="n">k</span><span class="p">)</span> <span class="p">{</span>
+<a name="line-163"></a>    <span class="c1">// partial density</span>
+<a name="line-164"></a>    <span class="n">s</span><span class="p">[</span><span class="n">densityIdx</span><span class="p">(</span><span class="n">nmat</span><span class="p">,</span><span class="n">k</span><span class="p">)]</span> <span class="o">=</span> <span class="n">s</span><span class="p">[</span><span class="n">volfracIdx</span><span class="p">(</span><span class="n">nmat</span><span class="p">,</span><span class="n">k</span><span class="p">)]</span> <span class="o">*</span> <span class="n">rhok</span><span class="p">[</span><span class="n">k</span><span class="p">];</span>
+<a name="line-165"></a>    <span class="c1">// total specific energy</span>
+<a name="line-166"></a>    <span class="k">if</span> <span class="p">(</span><span class="n">boxmas</span> <span class="o">&gt;</span> <span class="mf">0.0</span> <span class="o">&amp;&amp;</span> <span class="n">k</span> <span class="o">==</span> <span class="n">boxmatid</span> <span class="o">&amp;&amp;</span>
+<a name="line-167"></a>      <span class="n">initiate</span> <span class="o">==</span> <span class="n">ctr</span><span class="o">::</span><span class="n">InitiateType</span><span class="o">::</span><span class="n">IMPULSE</span><span class="p">)</span> <span class="p">{</span>
+<a name="line-168"></a>      <span class="n">s</span><span class="p">[</span><span class="n">energyIdx</span><span class="p">(</span><span class="n">nmat</span><span class="p">,</span><span class="n">k</span><span class="p">)]</span> <span class="o">=</span> <span class="n">s</span><span class="p">[</span><span class="n">volfracIdx</span><span class="p">(</span><span class="n">nmat</span><span class="p">,</span><span class="n">k</span><span class="p">)]</span> <span class="o">*</span> <span class="n">rhok</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">*</span> <span class="n">spi</span><span class="p">;</span>
+<a name="line-169"></a>    <span class="p">}</span>
+<a name="line-170"></a>    <span class="k">else</span> <span class="p">{</span>
+<a name="line-171"></a>      <span class="c1">// TEMP: Eventually we would need to initialize gk from control file</span>
+<a name="line-172"></a>      <span class="n">std</span><span class="o">::</span><span class="n">array</span><span class="o">&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">array</span><span class="o">&lt;</span> <span class="n">tk</span><span class="o">::</span><span class="n">real</span><span class="p">,</span> <span class="mi">3</span> <span class="o">&gt;</span><span class="p">,</span> <span class="mi">3</span> <span class="o">&gt;</span> <span class="n">gk</span><span class="p">;</span>
+<a name="line-173"></a>      <span class="k">if</span> <span class="p">(</span><span class="n">solidx</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+<a name="line-174"></a>        <span class="k">for</span> <span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">i</span><span class="o">&lt;</span><span class="mi">3</span><span class="p">;</span> <span class="o">++</span><span class="n">i</span><span class="p">)</span> <span class="p">{</span>
+<a name="line-175"></a>          <span class="k">for</span> <span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="n">j</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">j</span><span class="o">&lt;</span><span class="mi">3</span><span class="p">;</span> <span class="o">++</span><span class="n">j</span><span class="p">)</span> <span class="p">{</span>
+<a name="line-176"></a>            <span class="k">if</span> <span class="p">(</span><span class="n">i</span><span class="o">==</span><span class="n">j</span><span class="p">)</span> <span class="n">gk</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">;</span>
+<a name="line-177"></a>            <span class="k">else</span> <span class="n">gk</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">;</span>
+<a name="line-178"></a>            <span class="n">s</span><span class="p">[</span><span class="n">deformIdx</span><span class="p">(</span><span class="n">nmat</span><span class="p">,</span><span class="n">solidx</span><span class="p">[</span><span class="n">k</span><span class="p">],</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">)]</span> <span class="o">=</span> <span class="n">gk</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">];</span>
+<a name="line-179"></a>          <span class="p">}</span>
+<a name="line-180"></a>        <span class="p">}</span>
+<a name="line-181"></a>      <span class="p">}</span>
+<a name="line-182"></a>      <span class="k">else</span> <span class="p">{</span>
+<a name="line-183"></a>        <span class="n">gk</span> <span class="o">=</span> <span class="p">{{}};</span>
+<a name="line-184"></a>      <span class="p">}</span>
+<a name="line-185"></a>      <span class="n">s</span><span class="p">[</span><span class="n">energyIdx</span><span class="p">(</span><span class="n">nmat</span><span class="p">,</span><span class="n">k</span><span class="p">)]</span> <span class="o">=</span> <span class="n">s</span><span class="p">[</span><span class="n">volfracIdx</span><span class="p">(</span><span class="n">nmat</span><span class="p">,</span><span class="n">k</span><span class="p">)]</span> <span class="o">*</span>
+<a name="line-186"></a>        <span class="n">mat_blk</span><span class="p">[</span><span class="n">k</span><span class="p">].</span><span class="n">compute</span><span class="o">&lt;</span> <span class="n">EOS</span><span class="o">::</span><span class="n">totalenergy</span> <span class="o">&gt;</span><span class="p">(</span> <span class="n">rhok</span><span class="p">[</span><span class="n">k</span><span class="p">],</span> <span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">pr</span><span class="p">,</span> <span class="n">gk</span> <span class="p">);</span>
+<a name="line-187"></a>    <span class="p">}</span>
+<a name="line-188"></a>  <span class="p">}</span>
+<a name="line-189"></a>  <span class="c1">// bulk momentum</span>
+<a name="line-190"></a>  <span class="n">s</span><span class="p">[</span><span class="n">momentumIdx</span><span class="p">(</span><span class="n">nmat</span><span class="p">,</span><span class="mi">0</span><span class="p">)]</span> <span class="o">=</span> <span class="n">rbulk</span> <span class="o">*</span> <span class="n">u</span><span class="p">;</span>
+<a name="line-191"></a>  <span class="n">s</span><span class="p">[</span><span class="n">momentumIdx</span><span class="p">(</span><span class="n">nmat</span><span class="p">,</span><span class="mi">1</span><span class="p">)]</span> <span class="o">=</span> <span class="n">rbulk</span> <span class="o">*</span> <span class="n">v</span><span class="p">;</span>
+<a name="line-192"></a>  <span class="n">s</span><span class="p">[</span><span class="n">momentumIdx</span><span class="p">(</span><span class="n">nmat</span><span class="p">,</span><span class="mi">2</span><span class="p">)]</span> <span class="o">=</span> <span class="n">rbulk</span> <span class="o">*</span> <span class="n">w</span><span class="p">;</span>
+<a name="line-193"></a><span class="p">}</span>
+<a name="line-194"></a>
+<a name="line-195"></a><span class="p">}</span> <span class="c1">//inciter::</span>
+<a name="line-196"></a>
+<a name="line-197"></a><span class="cp">#endif </span><span class="c1">// MultiMatBoxInitialization_h</span>
 </pre></div>
 </td></tr></table>
       </div> <!-- /.wrapper -->
