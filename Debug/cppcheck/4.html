@@ -152,12 +152,12 @@ span.linenos.special { color: #000000; background-color: #ffffc0; padding: 0 5px
   </head>
   <body>
     <div id="header" class="header">
-      <h1>Cppcheck report - [<a href=https://github.com/quinoacomputing/quinoa/commit/-128-NOTFOUND>-128-NOTFOUND</a>]: /tmp/TeamCity-2/work/5ad443c8abe7fc0a/src/Inciter/DiagReducer.cpp</h1>
+      <h1>Cppcheck report - [<a href=https://github.com/quinoacomputing/quinoa/commit/-128-NOTFOUND>-128-NOTFOUND</a>]: /tmp/TeamCity-3/work/5ad443c8abe7fc0a/src/IO/UGRIDMeshReader.cpp</h1>
     </div>
     <div class="wrapper">
       <div id="menu">
-       <p id="filename"><a href="index.html">Defects:</a> DiagReducer.cpp</p>
-<a href="4.html#line-72"> uninitvar 72</a><a href="4.html#line-73"> uninitvar 73</a><a href="4.html#line-81"> uninitvar 81</a><a href="4.html#line-82"> uninitvar 82</a><a href="4.html#line-85"> uninitvar 85</a><a href="4.html#line-85"> unreadVariable 85</a><a href="4.html#line-86"> uninitvar 86</a><a href="4.html#line-86"> unreadVariable 86</a><a href="4.html#line-91"> unsignedLessThanZero 91</a>
+       <p id="filename"><a href="index.html">Defects:</a> UGRIDMeshReader.cpp</p>
+<a href="4.html#line-35"> unusedVariable 35</a>
     </div>
     <div id="content">
 <table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>  1
@@ -278,125 +278,151 @@ span.linenos.special { color: #000000; background-color: #ffffc0; padding: 0 5px
 116
 117
 118
-119</pre></div></td><td class="code"><div class="highlight"><pre><span></span><a name="line-1"></a><span class="c1">// *****************************************************************************</span>
+119
+120
+121
+122
+123
+124
+125
+126
+127
+128
+129
+130
+131
+132</pre></div></td><td class="code"><div class="highlight"><pre><span></span><a name="line-1"></a><span class="c1">// *****************************************************************************</span>
 <a name="line-2"></a><span class="cm">/*!</span>
-<a name="line-3"></a><span class="cm">  \file      src/Inciter/DiagReducer.cpp</span>
+<a name="line-3"></a><span class="cm">  \file      src/IO/UGRIDMeshReader.cpp</span>
 <a name="line-4"></a><span class="cm">  \copyright 2012-2015 J. Bakosi,</span>
 <a name="line-5"></a><span class="cm">             2016-2018 Los Alamos National Security, LLC.,</span>
 <a name="line-6"></a><span class="cm">             2019-2021 Triad National Security, LLC.</span>
 <a name="line-7"></a><span class="cm">             All rights reserved. See the LICENSE file for details.</span>
-<a name="line-8"></a><span class="cm">  \brief     Custom Charm++ reducer for merging std::vectors across PEs</span>
-<a name="line-9"></a><span class="cm">  \details   Custom Charm++ reducer for merging std::vectors across PEs.</span>
-<a name="line-10"></a><span class="cm">*/</span>
-<a name="line-11"></a><span class="c1">// *****************************************************************************</span>
-<a name="line-12"></a>
-<a name="line-13"></a><span class="cp">#include</span> <span class="cpf">&lt;stddef.h&gt;</span><span class="cp"></span>
-<a name="line-14"></a><span class="cp">#include</span> <span class="cpf">&lt;type_traits&gt;</span><span class="cp"></span>
-<a name="line-15"></a><span class="cp">#include</span> <span class="cpf">&lt;memory&gt;</span><span class="cp"></span>
-<a name="line-16"></a>
-<a name="line-17"></a><span class="cp">#include</span> <span class="cpf">&quot;DiagReducer.hpp&quot;</span><span class="cp"></span>
-<a name="line-18"></a><span class="cp">#include</span> <span class="cpf">&quot;Diagnostics.hpp&quot;</span><span class="cp"></span>
-<a name="line-19"></a><span class="cp">#include</span> <span class="cpf">&quot;Exception.hpp&quot;</span><span class="cp"></span>
+<a name="line-8"></a><span class="cm">  \brief     UGRID mesh reader class declaration</span>
+<a name="line-9"></a><span class="cm">  \details   UGRID mesh reader class declaration. Mesh reader facilitating</span>
+<a name="line-10"></a><span class="cm">             reading a mesh from a simple text file used by NASA.</span>
+<a name="line-11"></a><span class="cm">  \see       http://www.simcenter.msstate.edu/software/downloads/doc/ug_io/3d_grid_file_type_ugrid.html, http://www.simcenter.msstate.edu/software/downloads/doc/aflr3/aflr3_io_summary.html</span>
+<a name="line-12"></a><span class="cm">*/</span>
+<a name="line-13"></a><span class="c1">// *****************************************************************************</span>
+<a name="line-14"></a>
+<a name="line-15"></a><span class="cp">#include</span> <span class="cpf">&lt;array&gt;</span><span class="cp"></span>
+<a name="line-16"></a><span class="cp">#include</span> <span class="cpf">&lt;istream&gt;</span><span class="cp"></span>
+<a name="line-17"></a><span class="cp">#include</span> <span class="cpf">&lt;string&gt;</span><span class="cp"></span>
+<a name="line-18"></a><span class="cp">#include</span> <span class="cpf">&lt;vector&gt;</span><span class="cp"></span>
+<a name="line-19"></a><span class="cp">#include</span> <span class="cpf">&lt;cstddef&gt;</span><span class="cp"></span>
 <a name="line-20"></a>
-<a name="line-21"></a><span class="k">namespace</span> <span class="n">inciter</span> <span class="p">{</span>
-<a name="line-22"></a>
-<a name="line-23"></a><span class="n">std</span><span class="o">::</span><span class="n">pair</span><span class="o">&lt;</span> <span class="kt">int</span><span class="p">,</span> <span class="n">std</span><span class="o">::</span><span class="n">unique_ptr</span><span class="o">&lt;</span><span class="kt">char</span><span class="p">[]</span><span class="o">&gt;</span> <span class="o">&gt;</span>
-<a name="line-24"></a><span class="n">serialize</span><span class="p">(</span> <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="n">meshid</span><span class="p">,</span>
-<a name="line-25"></a>           <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="n">ncomp</span><span class="p">,</span>
-<a name="line-26"></a>           <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span> <span class="n">tk</span><span class="o">::</span><span class="n">real</span> <span class="o">&gt;</span> <span class="o">&gt;&amp;</span> <span class="n">d</span> <span class="p">)</span>
-<a name="line-27"></a><span class="c1">// *****************************************************************************</span>
-<a name="line-28"></a><span class="c1">// Serialize std::vectors to raw memory stream</span>
-<a name="line-29"></a><span class="c1">//! \param[in] meshid Mesh ID</span>
-<a name="line-30"></a><span class="c1">//! \param[in] ncomp Number of scalar components being solved</span>
-<a name="line-31"></a><span class="c1">//! \param[in] d Diagnostics vector of vectors (of eq components)</span>
-<a name="line-32"></a><span class="c1">//! \return Pair of the length and the raw stream containing the serialized</span>
-<a name="line-33"></a><span class="c1">//!   vectors</span>
-<a name="line-34"></a><span class="c1">// *****************************************************************************</span>
-<a name="line-35"></a><span class="p">{</span>
-<a name="line-36"></a>  <span class="c1">// Prepare for serializing diagnostics to a raw binary stream, compute size</span>
-<a name="line-37"></a>  <span class="n">PUP</span><span class="o">::</span><span class="n">sizer</span> <span class="n">sizer</span><span class="p">;</span>
-<a name="line-38"></a>  <span class="n">sizer</span> <span class="o">|</span> <span class="n">meshid</span><span class="p">;</span>
-<a name="line-39"></a>  <span class="n">sizer</span> <span class="o">|</span> <span class="n">ncomp</span><span class="p">;</span>
-<a name="line-40"></a>  <span class="n">sizer</span> <span class="o">|</span> <span class="k">const_cast</span><span class="o">&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span> <span class="n">tk</span><span class="o">::</span><span class="n">real</span> <span class="o">&gt;</span> <span class="o">&gt;&amp;</span> <span class="o">&gt;</span><span class="p">(</span> <span class="n">d</span> <span class="p">);</span>
-<a name="line-41"></a>
-<a name="line-42"></a>  <span class="c1">// Create raw character stream to store the serialized vectors</span>
-<a name="line-43"></a>  <span class="n">std</span><span class="o">::</span><span class="n">unique_ptr</span><span class="o">&lt;</span><span class="kt">char</span><span class="p">[]</span><span class="o">&gt;</span> <span class="n">flatData</span> <span class="o">=</span> <span class="n">std</span><span class="o">::</span><span class="n">make_unique</span><span class="o">&lt;</span><span class="kt">char</span><span class="p">[]</span><span class="o">&gt;</span><span class="p">(</span> <span class="n">sizer</span><span class="p">.</span><span class="n">size</span><span class="p">()</span> <span class="p">);</span>
-<a name="line-44"></a>
-<a name="line-45"></a>  <span class="c1">// Serialize vector, each message will contain a vector</span>
-<a name="line-46"></a>  <span class="n">PUP</span><span class="o">::</span><span class="n">toMem</span> <span class="n">packer</span><span class="p">(</span> <span class="n">flatData</span><span class="p">.</span><span class="n">get</span><span class="p">()</span> <span class="p">);</span>
-<a name="line-47"></a>  <span class="n">packer</span> <span class="o">|</span> <span class="n">meshid</span><span class="p">;</span>
-<a name="line-48"></a>  <span class="n">packer</span> <span class="o">|</span> <span class="n">ncomp</span><span class="p">;</span>
-<a name="line-49"></a>  <span class="n">packer</span> <span class="o">|</span> <span class="k">const_cast</span><span class="o">&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span> <span class="n">tk</span><span class="o">::</span><span class="n">real</span> <span class="o">&gt;</span> <span class="o">&gt;&amp;</span> <span class="o">&gt;</span><span class="p">(</span> <span class="n">d</span> <span class="p">);</span>
-<a name="line-50"></a>
-<a name="line-51"></a>  <span class="c1">// Return size of and raw stream</span>
-<a name="line-52"></a>  <span class="k">return</span> <span class="p">{</span> <span class="n">sizer</span><span class="p">.</span><span class="n">size</span><span class="p">(),</span> <span class="n">std</span><span class="o">::</span><span class="n">move</span><span class="p">(</span><span class="n">flatData</span><span class="p">)</span> <span class="p">};</span>
-<a name="line-53"></a><span class="p">}</span>
-<a name="line-54"></a>
-<a name="line-55"></a><span class="n">CkReductionMsg</span><span class="o">*</span>
-<a name="line-56"></a><span class="n">mergeDiag</span><span class="p">(</span> <span class="kt">int</span> <span class="n">nmsg</span><span class="p">,</span> <span class="n">CkReductionMsg</span> <span class="o">**</span><span class="n">msgs</span> <span class="p">)</span>
-<a name="line-57"></a><span class="c1">// *****************************************************************************</span>
-<a name="line-58"></a><span class="c1">// Charm++ custom reducer for merging diagnostics during reduction across PEs</span>
-<a name="line-59"></a><span class="c1">//! \param[in] nmsg Number of messages in msgs</span>
-<a name="line-60"></a><span class="c1">//! \param[in] msgs Charm++ reduction message containing the serialized</span>
-<a name="line-61"></a><span class="c1">//!   diagnostics</span>
-<a name="line-62"></a><span class="c1">//! \return Aggregated diagnostics built for further aggregation if needed</span>
-<a name="line-63"></a><span class="c1">// *****************************************************************************</span>
-<a name="line-64"></a><span class="p">{</span>
-<a name="line-65"></a>  <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="n">meshid</span><span class="p">,</span> <span class="n">ncomp</span><span class="p">;</span>
-<a name="line-66"></a>  <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span> <span class="n">tk</span><span class="o">::</span><span class="n">real</span> <span class="o">&gt;</span> <span class="o">&gt;</span> <span class="n">v</span><span class="p">;</span>
-<a name="line-67"></a>
-<a name="line-68"></a>  <span class="c1">// Create PUP deserializer based on message passed in</span>
-<a name="line-69"></a>  <span class="n">PUP</span><span class="o">::</span><span class="n">fromMem</span> <span class="n">creator</span><span class="p">(</span> <span class="n">msgs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">-&gt;</span><span class="n">getData</span><span class="p">()</span> <span class="p">);</span>
-<a name="line-70"></a>
-<a name="line-71"></a>  <span class="c1">// Deserialize vector from raw stream</span>
-<a name="line-72"></a><span class="hll">  <span class="n">creator</span> <span class="o">|</span> <span class="n">meshid</span><span class="p">;</span><span class="error2">&lt;--- Uninitialized variable: meshid</span>
-</span><a name="line-73"></a><span class="hll">  <span class="n">creator</span> <span class="o">|</span> <span class="n">ncomp</span><span class="p">;</span><span class="error2">&lt;--- Uninitialized variable: ncomp</span>
-</span><a name="line-74"></a>  <span class="n">creator</span> <span class="o">|</span> <span class="n">v</span><span class="p">;</span>
-<a name="line-75"></a>
-<a name="line-76"></a>  <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">m</span><span class="o">=</span><span class="mi">1</span><span class="p">;</span> <span class="n">m</span><span class="o">&lt;</span><span class="n">nmsg</span><span class="p">;</span> <span class="o">++</span><span class="n">m</span><span class="p">)</span> <span class="p">{</span>
-<a name="line-77"></a>    <span class="c1">// Unpack vector</span>
-<a name="line-78"></a>    <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="n">mid</span><span class="p">,</span> <span class="n">nc</span><span class="p">;</span>
-<a name="line-79"></a>    <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span> <span class="n">tk</span><span class="o">::</span><span class="n">real</span> <span class="o">&gt;</span> <span class="o">&gt;</span> <span class="n">w</span><span class="p">;</span>
-<a name="line-80"></a>    <span class="n">PUP</span><span class="o">::</span><span class="n">fromMem</span> <span class="n">curCreator</span><span class="p">(</span> <span class="n">msgs</span><span class="p">[</span><span class="n">m</span><span class="p">]</span><span class="o">-&gt;</span><span class="n">getData</span><span class="p">()</span> <span class="p">);</span>
-<a name="line-81"></a><span class="hll">    <span class="n">curCreator</span> <span class="o">|</span> <span class="n">mid</span><span class="p">;</span><span class="error2">&lt;--- Uninitialized variable: mid</span>
-</span><a name="line-82"></a><span class="hll">    <span class="n">curCreator</span> <span class="o">|</span> <span class="n">nc</span><span class="p">;</span><span class="error2">&lt;--- Uninitialized variable: nc</span>
-</span><a name="line-83"></a>    <span class="n">curCreator</span> <span class="o">|</span> <span class="n">w</span><span class="p">;</span>
-<a name="line-84"></a>    <span class="c1">// Aggregate diagnostics vector</span>
-<a name="line-85"></a><span class="hll">    <span class="n">meshid</span> <span class="o">=</span> <span class="n">mid</span><span class="p">;</span><span class="error2">&lt;--- Uninitialized variable: mid</span><span class="error2">&lt;--- Variable 'meshid' is assigned a value that is never used.</span>
-</span><a name="line-86"></a><span class="hll">    <span class="n">ncomp</span> <span class="o">=</span> <span class="n">nc</span><span class="p">;</span><span class="error2">&lt;--- Uninitialized variable: nc</span><span class="error2">&lt;--- Variable 'ncomp' is assigned a value that is never used.</span>
-</span><a name="line-87"></a>    <span class="n">Assert</span><span class="p">(</span> <span class="n">v</span><span class="p">.</span><span class="n">size</span><span class="p">()</span> <span class="o">==</span> <span class="n">w</span><span class="p">.</span><span class="n">size</span><span class="p">(),</span>
-<a name="line-88"></a>            <span class="s">&quot;Size mismatch during diagnostics aggregation&quot;</span> <span class="p">);</span>
-<a name="line-89"></a>    <span class="n">Assert</span><span class="p">(</span> <span class="n">v</span><span class="p">.</span><span class="n">size</span><span class="p">()</span> <span class="o">==</span> <span class="n">inciter</span><span class="o">::</span><span class="n">NUMDIAG</span><span class="p">,</span>
-<a name="line-90"></a>            <span class="s">&quot;Size mismatch during diagnostics aggregation&quot;</span> <span class="p">);</span>
-<a name="line-91"></a><span class="hll">    <span class="k">for</span> <span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">i</span><span class="o">&lt;</span><span class="n">v</span><span class="p">.</span><span class="n">size</span><span class="p">();</span> <span class="o">++</span><span class="n">i</span><span class="p">)</span><span class="error2">&lt;--- Unsigned less than zero</span>
-</span><a name="line-92"></a>      <span class="n">Assert</span><span class="p">(</span> <span class="n">v</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">size</span><span class="p">()</span> <span class="o">==</span> <span class="n">w</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">size</span><span class="p">(),</span>
-<a name="line-93"></a>              <span class="s">&quot;Size mismatch during diagnostics aggregation&quot;</span> <span class="p">);</span>
-<a name="line-94"></a>    <span class="c1">// Apply diagnostics aggregation policy</span>
-<a name="line-95"></a>    <span class="c1">// Sum for L2 normal of the numerical solution for all scalar components</span>
-<a name="line-96"></a>    <span class="k">for</span> <span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">i</span><span class="o">&lt;</span><span class="n">v</span><span class="p">[</span><span class="n">L2SOL</span><span class="p">].</span><span class="n">size</span><span class="p">();</span> <span class="o">++</span><span class="n">i</span><span class="p">)</span> <span class="n">v</span><span class="p">[</span><span class="n">L2SOL</span><span class="p">][</span><span class="n">i</span><span class="p">]</span> <span class="o">+=</span> <span class="n">w</span><span class="p">[</span><span class="n">L2SOL</span><span class="p">][</span><span class="n">i</span><span class="p">];</span>
-<a name="line-97"></a>    <span class="c1">// Sum for the L2 norm of the numerical - analytical solution for all comps</span>
-<a name="line-98"></a>    <span class="k">for</span> <span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">i</span><span class="o">&lt;</span><span class="n">v</span><span class="p">[</span><span class="n">L2ERR</span><span class="p">].</span><span class="n">size</span><span class="p">();</span> <span class="o">++</span><span class="n">i</span><span class="p">)</span> <span class="n">v</span><span class="p">[</span><span class="n">L2ERR</span><span class="p">][</span><span class="n">i</span><span class="p">]</span> <span class="o">+=</span> <span class="n">w</span><span class="p">[</span><span class="n">L2ERR</span><span class="p">][</span><span class="n">i</span><span class="p">];</span>
-<a name="line-99"></a>    <span class="c1">// Sum for the L2 norm of the residual of all components</span>
-<a name="line-100"></a>    <span class="k">for</span> <span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">i</span><span class="o">&lt;</span><span class="n">v</span><span class="p">[</span><span class="n">L2RES</span><span class="p">].</span><span class="n">size</span><span class="p">();</span> <span class="o">++</span><span class="n">i</span><span class="p">)</span> <span class="n">v</span><span class="p">[</span><span class="n">L2RES</span><span class="p">][</span><span class="n">i</span><span class="p">]</span> <span class="o">+=</span> <span class="n">w</span><span class="p">[</span><span class="n">L2RES</span><span class="p">][</span><span class="n">i</span><span class="p">];</span>
-<a name="line-101"></a>    <span class="c1">// Max for the Linf norm of the numerical - analytical solution for all comp</span>
-<a name="line-102"></a>    <span class="k">for</span> <span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">i</span><span class="o">&lt;</span><span class="n">v</span><span class="p">[</span><span class="n">LINFERR</span><span class="p">].</span><span class="n">size</span><span class="p">();</span> <span class="o">++</span><span class="n">i</span><span class="p">)</span>
-<a name="line-103"></a>      <span class="k">if</span> <span class="p">(</span><span class="n">w</span><span class="p">[</span><span class="n">LINFERR</span><span class="p">][</span><span class="n">i</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">v</span><span class="p">[</span><span class="n">LINFERR</span><span class="p">][</span><span class="n">i</span><span class="p">])</span> <span class="n">v</span><span class="p">[</span><span class="n">LINFERR</span><span class="p">][</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">w</span><span class="p">[</span><span class="n">LINFERR</span><span class="p">][</span><span class="n">i</span><span class="p">];</span>
-<a name="line-104"></a>    <span class="c1">// Sum of the total energy over the entire domain</span>
-<a name="line-105"></a>    <span class="n">v</span><span class="p">[</span><span class="n">TOTALSOL</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">+=</span> <span class="n">w</span><span class="p">[</span><span class="n">TOTALSOL</span><span class="p">][</span><span class="mi">0</span><span class="p">];</span>
-<a name="line-106"></a>    <span class="c1">// Copy ITER, TIME, DT</span>
-<a name="line-107"></a>    <span class="k">for</span> <span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="n">j</span><span class="o">=</span><span class="n">v</span><span class="p">.</span><span class="n">size</span><span class="p">()</span><span class="mi">-3</span><span class="p">;</span> <span class="n">j</span><span class="o">&lt;</span><span class="n">v</span><span class="p">.</span><span class="n">size</span><span class="p">();</span> <span class="o">++</span><span class="n">j</span><span class="p">)</span>
-<a name="line-108"></a>      <span class="k">for</span> <span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">i</span><span class="o">&lt;</span><span class="n">v</span><span class="p">[</span><span class="n">j</span><span class="p">].</span><span class="n">size</span><span class="p">();</span> <span class="o">++</span><span class="n">i</span><span class="p">)</span>
-<a name="line-109"></a>        <span class="n">v</span><span class="p">[</span><span class="n">j</span><span class="p">][</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">w</span><span class="p">[</span><span class="n">j</span><span class="p">][</span><span class="n">i</span><span class="p">];</span>
-<a name="line-110"></a>  <span class="p">}</span>
-<a name="line-111"></a>
-<a name="line-112"></a>  <span class="c1">// Serialize concatenated diagnostics vector to raw stream</span>
-<a name="line-113"></a>  <span class="k">auto</span> <span class="n">stream</span> <span class="o">=</span> <span class="n">serialize</span><span class="p">(</span> <span class="n">meshid</span><span class="p">,</span> <span class="n">ncomp</span><span class="p">,</span> <span class="n">v</span> <span class="p">);</span>
-<a name="line-114"></a>
-<a name="line-115"></a>  <span class="c1">// Forward serialized diagnostics</span>
-<a name="line-116"></a>  <span class="k">return</span> <span class="n">CkReductionMsg</span><span class="o">::</span><span class="n">buildNew</span><span class="p">(</span> <span class="n">stream</span><span class="p">.</span><span class="n">first</span><span class="p">,</span> <span class="n">stream</span><span class="p">.</span><span class="n">second</span><span class="p">.</span><span class="n">get</span><span class="p">()</span> <span class="p">);</span>
-<a name="line-117"></a><span class="p">}</span>
+<a name="line-21"></a><span class="cp">#include</span> <span class="cpf">&quot;Types.hpp&quot;</span><span class="cp"></span>
+<a name="line-22"></a><span class="cp">#include</span> <span class="cpf">&quot;Exception.hpp&quot;</span><span class="cp"></span>
+<a name="line-23"></a><span class="cp">#include</span> <span class="cpf">&quot;UnsMesh.hpp&quot;</span><span class="cp"></span>
+<a name="line-24"></a><span class="cp">#include</span> <span class="cpf">&quot;Reorder.hpp&quot;</span><span class="cp"></span>
+<a name="line-25"></a><span class="cp">#include</span> <span class="cpf">&quot;UGRIDMeshReader.hpp&quot;</span><span class="cp"></span>
+<a name="line-26"></a>
+<a name="line-27"></a><span class="k">using</span> <span class="n">tk</span><span class="o">::</span><span class="n">UGRIDMeshReader</span><span class="p">;</span>
+<a name="line-28"></a>
+<a name="line-29"></a><span class="kt">void</span>
+<a name="line-30"></a><span class="n">UGRIDMeshReader</span><span class="o">::</span><span class="n">readHeader</span><span class="p">()</span>
+<a name="line-31"></a><span class="c1">// *****************************************************************************</span>
+<a name="line-32"></a><span class="c1">//  Read UGRID mesh header</span>
+<a name="line-33"></a><span class="c1">// *****************************************************************************</span>
+<a name="line-34"></a><span class="p">{</span>
+<a name="line-35"></a><span class="hll">  <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="n">s</span><span class="p">;</span><span class="error2">&lt;--- Unused variable: s</span>
+</span><a name="line-36"></a>
+<a name="line-37"></a>  <span class="c1">// Number_of_Nodes</span>
+<a name="line-38"></a>  <span class="n">m_inFile</span> <span class="o">&gt;&gt;</span> <span class="n">m_nnode</span><span class="p">;</span>
+<a name="line-39"></a>
+<a name="line-40"></a>  <span class="c1">// Number_of_Surf_Trias</span>
+<a name="line-41"></a>  <span class="n">m_inFile</span> <span class="o">&gt;&gt;</span> <span class="n">m_ntri</span><span class="p">;</span>
+<a name="line-42"></a>
+<a name="line-43"></a>  <span class="c1">// Number_of_Surf_Quads</span>
+<a name="line-44"></a>  <span class="kt">int</span> <span class="n">nquad</span><span class="p">;</span>
+<a name="line-45"></a>  <span class="n">m_inFile</span> <span class="o">&gt;&gt;</span> <span class="n">nquad</span><span class="p">;</span>
+<a name="line-46"></a>
+<a name="line-47"></a>  <span class="c1">// Number_of_Vol_Tets</span>
+<a name="line-48"></a>  <span class="n">m_inFile</span> <span class="o">&gt;&gt;</span> <span class="n">m_ntet</span><span class="p">;</span>
+<a name="line-49"></a>
+<a name="line-50"></a>  <span class="c1">// Number_of_Vol_Pents_5</span>
+<a name="line-51"></a>  <span class="kt">int</span> <span class="n">pent5</span><span class="p">;</span>
+<a name="line-52"></a>  <span class="n">m_inFile</span> <span class="o">&gt;&gt;</span> <span class="n">pent5</span><span class="p">;</span>
+<a name="line-53"></a>
+<a name="line-54"></a>  <span class="c1">// Number_of_Vol_Pents_6</span>
+<a name="line-55"></a>  <span class="kt">int</span> <span class="n">pent6</span><span class="p">;</span>
+<a name="line-56"></a>  <span class="n">m_inFile</span> <span class="o">&gt;&gt;</span> <span class="n">pent6</span><span class="p">;</span>
+<a name="line-57"></a>
+<a name="line-58"></a>  <span class="c1">// Number_of_Vol_Hexs</span>
+<a name="line-59"></a>  <span class="kt">int</span> <span class="n">nhex</span><span class="p">;</span>
+<a name="line-60"></a>  <span class="n">m_inFile</span> <span class="o">&gt;&gt;</span> <span class="n">nhex</span><span class="p">;</span>
+<a name="line-61"></a><span class="p">}</span>
+<a name="line-62"></a>
+<a name="line-63"></a><span class="kt">void</span>
+<a name="line-64"></a><span class="n">UGRIDMeshReader</span><span class="o">::</span><span class="n">readMesh</span><span class="p">(</span> <span class="n">UnsMesh</span><span class="o">&amp;</span> <span class="n">mesh</span> <span class="p">)</span>
+<a name="line-65"></a><span class="c1">// *****************************************************************************</span>
+<a name="line-66"></a><span class="c1">//  Read UGRID mesh</span>
+<a name="line-67"></a><span class="c1">//! \param[in] mesh Unstructured mesh object</span>
+<a name="line-68"></a><span class="c1">// *****************************************************************************</span>
+<a name="line-69"></a><span class="p">{</span>
+<a name="line-70"></a>  <span class="c1">// Read header</span>
+<a name="line-71"></a>  <span class="n">readHeader</span><span class="p">();</span>
+<a name="line-72"></a>  <span class="c1">// Read nodes</span>
+<a name="line-73"></a>  <span class="n">readNodes</span><span class="p">(</span> <span class="n">mesh</span> <span class="p">);</span>
+<a name="line-74"></a>  <span class="c1">// Read elements</span>
+<a name="line-75"></a>  <span class="n">readElements</span><span class="p">(</span> <span class="n">mesh</span> <span class="p">);</span>
+<a name="line-76"></a><span class="p">}</span>
+<a name="line-77"></a>
+<a name="line-78"></a><span class="kt">void</span>
+<a name="line-79"></a><span class="n">UGRIDMeshReader</span><span class="o">::</span><span class="n">readNodes</span><span class="p">(</span> <span class="n">UnsMesh</span><span class="o">&amp;</span> <span class="n">mesh</span> <span class="p">)</span>
+<a name="line-80"></a><span class="c1">// *****************************************************************************</span>
+<a name="line-81"></a><span class="c1">//  Read nodes</span>
+<a name="line-82"></a><span class="c1">//! \param[in] mesh Unstructured mesh object</span>
+<a name="line-83"></a><span class="c1">// *****************************************************************************</span>
+<a name="line-84"></a><span class="p">{</span>
+<a name="line-85"></a>  <span class="c1">// Read in node coordinates: x-coord y-coord z-coord</span>
+<a name="line-86"></a>  <span class="k">for</span> <span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">i</span><span class="o">&lt;</span><span class="n">m_nnode</span><span class="p">;</span> <span class="o">++</span><span class="n">i</span><span class="p">)</span> <span class="p">{</span>
+<a name="line-87"></a>    <span class="n">tk</span><span class="o">::</span><span class="n">real</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">;</span>
+<a name="line-88"></a>    <span class="n">m_inFile</span> <span class="o">&gt;&gt;</span> <span class="n">x</span> <span class="o">&gt;&gt;</span> <span class="n">y</span> <span class="o">&gt;&gt;</span> <span class="n">z</span><span class="p">;</span>
+<a name="line-89"></a>    <span class="n">mesh</span><span class="p">.</span><span class="n">x</span><span class="p">().</span><span class="n">push_back</span><span class="p">(</span> <span class="n">x</span> <span class="p">);</span>
+<a name="line-90"></a>    <span class="n">mesh</span><span class="p">.</span><span class="n">y</span><span class="p">().</span><span class="n">push_back</span><span class="p">(</span> <span class="n">y</span> <span class="p">);</span>
+<a name="line-91"></a>    <span class="n">mesh</span><span class="p">.</span><span class="n">z</span><span class="p">().</span><span class="n">push_back</span><span class="p">(</span> <span class="n">z</span> <span class="p">);</span>
+<a name="line-92"></a>  <span class="p">}</span>
+<a name="line-93"></a><span class="p">}</span>
+<a name="line-94"></a>
+<a name="line-95"></a><span class="kt">void</span>
+<a name="line-96"></a><span class="n">UGRIDMeshReader</span><span class="o">::</span><span class="n">readElements</span><span class="p">(</span> <span class="n">UnsMesh</span><span class="o">&amp;</span> <span class="n">mesh</span> <span class="p">)</span>
+<a name="line-97"></a><span class="c1">// *****************************************************************************</span>
+<a name="line-98"></a><span class="c1">//  Read element connectivity</span>
+<a name="line-99"></a><span class="c1">//! \param[in] mesh Unstructured mesh object</span>
+<a name="line-100"></a><span class="c1">// *****************************************************************************</span>
+<a name="line-101"></a><span class="p">{</span>
+<a name="line-102"></a>  <span class="c1">// Read in triangle element connectivity</span>
+<a name="line-103"></a>  <span class="k">for</span> <span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">i</span><span class="o">&lt;</span><span class="n">m_ntri</span><span class="p">;</span> <span class="o">++</span><span class="n">i</span><span class="p">)</span> <span class="p">{</span>
+<a name="line-104"></a>    <span class="n">std</span><span class="o">::</span><span class="n">array</span><span class="o">&lt;</span> <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="p">,</span> <span class="mi">3</span> <span class="o">&gt;</span> <span class="n">n</span><span class="p">;</span>
+<a name="line-105"></a>    <span class="n">m_inFile</span> <span class="o">&gt;&gt;</span> <span class="n">n</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&gt;&gt;</span> <span class="n">n</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">&gt;&gt;</span> <span class="n">n</span><span class="p">[</span><span class="mi">2</span><span class="p">];</span>
+<a name="line-106"></a>    <span class="n">mesh</span><span class="p">.</span><span class="n">triinpoel</span><span class="p">().</span><span class="n">push_back</span><span class="p">(</span> <span class="n">n</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="p">);</span>
+<a name="line-107"></a>    <span class="n">mesh</span><span class="p">.</span><span class="n">triinpoel</span><span class="p">().</span><span class="n">push_back</span><span class="p">(</span> <span class="n">n</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="p">);</span>
+<a name="line-108"></a>    <span class="n">mesh</span><span class="p">.</span><span class="n">triinpoel</span><span class="p">().</span><span class="n">push_back</span><span class="p">(</span> <span class="n">n</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="p">);</span>
+<a name="line-109"></a>  <span class="p">}</span>
+<a name="line-110"></a>
+<a name="line-111"></a>  <span class="c1">// Read side sets of triangle elements</span>
+<a name="line-112"></a>  <span class="k">for</span> <span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">i</span><span class="o">&lt;</span><span class="n">m_ntri</span><span class="p">;</span> <span class="o">++</span><span class="n">i</span><span class="p">)</span> <span class="p">{</span>
+<a name="line-113"></a>    <span class="kt">int</span> <span class="n">setid</span><span class="p">;</span>
+<a name="line-114"></a>    <span class="n">m_inFile</span> <span class="o">&gt;&gt;</span> <span class="n">setid</span><span class="p">;</span>
+<a name="line-115"></a>    <span class="n">mesh</span><span class="p">.</span><span class="n">bface</span><span class="p">()[</span> <span class="n">setid</span> <span class="p">].</span><span class="n">push_back</span><span class="p">(</span> <span class="n">m_ntet</span> <span class="o">+</span> <span class="n">i</span> <span class="p">);</span>
+<a name="line-116"></a>    <span class="n">mesh</span><span class="p">.</span><span class="n">faceid</span><span class="p">()[</span> <span class="n">setid</span> <span class="p">].</span><span class="n">push_back</span><span class="p">(</span> <span class="mi">0</span> <span class="p">);</span>
+<a name="line-117"></a>  <span class="p">}</span>
 <a name="line-118"></a>
-<a name="line-119"></a><span class="p">}</span> <span class="c1">// inciter::</span>
+<a name="line-119"></a>  <span class="c1">// Read in tetrahedra element connectivity</span>
+<a name="line-120"></a>  <span class="k">for</span> <span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">i</span><span class="o">&lt;</span><span class="n">m_ntet</span><span class="p">;</span> <span class="o">++</span><span class="n">i</span><span class="p">)</span> <span class="p">{</span>
+<a name="line-121"></a>    <span class="n">std</span><span class="o">::</span><span class="n">array</span><span class="o">&lt;</span> <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="p">,</span> <span class="mi">4</span> <span class="o">&gt;</span> <span class="n">n</span><span class="p">;</span>
+<a name="line-122"></a>    <span class="n">m_inFile</span> <span class="o">&gt;&gt;</span> <span class="n">n</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&gt;&gt;</span> <span class="n">n</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">&gt;&gt;</span> <span class="n">n</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">&gt;&gt;</span> <span class="n">n</span><span class="p">[</span><span class="mi">3</span><span class="p">];</span>
+<a name="line-123"></a>    <span class="n">mesh</span><span class="p">.</span><span class="n">tetinpoel</span><span class="p">().</span><span class="n">push_back</span><span class="p">(</span> <span class="n">n</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="p">);</span>
+<a name="line-124"></a>    <span class="n">mesh</span><span class="p">.</span><span class="n">tetinpoel</span><span class="p">().</span><span class="n">push_back</span><span class="p">(</span> <span class="n">n</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="p">);</span>
+<a name="line-125"></a>    <span class="n">mesh</span><span class="p">.</span><span class="n">tetinpoel</span><span class="p">().</span><span class="n">push_back</span><span class="p">(</span> <span class="n">n</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="p">);</span>
+<a name="line-126"></a>    <span class="n">mesh</span><span class="p">.</span><span class="n">tetinpoel</span><span class="p">().</span><span class="n">push_back</span><span class="p">(</span> <span class="n">n</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="p">);</span>
+<a name="line-127"></a>  <span class="p">}</span>
+<a name="line-128"></a>
+<a name="line-129"></a>  <span class="c1">// Shift node IDs to start from zero</span>
+<a name="line-130"></a>  <span class="n">shiftToZero</span><span class="p">(</span> <span class="n">mesh</span><span class="p">.</span><span class="n">triinpoel</span><span class="p">()</span> <span class="p">);</span>
+<a name="line-131"></a>  <span class="n">shiftToZero</span><span class="p">(</span> <span class="n">mesh</span><span class="p">.</span><span class="n">tetinpoel</span><span class="p">()</span> <span class="p">);</span>
+<a name="line-132"></a><span class="p">}</span>
 </pre></div>
 </td></tr></table>
       </div> <!-- /.wrapper -->
