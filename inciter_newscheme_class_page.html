@@ -156,7 +156,9 @@
   <span class="n">m_bnormc</span><span class="p">(),</span>
   <span class="n">m_symbcnodes</span><span class="p">(),</span>
   <span class="n">m_farfieldbcnodes</span><span class="p">(),</span>
+  <span class="n">m_slipwallbcnodes</span><span class="p">(),</span>
   <span class="n">m_symbctri</span><span class="p">(),</span>
+  <span class="n">m_slipwallbctri</span><span class="p">(),</span>
   <span class="n">m_timedepbcnodes</span><span class="p">(),</span>
   <span class="n">m_timedepbcFn</span><span class="p">(),</span>
   <span class="n">m_stage</span><span class="p">(</span> <span class="mi">0</span> <span class="p">),</span>
@@ -248,14 +250,35 @@
   <span class="k">for</span> <span class="p">(</span><span class="k">const</span> <span class="k">auto</span><span class="o">&amp;</span> <span class="p">[</span><span class="n">s</span><span class="p">,</span><span class="n">nodes</span><span class="p">]</span> <span class="o">:</span> <span class="n">far</span><span class="p">)</span>
     <span class="n">m_farfieldbcnodes</span><span class="p">.</span><span class="n">insert</span><span class="p">(</span> <span class="n">begin</span><span class="p">(</span><span class="n">nodes</span><span class="p">),</span> <span class="n">end</span><span class="p">(</span><span class="n">nodes</span><span class="p">)</span> <span class="p">);</span>
 
-  <span class="c1">// If farfield BC is set on a node, will not also set symmetry BC</span>
-  <span class="k">for</span> <span class="p">(</span><span class="k">auto</span> <span class="nl">fn</span> <span class="p">:</span> <span class="n">m_farfieldbcnodes</span><span class="p">)</span> <span class="n">m_symbcnodes</span><span class="p">.</span><span class="n">erase</span><span class="p">(</span><span class="n">fn</span><span class="p">);</span>
+  <span class="c1">// Prepare unique set of slip wall BC nodes</span>
+  <span class="k">auto</span> <span class="n">slip</span> <span class="o">=</span> <span class="n">d</span><span class="o">-&gt;</span><span class="n">bcnodes</span><span class="o">&lt;</span> <span class="n">tag</span><span class="o">::</span><span class="n">slipwall</span> <span class="o">&gt;</span><span class="p">(</span> <span class="n">m_bface</span><span class="p">,</span> <span class="n">m_triinpoel</span> <span class="p">);</span>
+  <span class="k">for</span> <span class="p">(</span><span class="k">const</span> <span class="k">auto</span><span class="o">&amp;</span> <span class="p">[</span><span class="n">s</span><span class="p">,</span><span class="n">nodes</span><span class="p">]</span> <span class="o">:</span> <span class="n">slip</span><span class="p">)</span>
+    <span class="n">m_slipwallbcnodes</span><span class="p">.</span><span class="n">insert</span><span class="p">(</span> <span class="n">begin</span><span class="p">(</span><span class="n">nodes</span><span class="p">),</span> <span class="n">end</span><span class="p">(</span><span class="n">nodes</span><span class="p">)</span> <span class="p">);</span>
 
-  <span class="c1">// Prepare boundary nodes contiguously accessible from a triangle-face loop</span>
+  <span class="c1">// If farfield BC is set on a node, will not also set symmetry and slip BC</span>
+  <span class="k">for</span> <span class="p">(</span><span class="k">auto</span> <span class="nl">fn</span> <span class="p">:</span> <span class="n">m_farfieldbcnodes</span><span class="p">)</span> <span class="p">{</span>
+    <span class="n">m_symbcnodes</span><span class="p">.</span><span class="n">erase</span><span class="p">(</span><span class="n">fn</span><span class="p">);</span>
+    <span class="n">m_slipwallbcnodes</span><span class="p">.</span><span class="n">erase</span><span class="p">(</span><span class="n">fn</span><span class="p">);</span>
+  <span class="p">}</span>
+
+  <span class="c1">// If symmetry BC is set on a node, will not also set slip BC</span>
+  <span class="k">for</span> <span class="p">(</span><span class="k">auto</span> <span class="nl">fn</span> <span class="p">:</span> <span class="n">m_symbcnodes</span><span class="p">)</span> <span class="p">{</span>
+    <span class="n">m_slipwallbcnodes</span><span class="p">.</span><span class="n">erase</span><span class="p">(</span><span class="n">fn</span><span class="p">);</span>
+  <span class="p">}</span>
+
+  <span class="c1">// Prepare boundary nodes contiguously accessible from a triangle-face loop,</span>
+  <span class="c1">// which contain both symmetry and no slip walls</span>
   <span class="n">m_symbctri</span><span class="p">.</span><span class="n">resize</span><span class="p">(</span> <span class="n">m_triinpoel</span><span class="p">.</span><span class="n">size</span><span class="p">()</span><span class="o">/</span><span class="mi">3</span><span class="p">,</span> <span class="mi">0</span> <span class="p">);</span>
   <span class="k">for</span> <span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="n">e</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">e</span><span class="o">&lt;</span><span class="n">m_triinpoel</span><span class="p">.</span><span class="n">size</span><span class="p">()</span><span class="o">/</span><span class="mi">3</span><span class="p">;</span> <span class="o">++</span><span class="n">e</span><span class="p">)</span>
     <span class="k">if</span> <span class="p">(</span><span class="n">m_symbcnodes</span><span class="p">.</span><span class="n">find</span><span class="p">(</span><span class="n">m_triinpoel</span><span class="p">[</span><span class="n">e</span><span class="o">*</span><span class="mi">3</span><span class="o">+</span><span class="mi">0</span><span class="p">])</span> <span class="o">!=</span> <span class="n">end</span><span class="p">(</span><span class="n">m_symbcnodes</span><span class="p">))</span>
       <span class="n">m_symbctri</span><span class="p">[</span><span class="n">e</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+
+  <span class="c1">// Prepare the above for slip walls, which are needed for pressure integrals</span>
+  <span class="c1">// to obtain force on overset walls</span>
+  <span class="n">m_slipwallbctri</span><span class="p">.</span><span class="n">resize</span><span class="p">(</span> <span class="n">m_triinpoel</span><span class="p">.</span><span class="n">size</span><span class="p">()</span><span class="o">/</span><span class="mi">3</span><span class="p">,</span> <span class="mi">0</span> <span class="p">);</span>
+  <span class="k">for</span> <span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="n">e</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">e</span><span class="o">&lt;</span><span class="n">m_triinpoel</span><span class="p">.</span><span class="n">size</span><span class="p">()</span><span class="o">/</span><span class="mi">3</span><span class="p">;</span> <span class="o">++</span><span class="n">e</span><span class="p">)</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">m_slipwallbcnodes</span><span class="p">.</span><span class="n">find</span><span class="p">(</span><span class="n">m_triinpoel</span><span class="p">[</span><span class="n">e</span><span class="o">*</span><span class="mi">3</span><span class="o">+</span><span class="mi">0</span><span class="p">])</span> <span class="o">!=</span> <span class="n">end</span><span class="p">(</span><span class="n">m_slipwallbcnodes</span><span class="p">))</span>
+      <span class="n">m_slipwallbctri</span><span class="p">[</span><span class="n">e</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
 
   <span class="c1">// Prepare unique set of time dependent BC nodes</span>
   <span class="n">m_timedepbcnodes</span><span class="p">.</span><span class="n">clear</span><span class="p">();</span>
@@ -949,6 +972,10 @@
   <span class="c1">// Apply farfield BCs</span>
   <span class="n">g_cgpde</span><span class="p">[</span><span class="n">d</span><span class="o">-&gt;</span><span class="n">MeshId</span><span class="p">()].</span><span class="n">farfieldbc</span><span class="p">(</span> <span class="n">m_u</span><span class="p">,</span> <span class="n">coord</span><span class="p">,</span> <span class="n">m_bnorm</span><span class="p">,</span> <span class="n">m_farfieldbcnodes</span> <span class="p">);</span>
 
+  <span class="c1">// Apply slip wall BCs</span>
+  <span class="n">g_cgpde</span><span class="p">[</span><span class="n">d</span><span class="o">-&gt;</span><span class="n">MeshId</span><span class="p">()].</span><span class="n">slipwallbc</span><span class="p">(</span> <span class="n">m_u</span><span class="p">,</span> <span class="n">d</span><span class="o">-&gt;</span><span class="n">meshvel</span><span class="p">(),</span> <span class="n">coord</span><span class="p">,</span> <span class="n">m_bnorm</span><span class="p">,</span>
+    <span class="n">m_slipwallbcnodes</span> <span class="p">);</span>
+
   <span class="c1">// Apply user defined time dependent BCs</span>
   <span class="n">g_cgpde</span><span class="p">[</span><span class="n">d</span><span class="o">-&gt;</span><span class="n">MeshId</span><span class="p">()].</span><span class="n">timedepbc</span><span class="p">(</span> <span class="n">d</span><span class="o">-&gt;</span><span class="n">T</span><span class="p">(),</span> <span class="n">m_u</span><span class="p">,</span> <span class="n">m_timedepbcnodes</span><span class="p">,</span>
     <span class="n">m_timedepbcFn</span> <span class="p">);</span>
@@ -1119,7 +1146,7 @@
   <span class="n">conserved</span><span class="p">(</span> <span class="n">m_u</span><span class="p">,</span> <span class="n">Disc</span><span class="p">()</span><span class="o">-&gt;</span><span class="n">Vol</span><span class="p">()</span> <span class="p">);</span>
   <span class="n">g_cgpde</span><span class="p">[</span><span class="n">d</span><span class="o">-&gt;</span><span class="n">MeshId</span><span class="p">()].</span><span class="n">rhs</span><span class="p">(</span> <span class="n">d</span><span class="o">-&gt;</span><span class="n">T</span><span class="p">()</span> <span class="o">+</span> <span class="n">prev_rkcoef</span> <span class="o">*</span> <span class="n">d</span><span class="o">-&gt;</span><span class="n">Dt</span><span class="p">(),</span> <span class="n">d</span><span class="o">-&gt;</span><span class="n">Coord</span><span class="p">(),</span> <span class="n">d</span><span class="o">-&gt;</span><span class="n">Inpoel</span><span class="p">(),</span>
           <span class="n">m_triinpoel</span><span class="p">,</span> <span class="n">d</span><span class="o">-&gt;</span><span class="n">Gid</span><span class="p">(),</span> <span class="n">d</span><span class="o">-&gt;</span><span class="n">Bid</span><span class="p">(),</span> <span class="n">d</span><span class="o">-&gt;</span><span class="n">Lid</span><span class="p">(),</span> <span class="n">m_dfn</span><span class="p">,</span> <span class="n">m_psup</span><span class="p">,</span> <span class="n">m_esup</span><span class="p">,</span>
-          <span class="n">m_symbctri</span><span class="p">,</span> <span class="n">d</span><span class="o">-&gt;</span><span class="n">Vol</span><span class="p">(),</span> <span class="n">m_edgenode</span><span class="p">,</span> <span class="n">m_edgeid</span><span class="p">,</span>
+          <span class="n">m_symbctri</span><span class="p">,</span> <span class="n">m_slipwallbctri</span><span class="p">,</span> <span class="n">d</span><span class="o">-&gt;</span><span class="n">Vol</span><span class="p">(),</span> <span class="n">m_edgenode</span><span class="p">,</span> <span class="n">m_edgeid</span><span class="p">,</span>
           <span class="n">m_boxnodes</span><span class="p">,</span> <span class="n">m_chBndGrad</span><span class="p">,</span> <span class="n">m_u</span><span class="p">,</span> <span class="n">d</span><span class="o">-&gt;</span><span class="n">meshvel</span><span class="p">(),</span> <span class="n">m_tp</span><span class="p">,</span> <span class="n">d</span><span class="o">-&gt;</span><span class="n">Boxvol</span><span class="p">(),</span>
           <span class="n">m_rhs</span> <span class="p">);</span>
   <span class="n">volumetric</span><span class="p">(</span> <span class="n">m_u</span><span class="p">,</span> <span class="n">Disc</span><span class="p">()</span><span class="o">-&gt;</span><span class="n">Vol</span><span class="p">()</span> <span class="p">);</span>
@@ -1276,7 +1303,8 @@
     <span class="n">conserved</span><span class="p">(</span> <span class="n">m_u</span><span class="p">,</span> <span class="n">Disc</span><span class="p">()</span><span class="o">-&gt;</span><span class="n">Vol</span><span class="p">()</span> <span class="p">);</span>
     <span class="n">conserved</span><span class="p">(</span> <span class="n">m_un</span><span class="p">,</span> <span class="n">Disc</span><span class="p">()</span><span class="o">-&gt;</span><span class="n">Voln</span><span class="p">()</span> <span class="p">);</span>
     <span class="k">auto</span> <span class="n">diag_computed</span> <span class="o">=</span> <span class="n">m_diag</span><span class="p">.</span><span class="n">compute</span><span class="p">(</span> <span class="o">*</span><span class="n">d</span><span class="p">,</span> <span class="n">m_u</span><span class="p">,</span> <span class="n">m_un</span><span class="p">,</span> <span class="n">m_bnorm</span><span class="p">,</span>
-                                         <span class="n">m_symbcnodes</span><span class="p">,</span> <span class="n">m_farfieldbcnodes</span> <span class="p">);</span>
+                                          <span class="n">m_symbcnodes</span><span class="p">,</span> <span class="n">m_farfieldbcnodes</span><span class="p">,</span>
+                                          <span class="n">m_slipwallbcnodes</span> <span class="p">);</span>
     <span class="n">volumetric</span><span class="p">(</span> <span class="n">m_u</span><span class="p">,</span> <span class="n">Disc</span><span class="p">()</span><span class="o">-&gt;</span><span class="n">Vol</span><span class="p">()</span> <span class="p">);</span>
     <span class="n">volumetric</span><span class="p">(</span> <span class="n">m_un</span><span class="p">,</span> <span class="n">Disc</span><span class="p">()</span><span class="o">-&gt;</span><span class="n">Voln</span><span class="p">()</span> <span class="p">);</span>
     <span class="c1">// Increase number of iterations and physical time</span>
