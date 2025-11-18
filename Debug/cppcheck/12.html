@@ -992,7 +992,63 @@ span.linenos.special { color: #000000; background-color: #ffffc0; padding: 0 5px
 830
 831
 832
-833</pre></div></td><td class="code"><div class="highlight"><pre><span></span><a name="line-1"></a><span class="c1">// *****************************************************************************</span>
+833
+834
+835
+836
+837
+838
+839
+840
+841
+842
+843
+844
+845
+846
+847
+848
+849
+850
+851
+852
+853
+854
+855
+856
+857
+858
+859
+860
+861
+862
+863
+864
+865
+866
+867
+868
+869
+870
+871
+872
+873
+874
+875
+876
+877
+878
+879
+880
+881
+882
+883
+884
+885
+886
+887
+888
+889</pre></div></td><td class="code"><div class="highlight"><pre><span></span><a name="line-1"></a><span class="c1">// *****************************************************************************</span>
 <a name="line-2"></a><span class="cm">/*!</span>
 <a name="line-3"></a><span class="cm">  \file      src/Base/Vector.hpp</span>
 <a name="line-4"></a><span class="cm">  \copyright 2012-2015 J. Bakosi,</span>
@@ -1822,9 +1878,65 @@ span.linenos.special { color: #000000; background-color: #ffffc0; padding: 0 5px
 <a name="line-828"></a>            <span class="p">{</span><span class="n">matAuxOut</span><span class="p">[</span><span class="mi">6</span><span class="p">],</span> <span class="n">matAuxOut</span><span class="p">[</span><span class="mi">7</span><span class="p">],</span> <span class="n">matAuxOut</span><span class="p">[</span><span class="mi">8</span><span class="p">]}</span> <span class="p">}};</span>
 <a name="line-829"></a><span class="p">}</span>
 <a name="line-830"></a>
-<a name="line-831"></a><span class="p">}</span> <span class="c1">// tk::</span>
-<a name="line-832"></a>
-<a name="line-833"></a><span class="cp">#endif </span><span class="c1">// Vector_h</span>
+<a name="line-831"></a><span class="c1">//! Branchless Cholesky factorization of a 3x3 (SPD) matrix</span>
+<a name="line-832"></a><span class="c1">//! \param[in] A Matrix to be factorized</span>
+<a name="line-833"></a><span class="c1">//! \param[in,out] L Cholesky factorization</span>
+<a name="line-834"></a><span class="kr">inline</span> <span class="kt">void</span> <span class="n">chol3x3</span><span class="p">(</span> <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">array</span><span class="o">&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">array</span><span class="o">&lt;</span> <span class="n">tk</span><span class="o">::</span><span class="n">real</span><span class="p">,</span> <span class="mi">3</span> <span class="o">&gt;</span><span class="p">,</span> <span class="mi">3</span> <span class="o">&gt;&amp;</span> <span class="n">A</span><span class="p">,</span>
+<a name="line-835"></a>                     <span class="n">std</span><span class="o">::</span><span class="n">array</span><span class="o">&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">array</span><span class="o">&lt;</span> <span class="n">tk</span><span class="o">::</span><span class="n">real</span><span class="p">,</span> <span class="mi">3</span> <span class="o">&gt;</span><span class="p">,</span> <span class="mi">3</span> <span class="o">&gt;&amp;</span> <span class="n">L</span> <span class="p">)</span>
+<a name="line-836"></a><span class="p">{</span>
+<a name="line-837"></a>  <span class="c1">// A is symmetric: [a b c; b d e; c e f]</span>
+<a name="line-838"></a>  <span class="k">const</span> <span class="n">tk</span><span class="o">::</span><span class="n">real</span> <span class="n">a</span> <span class="o">=</span> <span class="n">A</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span> <span class="n">b</span> <span class="o">=</span> <span class="n">A</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">],</span> <span class="n">c</span> <span class="o">=</span> <span class="n">A</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">2</span><span class="p">];</span>
+<a name="line-839"></a>  <span class="k">const</span> <span class="n">tk</span><span class="o">::</span><span class="n">real</span> <span class="n">d</span> <span class="o">=</span> <span class="n">A</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">1</span><span class="p">],</span> <span class="n">e</span> <span class="o">=</span> <span class="n">A</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">2</span><span class="p">],</span> <span class="n">f</span> <span class="o">=</span> <span class="n">A</span><span class="p">[</span><span class="mi">2</span><span class="p">][</span><span class="mi">2</span><span class="p">];</span>
+<a name="line-840"></a>
+<a name="line-841"></a>  <span class="c1">// Regularize (helps near-degenerate stencils)</span>
+<a name="line-842"></a>  <span class="k">const</span> <span class="n">tk</span><span class="o">::</span><span class="n">real</span> <span class="n">tr</span> <span class="o">=</span> <span class="n">a</span> <span class="o">+</span> <span class="n">d</span> <span class="o">+</span> <span class="n">f</span><span class="p">;</span>
+<a name="line-843"></a>  <span class="k">const</span> <span class="n">tk</span><span class="o">::</span><span class="n">real</span> <span class="n">eps</span> <span class="o">=</span> <span class="n">std</span><span class="o">::</span><span class="n">max</span><span class="o">&lt;</span><span class="n">tk</span><span class="o">::</span><span class="n">real</span><span class="o">&gt;</span><span class="p">(</span><span class="mf">1e-30</span><span class="p">,</span> <span class="n">tr</span> <span class="o">*</span> <span class="mf">1e-14</span><span class="p">);</span>
+<a name="line-844"></a>
+<a name="line-845"></a>  <span class="k">const</span> <span class="n">tk</span><span class="o">::</span><span class="n">real</span> <span class="n">aR</span> <span class="o">=</span> <span class="n">a</span> <span class="o">+</span> <span class="n">eps</span><span class="p">;</span>
+<a name="line-846"></a>  <span class="k">const</span> <span class="n">tk</span><span class="o">::</span><span class="n">real</span> <span class="n">dR</span> <span class="o">=</span> <span class="n">d</span> <span class="o">+</span> <span class="n">eps</span><span class="p">;</span>
+<a name="line-847"></a>  <span class="k">const</span> <span class="n">tk</span><span class="o">::</span><span class="n">real</span> <span class="n">fR</span> <span class="o">=</span> <span class="n">f</span> <span class="o">+</span> <span class="n">eps</span><span class="p">;</span>
+<a name="line-848"></a>
+<a name="line-849"></a>  <span class="k">const</span> <span class="n">tk</span><span class="o">::</span><span class="n">real</span> <span class="n">L00</span> <span class="o">=</span> <span class="n">std</span><span class="o">::</span><span class="n">sqrt</span><span class="p">(</span><span class="n">aR</span><span class="p">);</span>
+<a name="line-850"></a>  <span class="k">const</span> <span class="n">tk</span><span class="o">::</span><span class="n">real</span> <span class="n">L10</span> <span class="o">=</span> <span class="n">b</span> <span class="o">/</span> <span class="n">L00</span><span class="p">;</span>
+<a name="line-851"></a>  <span class="k">const</span> <span class="n">tk</span><span class="o">::</span><span class="n">real</span> <span class="n">L20</span> <span class="o">=</span> <span class="n">c</span> <span class="o">/</span> <span class="n">L00</span><span class="p">;</span>
+<a name="line-852"></a>
+<a name="line-853"></a>  <span class="k">const</span> <span class="n">tk</span><span class="o">::</span><span class="n">real</span> <span class="n">t11</span> <span class="o">=</span> <span class="n">dR</span> <span class="o">-</span> <span class="n">L10</span><span class="o">*</span><span class="n">L10</span><span class="p">;</span>
+<a name="line-854"></a>  <span class="k">const</span> <span class="n">tk</span><span class="o">::</span><span class="n">real</span> <span class="n">L11</span> <span class="o">=</span> <span class="n">std</span><span class="o">::</span><span class="n">sqrt</span><span class="p">(</span> <span class="n">t11</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="o">?</span> <span class="nl">t11</span> <span class="p">:</span> <span class="n">eps</span> <span class="p">);</span>
+<a name="line-855"></a>
+<a name="line-856"></a>  <span class="k">const</span> <span class="n">tk</span><span class="o">::</span><span class="n">real</span> <span class="n">L21</span> <span class="o">=</span> <span class="p">(</span><span class="n">e</span> <span class="o">-</span> <span class="n">L10</span><span class="o">*</span><span class="n">L20</span><span class="p">)</span> <span class="o">/</span> <span class="n">L11</span><span class="p">;</span>
+<a name="line-857"></a>
+<a name="line-858"></a>  <span class="k">const</span> <span class="n">tk</span><span class="o">::</span><span class="n">real</span> <span class="n">t22</span> <span class="o">=</span> <span class="n">fR</span> <span class="o">-</span> <span class="n">L20</span><span class="o">*</span><span class="n">L20</span> <span class="o">-</span> <span class="n">L21</span><span class="o">*</span><span class="n">L21</span><span class="p">;</span>
+<a name="line-859"></a>  <span class="k">const</span> <span class="n">tk</span><span class="o">::</span><span class="n">real</span> <span class="n">L22</span> <span class="o">=</span> <span class="n">std</span><span class="o">::</span><span class="n">sqrt</span><span class="p">(</span> <span class="n">t22</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="o">?</span> <span class="nl">t22</span> <span class="p">:</span> <span class="n">eps</span> <span class="p">);</span>
+<a name="line-860"></a>
+<a name="line-861"></a>  <span class="n">L</span> <span class="o">=</span> <span class="p">{{</span> <span class="p">{</span> <span class="n">L00</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span> <span class="p">},</span>
+<a name="line-862"></a>         <span class="p">{</span> <span class="n">L10</span><span class="p">,</span> <span class="n">L11</span><span class="p">,</span> <span class="mf">0.0</span> <span class="p">},</span>
+<a name="line-863"></a>         <span class="p">{</span> <span class="n">L20</span><span class="p">,</span> <span class="n">L21</span><span class="p">,</span> <span class="n">L22</span> <span class="p">}</span> <span class="p">}};</span>
+<a name="line-864"></a><span class="p">}</span>
+<a name="line-865"></a>
+<a name="line-866"></a><span class="c1">//! Solve 3x3 system using the Cholesky factorization the 3x3 (SPD) matrix</span>
+<a name="line-867"></a><span class="c1">//! \param[in] L Cholesky factorization of 3x3 LHS matrix</span>
+<a name="line-868"></a><span class="c1">//! \param[in] b RHS matrix</span>
+<a name="line-869"></a><span class="c1">//! \return Solution of the 3x3 system Ax=b</span>
+<a name="line-870"></a><span class="kr">inline</span> <span class="n">std</span><span class="o">::</span><span class="n">array</span><span class="o">&lt;</span> <span class="n">tk</span><span class="o">::</span><span class="n">real</span><span class="p">,</span><span class="mi">3</span> <span class="o">&gt;</span>
+<a name="line-871"></a><span class="n">solve_chol3x3</span><span class="p">(</span> <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">array</span><span class="o">&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">array</span><span class="o">&lt;</span> <span class="n">tk</span><span class="o">::</span><span class="n">real</span><span class="p">,</span> <span class="mi">3</span> <span class="o">&gt;</span><span class="p">,</span> <span class="mi">3</span> <span class="o">&gt;&amp;</span> <span class="n">L</span><span class="p">,</span>
+<a name="line-872"></a>               <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">array</span><span class="o">&lt;</span> <span class="n">tk</span><span class="o">::</span><span class="n">real</span><span class="p">,</span> <span class="mi">3</span> <span class="o">&gt;&amp;</span> <span class="n">b</span> <span class="p">)</span>
+<a name="line-873"></a><span class="p">{</span>
+<a name="line-874"></a>  <span class="c1">// Forward: L y = b</span>
+<a name="line-875"></a>  <span class="k">const</span> <span class="n">tk</span><span class="o">::</span><span class="n">real</span> <span class="n">y0</span> <span class="o">=</span> <span class="n">b</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">/</span> <span class="n">L</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">];</span>
+<a name="line-876"></a>  <span class="k">const</span> <span class="n">tk</span><span class="o">::</span><span class="n">real</span> <span class="n">y1</span> <span class="o">=</span> <span class="p">(</span><span class="n">b</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">L</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="n">y0</span><span class="p">)</span> <span class="o">/</span> <span class="n">L</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">1</span><span class="p">];</span>
+<a name="line-877"></a>  <span class="k">const</span> <span class="n">tk</span><span class="o">::</span><span class="n">real</span> <span class="n">y2</span> <span class="o">=</span> <span class="p">(</span><span class="n">b</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">-</span> <span class="n">L</span><span class="p">[</span><span class="mi">2</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="n">y0</span> <span class="o">-</span> <span class="n">L</span><span class="p">[</span><span class="mi">2</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span><span class="o">*</span><span class="n">y1</span><span class="p">)</span> <span class="o">/</span> <span class="n">L</span><span class="p">[</span><span class="mi">2</span><span class="p">][</span><span class="mi">2</span><span class="p">];</span>
+<a name="line-878"></a>
+<a name="line-879"></a>  <span class="c1">// Backward: L^T x = y</span>
+<a name="line-880"></a>  <span class="n">tk</span><span class="o">::</span><span class="n">real</span> <span class="n">x2</span> <span class="o">=</span> <span class="n">y2</span> <span class="o">/</span> <span class="n">L</span><span class="p">[</span><span class="mi">2</span><span class="p">][</span><span class="mi">2</span><span class="p">];</span>
+<a name="line-881"></a>  <span class="n">tk</span><span class="o">::</span><span class="n">real</span> <span class="n">x1</span> <span class="o">=</span> <span class="p">(</span><span class="n">y1</span> <span class="o">-</span> <span class="n">L</span><span class="p">[</span><span class="mi">2</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span><span class="o">*</span><span class="n">x2</span><span class="p">)</span> <span class="o">/</span> <span class="n">L</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">1</span><span class="p">];</span>
+<a name="line-882"></a>  <span class="n">tk</span><span class="o">::</span><span class="n">real</span> <span class="n">x0</span> <span class="o">=</span> <span class="p">(</span><span class="n">y0</span> <span class="o">-</span> <span class="n">L</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="n">x1</span> <span class="o">-</span> <span class="n">L</span><span class="p">[</span><span class="mi">2</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="n">x2</span><span class="p">)</span> <span class="o">/</span> <span class="n">L</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">];</span>
+<a name="line-883"></a>
+<a name="line-884"></a>  <span class="k">return</span> <span class="p">{{</span> <span class="n">x0</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="n">x2</span> <span class="p">}};</span>
+<a name="line-885"></a><span class="p">}</span>
+<a name="line-886"></a>
+<a name="line-887"></a><span class="p">}</span> <span class="c1">// tk::</span>
+<a name="line-888"></a>
+<a name="line-889"></a><span class="cp">#endif </span><span class="c1">// Vector_h</span>
 </pre></div>
 </td></tr></table>
       </div> <!-- /.wrapper -->
