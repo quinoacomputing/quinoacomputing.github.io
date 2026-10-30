@@ -6,11 +6,11 @@
     <title>Cppcheck - HTML report - [<a href=https://github.com/quinoacomputing/quinoa/commit/-128-NOTFOUND>-128-NOTFOUND</a>]</title>
     <link rel="stylesheet" href="style.css">
     <style>
-pre { line-height: 125%; margin: 0; }
-td.linenos pre { color: #000000; background-color: #f0f0f0; padding: 0 5px 0 5px; }
-span.linenos { color: #000000; background-color: #f0f0f0; padding: 0 5px 0 5px; }
-td.linenos pre.special { color: #000000; background-color: #ffffc0; padding: 0 5px 0 5px; }
-span.linenos.special { color: #000000; background-color: #ffffc0; padding: 0 5px 0 5px; }
+pre { line-height: 125%; }
+td.linenos .normal { color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px; }
+span.linenos { color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px; }
+td.linenos .special { color: #000000; background-color: #ffffc0; padding-left: 5px; padding-right: 5px; }
+span.linenos.special { color: #000000; background-color: #ffffc0; padding-left: 5px; padding-right: 5px; }
 .highlight .hll { background-color: #ffffcc }
 .highlight { background: #ffffff; }
 .highlight .c { color: #888888 } /* Comment */
@@ -25,6 +25,7 @@ span.linenos.special { color: #000000; background-color: #ffffc0; padding: 0 5px
 .highlight .cs { color: #cc0000; font-weight: bold } /* Comment.Special */
 .highlight .gd { color: #A00000 } /* Generic.Deleted */
 .highlight .ge { font-style: italic } /* Generic.Emph */
+.highlight .ges { font-weight: bold; font-style: italic } /* Generic.EmphStrong */
 .highlight .gr { color: #FF0000 } /* Generic.Error */
 .highlight .gh { color: #000080; font-weight: bold } /* Generic.Heading */
 .highlight .gi { color: #00A000 } /* Generic.Inserted */
@@ -123,265 +124,185 @@ span.linenos.special { color: #000000; background-color: #ffffc0; padding: 0 5px
         }
       }
 
-      function toggleDisplay(id) {
-        var elements = document.querySelectorAll("." + id);
+      function toggleDisplay(cb) {
+        var elements = document.querySelectorAll("." + cb.id);
 
         for (var i = 0, len = elements.length; i < len; i++) {
-          elements[i].classList.toggle("d-none");
+          elements[i].classList.toggle("id-filtered", !cb.checked);
         }
+
+        updateFileRows();
+      }
+
+      function toggleSeverity(cb) {
+        cb.parentElement.classList.toggle("unchecked", !cb.checked);
+        var elements = document.querySelectorAll(".sev_" + cb.id);
+
+        for (var i = 0, len = elements.length; i < len; i++) {
+          elements[i].classList.toggle("severity-filtered", !cb.checked);
+        }
+
+        updateFileRows();
+      }
+
+      function toggleTool(cb) {
+        cb.parentElement.classList.toggle("unchecked", !cb.checked);
+
+        var elements;
+        if (cb.id == "clang-tidy")
+            elements = document.querySelectorAll("[class^=clang-tidy-]");
+        else
+            elements = document.querySelectorAll(".issue:not([class^=clang-tidy-])");
+
+        for (var i = 0, len = elements.length; i < len; i++) {
+          elements[i].classList.toggle("tool-filtered", !cb.checked);
+        }
+
+        updateFileRows();
       }
 
       function toggleAll() {
-        var elements = document.querySelectorAll("input");
+        var elements = document.querySelectorAll(".idToggle");
 
         // starting from 1 since 0 is the "toggle all" input
         for (var i = 1, len = elements.length; i < len; i++) {
-          var el = elements[i];
-
-          if (el.checked) {
-            el.checked = false;
-          } else {
-            el.checked = true;
+          var changed = elements[i].checked != elements[0].checked;
+          if (changed) {
+            elements[i].checked = elements[0].checked;
+            toggleDisplay(elements[i]);
           }
-
-          toggleDisplay(el.id);
         }
       }
+
+      function filterFile(filter) {
+        var elements = document.querySelectorAll(".fileEntry");
+
+        for (var i = 0, len = elements.length; i < len; i++) {
+          var visible = elements[i].querySelector("tr").querySelector("td").textContent.toLowerCase().includes(filter.toLowerCase());
+          elements[i].classList.toggle("text-filtered", !visible);
+        }
+      }
+
+      function filterText(text) {
+        filter = text.toLowerCase();
+        var elements = document.querySelectorAll(".issue");
+
+        for (var i = 0, len = elements.length; i < len; i++) {
+          var visible = false;
+          var fields = elements[i].querySelectorAll("td");
+          for (var n = 0, num = fields.length; n < num; n++) {
+            if (fields[n].textContent.toLowerCase().includes(filter)) {
+              visible = true;
+              break;
+            }
+          }
+          elements[i].classList.toggle("text-filtered", !visible);
+        }
+
+        updateFileRows();
+      }
+
+      function updateFileRows(element) {
+        var elements = document.querySelectorAll(".fileEntry");
+
+        for (var i = 0, len = elements.length; i < len; i++) {
+          var visible = elements[i].querySelector(".issue:not(.id-filtered):not(.severity-filtered):not(.tool-filtered):not(.text-filtered)");
+          elements[i].classList.toggle("file-filtered", !visible);
+        }
+      }
+
       window.addEventListener("load", initExpandables);
     </script>
   </head>
   <body>
+    <div id="wrapper">
     <div id="header" class="header">
-      <h1>Cppcheck report - [<a href=https://github.com/quinoacomputing/quinoa/commit/-128-NOTFOUND>-128-NOTFOUND</a>]: /tmp/TeamCity-3/work/5ad443c8abe7fc0a/src/LinearSolver/CSR.hpp</h1>
+      <h1>Cppcheck report - [<a href=https://github.com/quinoacomputing/quinoa/commit/-128-NOTFOUND>-128-NOTFOUND</a>]: /home/apandare/TeamCity/BuildAgent1/work/5ad443c8abe7fc0a/src/Base/ChareState.hpp</h1>
+
     </div>
-    <div class="wrapper">
-      <div id="menu">
-       <p id="filename"><a href="index.html">Defects:</a> CSR.hpp</p>
-<a href="21.html#line-83"> constParameter 83</a>
+
+    <div id="menu">
+     <p><a href="index.html">Defects:</a> ChareState.hpp</p>
+<a href="21.html#line-15"> missingIncludeSystem 15</a>
     </div>
     <div id="content">
-<table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>  1
-  2
-  3
-  4
-  5
-  6
-  7
-  8
-  9
- 10
- 11
- 12
- 13
- 14
- 15
- 16
- 17
- 18
- 19
- 20
- 21
- 22
- 23
- 24
- 25
- 26
- 27
- 28
- 29
- 30
- 31
- 32
- 33
- 34
- 35
- 36
- 37
- 38
- 39
- 40
- 41
- 42
- 43
- 44
- 45
- 46
- 47
- 48
- 49
- 50
- 51
- 52
- 53
- 54
- 55
- 56
- 57
- 58
- 59
- 60
- 61
- 62
- 63
- 64
- 65
- 66
- 67
- 68
- 69
- 70
- 71
- 72
- 73
- 74
- 75
- 76
- 77
- 78
- 79
- 80
- 81
- 82
- 83
- 84
- 85
- 86
- 87
- 88
- 89
- 90
- 91
- 92
- 93
- 94
- 95
- 96
- 97
- 98
- 99
-100
-101
-102
-103
-104
-105
-106</pre></div></td><td class="code"><div class="highlight"><pre><span></span><a name="line-1"></a><span class="c1">// *****************************************************************************</span>
-<a name="line-2"></a><span class="cm">/*!</span>
-<a name="line-3"></a><span class="cm">  \file      src/LinearSolver/CSR.hpp</span>
-<a name="line-4"></a><span class="cm">  \copyright 2012-2015 J. Bakosi,</span>
-<a name="line-5"></a><span class="cm">             2016-2018 Los Alamos National Security, LLC.,</span>
-<a name="line-6"></a><span class="cm">             2019-2021 Triad National Security, LLC.</span>
-<a name="line-7"></a><span class="cm">             All rights reserved. See the LICENSE file for details.</span>
-<a name="line-8"></a><span class="cm">  \brief     Compressed sparse row (CSR) storage for a sparse matrix</span>
-<a name="line-9"></a><span class="cm">  \details   Compressed sparse row (CSR) storage for a sparse matrix.</span>
-<a name="line-10"></a><span class="cm">*/</span>
-<a name="line-11"></a><span class="c1">// *****************************************************************************</span>
-<a name="line-12"></a><span class="cp">#ifndef CSR_h</span>
-<a name="line-13"></a><span class="cp">#define CSR_h</span>
-<a name="line-14"></a>
-<a name="line-15"></a><span class="cp">#include</span> <span class="cpf">&lt;vector&gt;</span><span class="cp"></span>
-<a name="line-16"></a><span class="cp">#include</span> <span class="cpf">&lt;ostream&gt;</span><span class="cp"></span>
-<a name="line-17"></a>
-<a name="line-18"></a><span class="cp">#include</span> <span class="cpf">&quot;NoWarning/pup_stl.hpp&quot;</span><span class="cp"></span>
-<a name="line-19"></a>
-<a name="line-20"></a><span class="cp">#include</span> <span class="cpf">&quot;Types.hpp&quot;</span><span class="cp"></span>
-<a name="line-21"></a><span class="cp">#include</span> <span class="cpf">&quot;CommMap.hpp&quot;</span><span class="cp"></span>
-<a name="line-22"></a>
-<a name="line-23"></a><span class="k">namespace</span> <span class="n">tk</span> <span class="p">{</span>
-<a name="line-24"></a>
-<a name="line-25"></a><span class="c1">//! Compressed sparse row (CSR) storage for a sparse matrix</span>
-<a name="line-26"></a><span class="k">class</span> <span class="nc">CSR</span> <span class="p">{</span>
-<a name="line-27"></a>
-<a name="line-28"></a>  <span class="k">public</span><span class="o">:</span>
-<a name="line-29"></a>    <span class="c1">//! \brief Constructor: Create a CSR symmetric matrix with ncomp scalar</span>
-<a name="line-30"></a>    <span class="c1">//!   components, storing only the upper triangular part</span>
-<a name="line-31"></a>    <span class="k">explicit</span> <span class="n">CSR</span><span class="p">(</span> <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="n">nc</span><span class="p">,</span>
-<a name="line-32"></a>                  <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">pair</span><span class="o">&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span> <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="o">&gt;</span><span class="p">,</span>
-<a name="line-33"></a>                                   <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span> <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="o">&gt;</span> <span class="o">&gt;&amp;</span> <span class="n">psup</span> <span class="p">);</span>
-<a name="line-34"></a>
-<a name="line-35"></a>    <span class="c1">//! Empty constructor for Charm++</span>
-<a name="line-36"></a>    <span class="k">explicit</span> <span class="nf">CSR</span><span class="p">()</span> <span class="o">=</span> <span class="k">default</span><span class="p">;</span>
-<a name="line-37"></a>
-<a name="line-38"></a>    <span class="c1">//! Return const reference to sparse matrix entry at a position</span>
-<a name="line-39"></a>    <span class="k">const</span> <span class="n">real</span><span class="o">&amp;</span>
-<a name="line-40"></a>    <span class="k">operator</span><span class="p">()(</span> <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="n">row</span><span class="p">,</span> <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="n">col</span><span class="p">,</span> <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="n">pos</span><span class="o">=</span><span class="mi">0</span> <span class="p">)</span> <span class="k">const</span><span class="p">;</span>
-<a name="line-41"></a>
-<a name="line-42"></a>    <span class="c1">//! Return non-const reference to sparse matrix entry at a position</span>
-<a name="line-43"></a>    <span class="c1">//! \see &quot;Avoid Duplication in const and Non-const Member Function,&quot; and</span>
-<a name="line-44"></a>    <span class="c1">//!   &quot;Use const whenever possible,&quot; Scott Meyers, Effective C++, 3d ed.</span>
-<a name="line-45"></a>    <span class="n">real</span><span class="o">&amp;</span>
-<a name="line-46"></a>    <span class="nf">operator</span><span class="p">()(</span> <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="n">row</span><span class="p">,</span> <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="n">col</span><span class="p">,</span> <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="n">pos</span><span class="o">=</span><span class="mi">0</span> <span class="p">)</span> <span class="p">{</span>
-<a name="line-47"></a>      <span class="k">return</span> <span class="k">const_cast</span><span class="o">&lt;</span> <span class="n">real</span><span class="o">&amp;</span> <span class="o">&gt;</span><span class="p">(</span>
-<a name="line-48"></a>               <span class="k">static_cast</span><span class="o">&lt;</span> <span class="k">const</span> <span class="n">CSR</span><span class="o">&amp;</span> <span class="o">&gt;</span><span class="p">(</span> <span class="o">*</span><span class="k">this</span> <span class="p">).</span><span class="k">operator</span><span class="p">()(</span> <span class="n">row</span><span class="p">,</span> <span class="n">col</span><span class="p">,</span> <span class="n">pos</span> <span class="p">)</span> <span class="p">);</span>
-<a name="line-49"></a>    <span class="p">}</span>
-<a name="line-50"></a>
-<a name="line-51"></a>    <span class="c1">//! Set Dirichlet boundary condition at a node</span>
-<a name="line-52"></a>    <span class="kt">void</span> <span class="nf">dirichlet</span><span class="p">(</span>
-<a name="line-53"></a>      <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="n">i</span><span class="p">,</span>
-<a name="line-54"></a>      <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span> <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="o">&gt;&amp;</span> <span class="n">gid</span> <span class="o">=</span> <span class="p">{},</span>
-<a name="line-55"></a>      <span class="k">const</span> <span class="n">NodeCommMap</span><span class="o">&amp;</span> <span class="n">nodecommap</span> <span class="o">=</span> <span class="p">{},</span>
-<a name="line-56"></a>      <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="n">pos</span><span class="o">=</span><span class="mi">0</span> <span class="p">);</span>
-<a name="line-57"></a>
-<a name="line-58"></a>    <span class="c1">//! Multiply CSR matrix with vector from the right: r = A * x</span>
-<a name="line-59"></a>    <span class="kt">void</span> <span class="nf">mult</span><span class="p">(</span> <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span> <span class="n">real</span> <span class="o">&gt;&amp;</span> <span class="n">x</span><span class="p">,</span> <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span> <span class="n">real</span> <span class="o">&gt;&amp;</span> <span class="n">r</span><span class="p">,</span>
-<a name="line-60"></a>               <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span> <span class="n">tk</span><span class="o">::</span><span class="n">real</span> <span class="o">&gt;&amp;</span> <span class="n">bcmask</span> <span class="p">)</span> <span class="k">const</span><span class="p">;</span>
-<a name="line-61"></a>
-<a name="line-62"></a>    <span class="c1">//! Access real size of matrix</span>
-<a name="line-63"></a>    <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="n">rsize</span><span class="p">()</span> <span class="k">const</span> <span class="p">{</span> <span class="k">return</span> <span class="n">rnz</span><span class="p">.</span><span class="n">size</span><span class="p">()</span><span class="o">*</span><span class="n">ncomp</span><span class="p">;</span> <span class="p">}</span>
-<a name="line-64"></a>
-<a name="line-65"></a>    <span class="c1">//! Access the number of scalar components per non-zero matrix entry</span>
-<a name="line-66"></a>    <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="n">Ncomp</span><span class="p">()</span> <span class="k">const</span> <span class="p">{</span> <span class="k">return</span> <span class="n">ncomp</span><span class="p">;</span> <span class="p">}</span>
-<a name="line-67"></a>
-<a name="line-68"></a>    <span class="c1">//! Write out CSR as stored</span>
-<a name="line-69"></a>    <span class="n">std</span><span class="o">::</span><span class="n">ostream</span><span class="o">&amp;</span> <span class="n">write_stored</span><span class="p">(</span> <span class="n">std</span><span class="o">::</span><span class="n">ostream</span> <span class="o">&amp;</span><span class="n">os</span> <span class="p">)</span> <span class="k">const</span><span class="p">;</span>
-<a name="line-70"></a>    <span class="c1">//! Write out CSR nonzero structure</span>
-<a name="line-71"></a>    <span class="n">std</span><span class="o">::</span><span class="n">ostream</span><span class="o">&amp;</span> <span class="n">write_structure</span><span class="p">(</span> <span class="n">std</span><span class="o">::</span><span class="n">ostream</span> <span class="o">&amp;</span><span class="n">os</span> <span class="p">)</span> <span class="k">const</span><span class="p">;</span>
-<a name="line-72"></a>    <span class="c1">//! Write out CSR contribute structure</span>
-<a name="line-73"></a>    <span class="n">std</span><span class="o">::</span><span class="n">ostream</span><span class="o">&amp;</span> <span class="n">write_contribute</span><span class="p">(</span> <span class="n">std</span><span class="o">::</span><span class="n">ostream</span> <span class="o">&amp;</span><span class="n">os</span> <span class="p">)</span> <span class="k">const</span><span class="p">;</span>
-<a name="line-74"></a>    <span class="c1">//! Write out CSR as a real matrix</span>
-<a name="line-75"></a>    <span class="n">std</span><span class="o">::</span><span class="n">ostream</span><span class="o">&amp;</span> <span class="n">write_matrix</span><span class="p">(</span> <span class="n">std</span><span class="o">::</span><span class="n">ostream</span> <span class="o">&amp;</span><span class="n">os</span> <span class="p">)</span> <span class="k">const</span><span class="p">;</span>
-<a name="line-76"></a>    <span class="c1">//! Write out CSR in Matlab/Octave format</span>
-<a name="line-77"></a>    <span class="n">std</span><span class="o">::</span><span class="n">ostream</span><span class="o">&amp;</span> <span class="n">write_matlab</span><span class="p">(</span> <span class="n">std</span><span class="o">::</span><span class="n">ostream</span> <span class="o">&amp;</span><span class="n">os</span> <span class="p">)</span> <span class="k">const</span><span class="p">;</span>
-<a name="line-78"></a>
-<a name="line-79"></a>    <span class="cm">/** @name Pack/unpack (Charm++ serialization) routines */</span>
-<a name="line-80"></a>    <span class="c1">///@{</span>
-<a name="line-81"></a>    <span class="c1">//! \brief Pack/Unpack serialize member function</span>
-<a name="line-82"></a>    <span class="c1">//! \param[in,out] p Charm++&#39;s PUP::er serializer object reference</span>
-<a name="line-83"></a><span class="hll">    <span class="kt">void</span> <span class="nf">pup</span><span class="p">(</span> <span class="n">PUP</span><span class="o">::</span><span class="n">er</span> <span class="o">&amp;</span><span class="n">p</span> <span class="p">)</span> <span class="p">{</span><span class="error2">&lt;--- Parameter 'p' can be declared with const</span>
-</span><a name="line-84"></a>      <span class="n">p</span> <span class="o">|</span> <span class="n">ncomp</span><span class="p">;</span>
-<a name="line-85"></a>      <span class="n">p</span> <span class="o">|</span> <span class="n">rnz</span><span class="p">;</span>
-<a name="line-86"></a>      <span class="n">p</span> <span class="o">|</span> <span class="n">ia</span><span class="p">;</span>
-<a name="line-87"></a>      <span class="n">p</span> <span class="o">|</span> <span class="n">ja</span><span class="p">;</span>
-<a name="line-88"></a>      <span class="n">p</span> <span class="o">|</span> <span class="n">a</span><span class="p">;</span>
-<a name="line-89"></a>    <span class="p">}</span>
-<a name="line-90"></a>    <span class="c1">//! \brief Pack/Unpack serialize operator|</span>
-<a name="line-91"></a>    <span class="c1">//! \param[in,out] p Charm++&#39;s PUP::er serializer object reference</span>
-<a name="line-92"></a>    <span class="c1">//! \param[in,out] c CSR object reference</span>
-<a name="line-93"></a>    <span class="k">friend</span> <span class="kt">void</span> <span class="k">operator</span><span class="o">|</span><span class="p">(</span> <span class="n">PUP</span><span class="o">::</span><span class="n">er</span><span class="o">&amp;</span> <span class="n">p</span><span class="p">,</span> <span class="n">CSR</span><span class="o">&amp;</span> <span class="n">c</span> <span class="p">)</span> <span class="p">{</span> <span class="n">c</span><span class="p">.</span><span class="n">pup</span><span class="p">(</span><span class="n">p</span><span class="p">);</span> <span class="p">}</span>
-<a name="line-94"></a>    <span class="c1">///@}</span>
-<a name="line-95"></a>
-<a name="line-96"></a>  <span class="k">private</span><span class="o">:</span>
-<a name="line-97"></a>    <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="n">ncomp</span><span class="p">;</span>                  <span class="c1">//!&lt; Number of scalars per non-zero</span>
-<a name="line-98"></a>    <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span> <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="o">&gt;</span> <span class="n">rnz</span><span class="p">;</span>     <span class="c1">//!&lt; Number of nonzeros in each row</span>
-<a name="line-99"></a>    <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span> <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="o">&gt;</span> <span class="n">ia</span><span class="p">;</span>      <span class="c1">//!&lt; Row pointers</span>
-<a name="line-100"></a>    <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span> <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="o">&gt;</span> <span class="n">ja</span><span class="p">;</span>      <span class="c1">//!&lt; Column indices</span>
-<a name="line-101"></a>    <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span> <span class="n">real</span> <span class="o">&gt;</span> <span class="n">a</span><span class="p">;</span>              <span class="c1">//!&lt; Nonzero matrix values</span>
-<a name="line-102"></a><span class="p">};</span>
-<a name="line-103"></a>
-<a name="line-104"></a><span class="p">}</span> <span class="c1">// tk::</span>
-<a name="line-105"></a>
-<a name="line-106"></a><span class="cp">#endif </span><span class="c1">// CSR_h</span>
-</pre></div>
-</td></tr></table>
-      </div> <!-- /.wrapper -->
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span>
+<span class="normal">26</span>
+<span class="normal">27</span>
+<span class="normal">28</span>
+<span class="normal">29</span>
+<span class="normal">30</span>
+<span class="normal">31</span>
+<span class="normal">32</span>
+<span class="normal">33</span>
+<span class="normal">34</span>
+<span class="normal">35</span></pre></div></td><td class="code"><div><pre><span></span><a id="line-1" name="line-1"></a><span class="c1">// *****************************************************************************</span>
+<a id="line-2" name="line-2"></a><span class="cm">/*!</span>
+<a id="line-3" name="line-3"></a><span class="cm">  \file      src/Base/ChareState.hpp</span>
+<a id="line-4" name="line-4"></a><span class="cm">  \copyright 2012-2015 J. Bakosi,</span>
+<a id="line-5" name="line-5"></a><span class="cm">             2016-2018 Los Alamos National Security, LLC.,</span>
+<a id="line-6" name="line-6"></a><span class="cm">             2019-2021 Triad National Security, LLC.</span>
+<a id="line-7" name="line-7"></a><span class="cm">             All rights reserved. See the LICENSE file for details.</span>
+<a id="line-8" name="line-8"></a><span class="cm">  \brief     Charm++ chare state collector group</span>
+<a id="line-9" name="line-9"></a><span class="cm">  \details   Charm++ chare state collectory group used for debugging.</span>
+<a id="line-10" name="line-10"></a><span class="cm">*/</span>
+<a id="line-11" name="line-11"></a><span class="c1">// *****************************************************************************</span>
+<a id="line-12" name="line-12"></a><span class="cp">#ifndef ChareState_h</span>
+<a id="line-13" name="line-13"></a><span class="cp">#define ChareState_h</span>
+<a id="line-14" name="line-14"></a>
+<a id="line-15" name="line-15"></a><span class="hll"><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;string&gt;</span><span class="error2">&lt;--- Include file: <string> not found. Please note: Cppcheck does not need standard library headers to get proper results.</span>
+</span><a id="line-16" name="line-16"></a>
+<a id="line-17" name="line-17"></a><span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;Tags.hpp&quot;</span>
+<a id="line-18" name="line-18"></a><span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;Types.hpp&quot;</span>
+<a id="line-19" name="line-19"></a><span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;TaggedTuple.hpp&quot;</span>
+<a id="line-20" name="line-20"></a>
+<a id="line-21" name="line-21"></a><span class="k">namespace</span><span class="w"> </span><span class="nn">tk</span><span class="w"> </span><span class="p">{</span>
+<a id="line-22" name="line-22"></a>
+<a id="line-23" name="line-23"></a><span class="c1">//! Chare state</span>
+<a id="line-24" name="line-24"></a><span class="k">using</span><span class="w"> </span><span class="n">ChareState</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">TaggedTuple</span><span class="o">&lt;</span><span class="w"> </span><span class="n">brigand</span><span class="o">::</span><span class="n">list</span><span class="o">&lt;</span>
+<a id="line-25" name="line-25"></a><span class="w">    </span><span class="n">tag</span><span class="o">::</span><span class="n">ch</span><span class="p">,</span><span class="w">   </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w">   </span><span class="c1">// chare name</span>
+<a id="line-26" name="line-26"></a><span class="w">  </span><span class="p">,</span><span class="w"> </span><span class="n">tag</span><span class="o">::</span><span class="n">id</span><span class="p">,</span><span class="w">   </span><span class="kt">int</span><span class="w">           </span><span class="c1">// thisIndex</span>
+<a id="line-27" name="line-27"></a><span class="w">  </span><span class="p">,</span><span class="w"> </span><span class="n">tag</span><span class="o">::</span><span class="n">pe</span><span class="p">,</span><span class="w">   </span><span class="kt">int</span><span class="w">           </span><span class="c1">// PE</span>
+<a id="line-28" name="line-28"></a><span class="w">  </span><span class="p">,</span><span class="w"> </span><span class="n">tag</span><span class="o">::</span><span class="n">it</span><span class="p">,</span><span class="w">   </span><span class="kt">uint64_t</span><span class="w">      </span><span class="c1">// iteration count</span>
+<a id="line-29" name="line-29"></a><span class="w">  </span><span class="p">,</span><span class="w"> </span><span class="n">tag</span><span class="o">::</span><span class="n">fn</span><span class="p">,</span><span class="w">   </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w">   </span><span class="c1">// member function name</span>
+<a id="line-30" name="line-30"></a><span class="w">  </span><span class="p">,</span><span class="w"> </span><span class="n">tag</span><span class="o">::</span><span class="n">time</span><span class="p">,</span><span class="w"> </span><span class="n">tk</span><span class="o">::</span><span class="n">real</span><span class="w">      </span><span class="c1">// time stamp</span>
+<a id="line-31" name="line-31"></a><span class="o">&gt;</span><span class="w"> </span><span class="o">&gt;</span><span class="p">;</span>
+<a id="line-32" name="line-32"></a>
+<a id="line-33" name="line-33"></a><span class="p">}</span><span class="w"> </span><span class="c1">// tk::</span>
+<a id="line-34" name="line-34"></a>
+<a id="line-35" name="line-35"></a><span class="cp">#endif </span><span class="c1">// ChareState_h</span>
+</pre></div></td></tr></table></div>
+
     </div>
     <div id="footer" class="footer">
       <p>
-        Cppcheck 2.3 - a tool for static C/C++ code analysis<br>
-        <br>
-        Internet: <a href="http://cppcheck.net">http://cppcheck.net</a><br>
-        IRC: <a href="irc://irc.freenode.net/cppcheck">irc://irc.freenode.net/cppcheck</a><br>
+        Created by Cppcheck 2.17.1 (<a href="https://cppcheck.sourceforge.io">Sourceforge</a>, <a href="irc://irc.freenode.net/cppcheck">IRC</a>)
       </p>
+    </div>
     </div>
   </body>
 </html>
